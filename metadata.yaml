@@ -1,0 +1,11 @@
+name: malleability-readiness-eval
+description: Evidence-backed software malleability and self-evolution readiness assessment with archetype-aware applicability, profile reporting, critical closed-loop floors, and prerequisite-ordered remediation.
+author: Vellanki Sriharsha
+date_added: 2026-09-27
+version: public-beta-2
+usage_examples:
+  - /malleability-readiness-eval "Example Software" ./repository --tip <immutable-tip> --archetype focused-application
+  - /malleability-readiness-eval "Example Platform" ./repository --archetype configurable-application-platform --prescribe --target 3
+dependencies:
+  - python3 3.8 or later; standard library only
+  - git for recording immutable repository tips

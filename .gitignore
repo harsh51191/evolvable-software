@@ -1,0 +1,6 @@
+__pycache__/
+*.py[cod]
+scores.json
+*-scorecard.md
+*-prescription.md
+.DS_Store
