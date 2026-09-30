@@ -1,6 +1,6 @@
 # Malleability and Self-Evolution Readiness
 
-![Malleable Software: Can your software change safely?](assets/malleable-software-social-preview.png)
+![Malleable Software: How ready is your software to self-evolve?](assets/malleable-software-social-preview.png)
 
 An open, evidence-backed framework and agent skill for assessing whether a software product can absorb governed change and safely improve from evidence.
 
