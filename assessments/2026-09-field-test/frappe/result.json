@@ -1,0 +1,269 @@
+{
+  "product": "Frappe Framework",
+  "date": "2026-09-30",
+  "source": "github.com/frappe/frappe @ 82b0384810030c8d347780538821a3b006375d28 (develop)",
+  "archetype": "configurable-application-platform",
+  "framework_version": "0.3.0",
+  "coverage": {
+    "assessed": 49,
+    "not_evidenced": 0,
+    "not_applicable": 0
+  },
+  "grades": {
+    "A": 48,
+    "B": 1,
+    "C": 0
+  },
+  "indexes": {
+    "malleability": 2.8,
+    "governance": 1.9,
+    "learning": 1.3,
+    "factory": 1.7
+  },
+  "bands": {
+    "malleability": "productised",
+    "governance": "mechanism",
+    "learning": "code-only",
+    "factory": "mechanism"
+  },
+  "ranges": {
+    "malleability": [
+      2.8,
+      2.8
+    ],
+    "governance": [
+      1.9,
+      2.3
+    ],
+    "learning": [
+      1.3,
+      1.5
+    ],
+    "factory": [
+      1.7,
+      2.0
+    ]
+  },
+  "profiles": {
+    "Change Surface": 3.1,
+    "Governance": 1.9,
+    "Learning": 1.3,
+    "Factory": 1.7,
+    "Agent Interface": 1.3,
+    "Extension Surface": 2.0,
+    "Operational Scalability": 2.3
+  },
+  "dimension_means": {
+    "A": 3.3,
+    "B": 2.7,
+    "C": 3,
+    "D": 3,
+    "E": 2,
+    "F": 1.8,
+    "G": 2.3,
+    "H": 1.3,
+    "I": 2.3,
+    "K": 1.3,
+    "N": 1.7,
+    "O": 3.3,
+    "J": 1.7,
+    "M": 0.7,
+    "P": 1.5,
+    "L": 2
+  },
+  "closed_loop_candidate": false,
+  "closed_loop": [
+    {
+      "stage": "observe",
+      "criteria": [
+        "J2"
+      ],
+      "min": 2,
+      "best": 1,
+      "passed": false
+    },
+    {
+      "stage": "propose",
+      "criteria": [
+        "M1",
+        "P1"
+      ],
+      "min": 2,
+      "best": 2,
+      "passed": true
+    },
+    {
+      "stage": "review",
+      "criteria": [
+        "F2"
+      ],
+      "min": 2,
+      "best": 2,
+      "passed": true
+    },
+    {
+      "stage": "gate",
+      "criteria": [
+        "F3"
+      ],
+      "min": 3,
+      "best": 1,
+      "passed": false
+    },
+    {
+      "stage": "apply and roll back",
+      "criteria": [
+        "F1"
+      ],
+      "min": 2,
+      "best": 2,
+      "passed": true
+    },
+    {
+      "stage": "measure",
+      "criteria": [
+        "M4",
+        "P2"
+      ],
+      "min": 3,
+      "best": 1,
+      "passed": false
+    },
+    {
+      "stage": "verify",
+      "criteria": [
+        "L1"
+      ],
+      "min": 2,
+      "best": 2,
+      "passed": true
+    }
+  ],
+  "flags": [],
+  "effective_scores": {
+    "A1": 3,
+    "A2": 3,
+    "A3": 4,
+    "B1": 3,
+    "B2": 3,
+    "B3": 2,
+    "C1": 3,
+    "C2": 3,
+    "C3": 3,
+    "D1": 3,
+    "D2": 3,
+    "D3": 3,
+    "E1": 1,
+    "E2": 2,
+    "E3": 2,
+    "E4": 3,
+    "F1": 2,
+    "F2": 2,
+    "F3": 1,
+    "F4": 2,
+    "G1": 3,
+    "G2": 2,
+    "G3": 2,
+    "H1": 1,
+    "H2": 1,
+    "H3": 2,
+    "I1": 3,
+    "I2": 2,
+    "I3": 2,
+    "K1": 2,
+    "K2": 0,
+    "K3": 2,
+    "N1": 1,
+    "N2": 2,
+    "N3": 2,
+    "O1": 4,
+    "O2": 3,
+    "O3": 3,
+    "J1": 3,
+    "J2": 1,
+    "J3": 1,
+    "M1": 2,
+    "M3": 0,
+    "M4": 0,
+    "P1": 2,
+    "P2": 1,
+    "L1": 2,
+    "L2": 2,
+    "L3": 2
+  },
+  "variants": {
+    "alternate": {
+      "indexes": {
+        "malleability": 2.8,
+        "governance": 2.3,
+        "learning": 1.5,
+        "factory": 2.0
+      },
+      "profiles": {
+        "Change Surface": 3.1,
+        "Governance": 2.3,
+        "Learning": 1.5,
+        "Factory": 2.0,
+        "Agent Interface": 1.3,
+        "Extension Surface": 2.2,
+        "Operational Scalability": 2.3
+      },
+      "closed_loop_candidate": false
+    },
+    "available": {
+      "indexes": {
+        "malleability": 2.8,
+        "governance": 1.9,
+        "learning": 1.3,
+        "factory": 1.7
+      },
+      "profiles": {
+        "Change Surface": 3.1,
+        "Governance": 1.9,
+        "Learning": 1.3,
+        "Factory": 1.7,
+        "Agent Interface": 1.3,
+        "Extension Surface": 2.0,
+        "Operational Scalability": 2.3
+      },
+      "closed_loop_candidate": false
+    },
+    "assessed_only": {
+      "indexes": {
+        "malleability": 2.8,
+        "governance": 1.9,
+        "learning": 1.3,
+        "factory": 1.7
+      },
+      "profiles": {
+        "Change Surface": 3.1,
+        "Governance": 1.9,
+        "Learning": 1.3,
+        "Factory": 1.7,
+        "Agent Interface": 1.3,
+        "Extension Surface": 2.0,
+        "Operational Scalability": 2.3
+      },
+      "closed_loop_candidate": false
+    },
+    "all_applicable": {
+      "indexes": {
+        "malleability": 2.8,
+        "governance": 1.9,
+        "learning": 1.3,
+        "factory": 1.7
+      },
+      "profiles": {
+        "Change Surface": 3.1,
+        "Governance": 1.9,
+        "Learning": 1.3,
+        "Factory": 1.7,
+        "Agent Interface": 1.3,
+        "Extension Surface": 2.0,
+        "Operational Scalability": 2.3
+      },
+      "closed_loop_candidate": false
+    }
+  },
+  "criteria_in_rubric": 49
+}

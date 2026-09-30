@@ -1,8 +1,8 @@
 # MSR Rubric: criterion definitions and anchored levels
 
-This file is the single source of truth for the Malleability and Self-Evolution Readiness framework. `scripts/score.py` reads the criterion ids and dimension membership from the `###` headings below. Edit here, nowhere else.
+This file is the single source of truth for the Malleability and Self-Evolution Readiness framework. `scripts/score.py` reads the criterion ids and dimension membership from the `###` headings below, and reads the scoring model (indexes, profiles, closed-loop floors, bands, archetype exclusions and caps) from the `msr-model` block at the end of this preamble. Change any of them here, nowhere else.
 
-Every criterion has: a definition, why it matters, evidence to look for, and one anchored description per level 0 to 4. Score the level whose description the evidence supports in full. If the evidence sits between two levels, take the lower one.
+Every criterion has: a definition, why it matters, evidence to look for, and one anchored description per level 0 to 4. Levels are cumulative: a level includes the substance of the levels below it. Score the level whose description the evidence supports in full. If the evidence sits between two levels, take the lower one and record the higher one as `alt_score`.
 
 ## General maturity ladder
 
@@ -10,9 +10,17 @@ Every criterion has: a definition, why it matters, evidence to look for, and one
 |---|---|
 | 0 | Absent. |
 | 1 | Code-only. Engineers change code and ship a release. |
-| 2 | Mechanism. A runtime mechanism exists, reachable by engineers or professional services through files, git, config or API. Not exposed to admins. |
-| 3 | Productised. Admins or tenants do it through UI or a supported self-serve path, validated, previewable, with no deploy. |
-| 4 | Generative and policy-gated. Machine-readable data the platform interprets, producible and consumable by an AI, with a policy gate that decides whether a human is needed, and rollback. |
+| 2 | Mechanism. A runtime mechanism exists, reachable by engineers through files, git, config or API, without validation or a supported path for the product's operator. |
+| 3 | Productised. The product's operator does it through a supported, validated path with no deploy: a UI, a first-party CLI command, a conversational command the product handles, or reviewed declarative configuration the product validates. |
+| 4 | Generative and policy-gated. Machine-readable definitions an AI can author through a supported path, validated before they take effect, with a policy that decides whether a human is needed, and rollback. |
+
+**Who the operator is.** For a multi-user platform, the in-product administrator. For a developer platform or a single-user agent runtime, the person who runs it. Hand-editing a file the product does not validate stays at level 2. The ladder measures how governed and supported a change path is, not whether it has a graphical UI.
+
+**What "tenant" means.** The unit of isolation: a tenant, workspace, site or project, or the installation itself for single-tenant products.
+
+**What "customisation surface" and "definition" mean.** Anything the operator changes to shape behaviour without a code release: entity and field definitions, layouts, rules, workflows, apps, and for agents their skills, memory, prompts, tool policies and configuration.
+
+**What "AI-authorable" means.** The definition has a documented machine-readable form, and the product exposes a path (tool, API or conversational command) that creates or changes it with structured validation errors. Storing JSON somewhere is not enough.
 
 For the E dimension the ladder reads: 0 no audit, 1 manual audit, 2 automated scan on demand, 3 scan wired as a gate on every change, 4 continuous scan plus automatic fix proposals through the change path.
 
@@ -23,20 +31,66 @@ For the E dimension the ladder reads: 0 no audit, 1 manual audit, 2 automated sc
 ## Evidence status
 
 - **assessed** means the criterion was evaluated and can be assigned an anchored score. Use score 0 when primary evidence establishes absence.
-- **not_evidenced** means the criterion appears applicable but the inspected sources could not establish presence or absence. It scores 0 in the evidence-limited index and is reported as uncertainty.
-- **not_applicable** means the criterion is outside the product's intended archetype. It is excluded from the denominator and requires a specific rationale.
+- **not_evidenced** means the criterion appears applicable but the inspected sources could not establish presence or absence. It scores 0 in the evidence-limited index, is excluded from the assessed-only index, and is reported as uncertainty.
+- **not_applicable** means the criterion is outside the product's intended archetype. Only the exclusions listed for that archetype in the model below are accepted. It is excluded from the denominator and requires a specific rationale.
 
-Read `archetypes.md` before applying `not_applicable`. Missing functionality is not non-applicability.
+Read `archetypes.md` before scoring. Missing functionality is not non-applicability.
 
 ## Scoring rules
 
-1. Score what ships today, not the roadmap.
-2. Every assessed criterion cites evidence, including the inspected surface for an assessed 0.
-3. A capability that exists for one entity family only scores at most 2 (`single_entity: true` in the scores file).
-4. A capability that has caused a production incident loses one point (`incident: true`).
-5. Criteria are integers. Dimension means are reported to one decimal. Indexes are means of dimension means after approved non-applicable criteria are excluded.
-6. Compliance and security are scored on whether they are structural and continuously verified. The latest audit result is an input, never a score.
-7. Name the branch or tip the evidence was read from. A claim is branch-scoped until proven otherwise.
+1. Score what ships today, not the roadmap. Features in the repository but disabled behind a beta flag still ship.
+2. **Score the default configuration.** `score` is the level in a standard installation with required credentials supplied. If an opt-in setting, beta flag or plugin that ships with the product raises the level, record that as `available_score`. The scorer reports both.
+3. **Scope includes first-party companions.** Assess every first-party repository that implements the product's core behaviour. When the assessed repository delegates a capability to another repository, assess it there, or mark it `not_evidenced` and name where it lives.
+4. **Self, not others.** Learning and Evolve criteria (J, M, P) credit changes to the assessed product's own behaviour, including behaviour its operators configure in it (apps, workflows, skills, rules). Improvements the product makes to other software, such as pull requests against a customer's repository, are recorded in the reading but not scored.
+5. Every assessed criterion cites evidence, including the inspected surface for an assessed 0.
+6. A capability that exists for one entity family only scores at most 2 (`single_entity: true`).
+7. A capability that has caused a production incident in the last 12 months loses one point (`incident: true`, with the incident cited in the evidence).
+8. Criteria are integers. Dimension means, profiles and indexes are computed from unrounded values and rounded half up to one decimal only for display.
+9. Compliance and security are scored on whether they are structural and continuously verified. The latest audit result is an input, never a score.
+10. Name the branch or tip the evidence was read from. A claim is branch-scoped until proven otherwise.
+
+## Scoring model
+
+Indexes and profiles are means of dimension means after excluded criteria are removed. The four indexes do not overlap. Self-evolution is not a single average: it is reported as the Governance and Learning indexes side by side, plus the closed-loop check.
+
+```json msr-model
+{
+  "version": "0.3.0",
+  "indexes": {
+    "malleability": ["A", "B", "C", "D", "I", "N", "O"],
+    "governance": ["E", "F"],
+    "learning": ["J", "M", "P"],
+    "factory": ["H", "L"]
+  },
+  "profiles": {
+    "Change Surface": ["A", "B", "C", "D", "O"],
+    "Governance": ["E", "F"],
+    "Learning": ["J", "M", "P"],
+    "Factory": ["H", "L"],
+    "Agent Interface": ["K"],
+    "Extension Surface": ["I", "N"],
+    "Operational Scalability": ["G"]
+  },
+  "closed_loop_floors": [
+    {"stage": "observe", "any_of": ["J2"], "min": 2},
+    {"stage": "propose", "any_of": ["M1", "P1"], "min": 2},
+    {"stage": "review", "any_of": ["F2"], "min": 2},
+    {"stage": "gate", "any_of": ["F3"], "min": 3},
+    {"stage": "apply and roll back", "any_of": ["F1"], "min": 2},
+    {"stage": "measure", "any_of": ["M4", "P2"], "min": 3},
+    {"stage": "verify", "any_of": ["L1"], "min": 2}
+  ],
+  "bands": [[1.5, "code-only"], [2.5, "mechanism"], [3.5, "productised"], [null, "generative and policy-gated"]],
+  "archetype_exclusions": {
+    "configurable-application-platform": [],
+    "focused-application": ["A1", "A3", "B1", "B2", "C2", "O1", "O2", "O3"],
+    "agent-runtime": ["A1", "A2", "A3", "B1", "B2", "C2", "G1"],
+    "developer-platform": ["C1", "C2", "C3", "E1"],
+    "other": "*"
+  },
+  "caps": {"grade_c_max": 2, "single_entity_max": 2, "incident_penalty": 1}
+}
+```
 
 ---
 
@@ -51,28 +105,28 @@ Read `archetypes.md` before applying `not_applicable`. Missing functionality is 
 - **0** Types are hard-coded and adding one is a project.
 - **1** Adding a type is code plus migration plus release.
 - **2** A runtime type registry or generic store exists but is populated by engineers through config, migration or API.
-- **3** Admins define types through UI or a supported API, live, validated, with no deploy.
+- **3** The operator defines types through a supported path, live, validated, with no deploy.
 - **4** Types are machine-readable definitions an AI can author, validated with dry-run, versioned, and applied through a policy gate.
 
-### A2 Field definitions carry type, validation and privacy classification
-**Definition.** Fields on any entity are declared with a data type, validation rules and a privacy classification that forms, API, search and erasure all read.
-**Why it matters.** Validation and privacy handled per feature is how compliance becomes engineering work; declared once, it becomes inherited.
-**Evidence.** Custom field types and their storage. Where validation rules live. Any personal-data or sensitivity tag on fields. Whether the tag is consumed anywhere.
+### A2 Field definitions carry type and validation
+**Definition.** Fields on any entity are declared with a data type and validation rules that forms, API and search all read.
+**Why it matters.** Validation handled per feature is re-implemented on every surface; declared once, it is inherited. Privacy classification of fields is scored in E3.
+**Evidence.** Custom field types and their storage. Where validation rules live. Whether forms, API and search read the same definition.
 - **0** Fields are database columns only.
 - **1** Field additions are code.
-- **2** Typed custom fields exist through API for engineers; validation partial; no privacy tag or a tag nothing consumes.
-- **3** Admins add typed, validated fields through UI; a privacy tag exists on at least one entity family and is consumed.
-- **4** Every field has type, validation and privacy tag in one machine-readable definition consumed by forms, API, search and erasure; AI-authorable.
+- **2** Typed custom fields exist through API or files for engineers; validation partial.
+- **3** The operator adds typed, validated fields through a supported path; the same definition drives forms and API.
+- **4** Every field has type and validation in one machine-readable definition consumed by forms, API, search and erasure; AI-authorable.
 
 ### A3 Relationships and lifecycle states declarable
-**Definition.** Relationships between entities and lifecycle states with transitions are declared in the definition, not coded per feature.
+**Definition.** Relationships between entities, or lifecycle states with transitions, are declared in the definition, not coded per feature.
 **Why it matters.** Most product behaviour is a relationship or a state change. If those are code, so is the product.
-**Evidence.** Generic association or relation tables. Workflow or state tables. Per-feature state enums in code. Any admin UI for states.
+**Evidence.** Generic association or relation tables. Workflow or state tables. Per-feature state enums in code. Any admin path for relations or states.
 - **0** None.
 - **1** Coded per feature.
 - **2** A generic relation or state mechanism exists for engineers, not exposed.
-- **3** Admins declare relations and states with transitions through UI.
-- **4** Referential integrity and transition guards are enforced by the platform from the definition; AI-authorable.
+- **3** The operator declares relations, or lifecycle states with transitions, through a supported path.
+- **4** Both relations and states are declarable, with referential integrity and transition guards enforced by the platform from the definition; AI-authorable.
 
 ## Dimension B: API surface generation
 
@@ -115,7 +169,7 @@ Read `archetypes.md` before applying `not_applicable`. Missing functionality is 
 - **0** Layout is coded.
 - **1** Templates in code.
 - **2** Layout files as data, engineer-edited, no tenant override.
-- **3** Admin layout editor with per-tenant overrides, schema validation, preview.
+- **3** Operator layout editor with per-tenant overrides, schema validation, preview.
 - **4** Layout and component props target a machine-validated schema; AI-authorable; versioned with rollback.
 
 ### C2 Generic list, detail and intake widgets from definition plus view spec
@@ -125,7 +179,7 @@ Read `archetypes.md` before applying `not_applicable`. Missing functionality is 
 - **0** None.
 - **1** Every view hand-built.
 - **2** Partial generic rendering exists, such as forms from a spec or generic field display, but not list, detail and intake together.
-- **3** Generic list, detail and intake widgets exist and admins configure view specs.
+- **3** Generic list, detail and intake widgets exist and the operator configures view specs.
 - **4** View specs are machine-readable and AI-authorable with inherited accessibility and theme.
 
 ### C3 Theme tokens and text are data with tenant overrides
@@ -135,7 +189,7 @@ Read `archetypes.md` before applying `not_applicable`. Missing functionality is 
 - **0** Hard-coded.
 - **1** CSS and strings in code.
 - **2** Tokens and text externalised but engineer-managed.
-- **3** Admin theme editor, per-tenant text overrides, locale pipeline.
+- **3** Operator theme editor or validated theme definitions, per-tenant text overrides, locale pipeline.
 - **4** Tokens and text carry a machine-readable schema, changes flow through the proposal path, AI translation and theming validated with contrast checks.
 
 ## Dimension D: Behaviour as data
@@ -147,7 +201,7 @@ Read `archetypes.md` before applying `not_applicable`. Missing functionality is 
 - **0** None.
 - **1** Behaviour coded.
 - **2** Engine exists but is engineer or API only, or narrow in scope.
-- **3** Admins compose rules through UI across entities with a test mode.
+- **3** The operator composes rules through a supported path across entities, with a test mode.
 - **4** Rules are machine-readable, simulatable against history, versioned, AI-authorable, and cover defined entities.
 
 ### D2 Event model with webhooks or subscriptions and retry
@@ -157,7 +211,7 @@ Read `archetypes.md` before applying `not_applicable`. Missing functionality is 
 - **0** None.
 - **1** Per-feature listeners in code.
 - **2** Event mechanism exists; webhooks limited or without retry.
-- **3** Admins subscribe to events with webhooks, retry and delivery logs.
+- **3** The operator subscribes to events with webhooks, retry and delivery logs.
 - **4** Event schema generated from definitions including defined entities; replay; per-tenant streams.
 
 ### D3 Sandboxed server-side hooks
@@ -194,19 +248,19 @@ Read `archetypes.md` before applying `not_applicable`. Missing functionality is 
 - **3** Admin UI; covers all entities, configuration and definition changes, and approvals; retention policy.
 - **4** Audit events are structured, exportable, tamper-evident, and consumed by the advise loop.
 
-### E3 GDPR export, erasure and retention generic over entities
-**Definition.** Data subject export, erasure and retention work for every entity based on privacy tags, not per-feature code.
-**Why it matters.** A metadata-driven platform without this fails GDPR the first time a tenant defines a personal field.
-**Evidence.** Erasure and export services and which entities they cover. Privacy tags. Retention policies. Admin triggers. Verification reports.
+### E3 Privacy classification, export, erasure and retention generic over entities
+**Definition.** Fields carry a privacy classification, and data-subject export, erasure and retention work for every entity based on it, not per-feature code.
+**Why it matters.** A malleable product without this fails privacy law the first time an operator defines a personal field.
+**Evidence.** Privacy or sensitivity tags on fields and their consumers. Erasure and export services and which entities they cover. Retention policies. Admin triggers. Verification reports.
 - **0** None.
 - **1** Manual or engineer-run scripts.
-- **2** Implemented for one entity family only.
-- **3** Admin-triggered export and erasure across entities through tags; retention policies.
+- **2** Implemented for one entity family only, or across entities through code-declared lists.
+- **3** A field-level privacy classification drives operator-triggered export and erasure across entities; retention policies.
 - **4** Automatic detection of untagged personal data with tagging proposals; verified erasure reports.
 
 ### E4 Security as infrastructure
 **Definition.** Authorisation derives from definitions, input validation is generic over entities, and vulnerability scanning is continuous and gates change.
-**Why it matters.** Security handled per feature drifts, as reverted mitigations show.
+**Why it matters.** Security handled per feature drifts; structural controls do not.
 **Evidence.** Permission model and how new permissions are declared. Validation framework and whether it is mandatory. SAST, dependency and container scanning in CI. Whether scans block merges. Runtime policy enforcement.
 - **0** None.
 - **1** Per-feature checks; manual penetration tests.
@@ -223,7 +277,7 @@ Read `archetypes.md` before applying `not_applicable`. Missing functionality is 
 - **0** None.
 - **1** Only in code version control, for engineers.
 - **2** Versioning for some surfaces, or without a rollback UI.
-- **3** Admins see history, diff and roll back across all customisation surfaces.
+- **3** The operator sees history and diffs, and rolls back, across all customisation surfaces.
 - **4** Versions are addressable objects linked to proposals and evidence; rollback automatic on failed verification.
 
 ### F2 Proposal, review, apply as a first-class object with preview
@@ -233,7 +287,7 @@ Read `archetypes.md` before applying `not_applicable`. Missing functionality is 
 - **0** None.
 - **1** Pull requests for code only.
 - **2** Stage and publish or GitOps flow for engineers.
-- **3** Admins propose, preview and apply on staging data with review.
+- **3** The operator proposes, previews (on staging data or a staged copy) and applies with review.
 - **4** Proposals are typed objects any actor can create; preview on production-shaped data; evidence attached automatically.
 
 ### F3 Policy-based apply with recorded approvals and a movable human boundary
@@ -292,11 +346,11 @@ Read `archetypes.md` before applying `not_applicable`. Missing functionality is 
 
 ### H1 Layers deploy independently
 **Definition.** Front end, API and core deploy independently, containerised, with no cross-layer build coupling.
-**Why it matters.** Coupling forces every change onto the slowest layer's train.
+**Why it matters.** Coupling forces every change onto the slowest layer's train. A well-bounded modular monolith with automated delivery is a legitimate choice and scores 1 or 2 here; this criterion measures independence, not architecture fashion.
 **Evidence.** Deployables and their build dependencies. Containerisation. Release trains. Cross-layer artifacts consumed at build time.
-- **0** One artifact.
-- **1** Monolith, manual.
-- **2** Containerised layers with build coupling.
+- **0** One artifact, built and deployed by hand.
+- **1** One artifact with automated build and deploy.
+- **2** Separately containerised layers that are still built or released together.
 - **3** Independently deployable services with contracts; no cross-layer build.
 - **4** Progressive delivery per layer with automatic rollback.
 
@@ -356,24 +410,24 @@ Read `archetypes.md` before applying `not_applicable`. Missing functionality is 
 
 ## Dimension K: Agent and conversational readiness
 
-### K1 Machine-readable capability surface over MCP
-**Definition.** The product exposes typed tools generated from its definitions over MCP, introspectable, with a current capability map.
-**Why it matters.** Agents act on tools, not on documentation.
-**Evidence.** MCP server. Tool definitions and their source. Capability map. Auth scoping on tools.
+### K1 Machine-readable capability surface for agents
+**Definition.** The product exposes typed, discoverable tools (MCP or an equivalent agent protocol) generated from its definitions, with scoped auth and a current capability map.
+**Why it matters.** Agents act on tools, not on documentation. The protocol is not the point; typed discovery and scoping are.
+**Evidence.** MCP server or equivalent. Tool definitions and their source. Capability map. Auth scoping on tools.
 - **0** None.
 - **1** Hand-written API documentation.
 - **2** Introspectable API; no tool surface.
-- **3** MCP server exposing typed tools with scoped auth; capability map exists.
+- **3** A typed tool surface with scoped auth; a capability map exists.
 - **4** Tools generated from definitions including defined entities; capability map machine-readable and current.
 
-### K2 Conversational operability for members and natural-language authoring for admins
-**Definition.** Members complete tasks through a grounded conversational surface, and admins author definitions, layouts and text through natural language on the same surfaces the UI uses.
-**Why it matters.** Conversation is the interface the vision assumes for both members and operators.
-**Evidence.** Chat or assistant surfaces. Grounding sources. Actions available conversationally. Admin natural-language authoring. Evaluation harness.
+### K2 Conversational operability for users and natural-language authoring for operators
+**Definition.** End users complete tasks through a grounded conversational surface, and operators author definitions, layouts and text through natural language on the same surfaces the UI uses.
+**Why it matters.** Conversation is increasingly how both users and operators reach a product; it only helps if it is grounded and shares the product's definitions.
+**Evidence.** Chat or assistant surfaces. Grounding sources. Actions available conversationally. Operator natural-language authoring. Evaluation harness.
 - **0** None.
 - **1** FAQ or keyword bot.
-- **2** Grounded conversational surface for one persona, or admin natural language for one surface.
-- **3** Members complete tasks conversationally with grounding and actions; admins author through natural language with preview.
+- **2** Grounded conversational surface for one persona, or natural-language authoring for one surface.
+- **3** Users complete tasks conversationally with grounding and actions; operators author through natural language with preview.
 - **4** Conversation and UI share definitions; every UI action has a conversational equivalent; an evaluation harness measures groundedness.
 
 ### K3 Agent-safe actions
@@ -390,7 +444,7 @@ Read `archetypes.md` before applying `not_applicable`. Missing functionality is 
 
 ### N1 Canonical data model with a mapping layer
 **Definition.** External systems integrate through a canonical model and a configurable mapping layer, so the second connector is field mapping, not core code.
-**Why it matters.** This is the Salesforce-then-ServiceNow test: the second integration should cost a fraction of the first.
+**Why it matters.** The second integration should cost a fraction of the first.
 **Evidence.** Canonical entity model. Mapping configuration or UI. How existing integrations were built. Count of bespoke modules.
 - **0** None.
 - **1** Bespoke integration per system.
@@ -421,18 +475,18 @@ Read `archetypes.md` before applying `not_applicable`. Missing functionality is 
 ## Dimension O: Adjacent-domain expansion
 
 ### O1 Kernel concepts are domain-neutral
-**Definition.** The kernel is identity, content, conversation, permission, workflow and channel, with the domain expressed above it.
-**Why it matters.** Domain nouns in the kernel make adjacent domains rewrites.
-**Evidence.** Core entity names. Where domain-specific behaviour lives. Presence of a channel concept.
+**Definition.** The kernel holds domain-neutral primitives (for example identity, content, permission, workflow, messaging), with the product's domain expressed above it.
+**Why it matters.** Domain nouns in the kernel make adjacent domains rewrites. The exact primitives depend on the product; neutrality is what is scored.
+**Evidence.** Core entity names. Where domain-specific behaviour lives.
 - **0** Single-purpose.
 - **1** Domain baked in.
 - **2** Some neutral primitives, but domain nouns remain in core.
-- **3** Kernel is identity, content, conversation, permission, workflow and channel; domain expressed above.
+- **3** Kernel primitives are domain-neutral; the domain is expressed above them.
 - **4** Kernel primitives are themselves configurable definitions.
 
 ### O2 A new domain is expressible without kernel change
 **Definition.** An adjacent domain is built as definitions plus connectors plus rules, with no kernel change.
-**Why it matters.** This is the omnichannel or autonomous-agent test.
+**Why it matters.** This tests whether the kernel really is neutral.
 **Evidence.** Any adjacent domain shipped this way. What a new domain would need in core today.
 - **0** Rewrite.
 - **1** Major core work.
@@ -464,56 +518,46 @@ Read `archetypes.md` before applying `not_applicable`. Missing functionality is 
 - **3** Near-real-time events available to platform features.
 - **4** Streaming with per-entity and per-definition instrumentation added automatically.
 
-### J2 Feedback captured as structured objects
-**Definition.** Member reports, admin signals and support tickets are structured objects linked to entities, features and versions.
-**Why it matters.** Free-text feedback cannot drive proposals.
-**Evidence.** Feedback types. Linking to entities. Triage workflow. Closure loop with reporter.
+### J2 Structured learning signals
+**Definition.** Feedback, corrections, ratings, evaluation outcomes and per-definition usage are recorded as structured signals linked to the definition and version they concern.
+**Why it matters.** Free text cannot drive proposals; signals tied to what they concern can.
+**Evidence.** Feedback or rating objects. Evaluation results. Usage counters per definition. What they link to. Triage.
 - **0** None.
-- **1** Free-text reports.
-- **2** Some typed feedback, such as moderation reports.
-- **3** Feedback objects linked to entities, features and versions with a triage workflow.
-- **4** Feedback auto-classified and linked to proposals; loop closes with the reporter.
+- **1** Free-text reports only.
+- **2** Typed signals exist but are not linked to the definition and version they concern.
+- **3** Typed signals linked to the definition and version they concern, with a triage or review workflow.
+- **4** Signals are auto-classified and routed into proposals; the loop closes with the reporter.
 
 ### J3 Cross-source mining inside the product
-**Definition.** The product joins usage, support and delivery data into queryable models and mines them continuously.
+**Definition.** The product joins its own usage, feedback, error and change history into queryable models and mines them continuously.
 **Why it matters.** Diagnosis needs joined data; analysis done outside the product does not compound.
-**Evidence.** Data lake or warehouse and what it joins. Mining jobs. Whether findings surface in the product.
+**Evidence.** Joined stores and what they join. Mining jobs. Whether findings surface in the product.
 - **0** None.
 - **1** Manual analysis outside the product.
-- **2** A data lake joins some sources.
-- **3** Product joins usage, support and delivery data with queryable models.
+- **2** Some sources are joined or queryable together.
+- **3** The product joins usage, feedback, errors and change history with queryable models.
 - **4** Continuous mining producing candidate findings with provenance.
 
 ## Dimension M: Advise and act
 
-### M1 Ranked, evidence-backed proposals for software change
-**Definition.** From mined data, the product produces ranked proposals for software change with evidence and expected impact.
+### M1 Ranked, evidence-backed proposals for change
+**Definition.** From observed data, the product produces ranked proposals to change its own behaviour or configured definitions, with evidence and expected impact.
 **Why it matters.** This is the difference between a dashboard and a self-diagnosing system.
-**Evidence.** Recommendation features. Proposal objects. Ranking and evidence. Post-apply impact measurement.
+**Evidence.** Recommendation features. Proposal objects. Ranking and evidence. What the proposals target.
 - **0** None.
 - **1** Dashboards.
-- **2** Insights or recommendations for one area.
-- **3** Ranked evidence-backed proposals for software change across the product with expected impact.
+- **2** Recommendations or proposals for one area.
+- **3** Ranked evidence-backed proposals across the product with expected impact.
 - **4** Proposals carry definition diffs ready for the gate and post-apply impact measurement.
 
-### M2 Proposals for process change
-**Definition.** The product proposes changes to how the customer runs their operation and to how the vendor delivers, with evidence.
-**Why it matters.** Consultative value is the part no feature request captures.
-**Evidence.** Benchmarks. Operational recommendations. Delivery-process recommendations. Implementation paths.
+### M3 Accepted proposals are implemented by an AI authoring lane
+**Definition.** Accepted proposals are implemented through the definition and proposal path, authored by an AI lane, across every tenant or installation they apply to.
+**Why it matters.** Proposals that need a human to hand-build each change do not scale.
+**Evidence.** AI authoring lane and its scope. Where changes apply. Policy gate. Measurement after apply.
 - **0** None.
-- **1** Reports.
-- **2** Benchmarks against peers.
-- **3** Consultative proposals for customer operations and delivery process with evidence.
-- **4** Proposals include an implementation path through rules, definitions or training, with measured outcomes.
-
-### M3 Aligned proposals implement at scale with an AI authoring lane
-**Definition.** Accepted proposals implement through the definition and proposal path across tenants, authored by an AI lane.
-**Why it matters.** Proposals that need a human to hand-build per tenant do not scale.
-**Evidence.** AI authoring lane and its scope. Cross-tenant application. Policy gate. Measurement after apply.
-- **0** None.
-- **1** Manual per tenant.
-- **2** AI lane for narrow tasks, engineer-run.
-- **3** Aligned proposals implemented across tenants through definitions and proposals under policy.
+- **1** Manual per tenant or installation.
+- **2** AI lane for narrow tasks, run on request.
+- **3** An AI lane implements accepted proposals through definitions and proposals under policy, wherever they apply.
 - **4** Closed loop: propose, gate, apply, measure, learn, with rollback.
 
 ### M4 Post-change impact is measured against a declared baseline
@@ -525,6 +569,28 @@ Read `archetypes.md` before applying `not_applicable`. Missing functionality is 
 - **2** Relevant telemetry exists, but it is not bound to the proposal version, baseline and decision.
 - **3** Applied proposals record a baseline, target metric, observation window and explicit keep, revise or rollback decision.
 - **4** Instrumentation is created with the proposal; policy uses measured impact to promote, revise or reverse the change, with attribution limits recorded.
+
+## Dimension P: Learn from experience
+
+### P1 The product turns its own operating experience into candidate changes
+**Definition.** The product observes its own runs, sessions or usage and, without being asked, produces candidate changes to its own behaviour or configured definitions (skills, rules, prompts, memory, configuration, indexes).
+**Why it matters.** This is what "self-improving" means in practice. Governance (F) says whether such changes are safe; this says whether they happen at all.
+**Evidence.** Background review or reflection jobs. Skill or rule creation from sessions. Automatic tuning from usage. Defaults.
+- **0** None.
+- **1** People turn experience into changes by hand.
+- **2** The product captures experience and can generate candidate changes when asked.
+- **3** The product continuously turns its own experience into candidate changes without being asked.
+- **4** Candidates are prioritised by expected impact, and the product learns which kinds of change succeed.
+
+### P2 Learned changes are validated before they take effect
+**Definition.** Changes the product proposes to itself are checked, and evaluated against the current baseline, before they apply.
+**Why it matters.** A system that rewrites itself without evaluation is self-modifying, not self-improving.
+**Evidence.** Scans and linters on learned changes. Evaluation datasets. Baseline comparison. Pass, revise or block decisions.
+- **0** No checks.
+- **1** Manual review only.
+- **2** Automated checks (security scan, lint, schema) on learned changes.
+- **3** Learned changes are evaluated against the current baseline on representative tasks or data, with a pass, revise or block decision before apply.
+- **4** Evaluation is automatic for every learned change, uses held-out data, and its results feed the policy in F3.
 
 ## Dimension L: Factory surfaces
 

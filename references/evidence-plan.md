@@ -1,13 +1,15 @@
 # Evidence plan: what to look for, per pillar
 
-Dispatch one read-only explorer per pillar (four in parallel), or one per dimension for a deep pass. Give each explorer the repository path, the branch or tip, the criteria text from `rubric.md` for its dimensions, and these instructions:
+First settle scope: list every first-party repository that implements the product's core behaviour, and check the architecture docs for capabilities delegated elsewhere. Then dispatch one read-only explorer per pillar (four in parallel), or one per dimension for a deep pass. Give each explorer the repository path, the branch or tip, the criteria text from `rubric.md` for its dimensions, and these instructions:
 
 - Report facts only, with file paths and short excerpts. No recommendations.
 - Label every claim MEASURED (read in code at the named tip), DOCUMENTED (first-party doc or config) or NOT FOUND. Never infer silently.
 - Say who can change each capability (engineer, professional services, admin, tenant) and whether a deploy is needed.
 - Name the branch. A claim like "X does not exist" is branch-scoped.
 - Distinguish an assessed absence from insufficient evidence. Record the inspected surface for either one.
-- Recommend `not_applicable` only when the criterion falls outside the declared product archetype, never because implementation is missing.
+- Recommend `not_applicable` only for exclusions listed for the declared archetype in `archetypes.md`, never because implementation is missing.
+- Report the default setting of every capability. If it is off by default, say what turns it on.
+- For Learning criteria, say whose software the capability improves: the product itself (including what operators configure in it) or someone else's.
 
 ## Pillar 1: Define (A, B, C, D)
 - Entity type registry: grep for type enums, `EntityType`, content type tables, "custom object", DDL or migration per type.
@@ -39,12 +41,15 @@ Dispatch one read-only explorer per pillar (four in parallel), or one per dimens
 - Connectors: canonical model; mapping configuration; how existing integrations were built; connector SDK; lifecycle; API versioning and deprecation; idempotent sync; conflict handling.
 - Domains: core entity names; where domain behaviour lives; channel concept; any adjacent domain shipped as configuration; export and import of assets; templates or bundles.
 
-## Pillar 4: Evolve (J, M, L)
+## Pillar 4: Evolve (J, M, P, L)
 - Telemetry: event pipeline and latency; consumers inside the product; per-feature instrumentation.
-- Feedback: feedback types; linking to entities; triage; closure loop.
+- Learning signals: feedback, ratings, corrections, evaluation results and per-definition usage; what they link to; triage.
+- Learning from experience: the self-modification checklist in `archetypes.md`; defaults; evaluation of learned changes against a baseline.
 - Mining: data lake or warehouse and what it joins; mining jobs; findings surfaced in product.
-- Advise: recommendation features; proposal objects; ranking; process recommendations; AI authoring lane and its scope; cross-tenant application; baseline, observation window and proposal-to-impact linkage.
+- Advise: recommendation features; proposal objects; ranking; AI authoring lane and its scope; where changes apply; baseline, observation window and proposal-to-impact linkage.
 - Factory: version or build endpoint; health; config snapshot; instance provisioning tooling and time; seed data; configuration source and access; end-to-end suites and their state; path-to-journey mapping; adoption instrumentation coverage.
 
 ## After the reports
 Re-read every score of 3 or higher against one primary source yourself before publishing. Explorer summaries are evidence pointers, not evidence.
+
+Wherever an adjacent level is also defensible, record it as `alt_score`. For comparative work, run a second independent pass on at least the F, J, M and P dimensions and report any criterion where the two passes differ.

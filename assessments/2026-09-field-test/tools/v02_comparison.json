@@ -1,0 +1,660 @@
+{
+  "systems": {
+    "frappe": {
+      "product": "Frappe Framework",
+      "archetype": "configurable-application-platform",
+      "coverage": {
+        "assessed": 48,
+        "not_evidenced": 0,
+        "not_applicable": 0
+      },
+      "primary": {
+        "malleability": 2.4,
+        "self_evolution": 1.3,
+        "factory_readiness": 1.6
+      },
+      "with_alternates": {
+        "malleability": 2.5,
+        "self_evolution": 1.5,
+        "factory_readiness": 2.0
+      },
+      "all_applicable": {
+        "malleability": 2.4,
+        "self_evolution": 1.3,
+        "factory_readiness": 1.6
+      },
+      "closed_loop": false,
+      "profiles": {
+        "Change Surface": 3.0,
+        "Governance": 1.9,
+        "Factory": 1.6,
+        "Learning Loop": 1.1,
+        "Agent Interface": 1.3,
+        "Extension Surface": 2.0,
+        "Operational Scalability": 2.3
+      },
+      "dimension_means": {
+        "A": 3,
+        "B": 2.7,
+        "C": 3,
+        "D": 3,
+        "E": 2,
+        "F": 1.8,
+        "G": 2.3,
+        "H": 1.3,
+        "I": 2.3,
+        "K": 1.3,
+        "N": 1.7,
+        "O": 3.3,
+        "J": 1.7,
+        "M": 0.5,
+        "L": 2
+      },
+      "alternates": 19,
+      "floor_failures": [
+        "F3",
+        "J2",
+        "M4"
+      ]
+    },
+    "directus": {
+      "product": "Directus",
+      "archetype": "configurable-application-platform",
+      "coverage": {
+        "assessed": 48,
+        "not_evidenced": 0,
+        "not_applicable": 0
+      },
+      "primary": {
+        "malleability": 2.3,
+        "self_evolution": 1.4,
+        "factory_readiness": 2.0
+      },
+      "with_alternates": {
+        "malleability": 2.6,
+        "self_evolution": 1.6,
+        "factory_readiness": 2.4
+      },
+      "all_applicable": {
+        "malleability": 2.3,
+        "self_evolution": 1.4,
+        "factory_readiness": 2.0
+      },
+      "closed_loop": false,
+      "profiles": {
+        "Change Surface": 2.6,
+        "Governance": 1.8,
+        "Factory": 2.0,
+        "Learning Loop": 1.1,
+        "Agent Interface": 2.7,
+        "Extension Surface": 2.0,
+        "Operational Scalability": 1.7
+      },
+      "dimension_means": {
+        "A": 2.3,
+        "B": 3.3,
+        "C": 3,
+        "D": 2.3,
+        "E": 1.5,
+        "F": 2,
+        "G": 1.7,
+        "H": 1.7,
+        "I": 2.7,
+        "K": 2.7,
+        "N": 1.3,
+        "O": 2.3,
+        "J": 1.7,
+        "M": 0.5,
+        "L": 2.3
+      },
+      "alternates": 28,
+      "floor_failures": [
+        "J2",
+        "M1",
+        "M4"
+      ]
+    },
+    "discourse": {
+      "product": "Discourse",
+      "archetype": "focused-application",
+      "coverage": {
+        "assessed": 40,
+        "not_evidenced": 0,
+        "not_applicable": 8
+      },
+      "primary": {
+        "malleability": 2.2,
+        "self_evolution": 1.8,
+        "factory_readiness": 1.6
+      },
+      "with_alternates": {
+        "malleability": 2.5,
+        "self_evolution": 1.9,
+        "factory_readiness": 2.0
+      },
+      "all_applicable": {
+        "malleability": 2.0,
+        "self_evolution": 1.8,
+        "factory_readiness": 1.6
+      },
+      "closed_loop": false,
+      "profiles": {
+        "Change Surface": 2.4,
+        "Governance": 1.9,
+        "Factory": 1.6,
+        "Learning Loop": 1.6,
+        "Agent Interface": 2.7,
+        "Extension Surface": 1.8,
+        "Operational Scalability": 2
+      },
+      "dimension_means": {
+        "A": 2,
+        "B": 2,
+        "C": 2.5,
+        "D": 3,
+        "E": 1.8,
+        "F": 2,
+        "G": 2,
+        "H": 1.3,
+        "I": 2.3,
+        "K": 2.7,
+        "N": 1.3,
+        "J": 2.3,
+        "M": 1,
+        "L": 2
+      },
+      "alternates": 18,
+      "floor_failures": [
+        "F3",
+        "M4"
+      ]
+    },
+    "posthog": {
+      "product": "PostHog",
+      "archetype": "focused-application",
+      "coverage": {
+        "assessed": 40,
+        "not_evidenced": 0,
+        "not_applicable": 8
+      },
+      "primary": {
+        "malleability": 2.4,
+        "self_evolution": 2.5,
+        "factory_readiness": 2.7
+      },
+      "with_alternates": {
+        "malleability": 2.9,
+        "self_evolution": 3.0,
+        "factory_readiness": 2.9
+      },
+      "all_applicable": {
+        "malleability": 2.3,
+        "self_evolution": 2.5,
+        "factory_readiness": 2.7
+      },
+      "closed_loop": true,
+      "profiles": {
+        "Change Surface": 2.4,
+        "Governance": 2.2,
+        "Factory": 2.7,
+        "Learning Loop": 2.6,
+        "Agent Interface": 3,
+        "Extension Surface": 2.3,
+        "Operational Scalability": 2.3
+      },
+      "dimension_means": {
+        "A": 2,
+        "B": 3,
+        "C": 2,
+        "D": 2.7,
+        "E": 2.2,
+        "F": 2.2,
+        "G": 2.3,
+        "H": 2.7,
+        "I": 2.3,
+        "K": 3,
+        "N": 2.3,
+        "J": 3.3,
+        "M": 2,
+        "L": 2.7
+      },
+      "alternates": 28,
+      "floor_failures": []
+    },
+    "n8n": {
+      "product": "n8n",
+      "archetype": "configurable-application-platform",
+      "coverage": {
+        "assessed": 48,
+        "not_evidenced": 0,
+        "not_applicable": 0
+      },
+      "primary": {
+        "malleability": 2.5,
+        "self_evolution": 2.1,
+        "factory_readiness": 2.5
+      },
+      "with_alternates": {
+        "malleability": 2.8,
+        "self_evolution": 2.3,
+        "factory_readiness": 2.7
+      },
+      "all_applicable": {
+        "malleability": 2.5,
+        "self_evolution": 2.1,
+        "factory_readiness": 2.5
+      },
+      "closed_loop": false,
+      "profiles": {
+        "Change Surface": 2.3,
+        "Governance": 2.8,
+        "Factory": 2.5,
+        "Learning Loop": 1.6,
+        "Agent Interface": 2.7,
+        "Extension Surface": 2.7,
+        "Operational Scalability": 2
+      },
+      "dimension_means": {
+        "A": 2,
+        "B": 2.3,
+        "C": 2,
+        "D": 3,
+        "E": 2.5,
+        "F": 3,
+        "G": 2,
+        "H": 2.3,
+        "I": 2.7,
+        "K": 2.7,
+        "N": 2.7,
+        "O": 2.3,
+        "J": 1.7,
+        "M": 1.5,
+        "L": 2.7
+      },
+      "alternates": 28,
+      "floor_failures": [
+        "J2"
+      ]
+    },
+    "dify": {
+      "product": "Dify",
+      "archetype": "configurable-application-platform",
+      "coverage": {
+        "assessed": 48,
+        "not_evidenced": 0,
+        "not_applicable": 0
+      },
+      "primary": {
+        "malleability": 2.3,
+        "self_evolution": 1.8,
+        "factory_readiness": 2.4
+      },
+      "with_alternates": {
+        "malleability": 2.4,
+        "self_evolution": 1.7,
+        "factory_readiness": 2.3
+      },
+      "all_applicable": {
+        "malleability": 2.3,
+        "self_evolution": 1.8,
+        "factory_readiness": 2.4
+      },
+      "closed_loop": false,
+      "profiles": {
+        "Change Surface": 2.4,
+        "Governance": 1.9,
+        "Factory": 2.4,
+        "Learning Loop": 1.6,
+        "Agent Interface": 2.7,
+        "Extension Surface": 2.7,
+        "Operational Scalability": 1.3
+      },
+      "dimension_means": {
+        "A": 1.3,
+        "B": 3,
+        "C": 2,
+        "D": 2.7,
+        "E": 1.8,
+        "F": 2,
+        "G": 1.3,
+        "H": 2.7,
+        "I": 2.7,
+        "K": 2.7,
+        "N": 2.7,
+        "O": 3,
+        "J": 2.3,
+        "M": 1,
+        "L": 2
+      },
+      "alternates": 21,
+      "floor_failures": [
+        "F3",
+        "M1",
+        "M4"
+      ]
+    },
+    "librechat": {
+      "product": "LibreChat",
+      "archetype": "focused-application",
+      "coverage": {
+        "assessed": 40,
+        "not_evidenced": 0,
+        "not_applicable": 8
+      },
+      "primary": {
+        "malleability": 1.9,
+        "self_evolution": 1.3,
+        "factory_readiness": 2
+      },
+      "with_alternates": {
+        "malleability": 2.2,
+        "self_evolution": 1.2,
+        "factory_readiness": 2.4
+      },
+      "all_applicable": {
+        "malleability": 1.8,
+        "self_evolution": 1.3,
+        "factory_readiness": 2
+      },
+      "closed_loop": false,
+      "profiles": {
+        "Change Surface": 1.5,
+        "Governance": 1.9,
+        "Factory": 2,
+        "Learning Loop": 1,
+        "Agent Interface": 2.3,
+        "Extension Surface": 2.4,
+        "Operational Scalability": 2
+      },
+      "dimension_means": {
+        "A": 1,
+        "B": 1,
+        "C": 2,
+        "D": 2,
+        "E": 2,
+        "F": 1.8,
+        "G": 2,
+        "H": 2,
+        "I": 2,
+        "K": 2.3,
+        "N": 2.7,
+        "J": 2,
+        "M": 0,
+        "L": 2
+      },
+      "alternates": 14,
+      "floor_failures": [
+        "F3",
+        "M1",
+        "M4"
+      ]
+    },
+    "hermes-agent": {
+      "product": "Hermes Agent",
+      "archetype": "agent-runtime",
+      "coverage": {
+        "assessed": 41,
+        "not_evidenced": 0,
+        "not_applicable": 7
+      },
+      "primary": {
+        "malleability": 2.3,
+        "self_evolution": 2.3,
+        "factory_readiness": 2
+      },
+      "with_alternates": {
+        "malleability": 2.4,
+        "self_evolution": 2.5,
+        "factory_readiness": 2.3
+      },
+      "all_applicable": {
+        "malleability": 2.1,
+        "self_evolution": 2.3,
+        "factory_readiness": 2
+      },
+      "closed_loop": false,
+      "profiles": {
+        "Change Surface": 2.2,
+        "Governance": 2.5,
+        "Factory": 2,
+        "Learning Loop": 1.9,
+        "Agent Interface": 2.7,
+        "Extension Surface": 2.7,
+        "Operational Scalability": 1.5
+      },
+      "dimension_means": {
+        "B": 2,
+        "C": 1.5,
+        "D": 2,
+        "E": 2,
+        "F": 3,
+        "G": 1.5,
+        "H": 2,
+        "I": 2.7,
+        "K": 2.7,
+        "N": 2.7,
+        "O": 3.3,
+        "J": 2,
+        "M": 1.8,
+        "L": 2
+      },
+      "alternates": 18,
+      "floor_failures": [
+        "J2"
+      ]
+    },
+    "openclaw": {
+      "product": "OpenClaw",
+      "archetype": "agent-runtime",
+      "coverage": {
+        "assessed": 41,
+        "not_evidenced": 0,
+        "not_applicable": 7
+      },
+      "primary": {
+        "malleability": 2.5,
+        "self_evolution": 2.2,
+        "factory_readiness": 2.7
+      },
+      "with_alternates": {
+        "malleability": 2.8,
+        "self_evolution": 2.5,
+        "factory_readiness": 2.9
+      },
+      "all_applicable": {
+        "malleability": 2.2,
+        "self_evolution": 2.2,
+        "factory_readiness": 2.7
+      },
+      "closed_loop": false,
+      "profiles": {
+        "Change Surface": 2.3,
+        "Governance": 2.5,
+        "Factory": 2.7,
+        "Learning Loop": 1.8,
+        "Agent Interface": 3,
+        "Extension Surface": 2.7,
+        "Operational Scalability": 2
+      },
+      "dimension_means": {
+        "B": 2,
+        "C": 2,
+        "D": 2,
+        "E": 2,
+        "F": 3,
+        "G": 2,
+        "H": 2.7,
+        "I": 2.7,
+        "K": 3,
+        "N": 2.7,
+        "O": 3.3,
+        "J": 1.7,
+        "M": 1.8,
+        "L": 2.7
+      },
+      "alternates": 19,
+      "floor_failures": [
+        "J2"
+      ]
+    },
+    "opencode": {
+      "product": "OpenCode",
+      "archetype": "agent-runtime",
+      "coverage": {
+        "assessed": 41,
+        "not_evidenced": 0,
+        "not_applicable": 7
+      },
+      "primary": {
+        "malleability": 2.1,
+        "self_evolution": 1.0,
+        "factory_readiness": 2.1
+      },
+      "with_alternates": {
+        "malleability": 2.2,
+        "self_evolution": 1.3,
+        "factory_readiness": 2.7
+      },
+      "all_applicable": {
+        "malleability": 1.8,
+        "self_evolution": 1.0,
+        "factory_readiness": 2.1
+      },
+      "closed_loop": false,
+      "profiles": {
+        "Change Surface": 2.2,
+        "Governance": 1.5,
+        "Factory": 2.1,
+        "Learning Loop": 0.8,
+        "Agent Interface": 2.3,
+        "Extension Surface": 2.4,
+        "Operational Scalability": 2
+      },
+      "dimension_means": {
+        "B": 3,
+        "C": 1.5,
+        "D": 2,
+        "E": 1.5,
+        "F": 1.5,
+        "G": 2,
+        "H": 2.3,
+        "I": 2,
+        "K": 2.3,
+        "N": 2.7,
+        "O": 2.3,
+        "J": 1,
+        "M": 0.5,
+        "L": 2
+      },
+      "alternates": 11,
+      "floor_failures": [
+        "F1",
+        "F2",
+        "J2",
+        "M1",
+        "M4"
+      ]
+    },
+    "openhands": {
+      "product": "OpenHands (Agent Canvas repository)",
+      "archetype": "agent-runtime",
+      "coverage": {
+        "assessed": 37,
+        "not_evidenced": 4,
+        "not_applicable": 7
+      },
+      "primary": {
+        "malleability": 1.5,
+        "self_evolution": 1.0,
+        "factory_readiness": 2.1
+      },
+      "with_alternates": {
+        "malleability": 1.7,
+        "self_evolution": 1.0,
+        "factory_readiness": 2.5
+      },
+      "all_applicable": {
+        "malleability": 1.3,
+        "self_evolution": 1.0,
+        "factory_readiness": 2.1
+      },
+      "closed_loop": false,
+      "profiles": {
+        "Change Surface": 1.7,
+        "Governance": 1.2,
+        "Factory": 2.1,
+        "Learning Loop": 0.9,
+        "Agent Interface": 1.3,
+        "Extension Surface": 2.0,
+        "Operational Scalability": 1
+      },
+      "dimension_means": {
+        "B": 2,
+        "C": 2,
+        "D": 0.7,
+        "E": 1.2,
+        "F": 1.2,
+        "G": 1,
+        "H": 2.3,
+        "I": 1.7,
+        "K": 1.3,
+        "N": 2.3,
+        "O": 2,
+        "J": 1.3,
+        "M": 0.5,
+        "L": 2
+      },
+      "alternates": 8,
+      "floor_failures": [
+        "F2",
+        "F3",
+        "J2",
+        "M1",
+        "M4"
+      ]
+    }
+  },
+  "agreement": {
+    "malleability": {
+      "mad": 0.23,
+      "max": 0.5,
+      "max_system": "openclaw",
+      "same_band": "7/10",
+      "spearman": 0.42
+    },
+    "self_evolution": {
+      "mad": 0.41,
+      "max": 1.3,
+      "max_system": "openclaw",
+      "same_band": "7/10",
+      "spearman": 0.41
+    },
+    "factory_readiness": {
+      "mad": 0.31,
+      "max": 0.5,
+      "max_system": "frappe",
+      "same_band": "7/10",
+      "spearman": 0.35
+    }
+  },
+  "closed_loop_agreement": "9/10",
+  "narrow": {
+    "hermes-agent": {
+      "malleability": 2.2,
+      "self_evolution": 1.5,
+      "factory_readiness": 2
+    },
+    "openclaw": {
+      "malleability": 2.4,
+      "self_evolution": 1.2,
+      "factory_readiness": 2.7
+    }
+  },
+  "prior_correlation": {
+    "self_evolution": 0.51,
+    "malleability": 0.36
+  },
+  "dead_criteria": [
+    "M2"
+  ]
+}

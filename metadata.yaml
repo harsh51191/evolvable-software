@@ -1,8 +1,8 @@
 name: malleability-readiness-eval
-description: Evidence-backed software malleability and self-evolution readiness assessment with archetype-aware applicability, profile reporting, critical closed-loop floors, and prerequisite-ordered remediation.
+description: Evidence-backed assessment of software malleability, change governance, learning and factory readiness, with enforced archetype exclusions, default-versus-opt-in scoring, reported score ranges, a closed-loop check, and prerequisite-ordered remediation.
 author: Vellanki Sriharsha
 date_added: 2026-09-27
-version: public-beta-2
+version: public-beta-3
 usage_examples:
   - /malleability-readiness-eval "Example Software" ./repository --tip <immutable-tip> --archetype focused-application
   - /malleability-readiness-eval "Example Platform" ./repository --archetype configurable-application-platform --prescribe --target 3

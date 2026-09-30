@@ -1,47 +1,60 @@
-# Archetypes And Applicability
+# Archetypes, Applicability And Interpretation
 
-The MSR framework describes a broad software system. It should not force every product into one universal rank.
+The MSR framework describes a broad class of software. It should not force every product into one universal rank. Choose one archetype, apply only its listed exclusions, and read the rubric through the interpretation notes below.
 
-## Supported Archetypes
+## Archetypes and their exclusions
 
-### Configurable application platform
+The scorer enforces this table (it is the `archetype_exclusions` entry in the `msr-model` block of `rubric.md`). Excluding any other criterion is a validation error. Every exclusion needs a rationale, and should record `if_applicable`, the score it would have received, so reports can show what the exclusion changed.
 
-A platform intended to let administrators define or reshape business objects, views, rules, integrations, and domain packs. Most change-surface criteria should be applicable.
+| Archetype | Use for | May exclude |
+|---|---|---|
+| `configurable-application-platform` | Products whose operators define or reshape business objects, views, rules, integrations and domain packs | Nothing |
+| `focused-application` | Products with a deliberately narrow domain or workflow | A1, A3, B1, B2, C2 (universal entity) and O1, O2, O3 (adjacent-domain expansion) |
+| `agent-runtime` | Runtimes for tools, memory, skills, planning, execution and agent governance | A1, A2, A3, B1, B2, C2, G1 (generic business objects and CRUD) |
+| `developer-platform` | Frameworks, SDKs and infrastructure changed mainly by developers | C1, C2, C3, E1, only when the product has no end-user interface |
+| `other` | Anything else | Any criterion, with a rationale naming the product's purpose |
 
-### Agent runtime
+Missing functionality is never a reason to exclude. A low score is often the most useful result.
 
-A runtime focused on tools, memory, skills, planning, execution, and agent governance. Generic business-object and generic CRUD criteria may be outside its intended purpose. Governance, factory, learning, and agent-interface criteria remain central.
+## Reading the rubric for agent runtimes
 
-### Developer platform
+| Rubric term | Read it as |
+|---|---|
+| Definitions, customisation surfaces | Skills, memory, prompts and persona files, tool and permission policies, cron jobs, configuration |
+| Operator, admin | The person or team running the agent |
+| Tenant | A profile, workspace or installation |
+| Proposal (F2) | A staged skill, memory or configuration change awaiting approval, or a pull request with evaluation evidence |
+| Policy (F3) | Settings that decide per change class whether a self-modification applies automatically, needs approval, or is blocked |
+| Learning signals (J2) | Per-skill usage and patch counts, corrections, ratings, evaluation outcomes |
+| Learn from experience (P1, P2) | Background review, reflection or experience review that writes skills or memory, and any evaluation of those changes |
 
-A framework, SDK, infrastructure platform, or extensibility substrate primarily changed by developers. Admin self-service may be intentionally limited, but extension safety, contracts, verification, rollback, and factory surfaces remain applicable.
+## Reading the rubric for developer platforms
 
-### Focused application
+A reviewed, validated declarative configuration path (for example configuration in version control that the product validates and previews) is a supported path and can reach level 3. Hand-edited files that nothing validates stay at level 2.
 
-A product with a deliberately narrow domain or workflow. Universal entity and adjacent-domain expansion criteria may be inappropriate; safe configuration, evidence, operations, and change control can still be assessed.
+## Where self-modification usually lives
 
-### Other
+Search these before scoring F, J, M or P for any product that claims to learn or self-improve:
 
-Use only with a short description of the product's intended purpose and the applicability decision.
+- skills, prompts, memory or rules directories written at runtime;
+- background, reflection, experience or review jobs that run after tasks or on idle;
+- curators, pruning, archival and restore commands;
+- approval gates, staged or pending changes, ledgers, backups and rollback;
+- evaluation hooks, datasets and baseline comparisons;
+- first-party companion repositories (optimisers, evaluation harnesses, agent servers) named in the README or docs.
 
-## Status Rules
+Record where you searched. In large repositories, list the directories read.
 
-- `assessed`: the criterion belongs to the product's intended surface. Use score 0 when evidence establishes absence.
-- `not_evidenced`: the criterion appears applicable, but the available sources cannot establish presence or absence. It remains a zero for the current evidence-limited index and is counted as uncertainty.
-- `not_applicable`: the criterion is outside the product's intended purpose. It is excluded from the relevant denominator and requires a concrete rationale.
+## Profile reading
 
-Missing functionality is not a reason to use `not_applicable`. A low score is often the most useful assessment result.
+Read the seven profiles before the four indexes:
 
-## Profile Reading
-
-Read the seven profiles before comparing the three aggregate indexes:
-
-- **Change Surface:** schema, APIs, UI, behaviour, and domain definitions.
-- **Governance:** security, audit, versioning, approval, rollback, and upgrade safety.
-- **Factory:** modularity, environments, verification, and machine-readable release evidence.
-- **Learning Loop:** observation, structured feedback, proposals, application, and impact measurement.
-- **Agent Interface:** discoverable capabilities, identity, scopes, preview, and safe action semantics.
+- **Change Surface:** schema, APIs, UI, behaviour and domain definitions.
+- **Governance:** security, audit, versioning, approval, rollback and upgrade safety.
+- **Learning:** observation, structured signals, proposals, learning from experience and impact measurement.
+- **Factory:** modularity, environments, verification and machine-readable release evidence.
+- **Agent Interface:** discoverable capabilities, identity, scopes, preview and safe action semantics.
 - **Extension Surface:** plugins and connectors.
-- **Operational Scalability:** genericity, tenancy, limits, and measured ceilings.
+- **Operational Scalability:** genericity, tenancy, limits and measured ceilings.
 
-Cross-product comparison is defensible only when scope, archetype, evidence grades, applicability decisions, and operational-validation depth are comparable.
+Cross-product comparison is defensible only when scope, archetype, evidence grades, exclusions and default-versus-available readings are comparable, and when the reported ranges are shown.

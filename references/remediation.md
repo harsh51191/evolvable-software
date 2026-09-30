@@ -4,19 +4,19 @@ For every criterion in `rubric.md`: the move that reaches level 3 (productised),
 
 Sizes: **S** a small bounded change, **M** a multi-surface or multi-sprint change, **L** a cross-team or architectural change. These are relative ordering aids, not estimates. Re-estimate every item for the assessed software.
 
-Format per criterion: `To 3:` · `To 4:` · `Requires:` (criterion ids that should be at 3 or higher first, or none) · `Size:`.
+Format per criterion: `To 3:` · `To 4:` · `Requires:` (hard prerequisites: criterion ids that must reach the target first, or none) · optional `Helps:` (soft prerequisites, shown but not used for ordering) · `Size:`.
 
 # Pillar 1: Define
 
 ### A1
-To 3: Introduce a Type Definition store (versioned, tenant or product scoped) and a generic defined-entity store with a JSON payload, definition id and version, placement reference, author and state. Open the entity-type list to a DEFINED branch keyed by type key. Ship an admin type designer over the store.
+To 3: Introduce a versioned type-definition store and a generic store for entities of defined types, and let the entity-type registry accept defined types. Ship an operator type designer over the store.
 To 4: Expose the definition as a machine-readable schema an AI can author; validate with dry-run; route publish through the proposal path (F2) and policy gate (F3).
 Requires: none. This is the root of the dependency graph.
 Size: L
 
 ### A2
-To 3: Add a mandatory privacy classification to every field definition (none, personal, sensitive) and make at least the erasure service (E3) and the search indexer (G1) read it. Expose typed, validated field authoring in the type designer.
-To 4: One field definition consumed by forms, API, search, erasure and audit; AI-proposed field definitions with automatic privacy tagging suggestions.
+To 3: Expose typed, validated field authoring in the type designer, with forms and API reading the same definition.
+To 4: One field definition consumed by forms, API, search, erasure and audit; AI-authorable through a validated path.
 Requires: A1
 Size: M
 
@@ -27,31 +27,31 @@ Requires: A1
 Size: M
 
 ### B1
-To 3: One generic schema registry that reads definitions and contributes `definedType(s)`, `definedEntity/definedEntities` with filter, sort and paging, plus create, update, delete and transition mutations. No per-type resolver.
+To 3: Serve a generic API for every defined type from its definition: read, list with filter, sort and paging, create, update, delete and state transitions. No per-type handlers.
 To 4: Generated typed projections and filters per type; validation from the definition; runtime updates.
 Requires: A1
 Size: M
 
 ### B2
-To 3: Publishing a definition reshapes the API for that tenant with no deploy, using the existing runtime schema assembly and invalidation.
+To 3: Publishing a definition reshapes the API for that tenant with no deploy, by assembling the schema at runtime and invalidating it on change.
 To 4: Per-consumer schema versions with deprecation windows and a dry-run endpoint.
 Requires: B1
 Size: S
 
 ### B3
-To 3: Publish a versioned schema artifact per build; structured validation errors; typed client generation from the artifact rather than from a sibling source tree.
+To 3: Publish a versioned schema artifact per build; structured validation errors; typed client generation from the artifact.
 To 4: Dry-run mode on every mutation; contract tests in CI against the artifact.
 Requires: none
 Size: S
 
 ### C1
-To 3: If layout is already data with a designer, add schema validation for component props (a props schema on every widget descriptor) and preview on tenant data.
+To 3: Store layout as data with an operator designer, a props schema on every component, and preview on tenant data.
 To 4: Layout and props authorable from natural language against the schema; versioned with rollback through F1.
 Requires: none
 Size: S
 
 ### C2
-To 3: Build the generic widget family: list, card, detail, intake form, filter, chart, each parameterised by type key and a validated view spec. Map definition field types onto the existing form field variants.
+To 3: Build the generic widget family: list, card, detail, intake form, filter, chart, each parameterised by type key and a validated view spec. Map definition field types onto form field components.
 To 4: View specs AI-authorable; accessibility and theme inherited from the kit and gated (E1).
 Requires: A1, A2
 Size: M
@@ -63,19 +63,21 @@ Requires: none
 Size: S
 
 ### D1
-To 3: Expose the rules engine to admins across entities with a test or simulation mode; add conditions and actions for defined entities (created, transitioned, field changed; transition, notify, award, webhook).
+To 3: Give the operator a rules engine across entities with a test or simulation mode, including conditions and actions for defined entities (created, transitioned, field changed; transition, notify, webhook).
 To 4: Rules simulatable against history, versioned, AI-authorable.
-Requires: A1 for defined-entity coverage; otherwise none
+Requires: none
+Helps: A1 (defined-entity coverage)
 Size: M
 
 ### D2
 To 3: Publish lifecycle events for every entity, including defined ones, to a durable bus; admin webhook subscriptions with retry and delivery logs.
 To 4: Event schema generated from definitions; replay; per-tenant streams.
-Requires: A1 for defined-entity events; otherwise none
+Requires: none
+Helps: A1 (defined-entity events)
 Size: M
 
 ### D3
-To 3: Event-triggered hooks in the existing endpoint lane; runtime dependency allowlist, timeouts, egress allowlist, resource limits; partner-deployable.
+To 3: Event- and request-triggered hooks; runtime dependency allowlist, timeouts, egress allowlist, resource limits; partner-deployable.
 To 4: AI-authored hooks with a test harness, policy-gated, per-hook observability.
 Requires: D2, I2
 Size: M
@@ -85,7 +87,7 @@ Size: M
 ### E1
 To 3: Wire the accessibility scanners into CI as a blocking gate on every change class; enforce required accessible props in the component kit by lint or type.
 To 4: Continuous scanning of deployed pages with automatic fix proposals through the proposal path; conformance report generated with human sign-off where the criterion needs judgment.
-Requires: H3 for the gate to be unskippable
+Requires: H3
 Size: M
 
 ### E2
@@ -95,15 +97,17 @@ Requires: none
 Size: S
 
 ### E3
-To 3: Generic export and erasure over every entity driven by the privacy tag (A2); retention policies per type; admin-triggered with a verification report.
+To 3: Add a privacy classification to every field definition (none, personal, sensitive); drive operator-triggered export and erasure over every entity from it; retention policies per type; a verification report.
 To 4: Automatic detection of untagged personal data with tagging proposals.
-Requires: A2
+Requires: none
+Helps: A2
 Size: M
 
 ### E4
 To 3: SAST, dependency and container scanning as blocking gates; authorisation verbs generated per defined type (view, create, edit, delete, manage) with role defaults; generic input validation from the definition.
 To 4: Auto-remediation proposals for scan findings; runtime policy enforcement; incident findings become rules.
-Requires: A1 for generated authorisation; H3 for gating
+Requires: H3
+Helps: A1 (generated authorisation)
 Size: M
 
 ### F1
@@ -127,11 +131,12 @@ Size: M
 ### F4
 To 3: Versioned extension contracts; automated compatibility checks in CI for plugins and definitions against the next release; migration tooling.
 To 4: Backward compatibility guaranteed for definitions with automated migration proposals; breaking changes require a policy exception.
-Requires: I1 for plugin contracts; A1 for definition contracts
+Requires: none
+Helps: I1 (plugin contracts), A1 (definition contracts)
 Size: M
 
 ### G1
-To 3: Definition-driven index mappings (dynamic templates by field type) and a generic filler; all list and filter queries via the index; get-by-id via the store; caching.
+To 3: Definition-driven index mappings (index mappings by field type) and a generic filler; all list and filter queries via the index; get-by-id via the store; caching.
 To 4: Query plans derived from definitions with cost limits and observability.
 Requires: A1, A2
 Size: M
@@ -183,17 +188,19 @@ Size: M
 ### I3
 To 3: Preview against a real tenant, staged branches, log access, validators.
 To 4: Ephemeral preview environments per change with a test harness.
-Requires: L2 for ephemeral previews
+Requires: none
+Helps: L2 (ephemeral previews for the level 4 move)
 Size: S
 
 ### K1
-To 3: An MCP server exposing typed tools with scoped authentication; a capability map listing what the product can do.
+To 3: A typed tool surface (MCP or equivalent) with scoped authentication; a capability map listing what the product can do.
 To 4: Tools generated from definitions, including defined entities; capability map machine-readable and regenerated on publish.
-Requires: B3; A1 for generated tools
+Requires: B3
+Helps: A1 (generated tools)
 Size: M
 
 ### K2
-To 3: A grounded conversational surface for members with actions; natural-language authoring for admins over definitions, layouts and text, with preview.
+To 3: A grounded conversational surface for end users with actions; natural-language authoring for operators over definitions, layouts and text, with preview.
 To 4: Every UI action has a conversational equivalent from the same definitions; groundedness measured by an evaluation harness.
 Requires: K1, C1, F2
 Size: M
@@ -207,7 +214,8 @@ Size: M
 ### N1
 To 3: A canonical integration model per domain (person, case, message, organisation) and a configurable mapping layer, so a second connector is mapping configuration.
 To 4: Mapping proposed by AI from the target system's schema and validated with a sample sync.
-Requires: A1 helps but is not required
+Requires: none
+Helps: A1
 Size: M
 
 ### N2
@@ -223,7 +231,7 @@ Requires: B3
 Size: S
 
 ### O1
-To 3: Introduce or extract the missing kernel primitive (most often channel or conversation); move domain nouns above the kernel into definitions.
+To 3: Extract any missing neutral kernel primitive and move domain nouns above the kernel into definitions.
 To 4: Kernel primitives themselves configurable.
 Requires: A1
 Size: L
@@ -249,31 +257,25 @@ Requires: none
 Size: M
 
 ### J2
-To 3: Typed feedback objects (report, suggestion, defect) linked to entity, feature and version, with a triage workflow and reporter closure.
+To 3: Record feedback, ratings, corrections, evaluation outcomes and per-definition usage as typed signals linked to the definition and version they concern, with a triage workflow.
 To 4: Auto-classification and linking to proposals.
 Requires: none
 Size: S
 
 ### J3
-To 3: Join usage, support and delivery data into queryable models inside the product.
+To 3: Join the product's own usage, feedback, errors and change history into queryable models inside the product.
 To 4: Continuous mining producing candidate findings with provenance.
 Requires: J1, J2
 Size: M
 
 ### M1
-To 3: Produce ranked, evidence-backed software-change proposals from mined data with expected impact, across the product.
+To 3: Produce ranked, evidence-backed proposals to change the product's own behaviour or configured definitions, with expected impact, across the product.
 To 4: Proposals carry definition diffs ready for the gate; post-apply impact measured.
 Requires: J3, F2
 Size: M
 
-### M2
-To 3: Consultative proposals for the customer's operation (benchmarks, operating recommendations) and for delivery process, with evidence.
-To 4: Each proposal carries an implementation path through rules, definitions or training, with measured outcomes.
-Requires: J3
-Size: M
-
 ### M3
-To 3: An AI authoring lane that turns accepted proposals into definition and layout changes and applies them across tenants under policy.
+To 3: An AI authoring lane that turns accepted proposals into definition and layout changes and applies them wherever they apply, under policy.
 To 4: Closed loop: propose, gate, apply, measure, learn, roll back.
 Requires: A1, F2, F3, M1, M4
 Size: L
@@ -282,6 +284,19 @@ Size: L
 To 3: Bind every applied proposal to a baseline, target metric, observation window and explicit keep, revise or rollback decision.
 To 4: Generate instrumentation with the proposal and let policy use measured impact to promote, revise or reverse the change while recording attribution limits.
 Requires: J1, F1, F2, L1
+Size: M
+
+### P1
+To 3: A background review that runs after tasks or on idle, reads recent runs, and drafts candidate changes to skills, rules, prompts, memory or configuration without being asked; candidates go through the F2 proposal path.
+To 4: Prioritise candidates by expected impact and track which kinds of change pass evaluation and stick.
+Requires: J2
+Helps: J1
+Size: M
+
+### P2
+To 3: Evaluate every learned change against the current baseline on representative tasks or recorded data, and return pass, revise or block before apply.
+To 4: Run the evaluation automatically with held-out data and feed pass rates into the F3 policy.
+Requires: P1, F2
 Size: M
 
 ### L1
