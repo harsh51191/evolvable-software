@@ -34,6 +34,7 @@ Criterion entry fields:
 
 import argparse
 import json
+import math
 import os
 import re
 import sys
@@ -84,15 +85,19 @@ def _test_ids(test):
 
 
 def load_rubric(path):
-    criteria, order, areas = {}, [], {}
+    criteria, order, areas, ai_areas = {}, [], {}, {}
     with open(path, encoding="utf-8") as handle:
         text = handle.read()
-    cap, area = None, None
+    cap, area, in_ai = None, None, False
     for line in text.splitlines():
         line = line.strip()
         heading = re.match(r"^# Capability ([A-Z]{3}): (.+)$", line)
         if heading:
-            cap, area = heading.group(1), None
+            cap, area, in_ai = heading.group(1), None, False
+            continue
+        heading = re.match(r"^# AI Readiness Checks \(([A-Z]{3})\)$", line)
+        if heading:
+            cap, area, in_ai = heading.group(1), None, True
             continue
         heading = re.match(r"^## Area: (.+)$", line)
         if heading:
@@ -105,8 +110,8 @@ def load_rubric(path):
                 raise ModelError(f"Rubric defines {cid} twice: {path}")
             if cap is None or area is None or not cid.startswith(cap + "-"):
                 raise ModelError(f"{cid} is not under a matching capability and area heading")
-            criteria[cid] = {"cap": cap, "area": area, "title": criterion.group(2).strip()}
-            areas.setdefault(cap, {}).setdefault(area, []).append(cid)
+            criteria[cid] = {"cap": cap, "area": area, "title": criterion.group(2).strip(), "ai_check": in_ai}
+            (ai_areas if in_ai else areas).setdefault(cap, {}).setdefault(area, []).append(cid)
             order.append(cid)
     if not criteria:
         raise ModelError("Rubric has no criterion headings: " + path)
@@ -115,6 +120,7 @@ def load_rubric(path):
         raise ModelError("Rubric has no evolve-model block: " + path)
     model = json.loads(block.group(1))
     model["areas"] = areas
+    model["ai_areas"] = ai_areas
     caps = set(model["capabilities"])
     if caps != set(areas):
         raise ModelError(f"Capabilities in the model {sorted(caps)} do not match the rubric {sorted(areas)}")
@@ -159,6 +165,33 @@ def load_rubric(path):
             if set(_as_list(cond.get("when", []))) - facts:
                 raise ModelError(f"condition names unknown scope fact: {cond}")
             known(_test_ids(cond), f"level {level} condition")
+    view = model.get("ai_view")
+    if view:
+        checks = {c for c, info in criteria.items() if info["ai_check"]}
+        for name, dim in view["dimensions"].items():
+            if set(dim["checks"]) - checks:
+                raise ModelError(f"AI dimension {name} names criteria outside the AI checks section")
+            if set(dim["readings"]) - set(view["readings"]):
+                raise ModelError(f"AI dimension {name} names readings not listed in ai_view readings")
+        used = {c for dim in view["dimensions"].values() for c in dim["checks"]}
+        if used != checks:
+            raise ModelError(f"AI checks not in exactly the dimensions: {sorted(checks ^ used)}")
+        known(view["readings"], "ai_view readings")
+        if set(view["readings"]) & checks:
+            raise ModelError("AI-qualified readings must be existing criteria, not AI checks")
+        for area, ids in view["footprint"].items():
+            if set(ids) - set(view["readings"]):
+                raise ModelError(f"footprint area {area} names readings not listed in ai_view readings")
+        for cid, fact in view["reading_applies_when"].items():
+            known([cid], "reading_applies_when")
+            if fact not in facts:
+                raise ModelError(f"reading_applies_when {cid} names unknown scope fact {fact!r}")
+        for gate in view["gates"]:
+            known([gate["c"]], "ai_view gates")
+            if gate["when"] not in facts:
+                raise ModelError(f"ai_view gate names unknown scope fact {gate['when']!r}")
+        if set(model.get("opt_in_facts", [])) - facts:
+            raise ModelError("opt_in_facts names unknown scope facts")
     return criteria, order, model
 
 
@@ -199,14 +232,33 @@ def _text(entry, key):
     return str(entry.get(key) or "").strip()
 
 
-def fact_values(data):
+def fact_values(data, opt_in=False):
+    """Scope fact values; with opt_in, an AI fact's available_value replaces its default value."""
     facts = data.get("scope_facts") if isinstance(data, dict) else None
     if not isinstance(facts, dict):
         return {}
-    return {k: v.get("value") for k, v in facts.items() if isinstance(v, dict)}
+    out = {}
+    for key, value in facts.items():
+        if isinstance(value, dict):
+            out[key] = value.get("available_value", value.get("value")) if opt_in else value.get("value")
+    return out
 
 
-def _validate_assessed(cid, entry, model, errors):
+def _switched_off(gate, data):
+    """A criterion is switched off only when its facts are false by default and with opt-in settings."""
+    gate = _as_list(gate)
+    return bool(gate) and all(fact_values(data).get(f) is False and fact_values(data, True).get(f) is False
+                              for f in gate)
+
+
+def _validate_assessed(cid, entry, model, errors, label=None, check_inventory=True):
+    label = label or cid
+    errs = []
+    _validate_assessed_inner(cid, entry, model, errs, check_inventory)
+    errors.extend(e.replace(f"{cid}:", f"{label}:", 1) if label != cid else e for e in errs)
+
+
+def _validate_assessed_inner(cid, entry, model, errors, check_inventory):
     score = entry.get("score")
     if not _is_int_score(score):
         errors.append(f"{cid}: score must be an integer 0..4, got {score!r}")
@@ -233,7 +285,7 @@ def _validate_assessed(cid, entry, model, errors):
             errors.append(f"{cid}: tested or operated facets require implemented")
     elif cid in model["depth_capped"] and max(readings) >= 3:
         errors.append(f"{cid}: depth-capped criterion read at 3 or more needs facets")
-    if cid not in model["inventories"]:
+    if cid not in model["inventories"] or not check_inventory:
         return
     inventory = entry.get("inventory")
     if inventory is None:
@@ -286,6 +338,21 @@ def validate(data, criteria, order, model):
             errors.append(f"scope fact {fact}: needs evidence")
     for unknown in sorted(set(raw_facts) - set(model["scope_facts"])):
         errors.append(f"scope fact {unknown}: not in the model")
+    for fact, entry in raw_facts.items():
+        if isinstance(entry, dict) and "available_value" in entry:
+            if fact not in model.get("opt_in_facts", []):
+                errors.append(f"scope fact {fact}: available_value is only allowed on "
+                              + ", ".join(model.get("opt_in_facts", [])))
+            elif not isinstance(entry["available_value"], bool):
+                errors.append(f"scope fact {fact}: available_value must be true or false")
+            elif entry.get("value") is True and entry["available_value"] is False:
+                errors.append(f"scope fact {fact}: available_value cannot switch off what is on by default")
+    if "ai_view" in model:
+        for opt_in, name in ((False, "by default"), (True, "with opt-in settings")):
+            fv = fact_values(data, opt_in)
+            for fact in ("ai_data_access", "ai_actions"):
+                if fv.get(fact) is True and fv.get("ai_features") is not True:
+                    errors.append(f"scope fact {fact}: cannot be true {name} while ai_features is not")
     facts = fact_values(data)
     paths = model.get("change_path_facts", [])
     if paths and all(isinstance(facts.get(f), bool) for f in paths) and not any(facts[f] for f in paths):
@@ -321,7 +388,7 @@ def validate(data, criteria, order, model):
             if key in entry and status != allowed:
                 errors.append(f"{cid}: {key} is only allowed when status is {allowed}")
         gate = _as_list(model["applies_when"].get(cid, []))
-        switched_off = bool(gate) and all(facts.get(f) is False for f in gate)
+        switched_off = _switched_off(gate, data)
         if switched_off and status != "not_applicable":
             errors.append(f"{cid}: does not apply because scope fact {' and '.join(gate)} is false; "
                           "mark it not_applicable")
@@ -339,7 +406,59 @@ def validate(data, criteria, order, model):
                               f"(allowed: {', '.join(allowed_na) or 'none'}{hint})")
     for unknown in sorted(set(scores) - set(order)):
         errors.append(f"{unknown}: not in rubric")
+    if "ai_view" in model:
+        _validate_ai_readings(data, scores, model, errors)
     return errors
+
+
+def _validate_ai_readings(data, scores, model, errors):
+    view = model["ai_view"]
+    required = fact_values(data).get("ai_features") is True or fact_values(data, True).get("ai_features") is True
+    for cid in view["readings"]:
+        entry = scores.get(cid)
+        if not isinstance(entry, dict) or entry.get("status") not in STATUSES:
+            continue
+        label = f"{cid} (AI)"
+        ai = entry.get("ai")
+        if ai is None:
+            if required:
+                errors.append(f"{label}: an AI-qualified reading is required because ai_features is true")
+            continue
+        if not isinstance(ai, dict):
+            errors.append(f"{label}: must be an object")
+            continue
+        status = ai.get("status")
+        if status == "todo":
+            errors.append(f"{label}: not yet assessed")
+            continue
+        if status not in STATUSES:
+            errors.append(f"{label}: status must be one of {', '.join(STATUSES)}, got {status!r}")
+            continue
+        for key in ("alt_score", "available_score"):
+            if key in ai and not _is_int_score(ai[key]):
+                errors.append(f"{label}: {key} must be an integer 0..4, got {ai[key]!r}")
+            if key in ai and status != "assessed":
+                errors.append(f"{label}: {key} is only allowed when status is assessed")
+        fact = view["reading_applies_when"].get(cid)
+        allowed_na = entry["status"] == "not_applicable" or (fact is not None and _switched_off(fact, data))
+        if entry["status"] == "not_applicable" and status != "not_applicable":
+            errors.append(f"{label}: must be not_applicable because {cid} is not applicable")
+        if status == "assessed":
+            _validate_assessed(cid, ai, model, errors, label=label, check_inventory=False)
+            surface = view["reading_inventory_surface"].get(cid)
+            level = (entry.get("inventory") or {}).get(surface) if surface else None
+            if _is_int_score(level) and _is_int_score(ai.get("score")) and ai["score"] != level:
+                errors.append(f"{label}: score {ai['score']} must equal the {surface} inventory level {level}")
+        elif status == "not_evidenced":
+            if _text(ai, "searched").lower() in PLACEHOLDERS:
+                errors.append(f"{label}: not_evidenced needs the searched scope")
+        else:
+            if _text(ai, "rationale").lower() in PLACEHOLDERS:
+                errors.append(f"{label}: not_applicable needs a rationale")
+            if not allowed_na:
+                errors.append(f"{label}: may be not_applicable only when {cid} is"
+                              + (f" or {fact} is false" if fact else "")
+                              + "; score missing AI behaviour as 0")
 
 
 # ---------------------------------------------------------------- scoring
@@ -385,25 +504,105 @@ def effective_scores(data, order, model, variant):
         if status == "not_evidenced":
             values[cid] = None if variant == "assessed_only" else 0
             continue
-        value = entry["score"]
-        if variant == "high" and "alt_score" in entry:
-            value = entry["alt_score"]
-        if variant == "available" and "available_score" in entry:
-            value = entry["available_score"]
-        if str(entry["grade"]).upper() == "C" and value > caps["grade_c_max"]:
-            flags.append(f"{cid}: grade C caps {value} -> {caps['grade_c_max']}")
-            value = caps["grade_c_max"]
-        if entry.get("single_entity") is True and value > caps["single_entity_max"]:
-            flags.append(f"{cid}: single-entity caps {value} -> {caps['single_entity_max']}")
-            value = caps["single_entity_max"]
-        value = _depth_cap(cid, value, entry, model, flags)
-        value = _inventory_cap(cid, value, entry, model, flags)
-        if entry.get("incident") is True and value > 0:
-            new = max(0, value - caps["incident_penalty"])
-            flags.append(f"{cid}: incident deduction {value} -> {new}")
-            value = new
-        values[cid] = value
+        values[cid] = _assessed_value(cid, entry, model, variant, flags)
     return values, flags
+
+
+def _assessed_value(cid, entry, model, variant, flags, use_inventory=True, label=None):
+    """One assessed entry's value for a variant, after every cap and deduction."""
+    caps, label = model["caps"], label or cid
+    value = entry["score"]
+    if variant == "high" and "alt_score" in entry:
+        value = entry["alt_score"]
+    if variant == "available" and "available_score" in entry:
+        value = entry["available_score"]
+    if str(entry["grade"]).upper() == "C" and value > caps["grade_c_max"]:
+        flags.append(f"{label}: grade C caps {value} -> {caps['grade_c_max']}")
+        value = caps["grade_c_max"]
+    if entry.get("single_entity") is True and value > caps["single_entity_max"]:
+        flags.append(f"{label}: single-entity caps {value} -> {caps['single_entity_max']}")
+        value = caps["single_entity_max"]
+    before = len(flags)
+    value = _depth_cap(cid, value, entry, model, flags)
+    if use_inventory:
+        value = _inventory_cap(cid, value, entry, model, flags)
+    if label != cid:
+        flags[before:] = [f.replace(f"{cid}:", f"{label}:", 1) for f in flags[before:]]
+    if entry.get("incident") is True and value > 0:
+        new = max(0, value - caps["incident_penalty"])
+        flags.append(f"{label}: incident deduction {value} -> {new}")
+        value = new
+    return value
+
+
+def effective_ai_readings(data, model, variant):
+    """AI-qualified reading values: {criterion: value or None}, plus not-evidenced ids and flags."""
+    values, not_evidenced, flags = {}, [], []
+    for cid in model["ai_view"]["readings"]:
+        ai = data["scores"][cid].get("ai")
+        if not isinstance(ai, dict) or ai.get("status") == "not_applicable":
+            values[cid] = None if isinstance(ai, dict) else 0
+            continue
+        if ai["status"] == "not_evidenced":
+            values[cid] = 0
+            not_evidenced.append(cid)
+            continue
+        values[cid] = _assessed_value(cid, ai, model, variant, flags, use_inventory=False, label=f"{cid} (AI)")
+    return values, not_evidenced, flags
+
+
+def _floor_mean(items):
+    return math.floor(mean(items) + 1e-9) if items else None
+
+
+def ai_readiness(data, values, ai_values, ai_not_evidenced, model, opt_in):
+    """The AI Readiness View and the AI Capability Footprint for one variant."""
+    view = model["ai_view"]
+    facts = fact_values(data, opt_in)
+    footprint = {area: {"level": _floor_mean([ai_values[c] for c in ids if ai_values.get(c) is not None]),
+                        "readings": {c: ai_values.get(c) for c in ids}}
+                 for area, ids in view["footprint"].items()}
+    if facts.get("ai_features") is not True:
+        return {"status": "no_ai_features", "footprint": footprint}
+    dimensions, check_ne = {}, []
+    for name, dim in view["dimensions"].items():
+        contributors = {}
+        for cid in dim["checks"]:
+            gate = _as_list(model["applies_when"].get(cid, []))
+            if gate and not any(facts.get(f) is True for f in gate):
+                continue
+            if values.get(cid) is None:
+                continue
+            contributors[cid] = values[cid]
+            if data["scores"][cid]["status"] == "not_evidenced":
+                check_ne.append(cid)
+        for cid in dim["readings"]:
+            fact = view["reading_applies_when"].get(cid)
+            if fact and facts.get(fact) is not True:
+                continue
+            if ai_values.get(cid) is None:
+                continue
+            contributors[f"{cid} (AI)"] = ai_values[cid]
+        dimensions[name] = {"level": _floor_mean(list(contributors.values())), "contributors": contributors}
+    applicable = [d["level"] for d in dimensions.values() if d["level"] is not None]
+    level = min(applicable) if applicable else 0
+    gates = []
+    for gate in view["gates"]:
+        if facts.get(gate["when"]) is not True:
+            gates.append({"gate": gate["gate"], "needs": f"{gate['c']} ≥ {gate['min']}", "observed": "n/a",
+                          "status": "n/a"})
+            continue
+        observed = values.get(gate["c"]) or 0
+        gates.append({"gate": gate["gate"], "needs": f"{gate['c']} ≥ {gate['min']}", "observed": observed,
+                      "status": "pass" if observed >= gate["min"] else "fail"})
+    failed = [g for g in gates if g["status"] == "fail"]
+    uncapped = level
+    if failed:
+        level = min(level, view["gate_cap"])
+    return {"status": "assessed", "level": level, "name": view["levels"][level], "uncapped": uncapped,
+            "label": view["gate_label"] if failed else None, "dimensions": dimensions, "gates": gates,
+            "not_evidenced": sorted(set(check_ne) | {f"{c} (AI)" for c in ai_not_evidenced}),
+            "footprint": footprint}
 
 
 def aggregate(values, criteria, model):
@@ -549,8 +748,9 @@ def sensitivity(data, values, criteria, model):
     """
     base = loop_levels(data, values, aggregate(values, criteria, model)["capabilities"], model)
     raise_headline, lower_headline, raise_loop, lower_loop = [], [], {}, {}
+    ai_checks = {c for ids in model.get("ai_areas", {}).get("AIR", {}).values() for c in ids}
     for cid, value in values.items():
-        if value is None or data["scores"][cid]["status"] != "assessed":
+        if value is None or data["scores"][cid]["status"] != "assessed" or cid in ai_checks:
             continue
         for step in (1, -1):
             new = value + step
@@ -575,9 +775,14 @@ def score_assessment(data, criteria, order, model):
         entry = {"effective": values, **agg}
         if variant in SAL_VARIANTS:
             entry["sal"] = loop_levels(data, values, agg["capabilities"], model)
+            if "ai_view" in model:
+                ai_values, ai_ne, ai_flags = effective_ai_readings(data, model, variant)
+                entry["ai_readiness"] = ai_readiness(data, values, ai_values, ai_ne, model,
+                                                     opt_in=(variant == "available"))
+                entry["ai_flags"] = ai_flags
         result["variants"][variant] = entry
         if variant == "default":
-            result["flags"] = flags
+            result["flags"] = flags + entry.get("ai_flags", [])
             result["sensitivity"] = sensitivity(data, values, criteria, model)
     coverage = {s: 0 for s in STATUSES}
     grades = {"A": 0, "B": 0, "C": 0}
@@ -624,6 +829,49 @@ def headline_text(sal, model, with_progress=False):
     loops = " · ".join(f"{model['loops'][l]} L{sal['loops'][l]['level']}"
                        + (progress(sal["loops"][l]) if with_progress else "") for l in model["loops"])
     return f"SAL {sal['headline']} ({sal['headline_name']}) · {loops}"
+
+
+def ai_headline_text(view_result, model):
+    if view_result["status"] != "assessed":
+        return "no AI features"
+    dims = " · ".join(f"{name} {'n/a' if d['level'] is None else d['level']}"
+                      for name, d in view_result["dimensions"].items())
+    text = f"AI Readiness L{view_result['level']} ({view_result['name']}) · {dims}"
+    if view_result["label"]:
+        text += f" · {view_result['label']}"
+    return text
+
+
+def render_ai(result, model):
+    if "ai_view" not in model:
+        return []
+    d, avail, high = (result["variants"][v]["ai_readiness"] for v in ("default", "available", "high"))
+    lines = ["", "## AI Readiness", "",
+             "How safely can the product run AI in production? Separate from SAL, which it never changes.", "",
+             f"**{ai_headline_text(d, model)}**", "",
+             f"- With opt-in settings: {ai_headline_text(avail, model)}.",
+             f"- With every alternate reading: {ai_headline_text(high, model)}."]
+    shown = d if d["status"] == "assessed" else avail
+    if shown["status"] == "assessed":
+        if shown is avail:
+            lines += ["", "No AI features by default; the tables below show the opt-in reading."]
+        lines += ["", "| Dimension | Level | Contributors |", "|---|---:|---|"]
+        for name, dim in shown["dimensions"].items():
+            contributors = ", ".join(f"{k} {v}" for k, v in dim["contributors"].items()) or "none applicable"
+            lines.append(f"| {name} | {'n/a' if dim['level'] is None else dim['level']} | {cell(contributors)} |")
+        lines += ["", "| AI gate | Needs | Observed | Status |", "|---|---|---|---|"]
+        for gate in shown["gates"]:
+            lines.append(f"| {gate['gate']} | {gate['needs']} | {gate['observed']} | {gate['status']} |")
+        if shown["not_evidenced"]:
+            lines += ["", "Not evidenced (computed as 0): " + ", ".join(shown["not_evidenced"]) + "."]
+    fp = shown["footprint"]
+    lines += ["", "### AI Capability Footprint", "",
+              "What the product's AI does. Unscored: it never changes AI Readiness or SAL.", "",
+              "| Area | Level | Readings |", "|---|---:|---|"]
+    for area, info in fp.items():
+        readings = ", ".join(f"{k} {'n/a' if v is None else v}" for k, v in info["readings"].items())
+        lines.append(f"| {area} | {'–' if info['level'] is None else info['level']} | {readings} |")
+    return lines
 
 
 def schedule(order, values, remediation, target, exclude=()):
@@ -706,6 +954,7 @@ def render_markdown(data, criteria, order, model, result):
                      f"{fmt(result['variants']['all_applicable']['capabilities'][cap])} |")
     if result["flags"]:
         lines += ["", "Caps and deductions applied:", ""] + [f"- {f}" for f in result["flags"]]
+    lines += render_ai(result, model)
     lines += ["", "## Area means", "", "| Area | Default |", "|---|---:|"]
     for area, value in d["area_means"].items():
         lines.append(f"| {cell(area)} | {fmt(value)} |")
@@ -721,6 +970,10 @@ def render_markdown(data, criteria, order, model, result):
         facet_text = "" if not facets else "".join(f[0].upper() for f in FACETS if facets.get(f))
         if entry.get("inventory"):
             text = "Inventory: " + ", ".join(f"{k} {v}" for k, v in entry["inventory"].items()) + ". " + text
+        ai = entry.get("ai")
+        if isinstance(ai, dict) and ai.get("status"):
+            ai_text = ai["score"] if ai["status"] == "assessed" else ai["status"].replace("_", " ")
+            text = f"AI-qualified reading: {ai_text}. " + text
         lines.append(f"| {cid} {cell(criteria[cid]['title'])} | {status} | "
                      f"{'excluded' if value is None else value} | {entry.get('alt_score', '')} | "
                      f"{entry.get('available_score', '')} | {entry.get('grade', '-') if status == 'assessed' else '-'} | "
@@ -810,6 +1063,8 @@ def main(argv=None):
                "coverage": result["coverage"], "grades": result["grades"],
                "sal": default["sal"],
                "sensitivity": result["sensitivity"],
+               **({"ai_readiness": {v: result["variants"][v]["ai_readiness"] for v in SAL_VARIANTS}}
+                  if "ai_view" in model else {}),
                "capabilities": rounded(default["capabilities"]),
                "ranges": rounded(result["ranges"]),
                "area_means": rounded(default["area_means"]),
@@ -824,6 +1079,8 @@ def main(argv=None):
         return 0
     if args.quiet:
         print(headline_text(default["sal"], model))
+        if "ai_view" in model:
+            print(ai_headline_text(default["ai_readiness"], model))
         print("  ".join(f"{label} {fmt(default['capabilities'][cap])}" for cap, label in model["capabilities"].items()))
         return 0
     print(render_markdown(data, criteria, order, model, result))

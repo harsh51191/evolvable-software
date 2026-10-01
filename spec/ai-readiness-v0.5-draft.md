@@ -1,97 +1,56 @@
-# EVOLVE v0.5: AI Readiness View (specification draft)
+# EVOLVE v0.5: AI Readiness View and AI Capability Footprint (specification, revision 2)
 
-**Status: draft for review.** Nothing in `scripts/`, `references/rubric.md` or `assessments/` uses this yet. Implementation starts only after this specification is reviewed.
+**Status: revised after review; implemented on this branch, not merged.** The results are provisional and single-rater.
+
+**Changes from revision 1:**
+
+1. The draft headline mixed two things: whether the product's AI is safe to run in production, and how widely AI is used. The first is now the **AI Readiness** headline. The second is a separate, unscored **AI Capability Footprint** (section 6).
+2. The Intelligence dimension is gone. Readiness is now **Context, Quality, Governance and Operations**.
+3. AIR-03 applies only when AI reads product data. A prompt-only feature is not marked down for lacking retrieval.
+4. Every reused criterion has explicit 0–4 anchors for its AI-qualified reading (section 5).
+5. AI-qualified readings have explicit statuses and support grades, alternates, opt-in readings and facets, like any criterion.
+6. AIR-01 recognises same-provider failover, self-hosted redundancy and controlled degradation, not only multi-provider fallback.
+7. Headline levels are named, and a failed gate is labelled **"not production-governed"**.
 
 ## 1. Two questions, kept separate
-
-EVOLVE v0.4 answers one question. This draft adds a second, related one:
 
 | Reading | Question |
 |---|---|
 | **Software Autonomy Level (SAL)** | How ready is the product to evolve itself safely? |
-| **AI Readiness** | How ready is the product to build, operate and govern AI safely in production? |
+| **AI Readiness** | How safely can the product run AI in production? |
+| **AI Capability Footprint** (unscored) | What kinds of meaningful work can its AI actually do? |
 
-They overlap but are not the same. A product can run AI features well while never changing itself (high AI Readiness, low SAL). Another can evolve itself through rules and configuration with no model involved (the reverse).
+**SAL does not change.** The eight new checks and the AI-qualified readings feed only the AI view. They never enter a loop condition, a critical control or an EVOLVE capability score. A test proves that SAL and the profile are identical with and without them.
 
-**The SAL calculation does not change.** The eight new checks feed only the AI Readiness View. They do not enter any loop condition, critical control or EVOLVE capability score. A test will prove that adding or removing them leaves every SAL result unchanged.
-
-## 2. Structure
+## 2. AI Readiness at a glance
 
 ```
-AI Readiness n/4 = weakest of four dimensions, capped at 2 if any AI gate fails
-
-  Context        can AI reach the right product data and capabilities, without exceeding permissions?
-  Intelligence   does AI do real product work: take requests, build changes, diagnose, propose?
-  Assurance      is AI behaviour evaluated, gated before release, bounded, traceable?
-  Operations     is AI portable, affordable and watched in production?
-
-Example:  AI Readiness 2/4 · Context 3 · Intelligence 3 · Assurance 2 · Operations 2
+AI Readiness L2 (Deployed with material control gaps) · Context 3 · Quality 2 · Governance 2 · Operations 3
+Gates: permissions ✓  regression gate ✗  traceability ✓   -> not production-governed
 ```
 
-Each dimension draws on:
+| Dimension | Contributors | Asks |
+|---|---|---|
+| **Context** | AIR-03, AIR-04 | Can AI reach the product data it needs, without exceeding the user's permissions? |
+| **Quality** | AIR-05, AIR-06 | Is AI behaviour evaluated, and blocked from release when it gets worse? |
+| **Governance** | AIR-07; AI-qualified GOV-09, GOV-10, GOV-11; AI-qualified LRN-08 when AI changes the product itself | Are AI actions traceable, bounded, scoped and protected from manipulated inputs? |
+| **Operations** | AIR-01, AIR-02, AIR-08; the AI-provider surface of ARC-08 | Is AI portable, affordable, contained when it fails, and watched in production? |
 
-- **new AI checks** (`AIR-01` to `AIR-08`), which are AI-specific by definition; and
-- **existing criteria**, which count only through an **AI-qualified reading** (section 5).
+### Headline levels
 
-## 3. The eight new checks
+| Level | Name | Meaning |
+|---|---|---|
+| L0 | No production AI foundation | AI ships without the basics in at least one dimension. |
+| L1 | Experimental | Some foundations exist; most are partial or manual. |
+| L2 | Deployed with material control gaps | AI runs with real mechanisms, but at least one dimension or gate falls short of production governance. |
+| L3 | Production-governed | Every dimension at 3 and every applicable gate passes. |
+| L4 | Adaptive and operationally proven | Every dimension at 4, with the gate criteria backed by operational evidence. |
 
-The four additions proposed in the last round each bundled separate concerns. Here they are split into eight checks, scored 0–4 on the usual ladder. The full anchors are in section 7.
+### Scoring rules
 
-| ID | Check | Dimension | Splits out of |
-|---|---|---|---|
-| AIR-01 | Model and provider portability and fallback | Operations | "model flexibility and cost" |
-| AIR-02 | AI usage and per-customer cost controls | Operations | "model flexibility and cost" |
-| AIR-03 | AI-ready data and context access | Context | "data readiness for AI" |
-| AIR-04 | Permission-preserving retrieval and tool access (**gate**) | Context | "data readiness for AI" |
-| AIR-05 | Offline AI evaluation | Assurance | "AI evaluation" |
-| AIR-06 | Regression gating before release (**gate**) | Assurance | "AI evaluation" |
-| AIR-07 | AI action tracing and auditability (**gate**) | Assurance | "AI monitoring" |
-| AIR-08 | Production quality, drift and feedback monitoring | Operations | "AI monitoring" |
-
-The pairs were split because each half can be present without the other:
-
-- **Portability vs cost:** a product can switch models freely and have no spending limits, or the reverse.
-- **Context vs permissions:** rich retrieval with an admin service account is the most dangerous combination, so permissions must be scored on their own.
-- **Offline evaluation vs release gating:** many products have evaluation sets that nothing blocks on.
-- **Tracing vs monitoring:** auditing what the AI did is a different capability from watching whether its answers are getting worse.
-
-## 4. Overlap analysis of the 13 existing AI-related criteria
-
-Several existing criteria are not inherently about AI. A form can be request intake; rules can do diagnosis; scripts are machine actors. Averaging them straight into an AI score would credit non-AI behaviour as AI readiness. Each one therefore either qualifies only under a stated interpretation, or is excluded.
-
-| Criterion | Inherently AI? | Qualifying interpretation (what counts towards AI Readiness) | Dimension | Overlap handling |
-|---|---|---|---|---|
-| MAL-19 capability surface for agents | Mostly | A typed tool surface designed for AI agents (MCP or equivalent) with scoped auth. A plain REST API or OpenAPI document alone does not qualify. | Context | Distinct from AIR-04: MAL-19 is what agents can reach; AIR-04 is whether permissions hold when they do. |
-| MAL-20 conversational operation and authoring | No | Only conversation backed by a language model grounded in product data. FAQ or keyword bots and scripted wizards do not qualify. | Intelligence | None. |
-| DEL-01 request intake | No | Only intake where a model structures the request: clarifying questions, a generated plan or specification. A structured form does not qualify. | Intelligence | None. |
-| DEL-04 AI implementation lane | Yes | As scored. | Intelligence | None. |
-| LRN-05 automated diagnosis | No | Only diagnosis a model produces (likely cause, reproduction). Rule-based grouping and fingerprinting do not qualify. | Intelligence | None. |
-| LRN-06 ranked proposals | No | Only proposals a model generates. Rule-based recommendations do not qualify. | Intelligence | None. |
-| LRN-07 learning from experience | No | Only learning that uses a model (reflection or review that writes skills, memory or rules). Heuristic tuning, such as automatic column materialisation, does not qualify. | Intelligence | None. |
-| LRN-08 learned changes validated | No | Only validation of AI-made changes. Lint and schema checks on human changes do not qualify. | Assurance | Distinct from AIR-05 and AIR-06: LRN-08 covers changes the product makes to itself; AIR-05 and AIR-06 cover the product's AI features (prompts, models, retrieval). |
-| EXP-05 opportunity proposals | No | Only adjacent-capability proposals a model generates. | Intelligence | None. |
-| GOV-09 agent-safe actions | No | Only the controls on AI agents: identity, scopes, idempotency, preview, rate limits. Scripts and integrations do not count. | Assurance | Audit rows are left out of this reading because AIR-07 scores tracing, so the same evidence is not counted twice. |
-| GOV-10 bounded self-change | Partly | Only bounds on AI-driven changes. | Assurance | None. |
-| GOV-11 learning-input integrity | Mostly | Only where the inputs feed a model, for example injection fencing and provenance of AI-made changes. | Assurance | Distinct from AIR-04: GOV-11 is about poisoned inputs; AIR-04 is about over-privileged access. |
-| ARC-08 failure isolation | No | Only its AI-provider surface: timeouts, circuit breakers and containment when a model provider fails. Connectors, plugins, tenants and internal services do not count. | Operations | Distinct from AIR-01: ARC-08's AI surface is containing failure; AIR-01 is switching or falling back to another model. |
-
-Leaving out LRN-09 (impact measurement) was deliberate. It measures any change against a baseline; production quality of AI features is AIR-08.
-
-## 5. How reused criteria contribute
-
-- **AI-qualified reading.** Each reused criterion carries an optional `ai` entry: `{"score": 0..4, "evidence": "..."}`. This is the level of the criterion's AI-qualified behaviour under the interpretation in section 4, with its own evidence.
-- **No `ai` entry, product has AI features:** the criterion contributes **0**. AI readiness is not demonstrated by non-AI behaviour.
-- **Criterion not applicable** (archetype or scope fact): it is left out of the dimension.
-- **ARC-08:** the `ai` score must equal the level of the `ai_providers` surface whenever an inventory with that surface is recorded.
-- **The AI-qualified score is independent of the criterion's general score.** For example, GOV-09 may score 2 overall because scripts use shared keys, while AI agents run with scoped identities and the AI reading is 3. The evidence must say which actors or paths it covers.
-
-The general score is never changed by the `ai` entry, so SAL and the EVOLVE profile stay exactly as in v0.4.
-
-## 6. Scoring the view
-
-1. **Dimension level** = the floor of the mean of the dimension's contributing scores (new checks plus AI-qualified readings). Floor, not rounding, because a dimension should not claim a level most of its parts have not reached.
-2. **Headline** = the lowest dimension level. One weak dimension (for example, no evaluation) cannot be hidden by strong others.
-3. **AI gates** are three hard controls. Failing any applicable gate caps the headline at **2**, matching SAL, where a failed critical control caps a loop at L2.
+1. **Dimension level** is the floor of the mean of its applicable contributors. Floor rather than rounding, so a dimension never claims a level most of its parts have not reached. A dimension with no applicable contributors (for example Context, when AI reads no product data) is not applicable and is left out.
+2. **Headline** is the lowest applicable dimension. The weakest-link rule applies once, across dimensions, not again inside them.
+3. **Gates.** Failing any applicable gate caps the headline at **L2**, and the report adds **"not production-governed"**:
 
    | Gate | Passes when | Applies when |
    |---|---|---|
@@ -99,81 +58,89 @@ The general score is never changed by the `ai` entry, so SAL and the EVOLVE prof
    | Regression evaluation before release | AIR-06 ≥ 3 | `ai_features` |
    | Traceability of consequential AI actions | AIR-07 ≥ 3 | `ai_actions` |
 
-   The gate criteria are depth-capped, as v0.4 critical controls are: a 3 needs tested evidence.
-4. **Report:** `AI Readiness 2/4 · Context 3 · Intelligence 3 · Assurance 2 · Operations 2`, plus:
-   - each dimension's contributing scores;
-   - which reused criteria had no AI-qualified evidence;
-   - gate status;
-   - the opt-in and alternate readings, as for SAL.
+   The gate criteria are depth-capped, like v0.4 critical controls: a 3 needs tested evidence and a 4 needs operated evidence.
+4. **Default and opt-in.**
+   - The headline uses the default configuration, as SAL does.
+   - The opt-in reading uses shipped opt-in settings: `available_score` on criteria and readings, and `available_value` on the AI scope facts. It is shown beside the headline.
+   - When AI is off by default, the headline reads "no AI features by default" and the opt-in reading carries the score.
 
 ### New scope facts
 
 | Fact | True when |
 |---|---|
 | `ai_features` | The product ships features that call a language or other ML model |
-| `ai_data_access` | AI features read product data, or call tools that can |
-| `ai_actions` | AI can take consequential actions: change data or definitions, send messages outside the product, or spend money |
+| `ai_data_access` | AI features read product data, or call tools that can (requires `ai_features`) |
+| `ai_actions` | AI can take consequential actions (requires `ai_features`) |
 
-If `ai_features` is false, the view reports `AI Readiness: no AI features`. It still shows the Context and Operations foundations, but gives no headline level.
+A **consequential action** changes data or definitions, sends a message outside the product, or spends money.
 
-## 7. Anchors for the eight checks
+Each AI fact may carry `available_value` for the opt-in reading. If `ai_features` is false, the view reports "no AI features" and the eight checks are not applicable.
 
-**Consequential action** means an action that changes data or definitions, sends messages outside the product, or spends money.
+## 3. The eight new checks
 
-### AIR-01 Model and provider portability and fallback
-- **0** One hard-coded model and provider.
-- **1** Model name configurable by engineers in code or environment.
-- **2** A provider abstraction supports several providers; switching needs configuration and a restart; no fallback.
-- **3** Operators choose models per feature through a supported path, with automatic, tested fallback to another model or provider on failure or rate limit.
+| ID | Check | Dimension | Applies when |
+|---|---|---|---|
+| AIR-01 | Model and provider portability and resilience | Operations | `ai_features` |
+| AIR-02 | AI usage and per-customer cost controls | Operations | `ai_features` |
+| AIR-03 | AI-ready data and context access | Context | `ai_data_access` |
+| AIR-04 | Permission-preserving retrieval and tool access (**gate**) | Context | `ai_data_access` |
+| AIR-05 | Offline AI evaluation | Quality | `ai_features` |
+| AIR-06 | Regression gating before release (**gate**) | Quality | `ai_features` |
+| AIR-07 | AI action tracing and auditability (**gate when `ai_actions`**) | Governance | `ai_features` |
+| AIR-08 | Production quality, drift and feedback monitoring | Operations | `ai_features` |
+
+The checks are not part of any EVOLVE capability, so they never move the six-capability profile.
+
+## 4. Anchors for the eight checks
+
+### AIR-01 Model and provider portability and resilience
+Any mature resilience strategy counts: fallback to another model or provider, same-provider failover (region or deployment), self-hosted redundancy, or controlled degradation, where the feature switches off cleanly, queues, or answers without AI. Multi-provider fallback is not required.
+- **0** One hard-coded model; its failure breaks the feature.
+- **1** The model is configurable by engineers in code or environment.
+- **2** An abstraction supports several models or providers, switched by configuration; failure handling is ad hoc.
+- **3** Operators choose models per feature through a supported path, and model failure is handled by a declared, tested resilience strategy.
 - **4** Models are routed by policy (cost, latency, quality), with evaluated equivalence before a switch.
 
 ### AIR-02 AI usage and per-customer cost controls
 - **0** None.
-- **1** Only the provider's own dashboard, or raw logs.
-- **2** Tokens and cost recorded per request and user or tenant, queryable.
-- **3** Per-tenant or per-user budgets or quotas enforced in the product, with an admin view and alerts.
+- **1** Only the provider's dashboard, or raw logs.
+- **2** Tokens and cost are recorded per request and per user or tenant, and are queryable.
+- **3** Per-tenant or per-user budgets or quotas are enforced in the product, with an admin view.
 - **4** Spend policy degrades gracefully (cheaper model, queueing) and forecasts usage.
 
 ### AIR-03 AI-ready data and context access
-- **0** AI sees only the prompt.
-- **1** Engineers assemble context in code per feature.
-- **2** Retrieval or indexing (search, embeddings) for some data; sync is manual or partial.
-- **3** Product data and definitions reach AI features through a governed context layer (retrieval, tools, schema-aware context) that stays fresh automatically and attributes sources.
+- **0** Applicable, but AI sees only the prompt.
+- **1** Engineers assemble context in code for each feature.
+- **2** Retrieval or indexing (search, embeddings) covers some data; sync is manual or partial.
+- **3** Product data and definitions reach AI through a governed context layer (retrieval, tools, schema-aware context). The layer stays fresh automatically and attributes its sources.
 - **4** The context layer is generated from definitions, so new entities reach AI without code, and retrieval quality is measured.
 
 ### AIR-04 Permission-preserving retrieval and tool access (gate)
 - **0** AI uses an admin or service account.
 - **1** Restrictions live only in prompt instructions.
 - **2** Permissions are enforced for some sources or tools; others run with elevated access.
-- **3** Every retrieval and tool call made by AI runs with the requesting user's permissions, or a scoped agent identity, enforced in code. Tests show a user cannot obtain through AI what they cannot access directly.
+- **3** Every retrieval and tool call AI makes runs with the requesting user's permissions, or a scoped agent identity, enforced in code. Tests show a user cannot obtain through AI what they cannot access directly.
 - **4** Row- and field-level policy and tenant isolation are covered by automated adversarial tests, and denials are audited.
 
 ### AIR-05 Offline AI evaluation
 - **0** None.
 - **1** Manual spot checks.
 - **2** An evaluation harness or datasets exist for some features and are run on request.
-- **3** Each AI feature has a maintained evaluation set with metrics (accuracy, groundedness, safety), run reproducibly, with results stored per prompt and model version.
+- **3** Each AI feature has a maintained evaluation set with metrics (accuracy, groundedness, safety). Evaluations run reproducibly, and results are stored per prompt and model version.
 - **4** Evaluation sets grow automatically from production failures and feedback, and include adversarial cases.
 
 ### AIR-06 Regression gating before release (gate)
 - **0** AI changes ship unevaluated.
-- **1** Manual review of prompt or model changes.
+- **1** Prompt or model changes are reviewed manually.
 - **2** Evaluations run in CI but do not block, or cover only some AI features.
-- **3** Changes to prompts, models, tools or retrieval for AI features are blocked from release when evaluation scores regress past declared thresholds.
+- **3** Changes to prompts, models, tools or retrieval are blocked from release when evaluation scores regress past declared thresholds.
 - **4** Gating covers every AI change class, including learned and self-made changes, with canary comparison in production.
 
-### AIR-07 AI action tracing and auditability (gate)
+### AIR-07 AI action tracing and auditability (gate when `ai_actions`)
 - **0** None.
 - **1** Application logs only.
 - **2** Model calls (prompts, responses) can be traced for engineers, often through an opt-in integration.
-- **3** Every consequential AI action records:
-  - what triggered it, and for whom;
-  - its inputs;
-  - the model and prompt version;
-  - its tool calls;
-  - its output and the resulting change.
-
-  Records are queryable by operators and retained.
+- **3** Every consequential AI action records what triggered it, for whom, the inputs, the model and prompt version, the tool calls, and the output and resulting change. Operators can query these records, and they are retained.
 - **4** Traces are linked to approvals and reversals, can be replayed, and are tamper-evident.
 
 ### AIR-08 Production quality, drift and feedback monitoring
@@ -183,34 +150,102 @@ If `ai_features` is false, the view reports `AI Readiness: no AI features`. It s
 - **3** Quality metrics (feedback, evaluator scores, failure and refusal rates) are monitored continuously per feature and model version, with alerts on drift.
 - **4** Drift triggers re-evaluation, rollback or a model switch under policy.
 
-## 8. Implementation plan (after review)
+## 5. AI-qualified readings of existing criteria
 
-1. **Rubric:**
-   - an "AI readiness checks" section with AIR-01 to AIR-08;
-   - an `ai_view` block in the model (dimensions, contributors, qualifying notes, gates, the three new facts);
-   - qualifying notes added to the 13 reused criteria.
+Thirteen existing criteria describe behaviour that may or may not involve AI. A form can be request intake, rules can diagnose, and scripts are machine actors. Each of the thirteen therefore carries a separate **AI-qualified reading** (`ai` in the assessment) that scores only its AI-backed behaviour, against the anchors below.
 
-   The AIR checks are kept out of the EVOLVE capabilities.
-2. **Scorer:**
-   - the AI Readiness View, including the `ai` entry validation (evidence required, the ARC-08 inventory link);
-   - the report section and JSON output;
-   - SAL code untouched.
-3. **Adversarial tests:**
-   - a reused criterion with a high general score but no `ai` entry adds nothing;
-   - one weak dimension sets the headline whatever the other three score;
-   - a failed gate caps the headline at 2, and a non-applicable gate does not;
-   - an `ai` score without evidence is rejected;
-   - an ARC-08 `ai` score that contradicts its inventory is rejected;
-   - SAL results are identical with and without the view;
-   - a product without AI features gets no headline;
-   - floor rather than rounding in dimension levels.
-4. **Field test:**
-   - provisionally score all 11 products on AIR-01 to AIR-08, the three facts and the 13 AI-qualified readings;
-   - every result labelled single-rater until independently reviewed.
+**The reading is a full entry:**
 
-## 9. Open questions for review
+- **Status:** `assessed`, `not_evidenced` or `not_applicable`.
+- **Fields:** `score`, `grade`, `evidence`, `alt_score` (upward only), `available_score` and `facets`. Depth caps apply where the parent criterion is depth-capped.
+- **When it is required:** for every one of the thirteen whenever `ai_features` is true, in the default or opt-in reading.
+- **Not evidenced:** computes as 0 but is reported separately from a confirmed 0.
+- **When `not_applicable` is allowed:**
+  - when the parent criterion is not applicable;
+  - for GOV-09 when `ai_actions` is false;
+  - for LRN-08 when `agent_mutations` is false.
 
-1. **Dimension level as the floor of the mean.** The alternative is weakest-check-within-dimension, which is stricter. Is the floor of the mean right, given that the headline already takes the weakest dimension?
-2. **Default or opt-in.** Several products ship AI that is off by default (Discourse AI, LibreChat memory). Should the headline use the default configuration, consistent with SAL, with the opt-in reading shown beside it?
-3. **Intelligence has no new checks.** It is built entirely from AI-qualified readings of existing criteria. Is that acceptable, or should it have a check of its own (for example, breadth of AI features across the product)?
-4. **Gate cap at 2.** Same cap as SAL. Agreed?
+  Nowhere else, so a missing AI behaviour scores 0 rather than disappearing.
+- **ARC-08:** when its inventory records the `ai_providers` surface, the reading must equal that level.
+- **The general criterion score is never changed**, so SAL and the profile are unaffected.
+
+| Criterion | Used in | AI-qualified anchors (0 · 1 · 2 · 3 · 4) |
+|---|---|---|
+| MAL-19 agent tool surface | Footprint: Operate | 0 none · 1 documentation only · 2 an API agents can call, but no typed agent tools · 3 a typed tool surface for AI agents (MCP or equivalent) with scoped auth · 4 tools generated from definitions, including defined entities, with a current capability map |
+| MAL-20 model-backed conversation | Footprint: Operate | 0 no model-backed conversation (keyword or FAQ bots count as 0) · 1 model answers without grounding in product data · 2 a grounded assistant for one persona or surface · 3 users complete tasks and operators author through a grounded assistant, with preview · 4 the assistant covers every UI action, and groundedness is evaluated |
+| DEL-01 AI intake | Footprint: Build | 0 no model in intake (forms count as 0) · 1 a model summarises or rewrites requests · 2 a model asks clarifying questions or drafts a structured plan · 3 a model produces a change specification with acceptance criteria, impact and risk class, which a person confirms · 4 the specification is machine-readable and drives implementation and tests |
+| DEL-04 AI implementation lane | Footprint: Build | Same anchors as DEL-04, which is inherently AI |
+| LRN-05 AI diagnosis | Footprint: Diagnose and improve | 0 no model diagnosis (rule-based grouping counts as 0) · 1 a model explains a pasted error on request · 2 a model explains failures with attached context on request · 3 for detected issues, a model produces a reproducible case and likely cause linked to the responsible area · 4 a model validates its diagnosis by reproduction |
+| LRN-06 AI proposals | Footprint: Diagnose and improve | 0 none (rule-based recommendations count as 0) · 1 a model suggests changes on request, without evidence · 2 a model drafts proposals for one area, citing evidence · 3 ranked, model-generated proposals across the product, with evidence and expected impact · 4 proposals carry ready changes and post-apply measurement |
+| LRN-07 AI learning | Footprint: Diagnose and improve | 0 none (heuristic tuning counts as 0) · 1 people ask a model to write rules or skills · 2 a model drafts candidate changes from experience on request · 3 a model reviews experience continuously and drafts changes unprompted · 4 it also prioritises them and learns which kinds of change succeed |
+| LRN-08 validation of AI-made changes | Footprint: Diagnose and improve; Governance when `agent_mutations` | 0 none · 1 manual review only · 2 automated scans or lint on AI-made changes · 3 AI-made changes are evaluated against a baseline before apply, with a pass, revise or block decision · 4 automatic, on held-out data, feeding policy |
+| EXP-05 AI opportunity proposals | Footprint: Expand | 0 none · 1 a model summarises demand on request · 2 a model drafts an adjacent-capability proposal on request · 3 a model proposes unprompted, with evidence, sizing and fit · 4 it also produces a buildable specification and a prototype |
+| GOV-09 AI agent action safety | Governance (n/a when `ai_actions` is false) | 0 AI acts with admin or ambient authority · 1 shared keys · 2 per-user or per-agent identity for AI actions, but no preview · 3 scoped AI identity, idempotent actions, preview or approval for mutations, rate limits · 4 policy-gated with per-action risk classification, budgets and a kill switch. Audit trails are left out here because AIR-07 scores them. |
+| GOV-10 bounds on AI-driven change | Governance | 0 unrestricted · 1 prompt instructions only · 2 an allow or deny list in code for some AI paths · 3 every AI change path enforced against a declared scope, with a blast-radius limit · 4 versioned policy, tightened automatically after failures |
+| GOV-11 model-input integrity | Governance | 0 untrusted content goes straight into prompts that can trigger changes · 1 no provenance · 2 some filtering or fencing · 3 untrusted content fenced as data, injection-scanned, with provenance recorded; it cannot alone trigger an auto-applied change · 4 adversarial inputs in automated evaluation, and changes revertible by source |
+| ARC-08 AI-provider containment | Operations | 0 a provider failure breaks the product · 1 errors caught locally · 2 timeouts and retries on model calls · 3 timeouts and circuit breakers or bulkheads around model calls, with tested fallback behaviour; failure is contained to the AI feature · 4 degradation modes declared and exercised by fault injection |
+
+**Overlaps resolved:**
+- **ARC-08 and AIR-01:** ARC-08's AI surface scores containment (a model failure stays inside the AI feature). AIR-01 scores portability and the declared strategy for continuing or degrading the AI service.
+- **GOV-09 and AIR-07:** audit trails count only under AIR-07, never under GOV-09.
+- **LRN-08 and AIR-05/06:** LRN-08 covers changes the product makes to itself; AIR-05 and AIR-06 cover its AI features.
+- **GOV-11 and AIR-04:** GOV-11 is about poisoned inputs; AIR-04 is about over-privileged access.
+- **LRN-09 is left out.** Production AI quality is AIR-08.
+
+## 6. AI Capability Footprint (unscored)
+
+The footprint shows what the product's AI does, without judging readiness. A focused product with excellent AI governance is not marked down for lacking AI that builds changes or proposes products.
+
+| Area | AI-qualified readings |
+|---|---|
+| Operate | MAL-19, MAL-20 |
+| Build | DEL-01, DEL-04 |
+| Diagnose and improve | LRN-05, LRN-06, LRN-07, LRN-08 |
+| Expand | EXP-05 |
+
+Each area shows its readings and their floor-of-mean. There is no footprint headline, and the footprint never affects AI Readiness or SAL.
+
+## 7. Report
+
+```
+AI Readiness L2 (Deployed with material control gaps) · Context 3 · Quality 2 · Governance 2 · Operations 3
+  not production-governed: regression gate fails (AIR-06 = 2, needs 3)
+  with opt-in settings: L2 · alternate readings: L3
+  contributors: Context AIR-03 3, AIR-04 3 · Quality AIR-05 2, AIR-06 2 · ...
+  not evidenced: GOV-11 (AI)
+AI Capability Footprint: Operate 3 · Build 2 · Diagnose and improve 1 · Expand 0
+```
+
+## 8. Tests that must hold (adversarial)
+
+**SAL isolation**
+- SAL, loop levels, controls and the EVOLVE profile are identical with and without the AI view.
+
+**AI-qualified readings**
+- A reused criterion with a high general score adds nothing unless its AI-qualified reading supports it.
+- A missing AI-qualified reading is rejected when `ai_features` is true.
+- `not_applicable` outside the allowed cases is rejected.
+- `not_evidenced` computes as 0 and is reported separately.
+- An ARC-08 reading that contradicts the `ai_providers` inventory level is rejected.
+- An AI-qualified alternate must be one level up, and an opt-in reading cannot be lower than the score.
+
+**Scope facts**
+- AI facts that contradict each other (data access or actions without AI features) are rejected.
+- A prompt-only product (no `ai_data_access`) has no Context dimension, and its headline is not lowered by it.
+- A product with no AI features gets no headline.
+
+**Headline and gates**
+- One weak dimension sets the headline, whatever the other three score.
+- Dimension levels use floor, not rounding.
+- A failed gate caps the headline at L2 and labels it "not production-governed"; a non-applicable gate does neither.
+- Gate criteria at 3 need tested evidence (depth cap).
+
+**Footprint**
+- Footprint scores never change the readiness headline.
+
+## 9. Decisions recorded from review
+
+1. Dimension level is the floor of the mean; the weakest-link rule applies once, across dimensions.
+2. The headline uses the default configuration; the opt-in reading is shown separately.
+3. No breadth check inside readiness. Breadth is the separate footprint.
+4. A failed gate caps the headline at L2, labelled "not production-governed".

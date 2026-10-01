@@ -36,6 +36,15 @@ def assessment(value=3, archetype="configurable-application-platform", facts=Non
         if cid in MODEL["inventories"] and value >= 3:
             entry["inventory"] = {s: value for s in (MODEL["inventories"][cid] or ["surface"])}
         scores[cid] = entry
+    view = MODEL["ai_view"]
+    for cid in view["readings"]:
+        fact = view["reading_applies_when"].get(cid)
+        if scores[cid]["status"] == "not_applicable" or (fact and not facts[fact]):
+            scores[cid]["ai"] = {"status": "not_applicable", "rationale": "does not apply"}
+        elif facts["ai_features"]:
+            scores[cid]["ai"] = {"status": "assessed", "score": value, "grade": "A", "evidence": "src/ai.py"}
+            if value >= 3:
+                scores[cid]["ai"]["facets"] = dict(ALL_FACETS)
     data = {"product": "P", "date": "2026-01-01", "source": "repo@abc", "archetype": archetype,
             "scope_facts": {f: {"value": v, "evidence": "README"} for f, v in facts.items()},
             "scores": scores}
@@ -98,8 +107,9 @@ def rubric_with(old, new):
 
 
 class ModelTests(unittest.TestCase):
-    def test_sixty_six_criteria_in_six_capabilities(self):
-        self.assertEqual(len(ORDER), 66)
+    def test_sixty_six_criteria_in_six_capabilities_plus_eight_ai_checks(self):
+        self.assertEqual(len([c for c in ORDER if not CRITERIA[c]["ai_check"]]), 66)
+        self.assertEqual(len([c for c in ORDER if CRITERIA[c]["ai_check"]]), 8)
         self.assertEqual(list(MODEL["capabilities"]), ["ARC", "DEL", "MAL", "LRN", "GOV", "EXP"])
 
     def test_every_criterion_has_a_remediation_entry(self):
@@ -383,6 +393,156 @@ class ReviewRoundTests(unittest.TestCase):
                                        "code_release_path": False}))["loops"]["request"]
         self.assertEqual(off["next_total"], on["next_total"] - 3)
         self.assertEqual(off["next_total"] - off["next_met"], on["next_total"] - on["next_met"] - 3)
+
+
+def ai(data, variant="default"):
+    return result(data)["variants"][variant]["ai_readiness"]
+
+
+def set_ai(data, cid, value, **extra):
+    entry = {"status": "assessed", "score": value, "grade": "A", "evidence": "src/ai.py", **extra}
+    if value >= 3 or extra.get("alt_score", 0) >= 3:
+        entry.setdefault("facets", dict(ALL_FACETS))
+    data["scores"][cid]["ai"] = entry
+
+
+class AIReadinessTests(unittest.TestCase):
+    """Adversarial tests for the AI Readiness View (spec v0.5, section 8)."""
+
+    def test_sal_and_profile_are_unchanged_by_the_ai_view(self):
+        data = assessment(3)
+        base = result(data)
+        for cid in [c for c in ORDER if CRITERIA[c]["ai_check"]]:
+            data["scores"][cid]["score"] = 0
+            data["scores"][cid].pop("facets", None)
+        for cid in MODEL["ai_view"]["readings"]:
+            data["scores"][cid]["ai"] = {"status": "not_evidenced", "searched": "src/"}
+        after = result(data)
+        for variant in ("default", "high", "available"):
+            self.assertEqual(base["variants"][variant]["sal"], after["variants"][variant]["sal"])
+            self.assertEqual(base["variants"][variant]["capabilities"], after["variants"][variant]["capabilities"])
+        self.assertNotEqual(ai(data)["level"], 3)
+
+    def test_high_general_score_without_ai_evidence_adds_nothing(self):
+        data = assessment(4)
+        data["scores"]["GOV-09"]["ai"] = {"status": "assessed", "score": 0, "grade": "A", "evidence": "scripts only"}
+        contributors = ai(data)["dimensions"]["Governance"]["contributors"]
+        self.assertEqual(contributors["GOV-09 (AI)"], 0)
+        self.assertEqual(data["scores"]["GOV-09"]["score"], 4)
+
+    def test_missing_ai_reading_is_rejected_when_ai_features_is_true(self):
+        data = assessment(3)
+        del data["scores"]["DEL-01"]["ai"]
+        self.assertIn("DEL-01 (AI): an AI-qualified reading is required because ai_features is true", errors(data))
+
+    def test_not_applicable_is_allowed_only_in_the_stated_cases(self):
+        data = assessment(3)
+        data["scores"]["LRN-05"]["ai"] = {"status": "not_applicable", "rationale": "rules do this"}
+        self.assertTrue(any(e.startswith("LRN-05 (AI): may be not_applicable only") for e in errors(data)))
+        data = assessment(3, facts={"ai_actions": False})
+        self.assertEqual(data["scores"]["GOV-09"]["ai"]["status"], "not_applicable")
+        self.assertEqual(errors(data), [])
+
+    def test_not_evidenced_counts_as_zero_and_is_reported(self):
+        data = assessment(3)
+        data["scores"]["GOV-11"]["ai"] = {"status": "not_evidenced", "searched": "src/ai"}
+        out = ai(data)
+        self.assertEqual(out["dimensions"]["Governance"]["contributors"]["GOV-11 (AI)"], 0)
+        self.assertIn("GOV-11 (AI)", out["not_evidenced"])
+
+    def test_arc08_reading_must_match_the_ai_provider_surface(self):
+        data = assessment(3)
+        data["scores"]["ARC-08"]["inventory"]["ai_providers"] = 3
+        set_ai(data, "ARC-08", 2)
+        self.assertIn("ARC-08 (AI): score 2 must equal the ai_providers inventory level 3", errors(data))
+
+    def test_ai_reading_alternates_are_upward_and_opt_in_not_lower(self):
+        data = assessment(2)
+        set_ai(data, "DEL-04", 2, alt_score=1, alt_note="lower", available_score=1)
+        errs = errors(data)
+        self.assertTrue(any(e.startswith("DEL-04 (AI): alt_score must be the next level up") for e in errs))
+        self.assertIn("DEL-04 (AI): available_score cannot be below score", errs)
+
+    def test_contradictory_ai_facts_are_rejected(self):
+        data = assessment(3, facts={"ai_features": False, "ai_data_access": True, "ai_actions": False})
+        self.assertIn("scope fact ai_data_access: cannot be true by default while ai_features is not", errors(data))
+
+    def test_prompt_only_product_has_no_context_dimension(self):
+        data = assessment(3, facts={"ai_data_access": False})
+        self.assertEqual(errors(data), [])
+        out = ai(data)
+        self.assertIsNone(out["dimensions"]["Context"]["level"])
+        self.assertEqual(out["level"], 3)
+        self.assertEqual({g["gate"]: g["status"] for g in out["gates"]}["Permission-preserving access"], "n/a")
+
+    def test_no_ai_features_gives_no_headline(self):
+        data = assessment(3, facts={"ai_features": False, "ai_data_access": False, "ai_actions": False})
+        self.assertEqual(errors(data), [])
+        self.assertEqual(ai(data)["status"], "no_ai_features")
+
+    def test_ai_off_by_default_scores_only_the_opt_in_reading(self):
+        data = assessment(3, facts={"ai_features": False, "ai_data_access": False, "ai_actions": False})
+        for fact in ("ai_features", "ai_data_access", "ai_actions"):
+            data["scope_facts"][fact]["available_value"] = True
+        for cid in [c for c in ORDER if CRITERIA[c]["ai_check"]]:
+            data["scores"][cid] = {"status": "assessed", "score": 3, "grade": "A", "evidence": "x",
+                                   "facets": dict(ALL_FACETS)}
+        for cid in MODEL["ai_view"]["readings"]:
+            if data["scores"][cid]["status"] != "not_applicable":
+                set_ai(data, cid, 3)
+        self.assertEqual(errors(data), [])
+        self.assertEqual(ai(data)["status"], "no_ai_features")
+        self.assertEqual(ai(data, "available")["level"], 3)
+
+    def test_one_weak_dimension_sets_the_headline(self):
+        data = assessment(4)
+        data["scores"]["AIR-02"].update(score=1)
+        data["scores"]["AIR-08"].update(score=1)
+        out = ai(data)
+        self.assertEqual(out["dimensions"]["Context"]["level"], 4)
+        self.assertEqual(out["dimensions"]["Operations"]["level"], 2)
+        self.assertEqual(out["level"], 2)
+
+    def test_dimension_uses_floor_not_rounding(self):
+        data = assessment(3)
+        data["scores"]["AIR-05"].update(score=2)
+        data["scores"]["AIR-06"].update(score=3)
+        self.assertEqual(ai(data)["dimensions"]["Quality"]["level"], 2)
+
+    def test_failed_gate_caps_and_labels(self):
+        data = assessment(4)
+        data["scores"]["AIR-07"].update(score=2)
+        out = ai(data)
+        self.assertEqual(out["level"], 2)
+        self.assertEqual(out["label"], "not production-governed")
+        data = assessment(4, facts={"ai_actions": False})
+        out = ai(data)
+        self.assertIsNone(out["label"])
+        self.assertEqual({g["gate"]: g["status"] for g in out["gates"]}["Traceability of consequential AI actions"],
+                         "n/a")
+
+    def test_gate_criteria_need_tested_evidence(self):
+        data = assessment(3)
+        data["scores"]["AIR-06"]["facets"] = {"implemented": True, "tested": False, "operated": False}
+        out = ai(data)
+        self.assertEqual(out["level"], 2)
+        self.assertEqual({g["gate"]: g["status"] for g in out["gates"]}["Regression evaluation before release"],
+                         "fail")
+
+    def test_footprint_never_changes_readiness(self):
+        data = assessment(3)
+        before = ai(data)["level"]
+        for cid in ("MAL-19", "MAL-20", "DEL-01", "DEL-04", "LRN-05", "LRN-06", "LRN-07", "EXP-05"):
+            set_ai(data, cid, 0)
+        out = ai(data)
+        self.assertEqual(out["level"], before)
+        self.assertEqual(out["footprint"]["Build"]["level"], 0)
+
+    def test_lrn08_counts_for_governance_only_when_ai_changes_the_product(self):
+        data = assessment(3, facts={"agent_mutations": False})
+        self.assertNotIn("LRN-08 (AI)", ai(data)["dimensions"]["Governance"]["contributors"])
+        data = assessment(3)
+        self.assertIn("LRN-08 (AI)", ai(data)["dimensions"]["Governance"]["contributors"])
 
 class ScoringTests(unittest.TestCase):
     def test_rounding_is_half_up_and_applied_once(self):

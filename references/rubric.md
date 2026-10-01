@@ -40,7 +40,7 @@ Read `archetypes.md` before scoring. Missing functionality is not non-applicabil
 
 ## Scope facts
 
-Every assessment declares nine facts, each with evidence, for the default configuration. They decide which criteria and critical controls apply, so a stateless library is not failed on backups and a single-user tool is not failed on tenant isolation. A fact that is wrongly declared is a validation finding, not a shortcut.
+Every assessment declares twelve facts, each with evidence, for the default configuration. The three AI facts may also record `available_value`, their value with shipped opt-in settings on; it is used only by the AI Readiness View. They decide which criteria and critical controls apply, so a stateless library is not failed on backups and a single-user tool is not failed on tenant isolation. A fact that is wrongly declared is a validation finding, not a shortcut.
 
 | Fact | True when |
 |---|---|
@@ -53,6 +53,9 @@ Every assessment declares nine facts, each with evidence, for the default config
 | `evolution_auto_apply` | A change produced by the evolution loop (an AI lane, a learning loop or self-modification) applies without human approval by default. Scheduled maintenance such as index or column tuning does not count |
 | `definition_change_path` | Changes to the product's behaviour are made through definitions or configuration, by people or by the product |
 | `code_release_path` | The product's evolution system ships code changes, not only definition changes |
+| `ai_features` | The product ships features that call a language or other ML model |
+| `ai_data_access` | AI features read product data, or call tools that can (requires `ai_features`) |
+| `ai_actions` | AI can take consequential actions: change data or definitions, send messages outside the product, or spend money (requires `ai_features`) |
 
 At least one change path (`definition_change_path` or `code_release_path`) must be true. Rollback is required on each path that exists: GOV-05 for definition changes, DEL-11 for code changes, both when both exist.
 
@@ -88,12 +91,33 @@ A loop's level is the highest level whose conditions, and every lower level's co
 
 In the conditions below, `path` is the loop's build path: the criteria through which people (`people`) or the product (`product`) build a change. `rollback` is the lower of GOV-05 when `definition_change_path` is true and DEL-11 when `code_release_path` is true. `every` applies a threshold to every applicable criterion of a capability. `operated` requires the operated facet.
 
+## AI Readiness View
+
+A second reading, separate from SAL: **how safely can the product run AI in production?** The SAL calculation never uses it, and the AIR checks are not part of any EVOLVE capability.
+
+- **Dimensions:**
+  - Context: AIR-03, AIR-04.
+  - Quality: AIR-05, AIR-06.
+  - Governance: AIR-07 and the AI-qualified readings of GOV-09, GOV-10, GOV-11 and LRN-08 (LRN-08 only when `agent_mutations`).
+  - Operations: AIR-01, AIR-02, AIR-08 and the AI-qualified reading of ARC-08.
+- **Dimension level:** the floor of the mean of its applicable contributors. A dimension with none is not applicable.
+- **Headline:** the lowest applicable dimension, named:
+  - L0 No production AI foundation;
+  - L1 Experimental;
+  - L2 Deployed with material control gaps;
+  - L3 Production-governed;
+  - L4 Adaptive and operationally proven.
+- **Gates:** AIR-04 ≥ 3 (when `ai_data_access`), AIR-06 ≥ 3 (when `ai_features`) and AIR-07 ≥ 3 (when `ai_actions`). Failing any caps the headline at L2, labelled "not production-governed".
+- **Default and opt-in:** the headline uses the default configuration and default facts. The opt-in reading uses `available_score` and `available_value`.
+- **AI-qualified readings.** Thirteen existing criteria carry an `ai` entry that scores only their AI-backed behaviour, against the **AI-qualified reading** anchors under each criterion. The entry has a status (`assessed`, `not_evidenced` or `not_applicable`) and may carry grade, evidence, `alt_score`, `available_score` and facets. It is required whenever `ai_features` is true in either reading, and never changes the criterion's own score. `not_applicable` is allowed only when the parent criterion is not applicable, for GOV-09 when `ai_actions` is false, and for LRN-08 when `agent_mutations` is false.
+- **AI Capability Footprint (unscored):** Operate (MAL-19, MAL-20), Build (DEL-01, DEL-04), Diagnose and improve (LRN-05 to LRN-08), Expand (EXP-05). It shows what the product's AI does. It never affects AI Readiness or SAL.
+
 ## Scoring model
 
 ```json evolve-model
 {
   "framework": "EVOLVE",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "capabilities": {
     "ARC": "Elastic",
     "DEL": "Velocity",
@@ -111,7 +135,15 @@ In the conditions below, `path` is the loop's build path: the criteria through w
     "agent_mutations",
     "evolution_auto_apply",
     "definition_change_path",
-    "code_release_path"
+    "code_release_path",
+    "ai_features",
+    "ai_data_access",
+    "ai_actions"
+  ],
+  "opt_in_facts": [
+    "ai_features",
+    "ai_data_access",
+    "ai_actions"
   ],
   "change_path_facts": [
     "definition_change_path",
@@ -130,7 +162,15 @@ In the conditions below, `path` is the loop's build path: the criteria through w
     "GOV-05": "definition_change_path",
     "GOV-09": "machine_actions",
     "GOV-10": ["agent_mutations", "evolution_auto_apply"],
-    "GOV-11": ["agent_mutations", "evolution_auto_apply"]
+    "GOV-11": ["agent_mutations", "evolution_auto_apply"],
+    "AIR-01": "ai_features",
+    "AIR-02": "ai_features",
+    "AIR-03": "ai_data_access",
+    "AIR-04": "ai_data_access",
+    "AIR-05": "ai_features",
+    "AIR-06": "ai_features",
+    "AIR-07": "ai_features",
+    "AIR-08": "ai_features"
   },
   "depth_capped": [
     "ARC-01",
@@ -146,7 +186,10 @@ In the conditions below, `path` is the loop's build path: the criteria through w
     "GOV-05",
     "GOV-10",
     "LRN-08",
-    "DEL-11"
+    "DEL-11",
+    "AIR-04",
+    "AIR-06",
+    "AIR-07"
   ],
   "inventories": {
     "ARC-08": [
@@ -267,6 +310,116 @@ In the conditions below, `path` is the loop's build path: the criteria through w
       "GOV-01"
     ],
     "other": "*"
+  },
+  "ai_view": {
+    "section": "AIR",
+    "levels": [
+      "No production AI foundation",
+      "Experimental",
+      "Deployed with material control gaps",
+      "Production-governed",
+      "Adaptive and operationally proven"
+    ],
+    "dimensions": {
+      "Context": {
+        "checks": [
+          "AIR-03",
+          "AIR-04"
+        ],
+        "readings": []
+      },
+      "Quality": {
+        "checks": [
+          "AIR-05",
+          "AIR-06"
+        ],
+        "readings": []
+      },
+      "Governance": {
+        "checks": [
+          "AIR-07"
+        ],
+        "readings": [
+          "GOV-09",
+          "GOV-10",
+          "GOV-11",
+          "LRN-08"
+        ]
+      },
+      "Operations": {
+        "checks": [
+          "AIR-01",
+          "AIR-02",
+          "AIR-08"
+        ],
+        "readings": [
+          "ARC-08"
+        ]
+      }
+    },
+    "readings": [
+      "MAL-19",
+      "MAL-20",
+      "DEL-01",
+      "DEL-04",
+      "LRN-05",
+      "LRN-06",
+      "LRN-07",
+      "LRN-08",
+      "EXP-05",
+      "GOV-09",
+      "GOV-10",
+      "GOV-11",
+      "ARC-08"
+    ],
+    "reading_applies_when": {
+      "GOV-09": "ai_actions",
+      "LRN-08": "agent_mutations"
+    },
+    "reading_inventory_surface": {
+      "ARC-08": "ai_providers"
+    },
+    "footprint": {
+      "Operate": [
+        "MAL-19",
+        "MAL-20"
+      ],
+      "Build": [
+        "DEL-01",
+        "DEL-04"
+      ],
+      "Diagnose and improve": [
+        "LRN-05",
+        "LRN-06",
+        "LRN-07",
+        "LRN-08"
+      ],
+      "Expand": [
+        "EXP-05"
+      ]
+    },
+    "gates": [
+      {
+        "gate": "Permission-preserving access",
+        "c": "AIR-04",
+        "min": 3,
+        "when": "ai_data_access"
+      },
+      {
+        "gate": "Regression evaluation before release",
+        "c": "AIR-06",
+        "min": 3,
+        "when": "ai_features"
+      },
+      {
+        "gate": "Traceability of consequential AI actions",
+        "c": "AIR-07",
+        "min": 3,
+        "when": "ai_actions"
+      }
+    ],
+    "gate_cap": 2,
+    "gate_label": "not production-governed"
   },
   "caps": {
     "grade_c_max": 2,
@@ -458,6 +611,7 @@ Can the product take the load and survive the change?
 **Why it matters.** Evolution adds dependencies. Each one must be able to fail without taking the core product down.
 **Inventory.** Connectors and integrations; plugins and extensions; AI and model providers; tenant workloads; internal services. Record a level for each applicable surface; the score is the level every applicable surface reaches.
 **Evidence.** Timeouts, retries, circuit breakers and bulkheads per surface. Fallbacks and their tests. Fault-injection suites.
+**AI-qualified reading.** Scores only AI-backed behaviour, for the AI Readiness View and Footprint: 0 a model-provider failure breaks the product · 1 errors caught locally · 2 timeouts and retries on model calls · 3 timeouts and circuit breakers or bulkheads around model calls, with tested fallback behaviour; failure contained to the AI feature · 4 degradation modes declared and exercised by fault injection. Must equal the `ai_providers` inventory level when one is recorded.
 - **0** One failing dependency fails the whole product.
 - **1** Errors caught locally; no timeouts or isolation policy.
 - **2** Timeouts and retries on outbound calls; some surfaces degrade gracefully.
@@ -486,6 +640,7 @@ Can a change get from request to clients quickly and safely?
 **Definition.** A user or operator request becomes a specification precise enough to build and test.
 **Why it matters.** The request loop starts here. A free-text wish cannot be implemented, verified or measured.
 **Evidence.** Request or feedback objects. Specification templates or generators. Acceptance criteria. Links to affected definitions. Clarifying-question flows.
+**AI-qualified reading.** Scores only AI-backed behaviour, for the AI Readiness View and Footprint: 0 no model in intake (forms count as 0) · 1 a model summarises or rewrites requests · 2 a model asks clarifying questions or drafts a structured plan · 3 a model produces a change specification with acceptance criteria, impact and risk class, which a person confirms · 4 the specification is machine-readable and drives implementation and tests.
 - **0** Requests live outside the product (email, chat).
 - **1** A feedback or feature-request form stores free text.
 - **2** Requests captured in the product with structure (area, requester, examples) and linked to the entities or screens involved.
@@ -519,6 +674,7 @@ Can a change get from request to clients quickly and safely?
 **Why it matters.** Changes that need a person to hand-build each one do not scale. Both paths count: definitions where the product is malleable, code where it is not.
 **Evidence.** The AI lane, what it can change and how it is invoked. Whether its output arrives as a proposal with verification evidence. Where changes apply. Scope limits.
 **Boundary.** Credits a lane that changes this product: its definitions, or its own code under scoring rule 12. AI features that change users' other software are recorded, not scored.
+**AI-qualified reading.** Scores only AI-backed behaviour, for the AI Readiness View and Footprint: the same anchors as the criterion, which is inherently AI.
 - **0** None.
 - **1** Manual per tenant or installation.
 - **2** An AI lane drafts changes for narrow tasks on request; a person finishes them.
@@ -801,6 +957,7 @@ Can the product be reshaped without a code release?
 **Definition.** The product exposes typed, discoverable tools (MCP or an equivalent agent protocol) generated from its definitions, with scoped auth and a current capability map.
 **Why it matters.** Agents act on tools, not on documentation. The protocol is not the point; typed discovery and scoping are.
 **Evidence.** MCP server or equivalent. Tool definitions and their source. Capability map. Auth scoping on tools.
+**AI-qualified reading.** Scores only AI-backed behaviour, for the AI Readiness View and Footprint: 0 none · 1 documentation only · 2 an API agents can call, but no typed agent tools · 3 a typed tool surface for AI agents (MCP or equivalent) with scoped auth · 4 tools generated from definitions, including defined entities, with a current capability map.
 - **0** None.
 - **1** Hand-written API documentation.
 - **2** Introspectable API; no tool surface.
@@ -811,6 +968,7 @@ Can the product be reshaped without a code release?
 **Definition.** End users complete tasks through a grounded conversational surface, and operators author definitions, layouts and text through natural language on the same surfaces the UI uses.
 **Why it matters.** Conversation is increasingly how both users and operators reach a product; it only helps if it is grounded and shares the product's definitions.
 **Evidence.** Chat or assistant surfaces. Grounding sources. Actions available conversationally. Operator natural-language authoring. Evaluation harness.
+**AI-qualified reading.** Scores only AI-backed behaviour, for the AI Readiness View and Footprint: 0 no model-backed conversation (keyword or FAQ bots count as 0) · 1 a model answers without grounding in product data · 2 a grounded assistant for one persona or surface · 3 users complete tasks and operators author through a grounded assistant, with preview · 4 the assistant covers every UI action, and groundedness is evaluated.
 - **0** None.
 - **1** FAQ or keyword bot.
 - **2** Grounded conversational surface for one persona, or natural-language authoring for one surface.
@@ -869,6 +1027,7 @@ Does the product notice what is wrong, work out why, and know whether its change
 **Definition.** For a detected issue, the product works out why it happens.
 **Why it matters.** Detection without diagnosis produces a queue for engineers, not a fix.
 **Evidence.** Failure grouping. Context attached to issues (traces, inputs, recent changes). Reproduction and root-cause features.
+**AI-qualified reading.** Scores only AI-backed behaviour, for the AI Readiness View and Footprint: 0 no model diagnosis (rule-based grouping counts as 0) · 1 a model explains a pasted error on request · 2 a model explains failures with attached context on request · 3 for detected issues, a model produces a reproducible case and likely cause linked to the responsible area · 4 a model validates its diagnosis by reproduction.
 - **0** None.
 - **1** Raw traces or logs that engineers read.
 - **2** The product groups related failures and attaches context (traces, inputs, recent changes).
@@ -879,6 +1038,7 @@ Does the product notice what is wrong, work out why, and know whether its change
 **Definition.** From observed data, the product produces ranked proposals to change its own behaviour or configured definitions, with evidence and expected impact.
 **Why it matters.** This is the difference between a dashboard and a self-diagnosing system.
 **Evidence.** Recommendation features. Proposal objects. Ranking and evidence. What the proposals target.
+**AI-qualified reading.** Scores only AI-backed behaviour, for the AI Readiness View and Footprint: 0 none (rule-based recommendations count as 0) · 1 a model suggests changes on request, without evidence · 2 a model drafts proposals for one area, citing evidence · 3 ranked, model-generated proposals across the product, with evidence and expected impact · 4 proposals carry ready changes and post-apply measurement.
 - **0** None.
 - **1** Dashboards.
 - **2** Recommendations or proposals for one area.
@@ -891,6 +1051,7 @@ Does the product notice what is wrong, work out why, and know whether its change
 **Definition.** The product observes its own runs, sessions or usage and, without being asked, produces candidate changes to its own behaviour or configured definitions (skills, rules, prompts, memory, configuration, indexes).
 **Why it matters.** This is what "self-improving" means in practice. Governance (GOV) says whether such changes are safe; this says whether they happen at all.
 **Evidence.** Background review or reflection jobs. Skill or rule creation from sessions. Automatic tuning from usage. Defaults.
+**AI-qualified reading.** Scores only AI-backed behaviour, for the AI Readiness View and Footprint: 0 none (heuristic tuning counts as 0) · 1 people ask a model to write rules or skills · 2 a model drafts candidate changes from experience on request · 3 a model reviews experience continuously and drafts changes unprompted · 4 it also prioritises them and learns which kinds of change succeed.
 - **0** None.
 - **1** People turn experience into changes by hand.
 - **2** The product captures experience and can generate candidate changes when asked.
@@ -901,6 +1062,7 @@ Does the product notice what is wrong, work out why, and know whether its change
 **Definition.** Changes the product proposes to itself are checked, and evaluated against the current baseline, before they apply.
 **Why it matters.** A system that rewrites itself without evaluation is self-modifying, not self-improving.
 **Evidence.** Scans and linters on learned changes. Evaluation datasets. Baseline comparison. Pass, revise or block decisions.
+**AI-qualified reading.** Scores only AI-backed behaviour, for the AI Readiness View and Footprint: 0 none · 1 manual review only · 2 automated scans or lint on AI-made changes · 3 AI-made changes evaluated against a baseline before apply, with a pass, revise or block decision · 4 automatic, on held-out data, feeding policy. Counts towards Governance only when `agent_mutations` is true.
 - **0** No checks.
 - **1** Manual review only.
 - **2** Automated checks (security scan, lint, schema) on learned changes.
@@ -1018,6 +1180,7 @@ Is every change safe, accountable and reversible, including the changes the prod
 **Why it matters.** An agent with ambient authority is an incident waiting for a prompt injection.
 **Evidence.** Identity model for API callers. Token scoping. Idempotency keys. Dry-run. Rate limits. Audit rows. Kill switch.
 **Boundary.** Covers every machine actor that can change the product through an API or tool surface: the product's own agents and external agents or automated clients. It applies when `machine_actions` is true.
+**AI-qualified reading.** Scores only AI-backed behaviour, for the AI Readiness View and Footprint: 0 AI acts with admin or ambient authority · 1 shared keys · 2 per-user or per-agent identity for AI actions, but no preview · 3 scoped AI identity, idempotent actions, preview or approval for mutations, rate limits · 4 policy-gated, with per-action risk classification, budgets and a kill switch. Audit trails are left out (AIR-07 scores them). Not applicable when `ai_actions` is false.
 - **0** Ambient authority.
 - **1** Shared API keys.
 - **2** Per-actor tokens and audit; no dry-run.
@@ -1028,6 +1191,7 @@ Is every change safe, accountable and reversible, including the changes the prod
 **Definition.** Explicit, enforced limits on what the product, its AI lanes and its learning loops may change on their own.
 **Why it matters.** Review gates decide whether a change is good. Bounds decide how much damage a bad one can do before anyone looks.
 **Evidence.** Allow-lists and deny-lists for self-modification. Rate and volume limits. Blast-radius limits. Logs of blocked changes.
+**AI-qualified reading.** Scores only AI-backed behaviour, for the AI Readiness View and Footprint: 0 unrestricted · 1 prompt instructions only · 2 an allow or deny list in code for some AI paths · 3 every AI change path enforced against a declared scope, with a blast-radius limit · 4 versioned policy, tightened automatically after failures.
 - **0** Self-modifications or AI-authored changes are unrestricted.
 - **1** Limits exist only as prompt instructions or convention.
 - **2** An allow-list or deny-list of what may change, enforced in code for some change paths.
@@ -1038,6 +1202,7 @@ Is every change safe, accountable and reversible, including the changes the prod
 **Definition.** The inputs that drive change (requests, feedback, telemetry, memories, documents) cannot easily be poisoned or used to inject instructions.
 **Why it matters.** A product that learns from its users can be taught the wrong thing by one of them.
 **Evidence.** Provenance on learned items and AI-built changes. Separation of untrusted content from instructions. Injection scanning. Bulk revert by source.
+**AI-qualified reading.** Scores only AI-backed behaviour, for the AI Readiness View and Footprint: 0 untrusted content goes straight into prompts that can trigger changes · 1 no provenance · 2 some filtering or fencing · 3 untrusted content fenced as data, injection-scanned, with provenance recorded; it cannot alone trigger an auto-applied change · 4 adversarial inputs in automated evaluation, and changes revertible by source.
 - **0** Any input can be written straight into memory, skills, rules or a change.
 - **1** Inputs stored with no provenance.
 - **2** Changes record their source inputs; some inputs are filtered.
@@ -1096,6 +1261,7 @@ Can the product grow into adjacent value, and does it notice where to grow?
 **Definition.** The product proposes adjacent capabilities, with evidence, for a person to decide.
 **Why it matters.** This is the step from "users want something" to "here is what we could become": a community platform proposing a course module, a professional network proposing gig matching.
 **Evidence.** Opportunity or proposal objects for new capabilities. Evidence and sizing attached. Fit analysis against existing concepts.
+**AI-qualified reading.** Scores only AI-backed behaviour, for the AI Readiness View and Footprint: 0 none · 1 a model summarises demand on request · 2 a model drafts an adjacent-capability proposal on request · 3 a model proposes unprompted, with evidence, sizing and fit · 4 it also produces a buildable specification and a prototype.
 - **0** None.
 - **1** Raw demand data only.
 - **2** Drafts an adjacent-capability proposal on request, citing some evidence.
@@ -1113,3 +1279,95 @@ Can the product grow into adjacent value, and does it notice where to grow?
 - **2** A new capability or bundle can be enabled for selected tenants or users.
 - **3** An expansion launches to a cohort with a declared success metric, a review date and a clean removal path; the keep-or-kill decision is recorded.
 - **4** The product measures the cohort against the metric and recommends keep, extend or kill under policy.
+
+# AI Readiness Checks (AIR)
+
+These checks feed only the AI Readiness View. They are not part of any EVOLVE capability and are never used by SAL. A **consequential action** changes data or definitions, sends a message outside the product, or spends money.
+
+## Area: Context
+
+### AIR-03 AI-ready data and context access
+**Definition.** Product data and definitions reach AI features through a governed context layer.
+**Why it matters.** AI without the product's context gives generic answers; context assembled by hand per feature drifts.
+**Evidence.** Retrieval, indexing and embedding pipelines. Tool or schema-aware context for models. Freshness and source attribution.
+- **0** Applicable, but AI sees only the prompt.
+- **1** Engineers assemble context in code for each feature.
+- **2** Retrieval or indexing (search, embeddings) covers some data; sync is manual or partial.
+- **3** Product data and definitions reach AI through a governed context layer (retrieval, tools, schema-aware context) that stays fresh automatically and attributes its sources.
+- **4** The context layer is generated from definitions, so new entities reach AI without code, and retrieval quality is measured.
+
+### AIR-04 Permission-preserving retrieval and tool access
+**Definition.** Everything AI retrieves or does runs with the permissions of the user it acts for, or of a scoped agent identity.
+**Why it matters.** Rich retrieval through an admin account turns every AI feature into a data leak.
+**Evidence.** How retrieval and tool calls authenticate. Permission checks in the retrieval path. Tests that try to obtain data through AI that the user cannot access directly.
+- **0** AI uses an admin or service account.
+- **1** Restrictions live only in prompt instructions.
+- **2** Permissions are enforced for some sources or tools; others run with elevated access.
+- **3** Every retrieval and tool call made by AI runs with the requesting user's permissions, or a scoped agent identity, enforced in code. Tests show a user cannot obtain through AI what they cannot access directly.
+- **4** Row- and field-level policy and tenant isolation are covered by automated adversarial tests, and denials are audited.
+
+## Area: Quality
+
+### AIR-05 Offline AI evaluation
+**Definition.** AI features are evaluated against maintained datasets with defined metrics.
+**Why it matters.** Without evaluation, nobody knows whether a prompt or model change made answers better or worse.
+**Evidence.** Evaluation harnesses, datasets, metrics and stored results per prompt and model version.
+- **0** None.
+- **1** Manual spot checks.
+- **2** An evaluation harness or datasets exist for some features and are run on request.
+- **3** Each AI feature has a maintained evaluation set with metrics (accuracy, groundedness, safety), run reproducibly, with results stored per prompt and model version.
+- **4** Evaluation sets grow automatically from production failures and feedback, and include adversarial cases.
+
+### AIR-06 Regression gating before release
+**Definition.** AI changes are blocked from release when evaluation scores regress.
+**Why it matters.** Evaluation that nothing blocks on does not stop regressions.
+**Evidence.** CI jobs that run evaluations, their thresholds and whether they block merges or releases.
+- **0** AI changes ship unevaluated.
+- **1** Prompt or model changes are reviewed manually.
+- **2** Evaluations run in CI but do not block, or cover only some AI features.
+- **3** Changes to prompts, models, tools or retrieval for AI features are blocked from release when evaluation scores regress past declared thresholds.
+- **4** Gating covers every AI change class, including learned and self-made changes, with canary comparison in production.
+
+## Area: Governance
+
+### AIR-07 AI action tracing and auditability
+**Definition.** What AI did, why and for whom can be reconstructed.
+**Why it matters.** A consequential AI action that cannot be traced cannot be investigated, explained or reversed with confidence.
+**Evidence.** Trace or audit records of model calls and tool calls, the fields they keep, who can query them, retention.
+- **0** None.
+- **1** Application logs only.
+- **2** Model calls (prompts, responses) can be traced for engineers, often through an opt-in integration.
+- **3** Every consequential AI action records what triggered it and for whom, its inputs, the model and prompt version, its tool calls, and its output and resulting change, queryable by operators and retained.
+- **4** Traces are linked to approvals and reversals, can be replayed, and are tamper-evident.
+
+## Area: Operations
+
+### AIR-01 Model and provider portability and resilience
+**Definition.** Models can be changed without code, and model failure is handled by a declared strategy.
+**Why it matters.** Models change, fail and get rate-limited; a product tied to one model at one endpoint inherits every outage.
+**Evidence.** Provider abstraction, per-feature model settings, and the resilience strategy and its tests. Any mature strategy counts: fallback to another model or provider, same-provider failover, self-hosted redundancy, or controlled degradation (the feature switches off cleanly, queues, or answers without AI).
+- **0** One hard-coded model; its failure breaks the feature.
+- **1** The model is configurable by engineers in code or environment.
+- **2** An abstraction supports several models or providers, switched by configuration; failure handling is ad hoc.
+- **3** Operators choose models per feature through a supported path, and model failure is handled by a declared, tested resilience strategy.
+- **4** Models are routed by policy (cost, latency, quality), with evaluated equivalence before a switch.
+
+### AIR-02 AI usage and per-customer cost controls
+**Definition.** AI usage and cost are recorded and limited per customer.
+**Why it matters.** Unmetered AI turns one heavy user into everyone's bill.
+**Evidence.** Token and cost records, budgets, quotas, rate limits and admin views.
+- **0** None.
+- **1** Only the provider's dashboard, or raw logs.
+- **2** Tokens and cost are recorded per request and per user or tenant, and are queryable.
+- **3** Per-tenant or per-user budgets or quotas are enforced in the product, with an admin view.
+- **4** Spend policy degrades gracefully (cheaper model, queueing) and forecasts usage.
+
+### AIR-08 Production quality, drift and feedback monitoring
+**Definition.** The quality of AI in production is measured and watched over time.
+**Why it matters.** Models and data drift; answers can get worse without any code changing.
+**Evidence.** Feedback capture per AI feature, quality metrics, dashboards, alerts.
+- **0** None.
+- **1** Feedback is collected but not analysed.
+- **2** Feedback and quality signals are recorded per AI feature and version, and are visible.
+- **3** Quality metrics (feedback, evaluator scores, failure and refusal rates) are monitored continuously per feature and model version, with alerts on drift.
+- **4** Drift triggers re-evaluation, rollback or a model switch under policy.

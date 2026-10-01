@@ -41,6 +41,9 @@ def main(argv=None):
         "scope_facts": {fact: {"value": None, "evidence": ""} for fact in model["scope_facts"]},
         "scores": {cid: {"status": "todo"} for cid in order},
     }
+    # AI-qualified readings: required when ai_features is true; delete them if the product has no AI.
+    for cid in model.get("ai_view", {}).get("readings", []):
+        output["scores"][cid]["ai"] = {"status": "todo"}
     text = json.dumps(output, indent=2) + "\n"
     if args.out:
         if os.path.exists(args.out):

@@ -433,3 +433,60 @@ To 4: Measure the cohort against the metric and recommend keep, extend or kill u
 Requires: DEL-09
 Helps: LRN-09, EXP-03
 Size: M
+
+# AIR: AI Readiness Checks
+
+### AIR-01
+To 3: Let operators choose models per AI feature through a supported path, and declare and test a resilience strategy for model failure: fallback model or provider, same-provider failover, self-hosted redundancy, or controlled degradation.
+To 4: Route models by policy (cost, latency, quality) and evaluate equivalence before switching.
+Requires: none
+Helps: ARC-08
+Size: M
+
+### AIR-02
+To 3: Record tokens and cost per request, user and tenant, and enforce per-tenant or per-user budgets or quotas with an admin view.
+To 4: Degrade gracefully when budgets run low (cheaper model, queueing) and forecast usage.
+Requires: none
+Size: M
+
+### AIR-03
+To 3: Give AI features a governed context layer (retrieval, tools, schema-aware context) over product data and definitions that stays fresh automatically and attributes sources.
+To 4: Generate the context layer from definitions so new entities reach AI without code, and measure retrieval quality.
+Requires: AIR-04
+Helps: MAL-19
+Size: L
+
+### AIR-04
+To 3: Run every AI retrieval and tool call with the requesting user's permissions or a scoped agent identity, enforced in code, and add tests that try to obtain restricted data through AI.
+To 4: Cover row- and field-level policy and tenant isolation with automated adversarial tests, and audit denials.
+Requires: none
+Helps: GOV-09
+Size: M
+
+### AIR-05
+To 3: Maintain an evaluation set with metrics for each AI feature, run reproducibly, with results stored per prompt and model version.
+To 4: Grow evaluation sets from production failures and feedback, including adversarial cases.
+Requires: none
+Size: M
+
+### AIR-06
+To 3: Block releases of prompt, model, tool or retrieval changes when evaluation scores regress past declared thresholds.
+To 4: Extend gating to learned and self-made AI changes, with canary comparison in production.
+Requires: AIR-05
+Helps: DEL-05
+Size: M
+
+### AIR-07
+To 3: Record, for every consequential AI action, what triggered it and for whom, inputs, model and prompt version, tool calls, output and resulting change, queryable by operators and retained.
+To 4: Link traces to approvals and reversals; make them replayable and tamper-evident.
+Requires: none
+Helps: GOV-02
+Size: M
+
+### AIR-08
+To 3: Monitor feedback, evaluator scores and failure and refusal rates per AI feature and model version, with alerts on drift.
+To 4: Let drift trigger re-evaluation, rollback or a model switch under policy.
+Requires: AIR-05
+Helps: LRN-01
+Size: M
+
