@@ -20,3 +20,17 @@ None.
 ## Licence note
 
 Enterprise modules (`*.ee`: source control, workflow reviews, log streaming, evaluations) are in the repository under n8n's Sustainable Use and Enterprise licences and were assessed as shipped.
+
+## EVOLVE v0.4 scope facts
+
+Declared for the default configuration. They decide which criteria and critical controls apply (`references/archetypes.md`).
+
+| Fact | Value | Evidence |
+|---|---|---|
+| `persistent_data` | true | Workflows, credentials, executions and data tables in the database. |
+| `schema_changes` | true | TypeORM migrations (packages/@n8n/db/src/migrations) and data tables created at runtime. |
+| `multi_tenant` | false | One instance per customer; projects separate work inside an instance but are not isolated tenants. |
+| `hosted_service` | true | Main, worker and webhook processes run as long-lived services, with multi-main and queue mode (packages/cli/src/scaling). |
+| `agent_mutations` | true | The AI workflow builder and Instance AI change workflows (packages/cli/src/modules/instance-ai, workflow-builder). |
+| `automatic_apply` | false | AI-built changes pass approvals before they apply. |
+| `code_release_path` | false | The AI lanes change workflows, not n8n code. |

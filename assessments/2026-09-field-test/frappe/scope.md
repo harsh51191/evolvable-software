@@ -20,3 +20,17 @@ None. Every criterion was judged applicable to a configurable platform. M2 (proc
 ## Conventions applied
 
 See `../README.md`. The site is treated as the tenant unit (multi-site benches give each site its own database).
+
+## EVOLVE v0.4 scope facts
+
+Declared for the default configuration. They decide which criteria and critical controls apply (`references/archetypes.md`).
+
+| Fact | Value | Evidence |
+|---|---|---|
+| `persistent_data` | true | Every site keeps documents in MariaDB or PostgreSQL and files on disk. |
+| `schema_changes` | true | Creating or editing a DocType alters its table at runtime (frappe/database/schema.py:479-485), and bench migrate applies patches (frappe/patches.txt). |
+| `multi_tenant` | true | One bench serves several sites, each with its own database (multi-site benches). |
+| `hosted_service` | true | Gunicorn web workers, RQ workers, a scheduler and a socket.io server run as long-lived services. |
+| `agent_mutations` | false | No first-party AI or agent changes Frappe definitions in this repository. |
+| `automatic_apply` | false | Every definition change is made by a person with the right role; nothing applies changes automatically. |
+| `code_release_path` | false | No first-party evolution system ships code changes; releases are made by engineers. |

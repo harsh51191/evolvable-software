@@ -24,3 +24,17 @@ Many PostHog capabilities (Signals, Tasks, experiments, autoresearch) run the ob
 ## Coverage note
 
 About 55,000 tracked files. Evidence was gathered from the modules cited in `evidence.md`, not from a full read. Absence claims are limited to the paths searched.
+
+## EVOLVE v0.4 scope facts
+
+Declared for the default configuration. They decide which criteria and critical controls apply (`references/archetypes.md`).
+
+| Fact | Value | Evidence |
+|---|---|---|
+| `persistent_data` | true | Events in ClickHouse, configuration in PostgreSQL, recordings in object storage. |
+| `schema_changes` | true | Django and ClickHouse migrations, plus property materialisation that adds columns at runtime (ee/clickhouse/materialized_columns/columns.py). |
+| `multi_tenant` | true | Organisations and projects share one deployment with access control and quotas. |
+| `hosted_service` | true | Django web, Celery and Temporal workers, Node ingestion and Rust capture services. |
+| `agent_mutations` | true | PostHog AI creates and edits insights, dashboards and other configured objects (ee/hogai). |
+| `automatic_apply` | true | Weekly property materialisation applies schema changes without approval (posthog/tasks/scheduled.py:927). |
+| `code_release_path` | false | Tasks and Stamphog act on customers' repositories (products/stamphog); no first-party lane ships PostHog code changes. |

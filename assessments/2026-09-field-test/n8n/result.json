@@ -3,285 +3,476 @@
   "date": "2026-09-30",
   "source": "github.com/n8n-io/n8n @ c17c48043eb1080e5ae9795ea3a384960f8748f1 (master)",
   "archetype": "configurable-application-platform",
-  "framework_version": "0.3.0",
+  "framework": "EVOLVE",
+  "framework_version": "0.4.0",
+  "scope_facts": {
+    "persistent_data": true,
+    "schema_changes": true,
+    "multi_tenant": false,
+    "hosted_service": true,
+    "agent_mutations": true,
+    "automatic_apply": false,
+    "code_release_path": false
+  },
   "coverage": {
-    "assessed": 49,
+    "assessed": 64,
     "not_evidenced": 0,
-    "not_applicable": 0
+    "not_applicable": 2
   },
   "grades": {
-    "A": 49,
+    "A": 64,
     "B": 0,
     "C": 0
   },
-  "indexes": {
-    "malleability": 2.4,
-    "governance": 2.8,
-    "learning": 1.8,
-    "factory": 2.5
-  },
-  "bands": {
-    "malleability": "mechanism",
-    "governance": "productised",
-    "learning": "mechanism",
-    "factory": "productised"
-  },
-  "ranges": {
-    "malleability": [
-      2.2,
-      2.9
-    ],
-    "governance": [
-      2.5,
-      3.0
-    ],
-    "learning": [
-      1.8,
-      2.5
-    ],
-    "factory": [
-      2.3,
-      2.8
+  "sal": {
+    "headline": 2,
+    "headline_name": "Assisted",
+    "loops": {
+      "request": {
+        "level": 2,
+        "name": "Assisted",
+        "parts": {
+          "stages": 2,
+          "spine": 2,
+          "architecture": 2,
+          "governance": 2
+        },
+        "blockers": [
+          {
+            "part": "spine",
+            "stage": "Build",
+            "needs": "product build path ≥ 3",
+            "observed": "DEL-04 2",
+            "control": null
+          },
+          {
+            "part": "spine",
+            "stage": "Verify",
+            "needs": "DEL-06 ≥ 3",
+            "observed": "2",
+            "control": null
+          },
+          {
+            "part": "spine",
+            "stage": "Roll back",
+            "needs": "GOV-05 ≥ 3",
+            "observed": "2",
+            "control": "Definition rollback"
+          },
+          {
+            "part": "stages",
+            "stage": "Intake",
+            "needs": "DEL-01 ≥ 3",
+            "observed": "2",
+            "control": null
+          },
+          {
+            "part": "architecture",
+            "stage": "Foundation",
+            "needs": "ARC-02 ≥ 3",
+            "observed": "2",
+            "control": "Safe migrations"
+          },
+          {
+            "part": "architecture",
+            "stage": "Foundation",
+            "needs": "ARC-09 ≥ 3",
+            "observed": "2",
+            "control": "Tested backup and restore"
+          },
+          {
+            "part": "governance",
+            "stage": "Ceiling",
+            "needs": "GOV-10 ≥ 3 and LRN-08 ≥ 2",
+            "observed": "2; 2",
+            "control": "Bounded self-change"
+          }
+        ]
+      },
+      "fix": {
+        "level": 2,
+        "name": "Assisted",
+        "parts": {
+          "stages": 2,
+          "spine": 2,
+          "architecture": 2,
+          "governance": 2
+        },
+        "blockers": [
+          {
+            "part": "spine",
+            "stage": "Build",
+            "needs": "product build path ≥ 3",
+            "observed": "DEL-04 2, LRN-07 1",
+            "control": null
+          },
+          {
+            "part": "spine",
+            "stage": "Verify",
+            "needs": "DEL-06 ≥ 3",
+            "observed": "2",
+            "control": null
+          },
+          {
+            "part": "spine",
+            "stage": "Roll back",
+            "needs": "GOV-05 ≥ 3",
+            "observed": "2",
+            "control": "Definition rollback"
+          },
+          {
+            "part": "stages",
+            "stage": "Detect",
+            "needs": "LRN-03 ≥ 3",
+            "observed": "2",
+            "control": null
+          },
+          {
+            "part": "stages",
+            "stage": "Diagnose",
+            "needs": "LRN-05 ≥ 3",
+            "observed": "2",
+            "control": null
+          },
+          {
+            "part": "stages",
+            "stage": "Propose",
+            "needs": "LRN-06 ≥ 3",
+            "observed": "2",
+            "control": null
+          },
+          {
+            "part": "architecture",
+            "stage": "Foundation",
+            "needs": "ARC-02 ≥ 3",
+            "observed": "2",
+            "control": "Safe migrations"
+          },
+          {
+            "part": "architecture",
+            "stage": "Foundation",
+            "needs": "ARC-09 ≥ 3",
+            "observed": "2",
+            "control": "Tested backup and restore"
+          },
+          {
+            "part": "governance",
+            "stage": "Ceiling",
+            "needs": "GOV-10 ≥ 3 and LRN-08 ≥ 2",
+            "observed": "2; 2",
+            "control": "Bounded self-change"
+          }
+        ]
+      },
+      "expansion": {
+        "level": 1,
+        "name": "Configurable",
+        "parts": {
+          "stages": 1,
+          "spine": 2,
+          "architecture": 2,
+          "governance": 2
+        },
+        "blockers": [
+          {
+            "part": "stages",
+            "stage": "Sense",
+            "needs": "EXP-04 ≥ 2",
+            "observed": "0",
+            "control": null
+          },
+          {
+            "part": "stages",
+            "stage": "Propose",
+            "needs": "EXP-05 ≥ 2",
+            "observed": "0",
+            "control": null
+          }
+        ]
+      }
+    },
+    "controls": [
+      {
+        "control": "Definition rollback",
+        "needs": "GOV-05 ≥ 3",
+        "observed": "2",
+        "status": "fail"
+      },
+      {
+        "control": "Release rollback",
+        "needs": "DEL-11 ≥ 3",
+        "observed": "n/a",
+        "status": "n/a"
+      },
+      {
+        "control": "Safe migrations",
+        "needs": "ARC-02 ≥ 3",
+        "observed": "2",
+        "status": "fail"
+      },
+      {
+        "control": "Tested backup and restore",
+        "needs": "ARC-09 ≥ 3",
+        "observed": "2",
+        "status": "fail"
+      },
+      {
+        "control": "Tenant isolation",
+        "needs": "ARC-05 ≥ 3",
+        "observed": "n/a",
+        "status": "n/a"
+      },
+      {
+        "control": "Security as infrastructure",
+        "needs": "GOV-04 ≥ 3",
+        "observed": "3",
+        "status": "pass"
+      },
+      {
+        "control": "Bounded self-change",
+        "needs": "GOV-10 ≥ 3 and LRN-08 ≥ 2",
+        "observed": "2; 2",
+        "status": "fail"
+      }
     ]
   },
-  "profiles": {
-    "Change Surface": 2.3,
-    "Governance": 2.8,
-    "Learning": 1.8,
-    "Factory": 2.5,
-    "Agent Interface": 2.7,
-    "Extension Surface": 2.7,
-    "Operational Scalability": 2
+  "capabilities": {
+    "ARC": 2.1,
+    "DEL": 2.1,
+    "MAL": 2.3,
+    "LRN": 1.9,
+    "GOV": 2.3,
+    "EXP": 1.1
   },
-  "dimension_means": {
-    "A": 2,
-    "B": 2.3,
-    "C": 2,
-    "D": 3,
-    "E": 2.5,
-    "F": 3,
-    "G": 2,
-    "H": 2.3,
-    "I": 2.7,
-    "K": 2.7,
-    "N": 2.7,
-    "O": 2.3,
-    "J": 2,
-    "M": 2,
-    "P": 1.5,
-    "L": 2.7
+  "ranges": {
+    "ARC": [
+      2.1,
+      2.4
+    ],
+    "DEL": [
+      2.1,
+      2.7
+    ],
+    "MAL": [
+      2.3,
+      3.0
+    ],
+    "LRN": [
+      1.9,
+      2.6
+    ],
+    "GOV": [
+      2.3,
+      2.9
+    ],
+    "EXP": [
+      1.1,
+      1.4
+    ]
   },
-  "closed_loop_candidate": false,
-  "closed_loop": [
-    {
-      "stage": "observe",
-      "criteria": [
-        "J2"
-      ],
-      "min": 2,
-      "best": 2,
-      "passed": true
-    },
-    {
-      "stage": "propose",
-      "criteria": [
-        "M1",
-        "P1"
-      ],
-      "min": 2,
-      "best": 2,
-      "passed": true
-    },
-    {
-      "stage": "review",
-      "criteria": [
-        "F2"
-      ],
-      "min": 2,
-      "best": 3,
-      "passed": true
-    },
-    {
-      "stage": "gate",
-      "criteria": [
-        "F3"
-      ],
-      "min": 3,
-      "best": 3,
-      "passed": true
-    },
-    {
-      "stage": "apply and roll back",
-      "criteria": [
-        "F1"
-      ],
-      "min": 2,
-      "best": 2,
-      "passed": true
-    },
-    {
-      "stage": "measure",
-      "criteria": [
-        "M4",
-        "P2"
-      ],
-      "min": 3,
-      "best": 2,
-      "passed": false
-    },
-    {
-      "stage": "verify",
-      "criteria": [
-        "L1"
-      ],
-      "min": 2,
-      "best": 3,
-      "passed": true
-    }
-  ],
+  "area_means": {
+    "ARC Data": 2,
+    "ARC Scale": 2.5,
+    "ARC Capacity": 2,
+    "ARC Resilience": 2,
+    "DEL Intake": 2,
+    "DEL Build": 2,
+    "DEL Verify": 2.5,
+    "DEL Release": 2,
+    "MAL Data model": 1.7,
+    "MAL APIs": 2.3,
+    "MAL Interface": 2,
+    "MAL Behaviour": 2.7,
+    "MAL Extensions": 2.3,
+    "MAL Integrations": 2.3,
+    "MAL Agent interface": 3,
+    "LRN Sense": 2,
+    "LRN Diagnose and propose": 2,
+    "LRN Learn from experience": 1.5,
+    "LRN Measure": 2,
+    "GOV Compliance and security": 2.3,
+    "GOV Change control": 2.8,
+    "GOV AI and self-change safety": 2,
+    "EXP Expressible": 2.3,
+    "EXP Discover": 0,
+    "EXP Launch": 1
+  },
   "flags": [],
   "effective_scores": {
-    "A1": 3,
-    "A2": 2,
-    "A3": 1,
-    "B1": 2,
-    "B2": 3,
-    "B3": 2,
-    "C1": 2,
-    "C2": 2,
-    "C3": 2,
-    "D1": 4,
-    "D2": 3,
-    "D3": 2,
-    "E1": 2,
-    "E2": 3,
-    "E3": 2,
-    "E4": 3,
-    "F1": 2,
-    "F2": 3,
-    "F3": 3,
-    "F4": 4,
-    "G1": 2,
-    "G2": 2,
-    "G3": 2,
-    "H1": 2,
-    "H2": 2,
-    "H3": 3,
-    "I1": 3,
-    "I2": 2,
-    "I3": 3,
-    "K1": 3,
-    "K2": 3,
-    "K3": 2,
-    "N1": 3,
-    "N2": 3,
-    "N3": 2,
-    "O1": 3,
-    "O2": 2,
-    "O3": 2,
-    "J1": 3,
-    "J2": 2,
-    "J3": 1,
-    "M1": 2,
-    "M3": 2,
-    "M4": 2,
-    "P1": 1,
-    "P2": 2,
-    "L1": 3,
-    "L2": 3,
-    "L3": 2
+    "ARC-01": 2,
+    "ARC-02": 2,
+    "ARC-03": 3,
+    "ARC-04": 2,
+    "ARC-05": null,
+    "ARC-06": 2,
+    "ARC-07": 2,
+    "ARC-08": 2,
+    "ARC-09": 2,
+    "DEL-01": 2,
+    "DEL-02": 2,
+    "DEL-03": 2,
+    "DEL-04": 2,
+    "DEL-05": 3,
+    "DEL-06": 2,
+    "DEL-07": 3,
+    "DEL-08": 2,
+    "DEL-09": 2,
+    "DEL-10": 2,
+    "DEL-11": null,
+    "MAL-01": 2,
+    "MAL-02": 2,
+    "MAL-03": 1,
+    "MAL-04": 2,
+    "MAL-05": 3,
+    "MAL-06": 2,
+    "MAL-07": 2,
+    "MAL-08": 2,
+    "MAL-09": 2,
+    "MAL-10": 3,
+    "MAL-11": 3,
+    "MAL-12": 2,
+    "MAL-13": 2,
+    "MAL-14": 2,
+    "MAL-15": 3,
+    "MAL-16": 2,
+    "MAL-17": 3,
+    "MAL-18": 2,
+    "MAL-19": 3,
+    "MAL-20": 3,
+    "LRN-01": 3,
+    "LRN-02": 2,
+    "LRN-03": 2,
+    "LRN-04": 1,
+    "LRN-05": 2,
+    "LRN-06": 2,
+    "LRN-07": 1,
+    "LRN-08": 2,
+    "LRN-09": 2,
+    "GOV-01": 2,
+    "GOV-02": 2,
+    "GOV-03": 2,
+    "GOV-04": 3,
+    "GOV-05": 2,
+    "GOV-06": 3,
+    "GOV-07": 3,
+    "GOV-08": 3,
+    "GOV-09": 2,
+    "GOV-10": 2,
+    "GOV-11": 2,
+    "EXP-01": 3,
+    "EXP-02": 2,
+    "EXP-03": 2,
+    "EXP-04": 0,
+    "EXP-05": 0,
+    "EXP-06": 1
   },
   "variants": {
-    "low": {
-      "indexes": {
-        "malleability": 2.2,
-        "governance": 2.5,
-        "learning": 1.8,
-        "factory": 2.3
-      },
-      "profiles": {
-        "Change Surface": 2.2,
-        "Governance": 2.5,
-        "Learning": 1.8,
-        "Factory": 2.3,
-        "Agent Interface": 2.7,
-        "Extension Surface": 2.3,
-        "Operational Scalability": 2
-      },
-      "closed_loop_candidate": false
-    },
     "high": {
-      "indexes": {
-        "malleability": 2.9,
-        "governance": 3.0,
-        "learning": 2.5,
-        "factory": 2.8
+      "capabilities": {
+        "ARC": 2.4,
+        "DEL": 2.7,
+        "MAL": 3.0,
+        "LRN": 2.6,
+        "GOV": 2.9,
+        "EXP": 1.4
       },
-      "profiles": {
-        "Change Surface": 2.9,
-        "Governance": 3.0,
-        "Learning": 2.5,
-        "Factory": 2.8,
-        "Agent Interface": 3.7,
-        "Extension Surface": 3,
-        "Operational Scalability": 2.3
-      },
-      "closed_loop_candidate": true
+      "sal": {
+        "headline": 2,
+        "headline_name": "Assisted",
+        "loops": {
+          "request": {
+            "level": 2,
+            "parts": {
+              "stages": 4,
+              "spine": 3,
+              "architecture": 2,
+              "governance": 2
+            }
+          },
+          "fix": {
+            "level": 2,
+            "parts": {
+              "stages": 2,
+              "spine": 3,
+              "architecture": 2,
+              "governance": 2
+            }
+          },
+          "expansion": {
+            "level": 1,
+            "parts": {
+              "stages": 1,
+              "spine": 3,
+              "architecture": 2,
+              "governance": 2
+            }
+          }
+        }
+      }
     },
     "available": {
-      "indexes": {
-        "malleability": 2.4,
-        "governance": 2.8,
-        "learning": 1.8,
-        "factory": 2.5
+      "capabilities": {
+        "ARC": 2.1,
+        "DEL": 2.1,
+        "MAL": 2.3,
+        "LRN": 1.9,
+        "GOV": 2.3,
+        "EXP": 1.1
       },
-      "profiles": {
-        "Change Surface": 2.3,
-        "Governance": 2.8,
-        "Learning": 1.8,
-        "Factory": 2.5,
-        "Agent Interface": 2.7,
-        "Extension Surface": 2.7,
-        "Operational Scalability": 2
-      },
-      "closed_loop_candidate": false
+      "sal": {
+        "headline": 2,
+        "headline_name": "Assisted",
+        "loops": {
+          "request": {
+            "level": 2,
+            "parts": {
+              "stages": 2,
+              "spine": 2,
+              "architecture": 2,
+              "governance": 2
+            }
+          },
+          "fix": {
+            "level": 2,
+            "parts": {
+              "stages": 2,
+              "spine": 2,
+              "architecture": 2,
+              "governance": 2
+            }
+          },
+          "expansion": {
+            "level": 1,
+            "parts": {
+              "stages": 1,
+              "spine": 2,
+              "architecture": 2,
+              "governance": 2
+            }
+          }
+        }
+      }
     },
     "assessed_only": {
-      "indexes": {
-        "malleability": 2.4,
-        "governance": 2.8,
-        "learning": 1.8,
-        "factory": 2.5
-      },
-      "profiles": {
-        "Change Surface": 2.3,
-        "Governance": 2.8,
-        "Learning": 1.8,
-        "Factory": 2.5,
-        "Agent Interface": 2.7,
-        "Extension Surface": 2.7,
-        "Operational Scalability": 2
-      },
-      "closed_loop_candidate": false
+      "capabilities": {
+        "ARC": 2.1,
+        "DEL": 2.1,
+        "MAL": 2.3,
+        "LRN": 1.9,
+        "GOV": 2.3,
+        "EXP": 1.1
+      }
     },
     "all_applicable": {
-      "indexes": {
-        "malleability": 2.4,
-        "governance": 2.8,
-        "learning": 1.8,
-        "factory": 2.5
-      },
-      "profiles": {
-        "Change Surface": 2.3,
-        "Governance": 2.8,
-        "Learning": 1.8,
-        "Factory": 2.5,
-        "Agent Interface": 2.7,
-        "Extension Surface": 2.7,
-        "Operational Scalability": 2
-      },
-      "closed_loop_candidate": false
+      "capabilities": {
+        "ARC": 2.1,
+        "DEL": 2.1,
+        "MAL": 2.3,
+        "LRN": 1.9,
+        "GOV": 2.3,
+        "EXP": 1.1
+      }
     }
   },
-  "criteria_in_rubric": 49
+  "criteria_in_rubric": 66
 }

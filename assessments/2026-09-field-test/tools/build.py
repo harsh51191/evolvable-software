@@ -11,24 +11,21 @@ ROOT = os.path.dirname(HERE)
 REPO = os.path.dirname(os.path.dirname(ROOT))
 SCORER = os.path.join(REPO, "scripts", "score.py")
 sys.path.insert(0, os.path.join(REPO, "scripts"))
-import score as msr  # noqa: E402
+import score as evolve  # noqa: E402
 
 SYSTEMS = ["frappe", "directus", "discourse", "posthog", "n8n", "dify", "librechat",
            "hermes-agent", "openclaw", "opencode", "openhands"]
-OTHER_RUN = {"directus": (2.5, 1.2, 2.3, False), "frappe": (2.4, 1.2, 2.1, False),
-             "posthog": (2.2, 2.7, 2.3, True), "n8n": (2.1, 2.0, 2.1, True), "discourse": (2.1, 1.1, 2.1, False),
-             "dify": (2.0, 1.6, 2.4, False), "opencode": (2.0, 1.3, 2.1, False), "openclaw": (2.0, 0.9, 2.3, False),
-             "hermes-agent": (1.9, 1.4, 2.3, False), "openhands": (1.6, 1.1, 2.4, False)}
 
 
 def f1(x):
     return "–" if x is None else f"{x:.1f}"
 
 
-def build(system, criteria, order, titles):
+def build(system, criteria, order, model):
     folder = os.path.join(ROOT, system)
     path = os.path.join(folder, "assessment.json")
-    data = json.load(open(path))
+    with open(path) as handle:
+        data = json.load(handle)
     js = subprocess.run([sys.executable, SCORER, path, "--json"], capture_output=True, text=True)
     if js.returncode:
         raise SystemExit(f"{system}: {js.stdout}{js.stderr}")
@@ -36,79 +33,116 @@ def build(system, criteria, order, titles):
     with open(os.path.join(folder, "result.json"), "w") as h:
         h.write(js.stdout)
     md = subprocess.run([sys.executable, SCORER, path], capture_output=True, text=True).stdout
-    head = [f"# {data['product']}: MSR v0.3 scorecard", "",
-            "Evaluator: Claude, single rater. Framework: rubric v0.3.0 in this repository.", "",
+    head = [f"# {data['product']}: EVOLVE v0.4 scorecard", "",
+            f"Evaluator: Claude, single rater. Framework: EVOLVE {model['version']} in this repository.", "",
             data.get("scope_line", ""), "", "## Reading", "", data.get("reading", "_Not written._"), "",
             "## Limits", "", data.get("limits", ""), "", "---", ""]
     with open(os.path.join(folder, "scorecard.md"), "w") as h:
         h.write("\n".join(head) + md.split("\n", 2)[2] + "\n")
-    ev = [f"# {data['product']} evidence", "", f"Read at {data['source']} on {data['date']}. Grade A is code at the tip, B is in-repository documentation.", ""]
-    dim = None
+    ev = [f"# {data['product']} evidence", "",
+          f"Read at {data['source']} on {data['date']}. Grade A is code at the tip, B is in-repository documentation.", "",
+          "## Scope facts", ""]
+    for fact in model["scope_facts"]:
+        entry = data["scope_facts"][fact]
+        ev.append(f"- **{fact}**: {'true' if entry['value'] else 'false'}. {entry['evidence']}")
+    cap, area = None, None
     for cid in order:
-        if criteria[cid]["dim"] != dim:
-            dim = criteria[cid]["dim"]
-            ev += [f"## {dim} {titles.get(dim, '')}", ""]
+        if criteria[cid]["cap"] != cap:
+            cap = criteria[cid]["cap"]
+            ev += ["", f"## {model['capabilities'][cap]} ({cap})"]
+        if criteria[cid]["area"] != area:
+            area = criteria[cid]["area"]
+            ev += ["", f"### {area}", ""]
         e = data["scores"][cid]
         st = e["status"]
         if st == "assessed":
             head_txt = f"**{e['score']}** (grade {e['grade']})"
             if "available_score" in e:
                 head_txt += f", **{e['available_score']}** with opt-in settings"
+            if "facets" in e:
+                head_txt += ", facets: " + ", ".join(k for k in evolve.FACETS if e["facets"][k])
             body = e["evidence"]
         elif st == "not_evidenced":
             head_txt, body = "**not evidenced**", "Searched: " + e["searched"]
         else:
-            head_txt, body = "**not applicable**", e["rationale"] + (f" If counted: {e['if_applicable']}." if "if_applicable" in e else "")
+            head_txt = "**not applicable**"
+            body = e["rationale"] + (f" If counted: {e['if_applicable']}." if "if_applicable" in e else "")
         ev.append(f"- **{cid} {criteria[cid]['title']}**: {head_txt}. {body}")
+        if "inventory" in e:
+            ev.append("  - Inventory: " + ", ".join(f"{k} {v}" for k, v in e["inventory"].items()))
         if "alt_score" in e:
-            ev.append(f"  - Alternate reading {e['alt_score']}: {e.get('alt_note', '')}")
+            ev.append(f"  - Higher reading {e['alt_score']}: {e.get('alt_note', '')}")
     with open(os.path.join(folder, "evidence.md"), "w") as h:
         h.write("\n".join(ev) + "\n")
     return data, result
 
 
 def main():
-    criteria, order, titles, model = msr.load_rubric(os.path.join(REPO, "references", "rubric.md"))
-    v02 = json.load(open(os.path.join(HERE, "v02_comparison.json")))["systems"]
-    rows = {s: build(s, criteria, order, titles) for s in SYSTEMS}
-    L = ["# Comparison: rubric v0.3", "", "Generated by `tools/build.py`. Every number comes from `scripts/score.py`.", "",
-         "## Indexes (default configuration)", "",
-         "| System | Archetype | Malleability | Governance | Learning | Factory | Learning range | Closed loop (default / opt-in) |",
-         "|---|---|---:|---:|---:|---:|---|---|"]
-    order_sys = sorted(SYSTEMS, key=lambda s: -(rows[s][1]["indexes"]["learning"] or 0))
-    for s in order_sys:
+    criteria, order, model = evolve.load_rubric(os.path.join(REPO, "references", "rubric.md"))
+    with open(os.path.join(HERE, "v03_comparison.json")) as handle:
+        v03 = json.load(handle)["systems"]
+    rows = {s: build(s, criteria, order, model) for s in SYSTEMS}
+    loops = list(model["loops"])
+
+    def sal_key(s):
+        r = rows[s][1]
+        return (-r["sal"]["headline"], -sum(r["sal"]["loops"][l]["level"] for l in loops), s)
+
+    ranked = sorted(SYSTEMS, key=sal_key)
+    L = ["# Comparison: EVOLVE v0.4", "", "Generated by `tools/build.py`. Every number comes from `scripts/score.py`.", "",
+         "## Software Autonomy Level (default configuration)", "",
+         "| System | Archetype | SAL | Request → Release | Issue → Fix | Opportunity → Expansion | SAL with opt-in settings | SAL with every alternate reading |",
+         "|---|---|---:|---:|---:|---:|---:|---:|"]
+    for s in ranked:
         d, r = rows[s]
-        i, rg = r["indexes"], r["ranges"]["learning"]
-        L.append(f"| {d['product']} | {d['archetype']} | {f1(i['malleability'])} | {f1(i['governance'])} | {f1(i['learning'])} | "
-                 f"{f1(i['factory'])} | {f1(rg[0])}–{f1(rg[1])} | {'yes' if r['closed_loop_candidate'] else 'no'} / "
-                 f"{'yes' if r['variants']['available']['closed_loop_candidate'] else 'no'} |")
-    L += ["", "## Opt-in settings", "", "Indexes when shipped but off-by-default settings are enabled.", "",
-          "| System | Governance | Learning | Changed criteria |", "|---|---:|---:|---|"]
-    for s in SYSTEMS:
+        lv = r["sal"]["loops"]
+        L.append(f"| {d['product']} | {d['archetype']} | **{r['sal']['headline']}** | "
+                 + " | ".join(f"L{lv[l]['level']}" for l in loops)
+                 + f" | {r['variants']['available']['sal']['headline']} | {r['variants']['high']['sal']['headline']} |")
+    L += ["", "## What holds each loop at its level", "",
+          "A loop's level is the lowest of its four parts. Each cell names the parts with an unmet condition for the next level.", "",
+          "| System | Request → Release | Issue → Fix | Opportunity → Expansion |", "|---|---|---|---|"]
+    for s in ranked:
         d, r = rows[s]
-        changed = [c for c, e in d["scores"].items() if "available_score" in e]
-        if changed:
-            av = r["variants"]["available"]["indexes"]
-            L.append(f"| {d['product']} | {f1(r['indexes']['governance'])} → {f1(av['governance'])} | "
-                     f"{f1(r['indexes']['learning'])} → {f1(av['learning'])} | {', '.join(changed)} |")
-    L += ["", "## Closed-loop stages that fail by default", "", "| System | Failing stages |", "|---|---|"]
-    for s in SYSTEMS:
+        cells = []
+        for l in loops:
+            weak = sorted({b["part"] for b in r["sal"]["loops"][l]["blockers"]})
+            cells.append(", ".join(weak) or "top level")
+        L.append(f"| {d['product']} | " + " | ".join(cells) + " |")
+    controls = [c["control"] for c in rows[SYSTEMS[0]][1]["sal"]["controls"]]
+    L += ["", "## Critical controls", "", "A failed applicable control caps every loop at L2.", "",
+          "| System | " + " | ".join(controls) + " |", "|---|" + "---|" * len(controls)]
+    for s in ranked:
         d, r = rows[s]
-        fails = [f"{st['stage']} ({'/'.join(st['criteria'])})" for st in r["closed_loop"] if not st["passed"]]
-        L.append(f"| {d['product']} | {', '.join(fails) or 'none'} |")
-    L += ["", "## Profiles (default)", "", "| System | " + " | ".join(model["profiles"]) + " |", "|---|" + "---:|" * len(model["profiles"])]
-    for s in SYSTEMS:
+        status = {c["control"]: c["status"] for c in r["sal"]["controls"]}
+        L.append(f"| {d['product']} | " + " | ".join(status[c] for c in controls) + " |")
+    caps = list(model["capabilities"])
+    L += ["", "## EVOLVE profile (default, with the range from alternate readings)", "",
+          "| System | " + " | ".join(f"{model['capabilities'][c]} ({c})" for c in caps) + " |", "|---|" + "---|" * len(caps)]
+    for s in ranked:
         d, r = rows[s]
-        L.append(f"| {d['product']} | " + " | ".join(f1(r["profiles"][p]) for p in model["profiles"]) + " |")
-    L += ["", "## Same systems under v0.2", "",
-          "v0.2 had one Self-Evolution index that averaged change control (F) with observe and advise (J, M). "
-          "v0.3 reports Governance (E, F) and Learning (J, M, P) separately, so the columns are not directly comparable.", "",
-          "| System | v0.2 Self-Evolution (this rater) | v0.2 Self-Evolution (other run) | v0.3 Governance | v0.3 Learning |", "|---|---:|---:|---:|---:|"]
-    for s in SYSTEMS:
+        cells = []
+        for c in caps:
+            v, rg = r["capabilities"][c], r["ranges"][c]
+            cells.append(f1(v) if rg is None or f1(rg[0]) == f1(rg[1]) else f"{f1(v)} ({f1(rg[0])}–{f1(rg[1])})")
+        L.append(f"| {d['product']} | " + " | ".join(cells) + " |")
+    L += ["", "## Scope facts", "", "| System | " + " | ".join(model["scope_facts"]) + " |",
+          "|---|" + "---|" * len(model["scope_facts"])]
+    for s in ranked:
         d, r = rows[s]
-        other = OTHER_RUN.get(s)
-        L.append(f"| {d['product']} | {f1(v02[s]['primary']['self_evolution'])} | {f1(other[1]) if other else '–'} | "
-                 f"{f1(r['indexes']['governance'])} | {f1(r['indexes']['learning'])} |")
+        L.append(f"| {d['product']} | " + " | ".join("yes" if r["scope_facts"][f] else "no" for f in model["scope_facts"]) + " |")
+    L += ["", "## Same systems under v0.3", "",
+          "v0.3 reported four non-overlapping indexes and a closed-loop flag. EVOLVE reports loop levels and a six-capability profile, "
+          "so the columns are not directly comparable.", "",
+          "| System | v0.3 Malleability | v0.3 Governance | v0.3 Learning | v0.3 Factory | v0.3 closed loop (default / opt-in) | v0.4 SAL |",
+          "|---|---:|---:|---:|---:|---|---:|"]
+    for s in ranked:
+        d, r = rows[s]
+        o = v03[s]
+        i = o["indexes"]
+        L.append(f"| {d['product']} | {f1(i['malleability'])} | {f1(i['governance'])} | {f1(i['learning'])} | {f1(i['factory'])} | "
+                 f"{'yes' if o['closed_loop_candidate'] else 'no'} / {'yes' if o['closed_loop_candidate_opt_in'] else 'no'} | "
+                 f"{r['sal']['headline']} |")
     with open(os.path.join(ROOT, "comparison.md"), "w") as h:
         h.write("\n".join(L) + "\n")
     print("\n".join(L))

@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Create an MSR score-input template from the rubric.
+"""Create an EVOLVE assessment template from the rubric.
 
-Every criterion starts as status "todo". The scorer refuses to score the file
-until each one is assessed, marked not_evidenced with a search scope, or
-excluded with a rationale the archetype allows.
+Every scope fact starts as null and every criterion as status "todo". The
+scorer refuses to score the file until each fact is true or false with
+evidence and each criterion is assessed, marked not_evidenced with a search scope, or
+excluded with a rationale the archetype or a scope fact allows.
 """
 
 import argparse
@@ -27,7 +28,7 @@ def main(argv=None):
     parser.add_argument("--out", help="write here instead of stdout; refuses to overwrite")
     args = parser.parse_args(argv)
 
-    _criteria, order, _titles, model = load_rubric(args.rubric)
+    _criteria, order, model = load_rubric(args.rubric)
     if args.archetype not in model["archetype_exclusions"]:
         parser.error("archetype must be one of: " + ", ".join(sorted(model["archetype_exclusions"])))
     output = {
@@ -35,7 +36,9 @@ def main(argv=None):
         "date": args.date,
         "source": args.source,
         "archetype": args.archetype,
+        "framework": model["framework"],
         "framework_version": model["version"],
+        "scope_facts": {fact: {"value": None, "evidence": ""} for fact in model["scope_facts"]},
         "scores": {cid: {"status": "todo"} for cid in order},
     }
     text = json.dumps(output, indent=2) + "\n"

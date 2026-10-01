@@ -16,3 +16,17 @@ A chat product with configurable providers and agents, not a platform for defini
 ## Not-applicable decisions
 
 The fixed `focused-application` rule excludes A1, A3, B1, B2, C2, O1, O2 and O3, each with its would-be score recorded.
+
+## EVOLVE v0.4 scope facts
+
+Declared for the default configuration. They decide which criteria and critical controls apply (`references/archetypes.md`).
+
+| Fact | Value | Evidence |
+|---|---|---|
+| `persistent_data` | true | Conversations, agents, prompts and users in MongoDB. |
+| `schema_changes` | true | Data migration scripts change stored documents and indexes (config/migrate-*.js). |
+| `multi_tenant` | true | A tenant isolation plugin scopes models by tenant (packages/data-schemas/src/models/plugins/tenantIsolation.coverage.spec.ts). |
+| `hosted_service` | true | Node API serving many users, with optional Redis (api/cache). |
+| `agent_mutations` | false | By default no AI changes LibreChat definitions; the memory agent is commented out in librechat.example.yaml:1351-1360. |
+| `automatic_apply` | false | Definition changes are direct human actions by default. |
+| `code_release_path` | false | No first-party evolution system ships code changes. |

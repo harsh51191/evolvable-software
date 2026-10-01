@@ -5,79 +5,79 @@
   "archetype": "agent-runtime",
   "scope_line": "Scope: the hermes-agent repository (agent loop, tools, skills, curator, approvals, gateway, MCP and ACP servers, desktop and web, CI) plus the first-party hermes-agent-self-evolution repository (DSPy and GEPA skill optimisation). Nous Portal and hosted services are out of scope.",
   "scores": {
-    "A1": {
+    "MAL-01": {
       "status": "not_applicable",
       "rationale": "Agent runtime: generic business-object criterion (fixed per-archetype rule).",
       "if_applicable": 1
     },
-    "A2": {
+    "MAL-02": {
       "status": "not_applicable",
       "rationale": "Agent runtime: generic business-object criterion (fixed per-archetype rule).",
       "if_applicable": 1
     },
-    "A3": {
+    "MAL-03": {
       "status": "not_applicable",
       "rationale": "Agent runtime: generic business-object criterion (fixed per-archetype rule).",
       "if_applicable": 1
     },
-    "B1": {
+    "MAL-04": {
       "status": "not_applicable",
       "rationale": "Agent runtime: generic CRUD criterion (fixed per-archetype rule).",
       "if_applicable": 1
     },
-    "B2": {
+    "MAL-05": {
       "status": "not_applicable",
       "rationale": "Agent runtime: generic CRUD criterion (fixed per-archetype rule).",
       "if_applicable": 1
     },
-    "B3": {
+    "MAL-06": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
       "evidence": "Typed tool schemas (model_tools.py, toolsets.py) served over MCP (mcp_serve.py) and the Agent Client Protocol (acp_adapter); no OpenAPI description of the serve API and no dry-run."
     },
-    "C1": {
+    "MAL-07": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
       "evidence": "CLI, TUI, desktop and web layouts are code; persona text (SOUL.md) is data but is not layout."
     },
-    "C2": {
+    "MAL-08": {
       "status": "not_applicable",
       "rationale": "Agent runtime: generic CRUD views (fixed per-archetype rule).",
       "if_applicable": 1
     },
-    "C3": {
+    "MAL-09": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
       "evidence": "UI strings externalised in locales/ and translated READMEs; themes are engineer-managed."
     },
-    "D1": {
+    "MAL-10": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
       "evidence": "Cron jobs are defined in natural language or the CLI and run agent tasks on schedules (cron/); plugin hooks add behaviour; there is no general condition and action engine."
     },
-    "D2": {
+    "MAL-11": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
       "evidence": "Gateway adapters receive platform and webhook events; the MCP server lets clients poll live events (mcp_serve.py); no retry or replay for outbound subscribers."
     },
-    "D3": {
+    "MAL-12": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
       "evidence": "Plugins register hooks that run in-process without a sandbox (plugins/); the agent's own commands can run in Docker, SSH or remote sandbox backends with guards (tools/terminal_tool_backends.py, terminal_tool_guards.py)."
     },
-    "E1": {
+    "GOV-01": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
       "evidence": "No automated accessibility scanning found for the TUI, desktop or web interfaces."
     },
-    "E2": {
+    "GOV-02": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
@@ -85,76 +85,82 @@
       "alt_score": 3,
       "alt_note": "Skills are the main definition surface and are fully audited with approvals."
     },
-    "E3": {
+    "GOV-03": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
       "evidence": "Session export and import (hermes_state_portability.py) and user-editable memory files; data stays on the user's machine; not driven by tags."
     },
-    "E4": {
+    "GOV-04": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Command scanning with tirith and dangerous-command approvals with an LLM risk classifier and floors (tools/approval_smart.py, approval_floors.py); skill security scans and AST audits before install or write (tools/skills_guard.py, skills_ast_audit.py); OSV and supply-chain scans in CI (.github/workflows/osv-scanner.yml, supply-chain-audit.yml)."
+      "evidence": "Command scanning with tirith and dangerous-command approvals with an LLM risk classifier and floors (tools/approval_smart.py, approval_floors.py); skill security scans and AST audits before install or write (tools/skills_guard.py, skills_ast_audit.py); OSV and supply-chain scans in CI (.github/workflows/osv-scanner.yml, supply-chain-audit.yml).",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      }
     },
-    "F1": {
+    "GOV-05": {
       "status": "assessed",
-      "score": 3,
+      "score": 2,
       "grade": "A",
-      "evidence": "Skills, the agent's main customisation surface, have a per-mutation ledger with single-edit rollback that fails closed (tools/skill_ledger.py); curator archives are recoverable with hermes curator restore; a write blocked by the security scan restores the original automatically (tools/skill_manager_tool.py:353-461).",
-      "alt_score": 4,
-      "alt_note": "Ledger entries are addressable and rollback is automatic on failed scans; links to evidence are partial."
+      "evidence": "Skills have a per-mutation ledger with single-edit rollback that fails closed (tools/skill_ledger.py) and curator archives are restorable, but configuration has only point-in-time copies on some writes (hermes_cli/config_backups.py) and memory files have no history. Under the inventory rule a 3 needs every default surface at 3.",
+      "inventory": {
+        "skills": 3,
+        "configuration": 2,
+        "memory": 1
+      }
     },
-    "F2": {
+    "GOV-06": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
       "evidence": "By default, skill and memory writes apply directly and are ledgered. With skills.write_approval or memory.write_approval on, writes are staged with a gist and applied through /skills approve (tools/write_approval.py:73-189); the self-evolution repo proposes evaluated skill variants as pull requests.",
       "available_score": 3
     },
-    "F3": {
+    "GOV-07": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
       "evidence": "By default only protected instruction files always need a human (cli-config.yaml.example:573-576); skill and memory gates default to off (hermes_cli/config_defaults.py:1320). With them on, each change class has its own gate.",
       "available_score": 3
     },
-    "F4": {
+    "GOV-08": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
       "evidence": "Numbered configuration migrations run on update (hermes_cli/config_migrations.py:379-397); bundled-skill sync updates shipped skills without overwriting user copies (tools/skills_sync*.py); skills follow the agentskills.io specification."
     },
-    "G1": {
+    "ARC-01": {
       "status": "not_applicable",
       "rationale": "Agent runtime: generic-store query performance (fixed per-archetype rule).",
       "if_applicable": 1
     },
-    "G2": {
-      "status": "assessed",
-      "score": 2,
-      "grade": "A",
-      "evidence": "Single user per installation with isolated profiles (separate homes); no multi-tenant limits."
+    "ARC-05": {
+      "status": "not_applicable",
+      "rationale": "Scope fact multi_tenant is false: One user per installation; profiles are separate homes, not tenants.",
+      "if_applicable": 2
     },
-    "G3": {
-      "status": "assessed",
-      "score": 1,
-      "grade": "A",
-      "evidence": "evals/ holds regression probes named after failures found in use (for example auxiliary_resource_exhausted.py, cron_error_diagnostics.py): ceilings are discovered in incidents."
+    "ARC-06": {
+      "status": "not_applicable",
+      "rationale": "Scope fact hosted_service is false: A local single-user agent; the gateway relays messaging platforms for the same user.",
+      "if_applicable": 1
     },
-    "H1": {
+    "DEL-02": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
       "evidence": "Python agent, gateway, desktop, web and sandbox images are separate artifacts built from one repository (Dockerfile, .github/workflows/sandbox-image.yml, desktop-bundled-release.yml)."
     },
-    "H2": {
+    "DEL-03": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
       "evidence": "Import guards in CI (.github/workflows/lazy-deps-guard.yml, case-collision-check.yml); no architectural boundary lint."
     },
-    "H3": {
+    "DEL-05": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
@@ -162,7 +168,7 @@
       "alt_score": 3,
       "alt_note": "Every change class except accessibility is checked."
     },
-    "I1": {
+    "MAL-13": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
@@ -170,7 +176,7 @@
       "alt_score": 4,
       "alt_note": "A versioned registry and hub exist."
     },
-    "I2": {
+    "MAL-14": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
@@ -178,21 +184,21 @@
       "alt_score": 3,
       "alt_note": "Scanned skills plus sandboxed command backends isolate most third-party and AI-written code."
     },
-    "I3": {
+    "MAL-15": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
       "evidence": "Skill linter (tools/skill_linter.py), curator dry-run (hermes curator run --dry-run), logs (hermes_logging.py) and local iteration against the user's own profile."
     },
-    "K1": {
+    "MAL-19": {
       "status": "assessed",
-      "score": 3,
+      "score": 2,
       "grade": "A",
-      "evidence": "MCP server exposing conversation, messaging, event and approval tools (mcp_serve.py) and an ACP adapter for editors (acp_adapter/); typed tool registry (model_tools.py).",
-      "alt_score": 2,
-      "alt_note": "The MCP surface covers messaging, not the full capability set."
+      "evidence": "MCP server exposing conversation, messaging, event and approval tools (mcp_serve.py) and an ACP adapter for editors (acp_adapter/); typed tool registry (model_tools.py). Scored at the lower reading under rule 11 because: The MCP surface covers messaging, not the full capability set.",
+      "alt_score": 3,
+      "alt_note": "The September v0.3 pass scored 3 on the evidence above."
     },
-    "K2": {
+    "MAL-20": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
@@ -200,7 +206,7 @@
       "alt_score": 4,
       "alt_note": "Almost every capability is reachable conversationally."
     },
-    "K3": {
+    "GOV-09": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
@@ -208,39 +214,39 @@
       "alt_score": 3,
       "alt_note": "Per-action risk classification and approval previews are level 3 and 4 features."
     },
-    "N1": {
+    "MAL-16": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
       "evidence": "One provider layer maps many model vendors onto a canonical chat interface (providers/, agent/*_adapter.py), and one gateway maps Telegram, Discord, Slack, WhatsApp and other platforms onto a canonical conversation model (gateway/)."
     },
-    "N2": {
+    "MAL-17": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
       "evidence": "Plugin catalogue entries, provider adapters, platform adapters and MCP servers cover auth, messaging and lifecycle; skill hub sources include official, GitHub, ClawHub and skills.sh (tools/skills_hub_*.py)."
     },
-    "N3": {
+    "MAL-18": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
       "evidence": "Standard protocols (MCP, ACP, OpenAI-compatible APIs) and versioned configuration; no deprecation windows."
     },
-    "O1": {
+    "EXP-01": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
       "evidence": "Kernel of sessions (conversation), gateway platforms (channel), profiles (identity), approvals (permission), cron and delegation (workflow), and skills and files (content); no domain nouns."
     },
-    "O2": {
+    "EXP-02": {
       "status": "assessed",
-      "score": 4,
+      "score": 3,
       "grade": "A",
-      "evidence": "Many domains ship as skill bundles on an unchanged kernel (skills/, optional-skills/), and the agent creates new domain skills itself.",
-      "alt_score": 3,
-      "alt_note": "If skills are judged too small to count as domains."
+      "evidence": "Many domains ship as skill bundles on an unchanged kernel (skills/, optional-skills/), and the agent creates new domain skills itself. Scored at the lower reading under rule 11 because: If skills are judged too small to count as domains.",
+      "alt_score": 4,
+      "alt_note": "The September v0.3 pass scored 4 on the evidence above."
     },
-    "O3": {
+    "EXP-03": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
@@ -248,7 +254,7 @@
       "alt_score": 4,
       "alt_note": "Bundles are composable (curator umbrella skills), upgradeable and AI-assembled."
     },
-    "J1": {
+    "LRN-01": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
@@ -256,15 +262,15 @@
       "alt_score": 4,
       "alt_note": "Per-definition instrumentation is added automatically for every skill."
     },
-    "J2": {
+    "LRN-02": {
       "status": "assessed",
-      "score": 3,
+      "score": 2,
       "grade": "A",
-      "evidence": "Every skill has view, use and patch counts linked to it (tools/skill_usage.py), and the curator triages skills into active, stale and archived (website/docs/user-guide/features/curator.md).",
-      "alt_score": 2,
-      "alt_note": "Usage counts are not versioned per skill revision."
+      "evidence": "Every skill has view, use and patch counts linked to it (tools/skill_usage.py), and the curator triages skills into active, stale and archived (website/docs/user-guide/features/curator.md). Scored at the lower reading under rule 11 because: Usage counts are not versioned per skill revision.",
+      "alt_score": 3,
+      "alt_note": "The September v0.3 pass scored 3 on the evidence above."
     },
-    "J3": {
+    "LRN-04": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
@@ -272,7 +278,7 @@
       "alt_score": 3,
       "alt_note": "Cross-source session mining exists, offline."
     },
-    "M1": {
+    "LRN-06": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
@@ -280,15 +286,15 @@
       "alt_score": 3,
       "alt_note": "Ranked, evidence-backed proposals with expected impact exist for the agent's main behaviour surface."
     },
-    "M3": {
+    "DEL-04": {
       "status": "assessed",
-      "score": 3,
+      "score": 2,
       "grade": "A",
-      "evidence": "The background review is an autonomous authoring lane that applies skill and memory changes every turn (agent/background_review.py); GEPA improvements reach every user through upstream pull requests.",
-      "alt_score": 2,
-      "alt_note": "The cross-user path depends on an offline companion tool."
+      "evidence": "The background review is an autonomous authoring lane that applies skill and memory changes every turn (agent/background_review.py); GEPA improvements reach every user through upstream pull requests. Scored at the lower reading under rule 11 because: The cross-user path depends on an offline companion tool.",
+      "alt_score": 3,
+      "alt_note": "The September v0.3 pass scored 3 on the evidence above."
     },
-    "M4": {
+    "LRN-09": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
@@ -296,13 +302,13 @@
       "alt_score": 3,
       "alt_note": "The curator records a metric, window and explicit keep or archive decision per skill."
     },
-    "L1": {
+    "DEL-06": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
       "evidence": "Version reporting and state health checks (hermes_state_health.py) and a configuration display; no machine-readable deployed-configuration endpoint."
     },
-    "L2": {
+    "DEL-07": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
@@ -310,13 +316,13 @@
       "alt_score": 3,
       "alt_note": "Reproducible environments are built per change in CI."
     },
-    "L3": {
+    "DEL-08": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
       "evidence": "Behaviour probes (evals/), desktop and install E2E suites; no changed-path map or adoption instrumentation at ship."
     },
-    "P1": {
+    "LRN-07": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
@@ -324,15 +330,179 @@
       "alt_score": 4,
       "alt_note": "The curator's consolidation learns which skills stick, but only when enabled."
     },
-    "P2": {
+    "LRN-08": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
       "evidence": "Skill writes pass security scans, AST audits and a linter (tools/skills_guard.py, skills_ast_audit.py, skill_linter.py). The first-party GEPA optimiser evaluates variants against the baseline skill before proposing, when it is run (hermes-agent-self-evolution README).",
-      "available_score": 3
+      "available_score": 3,
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      }
+    },
+    "ARC-02": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "The state database migrates forward on start (hermes_state_schema.py) and hermes update takes a pre-update snapshot it restores when an update fails (hermes_cli/update_cmd.py:109-110), with migration tests (tests/hermes_state).",
+      "alt_score": 3,
+      "alt_note": "Snapshot restore is a tested rollback path.",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      }
+    },
+    "ARC-08": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Fallback providers and credential pools take over when a primary model fails (agent/agent_init.py, tests/agent/test_restore_primary_pool_reselect.py); tool and MCP failures are contained to the turn.",
+      "alt_score": 3,
+      "alt_note": "Provider failover is tested.",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      }
+    },
+    "ARC-09": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "hermes backup and import cover the home directory, sessions database, skills, memory and configuration, with pre-update backups and extensive tests (hermes_cli/backup.py, tests/hermes_cli/test_backup*.py). No recovery objectives are stated.",
+      "alt_score": 3,
+      "alt_note": "Everything but stated recovery objectives meets level 3.",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      }
+    },
+    "DEL-01": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Requests are chat turns; the agent can create a skill when asked, without a specification step.",
+      "alt_score": 2,
+      "alt_note": "Skill creation on request records name and description."
+    },
+    "DEL-09": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Update channels let an installation take canary builds before stable (hermes_cli/update_channel.py); skill and memory changes are not staged."
+    },
+    "DEL-10": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Background review and individual skills can be switched off in configuration at runtime; curator archives remove skills without a release."
+    },
+    "DEL-11": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "hermes update rolls back a pulled tree that fails a syntax check and restores the state snapshot on failure (hermes_cli/update_cmd.py:840-870); there is no one-step rollback to the previous release.",
+      "alt_score": 3,
+      "alt_note": "Failed updates roll back automatically.",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      }
+    },
+    "LRN-03": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Background review sees corrections and failures in recent turns, and evals record failures found in use (evals/)."
+    },
+    "LRN-05": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "hermes doctor diagnoses setup problems and cron error diagnostics attach context to failing jobs (hermes_cli/main.py:2567)."
+    },
+    "GOV-10": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Protected instruction files always need a person, and skill writes pass scans and an AST audit (tools/skills_guard.py); there is no declared scope or rate limit for background changes."
+    },
+    "GOV-11": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "The skill ledger records the actor of every mutation (tools/skill_ledger.py:54-68) and the skills guard scans writes for injection and exfiltration patterns (tools/skills_guard.py:42-140); session content can still drive an automatically applied skill change.",
+      "alt_score": 3,
+      "alt_note": "Provenance and injection scanning are both present."
+    },
+    "EXP-04": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Unserved requests stay in session history; nothing records them as unmet demand."
+    },
+    "EXP-05": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Background review creates skills for tasks it has just done; it does not propose capabilities nobody has used yet."
+    },
+    "EXP-06": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "New skills apply to the whole installation at once."
+    },
+    "ARC-03": {
+      "status": "not_applicable",
+      "rationale": "Scope fact hosted_service is false: A local single-user agent; the gateway relays messaging platforms for the same user."
+    },
+    "ARC-04": {
+      "status": "not_applicable",
+      "rationale": "Scope fact hosted_service is false: A local single-user agent; the gateway relays messaging platforms for the same user."
+    },
+    "ARC-07": {
+      "status": "not_applicable",
+      "rationale": "Scope fact hosted_service is false: A local single-user agent; the gateway relays messaging platforms for the same user."
     }
   },
   "limits": "Repository evidence only. The self-evolution repository's last commit is 2026-06-17, and only phase 1 (skills) is implemented; phases 2 and 3 were not scored. No live runs were performed, so the effects of background review and the curator are read from code and documentation. Single rater.",
-  "framework_version": "0.3.0",
-  "reading": "**Strongest:** Learning (2.5), the highest point estimate in the sample, though its range (2.3–3.1) overlaps OpenClaw and PostHog. Background review is on by default and turns conversations into skill and memory changes (P1 3). Every skill has usage signals and curator triage (J2 3). Every change is ledgered with rollback (F1 3). **Gaps by default:** skill and memory approval gates are off (F3 2), and learned skills get security and lint checks but no baseline evaluation (P2 2). **With opt-ins** (write approval on, the GEPA optimiser run), Hermes is the only system in the sample that passes every closed-loop stage."
+  "framework_version": "0.4.0",
+  "reading": "**SAL 1.** Issue → Fix reaches L2: background review turns corrections and failures into skill and memory changes by default (LRN-07 3), and hermes doctor diagnoses setup problems (LRN-05 2). Request → Release stops at L1 because requests are chat turns with no specification step (DEL-01 1). **Blocks L3:** backups and update rollback are thorough and tested, but no recovery objectives are stated (ARC-09 2); configuration and memory lack the rollback skills have (GOV-05 2, inventory); background changes have no declared scope or rate limit (GOV-10 2).",
+  "framework": "EVOLVE",
+  "scope_facts": {
+    "persistent_data": {
+      "value": true,
+      "evidence": "Sessions in SQLite, plus skills, memory and configuration under HERMES_HOME."
+    },
+    "schema_changes": {
+      "value": true,
+      "evidence": "The state database is versioned and migrated on start (hermes_state_schema.py, SCHEMA_VERSION)."
+    },
+    "multi_tenant": {
+      "value": false,
+      "evidence": "One user per installation; profiles are separate homes, not tenants."
+    },
+    "hosted_service": {
+      "value": false,
+      "evidence": "A local single-user agent; the gateway relays messaging platforms for the same user."
+    },
+    "agent_mutations": {
+      "value": true,
+      "evidence": "The background review writes skills and memory (agent/background_review.py)."
+    },
+    "automatic_apply": {
+      "value": true,
+      "evidence": "background_review is on by default and skill and memory write approvals default to off (hermes_cli/config_defaults.py:814, 1320)."
+    },
+    "code_release_path": {
+      "value": true,
+      "evidence": "The first-party GEPA optimiser proposes improved skills as pull requests to this repository, shipped in releases (hermes-agent-self-evolution)."
+    }
+  }
 }

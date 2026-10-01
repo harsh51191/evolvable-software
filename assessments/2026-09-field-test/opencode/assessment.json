@@ -5,97 +5,97 @@
   "archetype": "agent-runtime",
   "scope_line": "Scope: the opencode monorepo (agent core, server and HTTP API, SDK and codegen, TUI, desktop, web, plugin SDK, console and enterprise packages, CI). opencode.ai hosted services and models.dev are out of scope.",
   "scores": {
-    "A1": {
+    "MAL-01": {
       "status": "not_applicable",
       "rationale": "Agent runtime: generic business-object criterion (fixed per-archetype rule).",
       "if_applicable": 0
     },
-    "A2": {
+    "MAL-02": {
       "status": "not_applicable",
       "rationale": "Agent runtime: generic business-object criterion (fixed per-archetype rule).",
       "if_applicable": 1
     },
-    "A3": {
+    "MAL-03": {
       "status": "not_applicable",
       "rationale": "Agent runtime: generic business-object criterion (fixed per-archetype rule).",
       "if_applicable": 1
     },
-    "B1": {
+    "MAL-04": {
       "status": "not_applicable",
       "rationale": "Agent runtime: generic CRUD criterion (fixed per-archetype rule).",
       "if_applicable": 1
     },
-    "B2": {
+    "MAL-05": {
       "status": "not_applicable",
       "rationale": "Agent runtime: generic CRUD criterion (fixed per-archetype rule).",
       "if_applicable": 1
     },
-    "B3": {
+    "MAL-06": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
       "evidence": "The HTTP API is generated from a typed specification into a TypeScript SDK (packages/httpapi-codegen, packages/sdk/js, .github/workflows/generate.yml); no dry-run."
     },
-    "C1": {
+    "MAL-07": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
       "evidence": "TUI, desktop and web layouts are code; keybinds are configuration."
     },
-    "C2": {
+    "MAL-08": {
       "status": "not_applicable",
       "rationale": "Agent runtime: generic CRUD views (fixed per-archetype rule).",
       "if_applicable": 1
     },
-    "C3": {
+    "MAL-09": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
       "evidence": "Themes are JSON files users can add and select in configuration (packages/opencode/src/config/config.ts); documentation is localised through a sync workflow (.github/workflows/docs-locale-sync.yml)."
     },
-    "D1": {
+    "MAL-10": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
       "evidence": "Custom commands and agents are markdown or JSON definitions (packages/opencode/src/config/command.ts, agent.ts); there is no condition and action engine."
     },
-    "D2": {
+    "MAL-11": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
       "evidence": "An internal event bus streams events to SDK clients over the server (packages/opencode/src/bus, packages/server/src/handlers/event.ts); no outbound webhooks with retry."
     },
-    "D3": {
+    "MAL-12": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
       "evidence": "Plugins register hooks such as tool.definition, permission.ask, shell.env and command.execute.before (packages/plugin/src/index.ts) and run in-process without a sandbox."
     },
-    "E1": {
+    "GOV-01": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
       "evidence": "Storybook exists for UI components (packages/storybook); no automated accessibility scanning found."
     },
-    "E2": {
+    "GOV-02": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
       "evidence": "Sessions and messages are stored locally; there is no audit store for configuration or permission decisions."
     },
-    "E3": {
+    "GOV-03": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
       "evidence": "Local-first storage, session export and removal of shared sessions (packages/opencode/src/share); not driven by tags."
     },
-    "E4": {
+    "GOV-04": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
       "evidence": "Permission rules with allow, ask and deny actions by tool and pattern (packages/opencode/src/permission/index.ts:33-80, evaluate.ts) and managed enterprise configuration (config/managed.ts); no security scanning in CI."
     },
-    "F1": {
+    "GOV-05": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
@@ -103,13 +103,13 @@
       "alt_score": 2,
       "alt_note": "If the agent's work product counts as a customisation surface."
     },
-    "F2": {
+    "GOV-06": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
       "evidence": "No proposal object for changes to OpenCode's own definitions; its code changes go through pull requests."
     },
-    "F3": {
+    "GOV-07": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
@@ -117,7 +117,7 @@
       "alt_score": 3,
       "alt_note": "Read as a change-control policy, the allow, ask and deny rules are a policy object per change class."
     },
-    "F4": {
+    "GOV-08": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
@@ -125,30 +125,28 @@
       "alt_score": 3,
       "alt_note": "Migrations run automatically and contracts are explicit packages."
     },
-    "G1": {
+    "ARC-01": {
       "status": "not_applicable",
       "rationale": "Agent runtime: generic-store query performance (fixed per-archetype rule).",
       "if_applicable": 1
     },
-    "G2": {
-      "status": "assessed",
-      "score": 2,
-      "grade": "A",
-      "evidence": "Single user per local installation; console and enterprise packages serve teams without evidenced noisy-neighbour controls."
+    "ARC-05": {
+      "status": "not_applicable",
+      "rationale": "Scope fact multi_tenant is false: A local single-user tool.",
+      "if_applicable": 2
     },
-    "G3": {
-      "status": "assessed",
-      "score": 2,
-      "grade": "A",
-      "evidence": "A performance test suite is documented (perf/test-suite.md); no per-surface limits or CI budgets."
+    "ARC-06": {
+      "status": "not_applicable",
+      "rationale": "Scope fact hosted_service is false: A local CLI and TUI with an optional local server; the console and cloud functions are separate products outside this scope.",
+      "if_applicable": 2
     },
-    "H1": {
+    "DEL-02": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
       "evidence": "Client and server architecture: server, TUI, desktop, web, console and cloud functions deploy separately (packages/server, packages/desktop, packages/function, .github/workflows/deploy.yml, containers.yml)."
     },
-    "H2": {
+    "DEL-03": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
@@ -156,19 +154,19 @@
       "alt_score": 3,
       "alt_note": "Explicit API contracts between modules."
     },
-    "H3": {
+    "DEL-05": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
       "evidence": "Tests and typecheck run on pull requests (.github/workflows/test.yml:7, typecheck.yml:6); no accessibility or security checks."
     },
-    "I1": {
+    "MAL-13": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
       "evidence": "Plugins with hooks (packages/plugin), custom agents, commands, modes, themes, MCP servers, formatters, LSP servers and skills, both declarative and code."
     },
-    "I2": {
+    "MAL-14": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
@@ -176,7 +174,7 @@
       "alt_score": 2,
       "alt_note": "Permission rules act as an allowlist on agent-written commands."
     },
-    "I3": {
+    "MAL-15": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
@@ -184,51 +182,51 @@
       "alt_score": 3,
       "alt_note": "The developer loop is live against the real project."
     },
-    "K1": {
+    "MAL-19": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
       "evidence": "Typed HTTP API, SDK and ACP support (packages/opencode/src/acp); OpenCode does not expose itself as an MCP server."
     },
-    "K2": {
+    "MAL-20": {
       "status": "assessed",
-      "score": 3,
+      "score": 2,
       "grade": "A",
-      "evidence": "Users complete coding tasks conversationally with tool actions; agent definitions can be generated from a natural-language description (packages/opencode/src/agent/generate.txt).",
-      "alt_score": 2,
-      "alt_note": "Natural-language authoring covers agents only."
+      "evidence": "Users complete coding tasks conversationally with tool actions; agent definitions can be generated from a natural-language description (packages/opencode/src/agent/generate.txt). Scored at the lower reading under rule 11 because: Natural-language authoring covers agents only.",
+      "alt_score": 3,
+      "alt_note": "The September v0.3 pass scored 3 on the evidence above."
     },
-    "K3": {
+    "GOV-09": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
       "evidence": "Ask prompts preview tool actions under permission rules, and snapshots allow revert; commands run with the user's ambient authority and there are no idempotency keys."
     },
-    "N1": {
+    "MAL-16": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
       "evidence": "Providers map onto one model interface through a models catalogue snapshot (packages/opencode/src/provider, .github/workflows/models-snapshot.yml)."
     },
-    "N2": {
+    "MAL-17": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
       "evidence": "Providers, MCP servers and LSP servers are configured by users with auth flows (packages/opencode/src/auth, mcp, lsp)."
     },
-    "N3": {
+    "MAL-18": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
       "evidence": "Versioned SDK and protocol packages; no deprecation windows."
     },
-    "O1": {
+    "EXP-01": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
       "evidence": "Kernel of sessions (conversation), agents, tools, permissions, projects and providers, served through TUI, desktop, web, ACP, Slack and GitHub clients (channels)."
     },
-    "O2": {
+    "EXP-02": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
@@ -236,13 +234,13 @@
       "alt_score": 3,
       "alt_note": "Skill discovery installs remote skill bundles."
     },
-    "O3": {
+    "EXP-03": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
       "evidence": "Agents and commands are shareable files; skills are fetched with a recorded version (packages/opencode/src/skill/discovery.ts:105)."
     },
-    "J1": {
+    "LRN-01": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
@@ -250,37 +248,39 @@
       "alt_score": 3,
       "alt_note": "The event bus is near-real-time to every client."
     },
-    "J2": {
+    "LRN-02": {
       "status": "assessed",
       "score": 0,
       "grade": "A",
       "evidence": "No feedback, rating or evaluation signals in the product."
     },
-    "J3": {
+    "LRN-04": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
       "evidence": "Usage analysis happens outside the product."
     },
-    "M1": {
+    "LRN-06": {
       "status": "assessed",
       "score": 0,
       "grade": "A",
       "evidence": "No proposals for changing OpenCode itself."
     },
-    "M3": {
+    "DEL-04": {
       "status": "assessed",
-      "score": 2,
+      "score": 1,
       "grade": "A",
-      "evidence": "OpenCode reviews and triages its own repository's pull requests and issues through its GitHub action (.github/workflows/review.yml, triage.yml, opencode.yml): an AI lane for narrow tasks, run by engineers."
+      "evidence": "The team runs OpenCode's general GitHub agent on this repository for reviews and triage (.github/workflows/review.yml, triage.yml, opencode.yml). Under rubric rule 12 that is a team's use of a coding agent, not a first-party evolution system for OpenCode.",
+      "alt_score": 2,
+      "alt_note": "If the GitHub agent is read as part of the product's own evolution system, it is an AI lane for narrow tasks."
     },
-    "M4": {
+    "LRN-09": {
       "status": "assessed",
       "score": 0,
       "grade": "A",
       "evidence": "No binding of changes to baselines or metrics."
     },
-    "L1": {
+    "DEL-06": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
@@ -288,13 +288,13 @@
       "alt_score": 3,
       "alt_note": "The configuration handlers amount to a snapshot."
     },
-    "L2": {
+    "DEL-07": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
       "evidence": "Nix flake and container definitions reproduce environments (nix/, .github/workflows/nix-eval.yml, containers.yml); no per-change ephemeral environment."
     },
-    "L3": {
+    "DEL-08": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
@@ -302,20 +302,145 @@
       "alt_score": 3,
       "alt_note": "Recorded interactions make journeys deterministic."
     },
-    "P1": {
+    "LRN-07": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
       "evidence": "People write agents, commands and AGENTS.md by hand; nothing learns from sessions."
     },
-    "P2": {
+    "LRN-08": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
       "evidence": "Changes to OpenCode's definitions are reviewed by people only."
+    },
+    "ARC-02": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Drizzle migrations for the session database (packages/opencode/migration); no down steps.",
+      "alt_score": 2,
+      "alt_note": "Generated migrations with a migration table."
+    },
+    "ARC-08": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Provider calls are retried with back-off (packages/opencode/src/session/retry.ts); MCP servers and LSPs run as separate processes."
+    },
+    "ARC-09": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Sessions can be exported and imported one at a time (packages/opencode/src/cli/cmd/export.ts, import.ts); configuration lives in files."
+    },
+    "DEL-01": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No request or feature-request object for changing the product was found; requests live outside it."
+    },
+    "DEL-09": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Releases go to all users; no staged exposure."
+    },
+    "DEL-10": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Features are switched in configuration files."
+    },
+    "LRN-03": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Logs for engineers."
+    },
+    "LRN-05": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Engineers read logs."
+    },
+    "GOV-10": {
+      "status": "not_applicable",
+      "rationale": "No self-change path.",
+      "if_applicable": 1
+    },
+    "GOV-11": {
+      "status": "not_applicable",
+      "rationale": "No self-change path.",
+      "if_applicable": 1
+    },
+    "EXP-04": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No record of unmet intents was found."
+    },
+    "EXP-05": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No adjacent-capability proposals."
+    },
+    "EXP-06": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Plugins and agents apply to the whole installation."
+    },
+    "ARC-03": {
+      "status": "not_applicable",
+      "rationale": "Scope fact hosted_service is false: A local CLI and TUI with an optional local server; the console and cloud functions are separate products outside this scope."
+    },
+    "ARC-04": {
+      "status": "not_applicable",
+      "rationale": "Scope fact hosted_service is false: A local CLI and TUI with an optional local server; the console and cloud functions are separate products outside this scope."
+    },
+    "ARC-07": {
+      "status": "not_applicable",
+      "rationale": "Scope fact hosted_service is false: A local CLI and TUI with an optional local server; the console and cloud functions are separate products outside this scope."
+    },
+    "DEL-11": {
+      "status": "not_applicable",
+      "rationale": "Scope fact code_release_path is false: The GitHub agent the team runs on this repository is the product's general coding agent, not a first-party evolution system for OpenCode (rubric rule 12)."
     }
   },
   "limits": "Repository evidence only, dev branch at the tip named above. Enterprise and console behaviour was not traced in depth. Single rater.",
-  "framework_version": "0.3.0",
-  "reading": "**Strongest:** generated API contracts and SDK (B3 3), a client and server architecture (H1 3), and broad extension (I1 3). **Largest gap:** Learning (0.9). By design, OpenCode improves the user's code, not itself: no learning signals, proposals or measurement. Both raters agreed on this under v0.2, and v0.3 does not change it."
+  "framework_version": "0.4.0",
+  "reading": "**SAL 0.** OpenCode's own agents, commands and configuration are files versioned only by the user's git (GOV-05 1), so no loop has a rollback path at L1. The team's use of OpenCode's GitHub agent on its own repository is not a first-party evolution system under rule 12 (DEL-04 1). **Next level:** versioned, validated configuration with rollback, and a learning path for agents and commands.",
+  "framework": "EVOLVE",
+  "scope_facts": {
+    "persistent_data": {
+      "value": true,
+      "evidence": "Sessions and messages in a local database (packages/opencode/src/storage)."
+    },
+    "schema_changes": {
+      "value": true,
+      "evidence": "Drizzle migrations for the session database (packages/opencode/migration)."
+    },
+    "multi_tenant": {
+      "value": false,
+      "evidence": "A local single-user tool."
+    },
+    "hosted_service": {
+      "value": false,
+      "evidence": "A local CLI and TUI with an optional local server; the console and cloud functions are separate products outside this scope."
+    },
+    "agent_mutations": {
+      "value": false,
+      "evidence": "No product feature lets the agent change OpenCode's own agents, commands or configuration."
+    },
+    "automatic_apply": {
+      "value": false,
+      "evidence": "Nothing changes OpenCode's definitions automatically."
+    },
+    "code_release_path": {
+      "value": false,
+      "evidence": "The GitHub agent the team runs on this repository is the product's general coding agent, not a first-party evolution system for OpenCode (rubric rule 12)."
+    }
+  }
 }

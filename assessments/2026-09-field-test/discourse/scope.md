@@ -20,3 +20,17 @@ The fixed rule for `focused-application` in `references/archetypes.md` (enforced
 ## Beta features
 
 `discourse-workflows` (`enable_discourse_workflows`, default false, "upcoming change" status beta) and `discourse-ai` (`discourse_ai_enabled`, default false) ship in the repository but are off by default. The rubric does not say how to treat shipped-but-disabled capabilities. They were scored as shipped, with alternates showing the effect of excluding them.
+
+## EVOLVE v0.4 scope facts
+
+Declared for the default configuration. They decide which criteria and critical controls apply (`references/archetypes.md`).
+
+| Fact | Value | Evidence |
+|---|---|---|
+| `persistent_data` | true | Posts, users and settings in PostgreSQL; uploads on disk or S3. |
+| `schema_changes` | true | Rails migrations (db/migrate, 1,765 files) change the schema on every upgrade. |
+| `multi_tenant` | true | Multisite hosting serves several forums from one deployment, each with its own database. |
+| `hosted_service` | true | Puma web processes and Sidekiq workers run as long-lived services. |
+| `agent_mutations` | false | By default no AI changes Discourse definitions: discourse-ai and the workflows AI author are off by default. |
+| `automatic_apply` | false | Admins apply changes directly; nothing applies definition changes automatically by default. |
+| `code_release_path` | false | No first-party evolution system ships code changes. |

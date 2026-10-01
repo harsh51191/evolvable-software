@@ -1,11 +1,11 @@
-name: malleability-readiness-eval
-description: Evidence-backed assessment of software malleability, change governance, learning and factory readiness, with enforced archetype exclusions, default-versus-opt-in scoring, reported score ranges, a closed-loop check, and prerequisite-ordered remediation.
+name: evolvable-software
+description: EVOLVE assessment of how ready a software product is to evolve itself safely. Reports a Software Autonomy Level (L0-L5) for three loops (request to release, issue to fix, opportunity to expansion) with the conditions that block the next level, critical controls, and a six-capability profile (Elastic, Velocity, Open, Learn, Vet, Expand), plus prerequisite-ordered remediation.
 author: Vellanki Sriharsha
 date_added: 2026-09-27
-version: public-beta-3
+version: public-beta-4
 usage_examples:
-  - /malleability-readiness-eval "Example Software" ./repository --tip <immutable-tip> --archetype focused-application
-  - /malleability-readiness-eval "Example Platform" ./repository --archetype configurable-application-platform --prescribe --target 3
+  - /evolvable-software "Example Software" ./repository --tip <immutable-tip> --archetype focused-application
+  - /evolvable-software "Example Platform" ./repository --archetype configurable-application-platform --prescribe --target 3
 dependencies:
   - python3 3.8 or later; standard library only
   - git for recording immutable repository tips

@@ -1,6 +1,6 @@
 # EVOLVE v0.4: specification draft (revision 2)
 
-**Status: draft for review.** Nothing in `scripts/` or `assessments/` uses this yet; the rubric and scorer remain MSR v0.3 until this draft is agreed. "EVOLVE" and "SAL" are working names, not final (section 13). Decisions already taken are recorded in section 15.
+**Status: implemented on this branch for review, not yet merged.** `references/rubric.md`, `scripts/score.py` and the field test now implement this specification. "EVOLVE" and "SAL" are working names, not final (section 13). Decisions already taken are recorded in section 15; section 16 records where the implementation refined this text.
 
 **Revision 2 changes**, from review of revision 1:
 
@@ -462,7 +462,7 @@ Why:
 
 - **Working names only.** "EVOLVE" and "Software Autonomy Level" are not locked. A published npm package already calls itself an "Evolve Multi-Agent SDLC framework" and reports architecture health and evolution readiness (`@huutq88/evolve`). "Software autonomy levels" is also used in self-driving laboratory research. Neither proves a trademark conflict, but both rule out claiming the space is empty. A trademark and prior-use search is required before any public launch.
 - **Stable IDs.** Criterion IDs use descriptive prefixes (`ARC`, `DEL`, `MAL`, `LRN`, `GOV`, `EXP`), so they survive a rename of the framework or of the capability display names.
-- **Repository name.** Kept as `malleablesoftware` until decided (section 15).
+- **Repository name.** `evolvable-software`, chosen in review. The skill and package already use it; the GitHub repository is renamed by its owner, and GitHub redirects the old URL.
 
 ## 14. Delivery plan once agreed
 
@@ -481,9 +481,26 @@ Why:
 2. Failing a critical control caps at L2, with each control applied only where its scope fact holds and to the path being assessed.
 3. Strict depth rule, with separate cumulative facets: implemented, tested, operated.
 4. Repository tooling counts only as a first-party evolution system (section 8.4).
+5. Repository and skill name: `evolvable-software`.
 
 **Open:**
 
-1. **Repository name.** "evolve" alone is too generic. Options: `evolve-readiness` (recommended: says what it measures and stays searchable), `evolvable-software` (keeps continuity with `malleablesoftware`), or `evolve-standard`. GitHub redirects the old URL after a rename.
-2. **Final framework name**, after the trademark and prior-use search.
-3. **Strictness at L4.** Every applicable ARC criterion at 3 with tested evidence. Right bar, or too high for products that are otherwise strong?
+1. **Final framework name**, after the trademark and prior-use search.
+2. **Strictness at L4.** Every applicable ARC criterion at 3 with tested evidence. Right bar, or too high for products that are otherwise strong?
+
+## 16. Refinements made during implementation
+
+Building the scorer and rescoring 11 systems exposed five places where this text needed tightening. The rubric is authoritative; these notes explain the differences.
+
+1. **GOV-09 (agent-safe actions) always applies.** Section 5 tied it to `agent_mutations`, but external agents act through every product's API and tool surface, so per-actor identity and audit matter everywhere. It stays an L3 condition at level 2.
+2. **GOV-10 and GOV-11 apply only when self-change is possible** (`agent_mutations` or `automatic_apply`). Without a self-change path there is nothing to bound and no learning input to protect; the self-change control was already conditional on the same facts.
+3. **Facets are required where they change the outcome.** Section 8.1 asked for facets on every assessed criterion. The scorer requires them on depth-capped criteria for any reading of 3 or more, and accepts them anywhere. A 4 without operated evidence counts as 3 when tested, rather than 2.
+4. **Inventories cap claims of 3 or more.** Section 8.3 said the score is the level every surface reaches. Anchor 2 of the multi-surface criteria already describes partial coverage ("versioning for some surfaces"), so the rule now reads: a score of 3 or more cannot exceed the weakest surface; below 3 the anchors decide and an inventory is optional.
+5. **Request intake credits AI planners.** An AI lane that asks clarifying questions and produces a structured plan for approval before building (for example n8n's workflow planner) is request intake at level 2 or above, provided it meets rule 12.
+
+The field test results are in `assessments/2026-09-field-test/README.md`. In short:
+
+- No system reaches L3, because every one fails at least one critical control.
+- Definition rollback and tested backup with stated recovery objectives fail in all eleven.
+- n8n and OpenClaw lead at SAL 2.
+

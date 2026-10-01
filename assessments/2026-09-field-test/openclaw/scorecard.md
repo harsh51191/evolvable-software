@@ -1,128 +1,163 @@
-# OpenClaw: MSR v0.3 scorecard
+# OpenClaw: EVOLVE v0.4 scorecard
 
-Evaluator: Claude, single rater. Framework: rubric v0.3.0 in this repository.
+Evaluator: Claude, single rater. Framework: EVOLVE 0.4.0 in this repository.
 
 Scope: the openclaw monorepo (gateway, agents, channels, skills and Skill Workshop, plugins and extensions, MCP, Control UI, companion apps, QA and CI). ClawHub (separate repository) and team.openclaw.ai operations are out of scope.
 
 ## Reading
 
-**Strongest:** a governed self-modification pipeline. The autonomous experience review drafts skill proposals by default (P1 3). Proposals are revisioned, ledgered and reversible (F1 3, F2 3), and observations are stored on the revision they concern (J2 3). Agent-safe actions are strong (K3 3). **Gaps:** proposals auto-apply by default (F3 2), and no evaluator ships, so learned skills are never compared with the baseline (P2 2, M4 2). Even with opt-ins, the measure stage fails.
+**SAL 2**, joint highest. /learn turns a request into a pending skill proposal (DEL-01 2), and the experience review drafts and applies skills from observed runs (LRN-07 3), so both core loops reach L2. **Blocks L3:** skills have backup, restore and rollback, but configuration has only rotating backups (GOV-05 2, inventory); there is no staged exposure for skill changes (DEL-09 1); the default auto-apply has no declared blast-radius limit (GOV-10 2).
 
 ## Limits
 
 Repository evidence only, main at the tip named above. ClawHub (registry and scanning) is a separate repository. No evaluator plugin is bundled, so measurement depends on third-party or user plugins. The experience review was read from code and tests, not run. Single rater.
 
 ---
-Framework 0.3.0. Date 2026-09-30. Source github.com/openclaw/openclaw @ df2a29cac9ad37c31a0f5a0d977ba3e4fd833cb0 (main). Archetype **agent-runtime**.
+Framework EVOLVE 0.4.0. Date 2026-09-30. Source github.com/openclaw/openclaw @ df2a29cac9ad37c31a0f5a0d977ba3e4fd833cb0 (main). Archetype **agent-runtime**.
 
-Coverage: 42 assessed, 0 not evidenced, 7 not applicable. Grades: 42 A, 0 B, 0 C.
+Scope facts true: persistent_data, schema_changes, agent_mutations, automatic_apply. False: multi_tenant, hosted_service, code_release_path.
 
-## Indexes
+Coverage: 53 assessed, 0 not evidenced, 13 not applicable. Grades: 53 A, 0 B, 0 C.
 
-| Index | Default | Band | Range with alternate readings | With opt-in settings | Assessed only | If every criterion counted |
-|---|---:|---|---|---:|---:|---:|
-| malleability | 2.4 | mechanism | 2.4–2.9 | 2.4 | 2.4 | 2.1 |
-| governance | 2.4 | mechanism | 2.4–2.8 | 2.5 | 2.4 | 2.4 |
-| learning | 2.4 | mechanism | 2.2–2.9 | 2.4 | 2.4 | 2.4 |
-| factory | 2.7 | productised | 2.7–2.8 | 2.7 | 2.7 | 2.7 |
+## Software Autonomy Level
 
-## Profiles
+**SAL 2 (Assisted) · Request → Release L2 · Issue → Fix L2 · Opportunity → Expansion L1**
 
-| Profile | Default | With opt-in settings |
-|---|---:|---:|
-| Change Surface | 2.3 | 2.3 |
-| Governance | 2.4 | 2.5 |
-| Learning | 2.4 | 2.4 |
-| Factory | 2.7 | 2.7 |
-| Agent Interface | 3.0 | 3.0 |
-| Extension Surface | 2.7 | 2.7 |
-| Operational Scalability | 2.0 | 2.0 |
+- With opt-in settings: SAL 2 (Assisted) · Request → Release L2 · Issue → Fix L2 · Opportunity → Expansion L1.
+- With every alternate reading: SAL 2 (Assisted) · Request → Release L2 · Issue → Fix L2 · Opportunity → Expansion L1.
 
-## Closed loop
+| Loop | Stages | Spine | Architecture | Governance | Level | With opt-in settings |
+|---|---:|---:|---:|---:|---:|---:|
+| Request → Release | L2 | L2 | L2 | L2 | **L2** | L2 |
+| Issue → Fix | L2 | L2 | L2 | L2 | **L2** | L2 |
+| Opportunity → Expansion | L1 | L2 | L2 | L2 | **L1** | L1 |
 
-Closed-loop candidate: **no** by default, **no** with opt-in settings. This is a minimum-mechanism signal, not a production-readiness or outcome claim.
+### Critical controls
 
-| Stage | Criteria | Needs | Default | With opt-in settings |
-|---|---|---:|---:|---:|
-| observe | J2 | 2 | 3 pass | 3 pass |
-| propose | M1, P1 | 2 | 3 pass | 3 pass |
-| review | F2 | 2 | 3 pass | 3 pass |
-| gate | F3 | 3 | 2 fail | 3 pass |
-| apply and roll back | F1 | 2 | 3 pass | 3 pass |
-| measure | M4, P2 | 3 | 2 fail | 2 fail |
-| verify | L1 | 2 | 3 pass | 3 pass |
+| Control | Needs | Observed | Status |
+|---|---|---|---|
+| Definition rollback | GOV-05 ≥ 3 | 2 | fail |
+| Release rollback | DEL-11 ≥ 3 | n/a | n/a |
+| Safe migrations | ARC-02 ≥ 3 | 2 | fail |
+| Tested backup and restore | ARC-09 ≥ 3 | 2 | fail |
+| Tenant isolation | ARC-05 ≥ 3 | n/a | n/a |
+| Security as infrastructure | GOV-04 ≥ 3 | 3 | pass |
+| Bounded self-change | GOV-10 ≥ 3 and LRN-08 ≥ 2 | 2; 2 | fail |
 
-## Dimension means
+### What blocks the next level
 
-| Dimension | Default |
+- **Request → Release to L3**: spine Build needs product build path ≥ 3 (has DEL-04 2); spine Verify needs DEL-05 ≥ 3 (has 2); spine Stage needs DEL-09 ≥ 2 (has 1); spine Roll back needs GOV-05 ≥ 3 (has 2); stages Intake needs DEL-01 ≥ 3 (has 2); architecture Foundation needs ARC-02 ≥ 3 (has 2); architecture Foundation needs ARC-09 ≥ 3 (has 2); governance Ceiling needs GOV-10 ≥ 3 and LRN-08 ≥ 2 (has 2; 2)
+- **Issue → Fix to L3**: spine Verify needs DEL-05 ≥ 3 (has 2); spine Stage needs DEL-09 ≥ 2 (has 1); spine Roll back needs GOV-05 ≥ 3 (has 2); stages Detect needs LRN-03 ≥ 3 (has 2); stages Diagnose needs LRN-05 ≥ 3 (has 2); stages Propose needs LRN-06 ≥ 3 (has 2); architecture Foundation needs ARC-02 ≥ 3 (has 2); architecture Foundation needs ARC-09 ≥ 3 (has 2); governance Ceiling needs GOV-10 ≥ 3 and LRN-08 ≥ 2 (has 2; 2)
+- **Opportunity → Expansion to L2**: stages Sense needs EXP-04 ≥ 2 (has 1); stages Propose needs EXP-05 ≥ 2 (has 1)
+
+## EVOLVE profile
+
+| Capability | Default | Range with alternate readings | With opt-in settings | Assessed only | If every criterion counted |
+|---|---:|---|---:|---:|---:|
+| Elastic (ARC) | 2.0 | 2.0–2.3 | 2.0 | 2.0 | 1.9 |
+| Velocity (DEL) | 2.2 | 2.2–2.6 | 2.2 | 2.2 | 2.2 |
+| Open (MAL) | 2.4 | 2.4–2.9 | 2.4 | 2.4 | 2.0 |
+| Learn (LRN) | 2.1 | 2.1–2.8 | 2.1 | 2.1 | 2.1 |
+| Vet (GOV) | 2.3 | 2.3–2.6 | 2.4 | 2.3 | 2.3 |
+| Expand (EXP) | 1.7 | 1.7–1.8 | 1.7 | 1.7 | 1.7 |
+
+## Area means
+
+| Area | Default |
 |---|---:|
-| B API surface generation | 2.0 |
-| C Rendering follows the definition | 2.0 |
-| D Behaviour as data | 2.0 |
-| E Compliance and security as infrastructure | 2.0 |
-| F Change control | 2.8 |
-| G Performance under genericity | 2.0 |
-| H Stack flexibility and verification | 2.7 |
-| I Extension ecosystem | 2.7 |
-| J Observe | 2.3 |
-| K Agent and conversational readiness | 3.0 |
-| L Factory surfaces | 2.7 |
-| M Advise and act | 2.3 |
-| N Integration and connector extensibility | 2.7 |
-| O Adjacent-domain expansion | 3.3 |
-| P Learn from experience | 2.5 |
+| ARC Data | 2.0 |
+| ARC Resilience | 2.0 |
+| DEL Intake | 2.0 |
+| DEL Build | 2.7 |
+| DEL Verify | 2.5 |
+| DEL Release | 1.5 |
+| MAL APIs | 2.0 |
+| MAL Interface | 2.0 |
+| MAL Behaviour | 2.0 |
+| MAL Extensions | 2.7 |
+| MAL Integrations | 2.7 |
+| MAL Agent interface | 3.0 |
+| LRN Sense | 2.0 |
+| LRN Diagnose and propose | 2.0 |
+| LRN Learn from experience | 2.5 |
+| LRN Measure | 2.0 |
+| GOV Compliance and security | 2.0 |
+| GOV Change control | 2.5 |
+| GOV AI and self-change safety | 2.3 |
+| EXP Expressible | 3.0 |
+| EXP Discover | 1.0 |
+| EXP Launch | 1.0 |
 
 ## Criteria
 
-| Criterion | Status | Score | Alternate | Opt-in | Grade | Evidence, search scope or rationale |
-|---|---|---:|---:|---:|---|---|
-| A1 New entity type without code, DDL or deploy | not_applicable | excluded |  |  | - | Agent runtime: generic business-object criterion (fixed per-archetype rule). |
-| A2 Field definitions carry type and validation | not_applicable | excluded |  |  | - | Agent runtime: generic business-object criterion (fixed per-archetype rule). |
-| A3 Relationships and lifecycle states declarable | not_applicable | excluded |  |  | - | Agent runtime: generic business-object criterion (fixed per-archetype rule). |
-| B1 API per entity is generic or generated | not_applicable | excluded |  |  | - | Agent runtime: generic CRUD criterion (fixed per-archetype rule). |
-| B2 API reshapes at runtime from definitions | not_applicable | excluded |  |  | - | Agent runtime: generic CRUD criterion (fixed per-archetype rule). |
-| B3 Machine-readable contract with introspection and dry-run | assessed | 2 | 3 |  | A | Typed gateway methods with JSON output modes and MCP JSON output (docs/cli/mcp/json-output.md); no OpenAPI or dry-run for gateway mutations. |
-| C1 Layout is data, tenant-overridable, validated, previewable | assessed | 2 | 3 |  | A | Canvas serves agent-authored documents and widgets (src/canvas); Control UI layout is code. |
-| C2 Generic list, detail and intake widgets from definition plus view spec | not_applicable | excluded |  |  | - | Agent runtime: generic CRUD views (fixed per-archetype rule). |
-| C3 Theme tokens and text are data with tenant overrides | assessed | 2 |  |  | A | 278 locale files; themes are engineer-managed. |
-| D1 Rules engine with declarative conditions and actions | assessed | 2 | 3 |  | A | Cron jobs, hooks, routing bindings and auto-reply configuration are declared as data (docs/gateway/config-hooks.md, config-automation.md, src/routing, src/auto-reply); no general rules engine with a test mode. |
-| D2 Event model with webhooks or subscriptions and retry | assessed | 2 |  |  | A | Inbound webhook hooks trigger agent runs; audit events record runs, messages and tool actions; no outbound subscriptions with retry. |
-| D3 Sandboxed server-side hooks | assessed | 2 | 3 |  | A | Hook scripts run in the gateway process; agent tools for non-main sessions run in sandboxes governed by tool policy and elevated mode (docs/gateway/sandboxing.md, sandbox-vs-tool-policy-vs-elevated.md). |
-| E1 Accessibility inherited from a component kit and continuously verified | assessed | 1 |  |  | A | No automated accessibility scanning found for the Control UI or companion apps. |
-| E2 Audit generic over entities, definition changes and approvals | assessed | 2 | 3 |  | A | Audit event store records agent runs, messages and tool actions with queries and configuration (src/audit/audit-event-types.ts, docs/gateway/audit.md); the Skill Workshop keeps an append-only proposal event ledger (docs/tools/skill-workshop/proposals.md). Configuration changes are not audit events. |
-| E3 Privacy classification, export, erasure and retention generic over entities | assessed | 2 |  |  | A | Local-first storage, trajectory export and cleanup (src/trajectory/export.ts, cleanup.ts), and redacted diagnostics export (docs/gateway/health.md:56); not driven by tags. |
-| E4 Security as infrastructure | assessed | 3 |  |  | A | Exec approvals with allowlists, DM pairing, tool policies, sandboxing and a secrets subsystem (docs/tools/exec-approvals.md, src/pairing, src/secrets); CodeQL, dependency audit and security review workflows (.github/workflows/codeql.yml, dependency-audit.yml, security-review.yml). |
-| F1 Definitions and layouts versioned with rollback | assessed | 3 | 4 |  | A | Workshop collections are backed up and can be restored or rolled back (src/skills/workshop/collection-backup.ts, collection-restore.ts, collection-rollback.ts); proposal revisions carry hashes (revision-hash.ts); state snapshots to git (src/snapshot/git-backup.ts). |
-| F2 Proposal, review, apply as a first-class object with preview | assessed | 3 | 4 |  | A | Skill changes are typed proposals (PROPOSAL.md with revision hashes) that the agent or a person creates; evaluations are stored on the exact revision and apply revalidates the evaluated tree (docs/tools/skill-workshop/proposals.md, src/skills/workshop/service-propose.ts, service-evaluation.ts); the system agent turns chat into proposals for configuration commands with approval classification (src/system-agent/approval-intent.ts). |
-| F3 Policy-based apply with recorded approvals and a movable human boundary | assessed | 2 |  | 3 | A | Defaults are autonomous.mode auto and approvalPolicy auto (src/skills/workshop/config.ts:15-20), so proposals apply without a person; evaluator block decisions only exist if an evaluator plugin is installed. Setting approvalPolicy to pending gives a per-class approval policy. |
-| F4 Upgrade safety | assessed | 3 |  |  | A | Doctor repairs and migrates configuration (docs/gateway/doctor.md), a compatibility layer (src/compat) and a plugin activation boundary test (src/plugin-activation-boundary.test.ts) around a versioned plugin SDK (src/plugin-sdk). |
-| G1 Indexed query path, never a scan of a generic store | not_applicable | excluded |  |  | - | Agent runtime: generic-store query performance (fixed per-archetype rule). |
-| G2 Tenant isolation and noisy-neighbour controls | assessed | 2 |  |  | A | Personal installs are single-tenant; shared gateways carry several people with per-person credit (VISION.md); no noisy-neighbour detection. |
-| G3 Ceilings measured, not discovered in incidents | assessed | 2 | 3 |  | A | Performance workflow and test-timing refits in CI (.github/workflows/openclaw-performance.yml, ci-test-timings-refit.yml); no documented per-surface limits. |
-| H1 Layers deploy independently | assessed | 3 |  |  | A | Gateway, Control UI and macOS, iOS and Android companion apps are separate deployables with their own release workflows (apps/, .github/workflows/android-release.yml, ios-release-e2e.yml). |
-| H2 Module boundaries enforced by tooling | assessed | 3 |  |  | A | Separate TypeScript projects for core, extensions, UI and scripts (tsconfig.core.json, tsconfig.extensions.projects.json) and a plugin activation boundary test (src/plugin-activation-boundary.test.ts). |
-| H3 Every change class has an automated pre-land check | assessed | 2 |  |  | A | CI runs on pull requests with CodeQL, dependency audit, E2E and performance checks, but passive draft pull requests are isolated from the main slots (.github/workflows/ci.yml:82-93); no accessibility check. |
-| I1 Plugin lane breadth | assessed | 3 | 4 |  | A | Plugins and extensions for channels, providers, tools and memory through a plugin SDK, declarative skills, hooks and an MCP registry (docs/cli/mcp/registry.md); ClawHub is the skill and plugin registry. |
-| I2 Runtime isolation and dependency control | assessed | 2 | 3 |  | A | Agent tools can run sandboxed under tool policy; plugins and hooks run in the gateway process with full trust. |
-| I3 Developer loop | assessed | 3 |  |  | A | Control UI, doctor, diagnostics export, logs and a QA lab (qa/) let developers validate against a live gateway. |
-| K1 Machine-readable capability surface for agents | assessed | 3 |  |  | A | MCP channel-bridge server exposing channel tools (src/mcp/channel-server.ts, channel-tools.ts), an MCP registry and a typed gateway protocol. |
-| K2 Conversational operability for users and natural-language authoring for operators | assessed | 3 | 4 |  | A | Users complete tasks conversationally across messaging channels with tool actions; operators configure OpenClaw in natural language through the system agent, which plans one safe command and waits for approval of the pending proposal (src/system-agent/assistant.ts, approval-intent.ts); skills are authored in chat. |
-| K3 Agent-safe actions | assessed | 3 |  |  | A | Pairing identities for senders, exec approvals previewing commands, tool policies, sandboxing, idempotency keys on gateway methods (94 non-test files under src/gateway) and audit events for tool actions. |
-| N1 Canonical data model with a mapping layer | assessed | 3 |  |  | A | Channel plugins map WhatsApp, Telegram, Slack, Discord, Signal and others onto one canonical message model (src/channels); providers map onto one model interface. |
-| N2 Connector definition or SDK | assessed | 3 |  |  | A | The plugin SDK covers channel auth and pairing, inbound and outbound sync and install and configure lifecycle (src/plugin-sdk, custodian-skills/configure-channel). |
-| N3 Stable versioned contracts | assessed | 2 |  |  | A | A compatibility layer and doctor migrations keep older configuration working; no public deprecation windows. |
-| O1 Kernel concepts are domain-neutral | assessed | 3 |  |  | A | Kernel of gateway sessions (conversation), channels (channel), pairing and auth (identity), tool policy (permission), cron, hooks and flows (workflow), and memory and files (content). |
-| O2 A new domain is expressible without kernel change | assessed | 4 | 3 |  | A | About 50 domain skills ship as bundles on an unchanged kernel (skills/: notion, obsidian, github, trello, spotify-player and more), and the agent authors new ones. |
-| O3 A domain ships as an installable bundle | assessed | 3 |  |  | A | Skills are versioned, installable bundles installed through ClawHub and the CLI (skills/clawhub, src/cli/skills-cli.ts). |
-| J1 Telemetry accessible to the platform in near real time | assessed | 3 |  |  | A | Audit events for runs, messages and tool actions are written as they happen and are queryable (src/audit/audit-event-queries.ts); a runtime trajectory store records sessions (src/trajectory/runtime-store.sqlite.test.ts). |
-| J2 Structured learning signals | assessed | 3 | 2 |  | A | Experience-review observations and evaluation findings are stored on the proposal revision they concern and recorded in the append-only proposal event ledger (src/skills/workshop/experience-review*.ts, docs/tools/skill-workshop/proposals.md). |
-| J3 Cross-source mining inside the product | assessed | 1 | 2 |  | A | Trajectories export for offline analysis; no joined usage, support and delivery models. |
-| M1 Ranked, evidence-backed proposals for change | assessed | 2 | 3 |  | A | The experience review scheduler turns observed runs into skill proposals when the system is idle (src/skills/workshop/experience-review-scheduler.ts, experience-review.ts, proposal-generation.ts); proposals are evidence-backed but not ranked by expected impact. |
-| M3 Accepted proposals are implemented by an AI authoring lane | assessed | 3 | 2 |  | A | By default the autonomous experience review drafts and applies skill proposals (autonomous.mode auto, approvalPolicy auto, src/skills/workshop/config.ts:15-20), under the Workshop's policy, revisions and rollback. |
-| M4 Post-change impact is measured against a declared baseline | assessed | 2 | 3 |  | A | Evaluator hooks compare each candidate with the complete baseline skill and store metrics and a pass, revise or block decision on the exact revision (docs/tools/skill-workshop/proposals.md); no evaluator is bundled (none in extensions/) and nothing observes impact after apply. |
-| P1 The product turns its own operating experience into candidate changes | assessed | 3 | 4 |  | A | With autonomous.mode auto by default, the experience review scheduler turns observed runs into skill proposals when the system is idle (src/skills/workshop/experience-review-scheduler.ts, proposal-generation.ts). |
-| P2 Learned changes are validated before they take effect | assessed | 2 |  |  | A | Proposals are scanned before apply (src/skills/workshop/proposal-scan.ts), and evaluator hooks can compare against the baseline and block, but no evaluator ships (none in extensions/). |
-| L1 Verification surface | assessed | 3 |  |  | A | Health monitor, status commands with JSON output, and a diagnostics export with sanitised status and health snapshots and the configuration shape (docs/gateway/health.md:13-65). |
-| L2 Environment reproducibility | assessed | 2 | 3 |  | A | Docker, Fly and Render deployment definitions (fly.toml, render.yaml, deploy/) and CI test boxes (.github/workflows/ci-check-testbox.yml); no per-change ephemeral environment with seeded data. |
-| L3 Machine verifiability | assessed | 3 |  |  | A | Live and E2E checks across channels and apps (.github/workflows/openclaw-live-and-e2e-checks-reusable.yml), and a maturity scorecard generated from a taxonomy and QA evidence covering 280 capability areas (docs/maturity/scorecard.md, taxonomy.yaml, qa/). |
+| Criterion | Status | Score | Alternate | Opt-in | Grade | Facets | Evidence, search scope or rationale |
+|---|---|---:|---:|---:|---|---|---|
+| ARC-01 Indexed query path, never a scan of a generic store | not_applicable | excluded |  |  | - |  | Agent runtime: generic-store query performance (fixed per-archetype rule). |
+| ARC-02 Safe schema and data migrations | assessed | 2 |  |  | A |  | The workshop store has a versioned SQLite schema (src/skills/workshop/store-sqlite-schema.ts) and doctor migrates configuration; no down steps. |
+| ARC-03 Horizontal scale of services | not_applicable | excluded |  |  | - |  | Scope fact hosted_service is false: A personal gateway daemon, not a multi-user service. |
+| ARC-04 Reliable asynchronous work | not_applicable | excluded |  |  | - |  | Scope fact hosted_service is false: A personal gateway daemon, not a multi-user service. |
+| ARC-05 Tenant isolation and noisy-neighbour controls | not_applicable | excluded |  |  | - |  | Scope fact multi_tenant is false: A personal assistant per installation; shared gateways carry several people but are not isolated tenants (VISION.md). |
+| ARC-06 Ceilings measured, not discovered in incidents | not_applicable | excluded |  |  | - |  | Scope fact hosted_service is false: A personal gateway daemon, not a multi-user service. |
+| ARC-07 Service objectives defined and monitored | not_applicable | excluded |  |  | - |  | Scope fact hosted_service is false: A personal gateway daemon, not a multi-user service. |
+| ARC-08 Failure isolation and graceful degradation | assessed | 2 | 3 |  | A | I | Agents can declare model fallbacks (src/agents/agent-scope-config.ts); plugins run in-process. |
+| ARC-09 Backup, restore and recovery | assessed | 2 | 3 |  | A | IT | Backup, scheduled backup, restore, health checks and a resource inventory, with restore tests and privacy rules for secrets (src/commands/backup-restore.ts, backup-schedule.ts, backup-health.ts, backup-resource-inventory.ts, backup-restore.test.ts). No recovery objectives are stated. |
+| DEL-01 Request intake into a structured change specification | assessed | 2 | 3 |  | A |  | The /learn command turns a request into requirements and sources and stages a pending skill proposal for review, revising existing Workshop skills before creating new ones (src/skills/workshop/learn-prompt.ts). No acceptance criteria or risk class. |
+| DEL-02 Layers deploy independently | assessed | 3 |  |  | A |  | Gateway, Control UI and macOS, iOS and Android companion apps are separate deployables with their own release workflows (apps/, .github/workflows/android-release.yml, ios-release-e2e.yml). |
+| DEL-03 Module boundaries enforced by tooling | assessed | 3 |  |  | A |  | Separate TypeScript projects for core, extensions, UI and scripts (tsconfig.core.json, tsconfig.extensions.projects.json) and a plugin activation boundary test (src/plugin-activation-boundary.test.ts). |
+| DEL-04 AI implementation lane | assessed | 2 | 3 |  | A |  | By default the autonomous experience review drafts and applies skill proposals (autonomous.mode auto, approvalPolicy auto, src/skills/workshop/config.ts:15-20), under the Workshop's policy, revisions and rollback. Scored at the lower reading under rule 11 because: Changes apply per installation, not across tenants. |
+| DEL-05 Every change class has an automated pre-land check | assessed | 2 |  |  | A |  | CI runs on pull requests with CodeQL, dependency audit, E2E and performance checks, but passive draft pull requests are isolated from the main slots (.github/workflows/ci.yml:82-93); no accessibility check. |
+| DEL-06 Verification surface | assessed | 3 |  |  | A |  | Health monitor, status commands with JSON output, and a diagnostics export with sanitised status and health snapshots and the configuration shape (docs/gateway/health.md:13-65). |
+| DEL-07 Environment reproducibility | assessed | 2 | 3 |  | A |  | Docker, Fly and Render deployment definitions (fly.toml, render.yaml, deploy/) and CI test boxes (.github/workflows/ci-check-testbox.yml); no per-change ephemeral environment with seeded data. |
+| DEL-08 Machine verifiability | assessed | 3 |  |  | A |  | Live and E2E checks across channels and apps (.github/workflows/openclaw-live-and-e2e-checks-reusable.yml), and a maturity scorecard generated from a taxonomy and QA evidence covering 280 capability areas (docs/maturity/scorecard.md, taxonomy.yaml, qa/). |
+| DEL-09 Staged exposure | assessed | 1 |  |  | A |  | Skill proposals apply to the whole installation; there are no cohorts. |
+| DEL-10 Kill switch | assessed | 2 |  |  | A |  | Autonomous mode and individual skills can be switched off in configuration at runtime (src/skills/workshop/config.ts). |
+| DEL-11 Release rollback | not_applicable | excluded |  |  | - |  | Scope fact code_release_path is false: The self-improvement path changes skills, not OpenClaw code. |
+| MAL-01 New entity type without code, DDL or deploy | not_applicable | excluded |  |  | - |  | Agent runtime: generic business-object criterion (fixed per-archetype rule). |
+| MAL-02 Field definitions carry type and validation | not_applicable | excluded |  |  | - |  | Agent runtime: generic business-object criterion (fixed per-archetype rule). |
+| MAL-03 Relationships and lifecycle states declarable | not_applicable | excluded |  |  | - |  | Agent runtime: generic business-object criterion (fixed per-archetype rule). |
+| MAL-04 API per entity is generic or generated | not_applicable | excluded |  |  | - |  | Agent runtime: generic CRUD criterion (fixed per-archetype rule). |
+| MAL-05 API reshapes at runtime from definitions | not_applicable | excluded |  |  | - |  | Agent runtime: generic CRUD criterion (fixed per-archetype rule). |
+| MAL-06 Machine-readable contract with introspection and dry-run | assessed | 2 | 3 |  | A |  | Typed gateway methods with JSON output modes and MCP JSON output (docs/cli/mcp/json-output.md); no OpenAPI or dry-run for gateway mutations. |
+| MAL-07 Layout is data, tenant-overridable, validated, previewable | assessed | 2 | 3 |  | A |  | Canvas serves agent-authored documents and widgets (src/canvas); Control UI layout is code. |
+| MAL-08 Generic list, detail and intake widgets from definition plus view spec | not_applicable | excluded |  |  | - |  | Agent runtime: generic CRUD views (fixed per-archetype rule). |
+| MAL-09 Theme tokens and text are data with tenant overrides | assessed | 2 |  |  | A |  | 278 locale files; themes are engineer-managed. |
+| MAL-10 Rules engine with declarative conditions and actions | assessed | 2 | 3 |  | A |  | Cron jobs, hooks, routing bindings and auto-reply configuration are declared as data (docs/gateway/config-hooks.md, config-automation.md, src/routing, src/auto-reply); no general rules engine with a test mode. |
+| MAL-11 Event model with webhooks or subscriptions and retry | assessed | 2 |  |  | A |  | Inbound webhook hooks trigger agent runs; audit events record runs, messages and tool actions; no outbound subscriptions with retry. |
+| MAL-12 Sandboxed server-side hooks | assessed | 2 | 3 |  | A |  | Hook scripts run in the gateway process; agent tools for non-main sessions run in sandboxes governed by tool policy and elevated mode (docs/gateway/sandboxing.md, sandbox-vs-tool-policy-vs-elevated.md). |
+| MAL-13 Plugin lane breadth | assessed | 3 | 4 |  | A |  | Plugins and extensions for channels, providers, tools and memory through a plugin SDK, declarative skills, hooks and an MCP registry (docs/cli/mcp/registry.md); ClawHub is the skill and plugin registry. |
+| MAL-14 Runtime isolation and dependency control | assessed | 2 | 3 |  | A |  | Agent tools can run sandboxed under tool policy; plugins and hooks run in the gateway process with full trust. |
+| MAL-15 Developer loop | assessed | 3 |  |  | A |  | Control UI, doctor, diagnostics export, logs and a QA lab (qa/) let developers validate against a live gateway. |
+| MAL-16 Canonical data model with a mapping layer | assessed | 3 |  |  | A |  | Channel plugins map WhatsApp, Telegram, Slack, Discord, Signal and others onto one canonical message model (src/channels); providers map onto one model interface. |
+| MAL-17 Connector definition or SDK | assessed | 3 |  |  | A |  | The plugin SDK covers channel auth and pairing, inbound and outbound sync and install and configure lifecycle (src/plugin-sdk, custodian-skills/configure-channel). |
+| MAL-18 Stable versioned contracts | assessed | 2 |  |  | A |  | A compatibility layer and doctor migrations keep older configuration working; no public deprecation windows. |
+| MAL-19 Machine-readable capability surface for agents | assessed | 3 |  |  | A |  | MCP channel-bridge server exposing channel tools (src/mcp/channel-server.ts, channel-tools.ts), an MCP registry and a typed gateway protocol. |
+| MAL-20 Conversational operability for users and natural-language authoring for operators | assessed | 3 | 4 |  | A |  | Users complete tasks conversationally across messaging channels with tool actions; operators configure OpenClaw in natural language through the system agent, which plans one safe command and waits for approval of the pending proposal (src/system-agent/assistant.ts, approval-intent.ts); skills are authored in chat. |
+| LRN-01 Telemetry accessible to the platform in near real time | assessed | 3 |  |  | A |  | Audit events for runs, messages and tool actions are written as they happen and are queryable (src/audit/audit-event-queries.ts); a runtime trajectory store records sessions (src/trajectory/runtime-store.sqlite.test.ts). |
+| LRN-02 Structured learning signals | assessed | 2 | 3 |  | A |  | Experience-review observations and evaluation findings are stored on the proposal revision they concern and recorded in the append-only proposal event ledger (src/skills/workshop/experience-review*.ts, docs/tools/skill-workshop/proposals.md). Scored at the lower reading under rule 11 because: Observations come from sessions, not from users. |
+| LRN-03 User-issue detection | assessed | 2 |  |  | A |  | The experience review observes failed runs and corrections (src/skills/workshop/experience-review.ts). |
+| LRN-04 Cross-source mining inside the product | assessed | 1 | 2 |  | A |  | Trajectories export for offline analysis; no joined usage, support and delivery models. |
+| LRN-05 Automated diagnosis | assessed | 2 |  |  | A |  | openclaw doctor diagnoses configuration and runtime problems; experience review attaches the observed runs to proposals. |
+| LRN-06 Ranked, evidence-backed proposals for change | assessed | 2 | 3 |  | A |  | The experience review scheduler turns observed runs into skill proposals when the system is idle (src/skills/workshop/experience-review-scheduler.ts, experience-review.ts, proposal-generation.ts); proposals are evidence-backed but not ranked by expected impact. |
+| LRN-07 The product turns its own operating experience into candidate changes | assessed | 3 | 4 |  | A |  | With autonomous.mode auto by default, the experience review scheduler turns observed runs into skill proposals when the system is idle (src/skills/workshop/experience-review-scheduler.ts, proposal-generation.ts). |
+| LRN-08 Learned changes are validated before they take effect | assessed | 2 |  |  | A |  | Proposals are scanned before apply (src/skills/workshop/proposal-scan.ts), and evaluator hooks can compare against the baseline and block, but no evaluator ships (none in extensions/). |
+| LRN-09 Post-change impact is measured against a declared baseline | assessed | 2 | 3 |  | A |  | Evaluator hooks compare each candidate with the complete baseline skill and store metrics and a pass, revise or block decision on the exact revision (docs/tools/skill-workshop/proposals.md); no evaluator is bundled (none in extensions/) and nothing observes impact after apply. |
+| GOV-01 Accessibility inherited from a component kit and continuously verified | assessed | 1 |  |  | A |  | No automated accessibility scanning found for the Control UI or companion apps. |
+| GOV-02 Audit generic over entities, definition changes and approvals | assessed | 2 | 3 |  | A |  | Audit event store records agent runs, messages and tool actions with queries and configuration (src/audit/audit-event-types.ts, docs/gateway/audit.md); the Skill Workshop keeps an append-only proposal event ledger (docs/tools/skill-workshop/proposals.md). Configuration changes are not audit events. |
+| GOV-03 Privacy classification, export, erasure and retention generic over entities | assessed | 2 |  |  | A |  | Local-first storage, trajectory export and cleanup (src/trajectory/export.ts, cleanup.ts), and redacted diagnostics export (docs/gateway/health.md:56); not driven by tags. |
+| GOV-04 Security as infrastructure | assessed | 3 |  |  | A | IT | Exec approvals with allowlists, DM pairing, tool policies, sandboxing and a secrets subsystem (docs/tools/exec-approvals.md, src/pairing, src/secrets); CodeQL, dependency audit and security review workflows (.github/workflows/codeql.yml, dependency-audit.yml, security-review.yml). |
+| GOV-05 Definitions and layouts versioned with rollback | assessed | 2 |  |  | A |  | Inventory: skills 3, configuration 2. Workshop skill collections are backed up and can be restored or rolled back with revision hashes (src/skills/workshop/collection-backup.ts, collection-restore.ts, collection-rollback.ts); configuration has rotating backups and recovery (src/config/backup-rotation.ts, recovery-policy.ts) but no operator rollback with diffs. Under the inventory rule a 3 needs every default surface at 3. |
+| GOV-06 Proposal, review, apply as a first-class object with preview | assessed | 3 | 4 |  | A |  | Skill changes are typed proposals (PROPOSAL.md with revision hashes) that the agent or a person creates; evaluations are stored on the exact revision and apply revalidates the evaluated tree (docs/tools/skill-workshop/proposals.md, src/skills/workshop/service-propose.ts, service-evaluation.ts); the system agent turns chat into proposals for configuration commands with approval classification (src/system-agent/approval-intent.ts). |
+| GOV-07 Policy-based apply with recorded approvals and a movable human boundary | assessed | 2 |  | 3 | A |  | Defaults are autonomous.mode auto and approvalPolicy auto (src/skills/workshop/config.ts:15-20), so proposals apply without a person; evaluator block decisions only exist if an evaluator plugin is installed. Setting approvalPolicy to pending gives a per-class approval policy. |
+| GOV-08 Upgrade safety | assessed | 3 |  |  | A |  | Doctor repairs and migrates configuration (docs/gateway/doctor.md), a compatibility layer (src/compat) and a plugin activation boundary test (src/plugin-activation-boundary.test.ts) around a versioned plugin SDK (src/plugin-sdk). |
+| GOV-09 Agent-safe actions | assessed | 3 |  |  | A |  | Pairing identities for senders, exec approvals previewing commands, tool policies, sandboxing, idempotency keys on gateway methods (94 non-test files under src/gateway) and audit events for tool actions. |
+| GOV-10 Bounded self-change | assessed | 2 |  |  | A |  | Workshop policy limits proposal size and origins (src/skills/workshop/policy.ts, proposal-origin-validation.ts); there is no per-period or blast-radius limit. |
+| GOV-11 Learning-input integrity | assessed | 2 | 3 |  | A |  | Every proposal records its origin agent, session, run and message (src/skills/workshop/proposal-origin-validation.ts) and is scanned before apply (proposal-scan.ts); with approvalPolicy auto, session content alone can drive an applied change. |
+| EXP-01 Kernel concepts are domain-neutral | assessed | 3 |  |  | A |  | Kernel of gateway sessions (conversation), channels (channel), pairing and auth (identity), tool policy (permission), cron, hooks and flows (workflow), and memory and files (content). |
+| EXP-02 A new domain is expressible without kernel change | assessed | 3 | 4 |  | A |  | About 50 domain skills ship as bundles on an unchanged kernel (skills/: notion, obsidian, github, trello, spotify-player and more), and the agent authors new ones. Scored at the lower reading under rule 11 because: If skills are judged too small to count as domains. |
+| EXP-03 A domain ships as an installable bundle | assessed | 3 |  |  | A |  | Skills are versioned, installable bundles installed through ClawHub and the CLI (skills/clawhub, src/cli/skills-cli.ts). |
+| EXP-04 Unmet-demand sensing | assessed | 1 |  |  | A |  | Unserved requests stay in session history. |
+| EXP-05 Evidence-backed opportunity proposals | assessed | 1 |  |  | A |  | Experience review proposes skills for observed tasks, not capabilities nobody has used yet. |
+| EXP-06 Cohort launch with keep-or-kill | assessed | 1 |  |  | A |  | New skills apply to the whole installation at once. |
+
+Facets: I implemented, T tested, O operated.
 

@@ -22,3 +22,17 @@ The fixed `agent-runtime` rule excludes A1, A2, A3, B1, B2, C2 and G1, each with
 1. **Skills count as definitions.** `references/archetypes.md` now lists skills, memory, prompts, tool policies and configuration as an agent's customisation surfaces.
 2. **Defaults are scored; opt-ins are reported separately.** `skills.write_approval` and `memory.write_approval` default to false, so F2, F3 and P2 carry a lower `score` and a higher `available_score`.
 3. **First-party companions are in scope.** `hermes-agent-self-evolution` targets this agent and is assessed with it (rubric scoring rule 3).
+
+## EVOLVE v0.4 scope facts
+
+Declared for the default configuration. They decide which criteria and critical controls apply (`references/archetypes.md`).
+
+| Fact | Value | Evidence |
+|---|---|---|
+| `persistent_data` | true | Sessions in SQLite, plus skills, memory and configuration under HERMES_HOME. |
+| `schema_changes` | true | The state database is versioned and migrated on start (hermes_state_schema.py, SCHEMA_VERSION). |
+| `multi_tenant` | false | One user per installation; profiles are separate homes, not tenants. |
+| `hosted_service` | false | A local single-user agent; the gateway relays messaging platforms for the same user. |
+| `agent_mutations` | true | The background review writes skills and memory (agent/background_review.py). |
+| `automatic_apply` | true | background_review is on by default and skill and memory write approvals default to off (hermes_cli/config_defaults.py:814, 1320). |
+| `code_release_path` | true | The first-party GEPA optimiser proposes improved skills as pull requests to this repository, shipped in releases (hermes-agent-self-evolution). |

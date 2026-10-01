@@ -1,0 +1,313 @@
+{
+ "note": "Headline outputs of the v0.3 field test, kept for comparison after the EVOLVE v0.4 migration.",
+ "systems": {
+  "frappe": {
+   "indexes": {
+    "malleability": 2.8,
+    "governance": 1.9,
+    "learning": 1.3,
+    "factory": 1.7
+   },
+   "ranges": {
+    "malleability": [
+     2.6,
+     3.0
+    ],
+    "governance": [
+     1.8,
+     2.4
+    ],
+    "learning": [
+     1.2,
+     1.6
+    ],
+    "factory": [
+     1.7,
+     2.0
+    ]
+   },
+   "closed_loop_candidate": false,
+   "closed_loop_candidate_opt_in": false
+  },
+  "directus": {
+   "indexes": {
+    "malleability": 2.6,
+    "governance": 1.8,
+    "learning": 1.1,
+    "factory": 2.0
+   },
+   "ranges": {
+    "malleability": [
+     2.3,
+     3.0
+    ],
+    "governance": [
+     1.6,
+     2.5
+    ],
+    "learning": [
+     0.9,
+     1.2
+    ],
+    "factory": [
+     2.0,
+     2.3
+    ]
+   },
+   "closed_loop_candidate": false,
+   "closed_loop_candidate_opt_in": false
+  },
+  "discourse": {
+   "indexes": {
+    "malleability": 2.1,
+    "governance": 1.8,
+    "learning": 1.5,
+    "factory": 1.7
+   },
+   "ranges": {
+    "malleability": [
+     2.1,
+     2.3
+    ],
+    "governance": [
+     1.8,
+     2.3
+    ],
+    "learning": [
+     1.4,
+     1.6
+    ],
+    "factory": [
+     1.7,
+     2.0
+    ]
+   },
+   "closed_loop_candidate": false,
+   "closed_loop_candidate_opt_in": false
+  },
+  "posthog": {
+   "indexes": {
+    "malleability": 2.6,
+    "governance": 2.3,
+    "learning": 2,
+    "factory": 2.7
+   },
+   "ranges": {
+    "malleability": [
+     2.4,
+     3.0
+    ],
+    "governance": [
+     2.1,
+     2.8
+    ],
+    "learning": [
+     1.8,
+     2.8
+    ],
+    "factory": [
+     2.5,
+     3
+    ]
+   },
+   "closed_loop_candidate": false,
+   "closed_loop_candidate_opt_in": false
+  },
+  "n8n": {
+   "indexes": {
+    "malleability": 2.4,
+    "governance": 2.8,
+    "learning": 1.8,
+    "factory": 2.5
+   },
+   "ranges": {
+    "malleability": [
+     2.2,
+     2.9
+    ],
+    "governance": [
+     2.5,
+     3.0
+    ],
+    "learning": [
+     1.8,
+     2.5
+    ],
+    "factory": [
+     2.3,
+     2.8
+    ]
+   },
+   "closed_loop_candidate": false,
+   "closed_loop_candidate_opt_in": false
+  },
+  "dify": {
+   "indexes": {
+    "malleability": 2.5,
+    "governance": 1.9,
+    "learning": 1.6,
+    "factory": 2.3
+   },
+   "ranges": {
+    "malleability": [
+     2.3,
+     2.8
+    ],
+    "governance": [
+     1.8,
+     2.1
+    ],
+    "learning": [
+     1.5,
+     1.8
+    ],
+    "factory": [
+     2.2,
+     2.5
+    ]
+   },
+   "closed_loop_candidate": false,
+   "closed_loop_candidate_opt_in": false
+  },
+  "librechat": {
+   "indexes": {
+    "malleability": 1.8,
+    "governance": 1.9,
+    "learning": 1,
+    "factory": 2
+   },
+   "ranges": {
+    "malleability": [
+     1.8,
+     2.2
+    ],
+    "governance": [
+     1.9,
+     2.3
+    ],
+    "learning": [
+     0.9,
+     1
+    ],
+    "factory": [
+     2,
+     2.3
+    ]
+   },
+   "closed_loop_candidate": false,
+   "closed_loop_candidate_opt_in": false
+  },
+  "hermes-agent": {
+   "indexes": {
+    "malleability": 2.4,
+    "governance": 2.3,
+    "learning": 2.5,
+    "factory": 2
+   },
+   "ranges": {
+    "malleability": [
+     2.3,
+     2.5
+    ],
+    "governance": [
+     2.3,
+     2.5
+    ],
+    "learning": [
+     2.3,
+     3.1
+    ],
+    "factory": [
+     2,
+     2.3
+    ]
+   },
+   "closed_loop_candidate": false,
+   "closed_loop_candidate_opt_in": true
+  },
+  "openclaw": {
+   "indexes": {
+    "malleability": 2.4,
+    "governance": 2.4,
+    "learning": 2.4,
+    "factory": 2.7
+   },
+   "ranges": {
+    "malleability": [
+     2.4,
+     2.9
+    ],
+    "governance": [
+     2.4,
+     2.8
+    ],
+    "learning": [
+     2.2,
+     2.9
+    ],
+    "factory": [
+     2.7,
+     2.8
+    ]
+   },
+   "closed_loop_candidate": false,
+   "closed_loop_candidate_opt_in": false
+  },
+  "opencode": {
+   "indexes": {
+    "malleability": 2.3,
+    "governance": 1.5,
+    "learning": 0.9,
+    "factory": 2.2
+   },
+   "ranges": {
+    "malleability": [
+     2.3,
+     2.4
+    ],
+    "governance": [
+     1.5,
+     1.9
+    ],
+    "learning": [
+     0.9,
+     1.0
+    ],
+    "factory": [
+     2.2,
+     2.7
+    ]
+   },
+   "closed_loop_candidate": false,
+   "closed_loop_candidate_opt_in": false
+  },
+  "openhands": {
+   "indexes": {
+    "malleability": 2.1,
+    "governance": 1.6,
+    "learning": 1.0,
+    "factory": 2.2
+   },
+   "ranges": {
+    "malleability": [
+     2.1,
+     2.4
+    ],
+    "governance": [
+     1.5,
+     1.8
+    ],
+    "learning": [
+     1.0,
+     1.0
+    ],
+    "factory": [
+     2.2,
+     2.5
+    ]
+   },
+   "closed_loop_candidate": false,
+   "closed_loop_candidate_opt_in": false
+  }
+ }
+}

@@ -1,133 +1,159 @@
-# Malleability and Self-Evolution Readiness
+# EVOLVE: how ready is your software to evolve itself?
 
-![Malleable Software: How ready is your software to self-evolve?](assets/malleable-software-social-preview.png)
+An open, evidence-backed framework and agent skill that answers one question: **how ready is a software product to evolve itself safely?**
 
-An open, evidence-backed framework and agent skill for assessing whether a software product can absorb governed change and safely improve from evidence.
+The question breaks into three loops:
 
-The framework asks four related questions, each reported as its own index:
+| Loop | Can the product... |
+|---|---|
+| **Request → Release** | take a user's request, implement it properly and release it? |
+| **Issue → Fix** | find the problems users face, fix them and ship the fix? |
+| **Opportunity → Expansion** | notice adjacent needs it does not serve yet, and propose or launch them? |
 
-1. **Malleability:** Can the product's shape change through governed definitions instead of another bespoke release?
-2. **Governance:** Are changes versioned, proposed, reviewed, gated by policy, audited and reversible?
-3. **Learning:** Does the product observe its own use, turn experience into candidate changes, and measure whether they help?
-4. **Factory:** Can changes be built and verified through reproducible, machine-readable surfaces?
+Each loop gets a **Software Autonomy Level (SAL)** from L0 to L5, modelled on the levels used for self-driving cars:
 
-Self-evolution readiness is Governance and Learning together, plus a closed-loop check that every stage (observe, propose, review, gate, apply and roll back, measure, verify) is present.
+| Level | Name | What the product can do |
+|---|---|---|
+| L0 | Manual | Every change is engineers writing and releasing code. |
+| L1 | Configurable | People make the change without bespoke engineering, and can roll it back. |
+| L2 | Assisted | The product structures the request, diagnoses the issue or drafts the proposal, and drafts the change. People build and release. |
+| L3 | Supervised | The product carries the loop end to end; a person approves each release. Every critical control passes. |
+| L4 | Policy-bounded | Low-risk changes ship without a person, under policy, with staged exposure, measurement and automatic rollback. |
+| L5 | Self-directing | The product initiates, ships and measures change within policy, backed by operational evidence. |
 
-This is a **public beta**. It is designed to create a falsifiable assessment, not a universal software leaderboard.
+The headline is the lower of the first two loops, with Expansion reported beside it, for example **SAL 2 · Request → Release L2 · Issue → Fix L2 · Expansion L1**. The scorer always names what blocks the next level.
 
-## What Is Included
+Behind the levels is the **EVOLVE profile**: six capabilities, each scored 0 to 4.
 
-- 16 dimensions and 49 anchored criteria.
-- Evidence grades and explicit uncertainty handling, with alternate readings reported as ranges.
-- Default-configuration scoring, with shipped opt-in settings reported separately.
+| | Capability | Asks |
+|---|---|---|
+| **E** | Elastic (`ARC`) | Does the architecture scale, survive failure and recover its data? |
+| **V** | Velocity (`DEL`) | Can a change be built, verified and released quickly and safely? |
+| **O** | Open (`MAL`) | Can the product be reshaped without a code release? |
+| **L** | Learn (`LRN`) | Does it notice what is wrong, work out why, and measure whether changes helped? |
+| **V** | Vet (`GOV`) | Is every change reviewed, policy-gated, audited and reversible, including the changes it makes to itself? |
+| **E** | Expand (`EXP`) | Does it find and launch adjacent value? |
+
+This is a **public beta**. It is designed to produce a falsifiable assessment, not a universal software leaderboard. `spec/evolve-v0.4-draft.md` explains the design and every decision behind it.
+
+## What is included
+
+- 66 anchored criteria in six capabilities, each with a 0–4 ladder.
+- Three loops, each scored by its weakest stage. A loop's level is the lowest of four parts: the loop's own stages, a shared release spine (build, verify, stage, release, observe, roll back), an architecture foundation and a governance ceiling.
+- Seven critical controls:
+  - definition rollback;
+  - release rollback;
+  - safe migrations;
+  - tested backup and restore;
+  - tenant isolation;
+  - security;
+  - bounded self-change.
+
+  A failed applicable control caps every loop at L2.
+- Seven scope facts that decide which criteria and controls apply, so a local tool is not failed on tenant isolation.
+- Evidence grades, evidence facets (implemented, tested, operated) and a depth cap: architecture and control criteria need tested evidence for a 3 and operated evidence for a 4.
+- Scoring of the default configuration, with shipped opt-in settings and higher alternate readings reported separately.
 - Enforced archetype exclusions and an interpretation guide for agent runtimes and developer platforms.
-- Seven profiles and four non-overlapping indexes.
-- A closed-loop check with a minimum level per stage.
-- A deterministic Python scorer with tests.
-- A prerequisite-ordered remediation generator.
+- A deterministic Python scorer with tests, and a remediation generator that orders work by prerequisites.
 - A reusable `SKILL.md` for compatible coding agents.
 - A field test on 11 open-source systems in `assessments/2026-09-field-test/`, scored from public source code and not yet reviewed by their maintainers.
 
-The framework itself contains no private repository evidence, client examples, or employer-specific terminology.
+The framework itself contains no private repository evidence, client examples or employer-specific terminology.
 
-## Install As A Skill
+## Install as a skill
 
 For Claude Code:
 
 ```bash
 git clone https://github.com/harsh51191/malleablesoftware.git \
-  ~/.claude/skills/malleability-readiness-eval
+  ~/.claude/skills/evolvable-software
 ```
 
 For Codex:
 
 ```bash
 git clone https://github.com/harsh51191/malleablesoftware.git \
-  ~/.codex/skills/malleability-readiness-eval
+  ~/.codex/skills/evolvable-software
 ```
 
-Restart or refresh Codex after installation. The skill can then be discovered for requests involving software malleability, self-evolution, governed product change, factory readiness, or agent-safe action surfaces.
+Restart or refresh the agent after installation. The skill can then be discovered for requests about self-evolution readiness, software autonomy levels, governed product change, architecture readiness for autonomous change, or agent-safe action surfaces.
 
-For other agents that support `SKILL.md` packages, clone the repository into the tool's configured skills directory.
-
-## Run The Scorer Directly
+## Run the scorer directly
 
 Requires Python 3.8 or later. It uses only the standard library.
 
-Create an evidence-input template outside the repository you are assessing:
+Create an input template outside the repository you are assessing:
 
 ```bash
 python3 scripts/init_scores.py \
   --product "Example Software" \
   --archetype focused-application \
   --source "repository @ immutable-tip" \
-  --out ~/msr/example-2026-09-30.json
+  --out ~/evolve/example-2026-10-01.json
 ```
 
-Every criterion starts as `todo`, and the scorer refuses the file until each one is assessed, marked `not_evidenced` with a search scope, or excluded as the archetype allows.
+Every scope fact starts empty and every criterion starts as `todo`. The scorer refuses the file until each of these holds:
+
+- each fact is true or false, with evidence;
+- each criterion is assessed, marked `not_evidenced` with a search scope, or excluded as the archetype or a scope fact allows.
 
 Complete the file using `references/rubric.md` and `references/evidence-plan.md`, then run:
 
 ```bash
-python3 scripts/score.py ~/msr/example-2026-09-30.json
+python3 scripts/score.py ~/evolve/example-2026-10-01.json
 ```
 
-Generate a prerequisite-ordered path to level 3:
+Generate a plan that starts with what blocks the next level:
 
 ```bash
-python3 scripts/score.py ~/msr/example-2026-09-30.json --prescribe --target 3
+python3 scripts/score.py ~/evolve/example-2026-10-01.json --prescribe --target 3
 ```
 
-Use `--target 4` only for a generative, policy-gated future state.
-
-## Evidence States
+## Evidence states and fields
 
 Every criterion must be one of:
 
-- `assessed`: assigned an anchored score from 0 to 4 with evidence.
-- `not_evidenced`: applicable, but available sources cannot establish presence or absence.
-- `not_applicable`: one of the exclusions the declared archetype allows, with a specific rationale.
+- `assessed`: an anchored score from 0 to 4 with evidence.
+- `not_evidenced`: applicable, but the sources cannot establish presence or absence.
+- `not_applicable`: an exclusion the archetype allows, or a criterion a false scope fact switches off, with a rationale.
 
-Missing capability is not the same as non-applicability. Optional fields: `alt_score` (an adjacent level that is also defensible), `available_score` (the level with shipped opt-in settings enabled), `if_applicable` (what an excluded criterion would score).
+Optional fields:
 
-## Software Archetypes
+- `alt_score`: the next level up, also defensible.
+- `available_score`: the level with shipped opt-in settings on.
+- `facets`: implemented, tested, operated.
+- `inventory`: a level per surface, for criteria that span several surfaces.
+- `if_applicable`: what an excluded criterion would score.
 
-- Configurable application platform
-- Agent runtime
-- Developer platform
-- Focused application
-- Other, with an explicit applicability explanation
+## Important limits
 
-Read `references/archetypes.md` before scoring. It lists the allowed exclusions per archetype and explains how to read the rubric for agent runtimes and developer platforms.
-
-## Important Limits
-
-- Repository evidence establishes that a mechanism exists in the inspected source. It does not prove usability, adoption, hosted-edition parity, production reliability, or business impact.
-- A closed-loop candidate signal is not a production-readiness certification.
-- Cross-product comparison is defensible only when scope, archetype, evidence depth, and applicability decisions are comparable.
+- Repository evidence establishes that a mechanism exists in the inspected source. It does not prove usability, adoption, hosted-edition parity, production reliability or business impact. The operated facet makes this limit visible.
+- A Software Autonomy Level is a readiness reading, not a production certification.
+- Cross-product comparison is defensible only when scope, archetype, scope facts, evidence depth and applicability decisions are comparable.
 - Give maintainers an opportunity to correct factual evidence before publishing comparative scores.
-- Do not include credentials, customer identifiers, confidential excerpts, internal URLs, or proprietary evidence in shared scorecards.
+- Do not include credentials, customer identifiers, confidential excerpts, internal URLs or proprietary evidence in shared scorecards.
 
-## Repository Structure
+## Repository structure
 
 ```text
-SKILL.md                         Agent instructions
-metadata.yaml                    Package metadata
-references/rubric.md             Anchored assessment criteria
-references/archetypes.md         Applicability guidance
-references/evidence-plan.md      Evidence collection plan
-references/remediation.md        Level 3 and 4 improvement moves
-references/scorecard-template.md Reporting structure
-scripts/init_scores.py           Neutral input generator
-scripts/score.py                 Validator, scorer, profiler and prescriber
-tests/test_score.py              Scorer tests (python3 -m unittest discover -s tests)
-assessments/                     Field-test results
-CHANGELOG.md                     Version history
+SKILL.md                          Agent instructions
+metadata.yaml                     Package metadata
+spec/evolve-v0.4-draft.md         Design and decisions
+references/rubric.md              Criteria, anchored levels and the scoring model
+references/archetypes.md          Applicability and interpretation guidance
+references/evidence-plan.md       Evidence collection plan
+references/remediation.md         Level 3 and 4 improvement moves
+references/scorecard-template.md  Reporting structure
+scripts/init_scores.py            Input template generator
+scripts/score.py                  Validator, scorer and prescriber
+tests/test_score.py               Scorer tests (python3 -m unittest discover -s tests)
+assessments/                      Field-test results
+CHANGELOG.md                      Version history
 ```
 
-## Version
+## Name and version
 
-Public Beta 3 (v0.3.0), 30 September 2026. See `CHANGELOG.md` for what changed and why.
+EVOLVE v0.4.0, public beta 4, 1 October 2026. EVOLVE was previously the Malleability and Self-Evolution Readiness (MSR) framework; see `CHANGELOG.md` for what changed and why. "EVOLVE" and "Software Autonomy Level" are working names until a trademark and prior-use search is complete.
 
 ## License
 

@@ -1,5 +1,85 @@
 # Changelog
 
+## Public Beta 4 (EVOLVE v0.4.0), 2026-10-01
+
+The framework is renamed from Malleability and Self-Evolution Readiness (MSR) to **EVOLVE** and re-centred on one question: how ready is a product to evolve itself safely? `spec/evolve-v0.4-draft.md` records the design, the two review rounds and every decision.
+
+### What it reports
+
+- **Software Autonomy Levels (L0 to L5)** for three loops: Request → Release, Issue → Fix and Opportunity → Expansion. The headline is the lower of the first two. These replace v0.3's four indexes and its single closed-loop flag.
+- **Each loop's level is the lowest of four parts:**
+  - the loop's own stages;
+  - a shared release spine (build, verify, stage, release, observe, roll back);
+  - an architecture foundation;
+  - a governance ceiling.
+
+  The scorer names every condition that blocks the next level.
+- **Seven critical controls**, each an L3 condition: definition rollback, release rollback, safe migrations, tested backup and restore, tenant isolation, security, and bounded self-change. A failed applicable control caps every loop at L2.
+- **The six-capability EVOLVE profile** replaces the indexes and profiles: Elastic (ARC), Velocity (DEL), Open (MAL), Learn (LRN), Vet (GOV), Expand (EXP). Each capability score is the mean of its area means.
+
+### What moved, and why
+
+- **Architecture is back in the headline.** v0.3 left performance (G) and agent readiness (K) only in profiles, an undisclosed loss. G is now the core of Elastic, and every applicable architecture criterion constrains every loop. K1 and K2 joined Open; K3 joined Vet.
+- **The implementation lane (M3) moved to Velocity** as DEL-04, and now credits code changes made through the product's own pipeline, not only definition changes.
+- **Adjacent-domain expansion (O) moved to Expand**, joined by criteria for sensing unmet demand, proposing adjacent capabilities and launching them to a cohort first.
+- **Criterion ids are descriptive** (`ARC-01` and so on). The mapping from every v0.3 id is in the specification, section 12.
+
+### New criteria (17)
+
+- Architecture:
+  - ARC-02 safe migrations;
+  - ARC-03 horizontal scale;
+  - ARC-04 reliable asynchronous work;
+  - ARC-07 service objectives;
+  - ARC-08 failure isolation;
+  - ARC-09 backup, restore and recovery.
+- Delivery:
+  - DEL-01 request intake;
+  - DEL-09 staged exposure;
+  - DEL-10 kill switch;
+  - DEL-11 release rollback.
+- Learning:
+  - LRN-03 user-issue detection;
+  - LRN-05 automated diagnosis.
+- Governance:
+  - GOV-10 bounded self-change;
+  - GOV-11 learning-input integrity.
+- Expansion:
+  - EXP-04 unmet-demand sensing;
+  - EXP-05 opportunity proposals;
+  - EXP-06 cohort launch with keep-or-kill.
+
+### How it is applied
+
+- **Scope facts.** Seven facts, declared with evidence, decide which criteria and controls apply: persistent data, schema changes, multi-tenant, hosted service, agent mutations, automatic apply, and code release path.
+- **Evidence facets and a depth cap.** Implemented, tested and operated are recorded separately. Architecture and control criteria need tested evidence for a 3 and operated evidence for a 4.
+- **Coverage inventories.** Failure isolation, backup and definition rollback list their surfaces, and a 3 or more cannot exceed the weakest one.
+- **Alternates are upward only.** `alt_score` must be `score + 1`, which enforces the rubric's "take the lower reading" rule. The 49 downward alternates in the field test were flipped.
+- **Repository tooling counts only as a first-party evolution system** for intake, implementation, release, detection, diagnosis, learning and expansion criteria.
+- **Round 2 boundary clarifications.** The inter-rater study reached 118 of 132 in exact agreement. Its four disputed boundaries are now explicit:
+  - definition rollback covers all default surfaces;
+  - impact measurement is post-apply only;
+  - the policy criterion covers self-changes, while per-action permissions belong to agent-safe actions;
+  - the implementation lane credits changes to the product itself.
+
+### Field test
+
+All 11 systems were migrated and scored on the new criteria. The OpenHands Automation Service was added to OpenHands' scope.
+
+- n8n and OpenClaw reach SAL 2; no system reaches L3.
+- Definition rollback and tested backup with stated recovery objectives fail in all eleven.
+
+### Scorer and tooling
+
+- The scorer reads capabilities and areas from rubric headings, and everything else from the `evolve-model` block, including the level conditions as data.
+- It validates:
+  - scope facts and fact-driven applicability;
+  - facets and inventories;
+  - upward-only alternates.
+- It reports SAL for the default, opt-in and alternate readings.
+- The prescriber lists the next-level blockers before the criterion plan.
+- 43 tests.
+
 ## Public Beta 3 (v0.3.0), 2026-09-30
 
 A field test on 11 open-source systems found that the criteria were usable, but the headline numbers depended too much on who did the scoring. Two independent runs of v0.2 ranked the same systems with a rank correlation of about 0.4. This release changes what the framework measures, and how the scorer computes it, and is designed to reduce that rater dependence. Whether it does is not yet shown: the v0.3 field test is a single rater. Showing it needs a second independent v0.3 pass that reports rank correlation and criterion-level agreement.

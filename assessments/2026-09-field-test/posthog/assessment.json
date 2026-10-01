@@ -5,52 +5,52 @@
   "archetype": "focused-application",
   "scope_line": "Scope: the posthog monorepo (Django app, products/, ee/, Node CDP services, Rust services, MCP service, CI). PostHog Cloud operations and separate SDK repositories are out of scope. Many products here run PostHog's evolve loop for customers' software; see the construct note in the reading.",
   "scores": {
-    "A1": {
+    "MAL-01": {
       "status": "not_applicable",
       "rationale": "Focused application: universal entity criterion (fixed per-archetype rule). Warehouse views and group types are runtime data models, created by analysts through queries.",
       "if_applicable": 2
     },
-    "A2": {
+    "MAL-02": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Event and person property definitions carry a validated property_type and format editable in Data management and read by queries and the UI (products/event_definitions/backend/models/property_definition.py:73-152). v0.3 moved the privacy tag to E3."
+      "evidence": "Event and person property definitions carry a validated property_type and format editable in Data management and read by queries and the UI (products/event_definitions/backend/models/property_definition.py:73-152). v0.3 moved the privacy tag to GOV-03."
     },
-    "A3": {
+    "MAL-03": {
       "status": "not_applicable",
       "rationale": "Focused application: universal entity criterion (fixed per-archetype rule).",
       "if_applicable": 1
     },
-    "B1": {
+    "MAL-04": {
       "status": "not_applicable",
       "rationale": "Focused application: universal entity criterion (fixed per-archetype rule). The endpoints product publishes APIs from saved queries.",
       "if_applicable": 2
     },
-    "B2": {
+    "MAL-05": {
       "status": "not_applicable",
       "rationale": "Focused application: universal entity criterion (fixed per-archetype rule).",
       "if_applicable": 2
     },
-    "B3": {
+    "MAL-06": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
       "evidence": "OpenAPI schema generated from the Django API and used to generate typed TypeScript for the frontend and MCP service (services/mcp/src/api/generated.ts); structured validation errors. No mutation dry-run, so not 4."
     },
-    "C1": {
+    "MAL-07": {
       "status": "assessed",
-      "score": 3,
+      "score": 2,
       "grade": "A",
-      "evidence": "Dashboards store tile layouts as JSON per dashboard with templates (products/dashboards/backend/models); insight definitions are schema-validated queries (posthog/schema.py) edited with live preview by project members.",
-      "alt_score": 2,
-      "alt_note": "Only dashboards are layout-as-data; product pages are code."
+      "evidence": "Dashboards store tile layouts as JSON per dashboard with templates (products/dashboards/backend/models); insight definitions are schema-validated queries (posthog/schema.py) edited with live preview by project members. Scored at the lower reading under rule 11 because: Only dashboards are layout-as-data; product pages are code.",
+      "alt_score": 3,
+      "alt_note": "The September v0.3 pass scored 3 on the evidence above."
     },
-    "C2": {
+    "MAL-08": {
       "status": "not_applicable",
       "rationale": "Focused application: generic widgets from entity definitions (fixed per-archetype rule).",
       "if_applicable": 2
     },
-    "C3": {
+    "MAL-09": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
@@ -58,7 +58,7 @@
       "alt_score": 2,
       "alt_note": "Tokens are externalised in a design system, engineer-managed."
     },
-    "D1": {
+    "MAL-10": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
@@ -66,7 +66,7 @@
       "alt_score": 4,
       "alt_note": "Functions are machine-readable and testable against real events; versioning and AI authoring are not verified."
     },
-    "D2": {
+    "MAL-11": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
@@ -74,7 +74,7 @@
       "alt_score": 4,
       "alt_note": "Replay and per-project streams exist; event schemas are described, not generated, from definitions."
     },
-    "D3": {
+    "MAL-12": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
@@ -82,7 +82,7 @@
       "alt_score": 3,
       "alt_note": "If Hog's closed function set counts as an allowlist and egress control exists outside the paths searched."
     },
-    "E1": {
+    "GOV-01": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
@@ -90,15 +90,15 @@
       "alt_score": 2,
       "alt_note": "Kit and tokens exist; the anchors bundle kit and scans."
     },
-    "E2": {
+    "GOV-02": {
       "status": "assessed",
-      "score": 3,
+      "score": 2,
       "grade": "A",
-      "evidence": "Activity logging on most models with an activity page (posthog/models/activity_logging), retention by entitlement (retention.py:71), and recorded approval decisions on change requests (products/approvals/backend/models.py:112-140).",
-      "alt_score": 2,
-      "alt_note": "Activity logging covers most, not all, models."
+      "evidence": "Activity logging on most models with an activity page (posthog/models/activity_logging), retention by entitlement (retention.py:71), and recorded approval decisions on change requests (products/approvals/backend/models.py:112-140). Scored at the lower reading under rule 11 because: Activity logging covers most, not all, models.",
+      "alt_score": 3,
+      "alt_note": "The September v0.3 pass scored 3 on the evidence above."
     },
-    "E3": {
+    "GOV-03": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
@@ -106,21 +106,31 @@
       "alt_score": 3,
       "alt_note": "Admin-triggered erasure is generic across products; only tag-driven coverage is missing."
     },
-    "E4": {
+    "GOV-04": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Resource-level access control and scoped API keys (products/access_control, posthog/scopes.py); semgrep and image scanning in CI on changed paths (.github/workflows/ci-security.yaml:60-174)."
+      "evidence": "Resource-level access control and scoped API keys (products/access_control, posthog/scopes.py); semgrep and image scanning in CI on changed paths (.github/workflows/ci-security.yaml:60-174).",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      }
     },
-    "F1": {
+    "GOV-05": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
       "evidence": "The activity log records before-and-after changes for flags, insights, dashboards and more; no general revert across customisation surfaces.",
       "alt_score": 3,
-      "alt_note": "History and diffs are broad; rollback coverage was not verified per surface."
+      "alt_note": "History and diffs are broad; rollback coverage was not verified per surface.",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      }
     },
-    "F2": {
+    "GOV-06": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
@@ -128,53 +138,63 @@
       "alt_score": 3,
       "alt_note": "A first-class proposal and review object exists; only preview on staging data is missing."
     },
-    "F3": {
+    "GOV-07": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
       "evidence": "Approval policies per registered action class with conditions evaluated on the change intent, named approvers, bypass roles and recorded Approval decisions (products/approvals/backend/policies.py:37-147, actions/registry.py, models.py:112-140)."
     },
-    "F4": {
+    "GOV-08": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
       "evidence": "Customer definitions (insights, flags, functions) are data carried forward by Django migrations; no automated compatibility check or versioned extension contract was found."
     },
-    "G1": {
+    "ARC-01": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
       "evidence": "ClickHouse event store with property materialisation driven by query analysis (ee/clickhouse/materialized_columns/analyze.py:89, columns.py:440), HogQL limits per context (posthog/hogql/constants.py:94-111) and cached query results.",
       "alt_score": 4,
-      "alt_note": "Query limits and materialisation from usage approach 'plans derived from definitions with cost limits'."
+      "alt_note": "Query limits and materialisation from usage approach 'plans derived from definitions with cost limits'.",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      }
     },
-    "G2": {
+    "ARC-05": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
       "evidence": "Multi-tenant organisations and projects with quota limiting and per-team throttles; no noisy-neighbour detection evidenced.",
       "alt_score": 3,
-      "alt_note": "Per-tenant limits are extensive; detection may exist in operations tooling outside the repository."
+      "alt_note": "Per-tenant limits are extensive; detection may exist in operations tooling outside the repository.",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      }
     },
-    "G3": {
+    "ARC-06": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
       "evidence": "Performance suites exist (services/mcp/vitest.perf.config.mts and service benchmarks); no documented per-surface limits."
     },
-    "H1": {
+    "DEL-02": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
       "evidence": "Independently deployable services with their own images: Django web, Node CDP and ingestion, Rust capture and flag services, and an MCP worker on Cloudflare (25 Dockerfiles; rust/, nodejs/, services/mcp/wrangler.jsonc)."
     },
-    "H2": {
+    "DEL-03": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
       "evidence": "tach enforces module boundaries and interfaces in CI (tach.toml, .github/workflows/ci-backend.yml) with isolation baselines for product modules (products/isolation_baseline.txt)."
     },
-    "H3": {
+    "DEL-05": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
@@ -182,7 +202,7 @@
       "alt_score": 3,
       "alt_note": "Every class except accessibility is covered."
     },
-    "I1": {
+    "MAL-13": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
@@ -190,29 +210,29 @@
       "alt_score": 3,
       "alt_note": "Declarative and code extension exists for server and layout surfaces."
     },
-    "I2": {
+    "MAL-14": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
       "evidence": "User code runs in the HogVM with memory limits and a closed function set; egress control was not evidenced.",
       "alt_score": 3,
-      "alt_note": "Same egress question as D3."
+      "alt_note": "Same egress question as MAL-12."
     },
-    "I3": {
+    "MAL-15": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
       "evidence": "Functions are test-invoked with logs and metrics before saving (nodejs/src/cdp/cdp-api.ts:280); per-PR Hogbox preview environments for PostHog's own developers (.github/workflows/hogbox-preview-env.yml)."
     },
-    "K1": {
+    "MAL-19": {
       "status": "assessed",
-      "score": 4,
+      "score": 3,
       "grade": "A",
-      "evidence": "MCP service typed from the generated OpenAPI schema (services/mcp/src/api/generated.ts) with tools declared per product in YAML (57 products/*/mcp/tools.yaml), scoped keys and OAuth, and MCP evals (services/mcp/evals).",
-      "alt_score": 3,
-      "alt_note": "If generation from API definitions does not count as generation from entity definitions."
+      "evidence": "MCP service typed from the generated OpenAPI schema (services/mcp/src/api/generated.ts) with tools declared per product in YAML (57 products/*/mcp/tools.yaml), scoped keys and OAuth, and MCP evals (services/mcp/evals). Scored at the lower reading under rule 11 because: If generation from API definitions does not count as generation from entity definitions.",
+      "alt_score": 4,
+      "alt_note": "The September v0.3 pass scored 4 on the evidence above."
     },
-    "K2": {
+    "MAL-20": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
@@ -220,7 +240,7 @@
       "alt_score": 4,
       "alt_note": "An evaluation harness exists; not every UI action has a conversational equivalent."
     },
-    "K3": {
+    "GOV-09": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
@@ -228,21 +248,21 @@
       "alt_score": 3,
       "alt_note": "Scoped identity, policy gates, limits and audit are present."
     },
-    "N1": {
+    "MAL-16": {
       "status": "assessed",
-      "score": 3,
+      "score": 2,
       "grade": "A",
-      "evidence": "Revenue analytics maps Stripe and event-based sources onto one canonical set of revenue views (products/revenue_analytics/backend/views/sources); warehouse sources share one import framework (products/warehouse_sources).",
-      "alt_score": 2,
-      "alt_note": "The canonical model covers one domain (revenue)."
+      "evidence": "Revenue analytics maps Stripe and event-based sources onto one canonical set of revenue views (products/revenue_analytics/backend/views/sources); warehouse sources share one import framework (products/warehouse_sources). Scored at the lower reading under rule 11 because: The canonical model covers one domain (revenue).",
+      "alt_score": 3,
+      "alt_note": "The September v0.3 pass scored 3 on the evidence above."
     },
-    "N2": {
+    "MAL-17": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
       "evidence": "Warehouse source definitions and CDP destination templates follow shared interfaces covering auth, sync schedules, incremental sync and delivery; admins install and configure them in the UI."
     },
-    "N3": {
+    "MAL-18": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
@@ -250,22 +270,22 @@
       "alt_score": 2,
       "alt_note": "The API is documented and sync is idempotent."
     },
-    "O1": {
+    "EXP-01": {
       "status": "not_applicable",
       "rationale": "Focused application: adjacent-domain criterion (fixed per-archetype rule).",
       "if_applicable": 2
     },
-    "O2": {
+    "EXP-02": {
       "status": "not_applicable",
       "rationale": "Focused application: adjacent-domain criterion (fixed per-archetype rule). More than 60 product modules extend the events and persons kernel.",
       "if_applicable": 2
     },
-    "O3": {
+    "EXP-03": {
       "status": "not_applicable",
       "rationale": "Focused application: adjacent-domain criterion (fixed per-archetype rule).",
       "if_applicable": 2
     },
-    "J1": {
+    "LRN-01": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
@@ -273,7 +293,7 @@
       "alt_score": 4,
       "alt_note": "Autocapture adds instrumentation automatically; whether that counts for PostHog's own evolution is the construct question."
     },
-    "J2": {
+    "LRN-02": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
@@ -281,7 +301,7 @@
       "alt_score": 2,
       "alt_note": "PostHog AI may record typed feedback on its answers."
     },
-    "J3": {
+    "LRN-04": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
@@ -289,7 +309,7 @@
       "alt_score": 3,
       "alt_note": "If Signals run on PostHog's own product counts."
     },
-    "M1": {
+    "LRN-06": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
@@ -297,7 +317,7 @@
       "alt_score": 3,
       "alt_note": "If Signals proposals count."
     },
-    "M3": {
+    "DEL-04": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
@@ -305,7 +325,7 @@
       "alt_score": 3,
       "alt_note": "If the Tasks lane counts."
     },
-    "M4": {
+    "LRN-09": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
@@ -313,7 +333,7 @@
       "alt_score": 3,
       "alt_note": "Experiments record baseline, metric, window and conclusion for flag-gated changes."
     },
-    "L1": {
+    "DEL-06": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
@@ -321,38 +341,203 @@
       "alt_score": 3,
       "alt_note": "Instance status APIs may expose configuration."
     },
-    "L2": {
+    "DEL-07": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
       "evidence": "Optional per-pull-request Hogbox environments restore a migrated, demo-seeded database, apply the PR's migrations, hibernate to save cost and are cleaned up (.github/workflows/hogbox-preview-env.yml, hogbox-preview-cleanup.yml)."
     },
-    "L3": {
+    "DEL-08": {
       "status": "assessed",
-      "score": 3,
+      "score": 2,
       "grade": "A",
-      "evidence": "Playwright journeys, Storybook visual tests and impacted-target selection that maps changed files to affected tests through tach's import map (.github/scripts/tach_map.py); features are instrumented with PostHog's own events.",
-      "alt_score": 2,
-      "alt_note": "Coverage across roles and devices was not verified."
+      "evidence": "Playwright journeys, Storybook visual tests and impacted-target selection that maps changed files to affected tests through tach's import map (.github/scripts/tach_map.py); features are instrumented with PostHog's own events. Scored at the lower reading under rule 11 because: Coverage across roles and devices was not verified.",
+      "alt_score": 3,
+      "alt_note": "The September v0.3 pass scored 3 on the evidence above."
     },
-    "P1": {
+    "LRN-07": {
       "status": "assessed",
-      "score": 3,
+      "score": 2,
       "grade": "A",
-      "evidence": "A weekly scheduled task analyses the last week of queries and materialises hot properties without being asked (posthog/tasks/scheduled.py:927, ee/settings.py:68-73, ee/clickhouse/materialized_columns/analyze.py:89). Narrow: storage layout only.",
-      "alt_score": 2,
-      "alt_note": "Narrow to one area."
+      "evidence": "A weekly scheduled task analyses the last week of queries and materialises hot properties without being asked (posthog/tasks/scheduled.py:927, ee/settings.py:68-73, ee/clickhouse/materialized_columns/analyze.py:89). Narrow: storage layout only. Scored at the lower reading under rule 11 because: Narrow to one area.",
+      "alt_score": 3,
+      "alt_note": "The September v0.3 pass scored 3 on the evidence above."
     },
-    "P2": {
+    "LRN-08": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
       "evidence": "No evaluation of materialisation changes against a baseline was found.",
       "alt_score": 2,
       "alt_note": "Materialisation may be checked in code not read."
+    },
+    "ARC-02": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "CI runs migrations up to master, a migration risk analysis and safety tests for ClickHouse migrations (.github/workflows/ci-backend.yml:1661-2034, posthog/management/commands/analyze_migration_risk.py, test_ch_migrations_are_safe.py); async migrations carry rollback steps (posthog/async_migrations).",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      }
+    },
+    "ARC-03": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Stateless Django, Node and Rust services over shared stores; the hobby deployment is single-node (docker-compose.hobby.yml) and cloud scale-out manifests are outside this repository.",
+      "alt_score": 3,
+      "alt_note": "The services are built to scale out.",
+      "facets": {
+        "implemented": true,
+        "tested": false,
+        "operated": false
+      }
+    },
+    "ARC-04": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Celery with Redbeat for once-only schedules (pyproject.toml:21-22) and Temporal workflows with retries (posthog/temporal); ingestion routes failures to dead-letter handling (rust/common/types/src/event.rs).",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      }
+    },
+    "ARC-07": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Prometheus metrics across services (for example services/llm-gateway/src/llm_gateway/metrics/prometheus.py); no published objectives in the repository."
+    },
+    "ARC-08": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "The LLM gateway has a circuit breaker for model providers (services/llm-gateway/src/llm_gateway/circuit_breaker.py) and subscriptions auto-disable after repeated failures (ee/tasks/subscriptions/auto_disable.py); other surfaces lack breakers.",
+      "alt_score": 3,
+      "alt_note": "AI providers and destinations are isolated.",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      }
+    },
+    "ARC-09": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "No backup command in the repository; self-hosted backup is left to the operator."
+    },
+    "DEL-01": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "PostHog AI takes requests in conversations stored with the page and objects in context, and has a plan mode that sets out steps before acting (ee/hogai/chat_agent/prompts/plan.py); plans carry no acceptance criteria or risk class."
+    },
+    "DEL-09": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "PostHog ships its own code behind its own feature flags with percentage and cohort rollouts (products/feature_flags); definition changes and materialisations are not staged.",
+      "alt_score": 3,
+      "alt_note": "Flags cover most code changes."
+    },
+    "DEL-10": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Feature flags switch code features off at runtime; there is no kill switch for AI-made or materialised changes.",
+      "alt_score": 3,
+      "alt_note": "Flags act as a runtime kill switch for most features."
+    },
+    "LRN-03": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "The app captures its own exceptions into PostHog's error tracking (frontend/src/lib/colors.ts:80, products/error_tracking); friction detection for customers' products (products/signals) is excluded under the self rule."
+    },
+    "LRN-05": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Exceptions are grouped into issues with stack traces by the error tracking product used on itself.",
+      "alt_score": 2,
+      "alt_note": "Grouping with attached context meets level 2."
+    },
+    "GOV-10": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "PostHog AI acts through a fixed tool set with resource-level access control, and approval policies cover registered action classes (products/approvals/backend/policies.py); materialisation has no declared blast-radius limit."
+    },
+    "GOV-11": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Third-party text in AI tool output is defanged and fenced as data, not instructions (ee/hogai/utils/untrusted.py); AI changes are attributed in the activity log, but source inputs are not recorded.",
+      "alt_score": 3,
+      "alt_note": "Injection fencing is systematic for session-derived content."
+    },
+    "EXP-04": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "No unmet-demand signals about PostHog itself beyond free-text requests."
+    },
+    "EXP-05": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No adjacent-capability proposals."
+    },
+    "EXP-06": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Early access features let users opt into new products and betas (products/early_access_features); no success metric or keep-or-kill record.",
+      "alt_score": 3,
+      "alt_note": "Stage-based releases approach a cohort launch."
+    },
+    "DEL-11": {
+      "status": "not_applicable",
+      "rationale": "Scope fact code_release_path is false: Tasks and Stamphog act on customers' repositories (products/stamphog); no first-party lane ships PostHog code changes."
     }
   },
   "limits": "Repository evidence only, master at the tip named above. The repository is very large (about 55,000 files); only the areas cited were read, so some capabilities are likely under-scored (for example versioning and rollback). Cloud operations, dogfooding practice and incident history are invisible here. Egress controls for Hog functions were searched for and not found; they may exist in infrastructure code outside the paths read. Single rater. Under the v0.3 self rule, Signals, Tasks and experiments on customers' products are excluded from scoring.",
-  "framework_version": "0.3.0",
-  "reading": "**Strongest:** Factory (2.7) and Agent Interface (3.0): independent services, enforced module boundaries, per-PR preview environments, and MCP tools generated from the API schema. Approval policies give real change control (F3 3). **The self rule matters here:** Signals and Tasks run the evolve loop on customers' software, so they are recorded but not scored. PostHog's own learning is narrow: it materialises hot columns from its own query logs without being asked (P1 3), with no baseline evaluation (P2 1)."
+  "framework_version": "0.4.0",
+  "reading": "**SAL 1.** Request → Release reaches L2: PostHog AI plans before acting and builds insights and dashboards (DEL-01 2, DEL-04 2). Issue → Fix stops at L1 because nothing diagnoses PostHog's own issues (LRN-05 1); its Signals product does this for customers' products and is excluded under the self rule. **Strengths:** migration risk analysis in CI (ARC-02 3), Temporal and Celery work (ARC-04 3), and feature flags on its own code (DEL-09 2). **Blocks L3:** no backup in the repository (ARC-09 1), and definition rollback covers only some surfaces (GOV-05 2).",
+  "framework": "EVOLVE",
+  "scope_facts": {
+    "persistent_data": {
+      "value": true,
+      "evidence": "Events in ClickHouse, configuration in PostgreSQL, recordings in object storage."
+    },
+    "schema_changes": {
+      "value": true,
+      "evidence": "Django and ClickHouse migrations, plus property materialisation that adds columns at runtime (ee/clickhouse/materialized_columns/columns.py)."
+    },
+    "multi_tenant": {
+      "value": true,
+      "evidence": "Organisations and projects share one deployment with access control and quotas."
+    },
+    "hosted_service": {
+      "value": true,
+      "evidence": "Django web, Celery and Temporal workers, Node ingestion and Rust capture services."
+    },
+    "agent_mutations": {
+      "value": true,
+      "evidence": "PostHog AI creates and edits insights, dashboards and other configured objects (ee/hogai)."
+    },
+    "automatic_apply": {
+      "value": true,
+      "evidence": "Weekly property materialisation applies schema changes without approval (posthog/tasks/scheduled.py:927)."
+    },
+    "code_release_path": {
+      "value": false,
+      "evidence": "Tasks and Stamphog act on customers' repositories (products/stamphog); no first-party lane ships PostHog code changes."
+    }
+  }
 }
