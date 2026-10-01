@@ -34,7 +34,7 @@ def assessment(value=3, archetype="configurable-application-platform", facts=Non
         if value >= 3:
             entry["facets"] = dict(ALL_FACETS)
         if cid in MODEL["inventories"] and value >= 3:
-            entry["inventory"] = {(MODEL["inventories"][cid] or ["surface"])[0]: value}
+            entry["inventory"] = {s: value for s in (MODEL["inventories"][cid] or ["surface"])}
         scores[cid] = entry
     data = {"product": "P", "date": "2026-01-01", "source": "repo@abc", "archetype": archetype,
             "scope_facts": {f: {"value": v, "evidence": "README"} for f, v in facts.items()},
@@ -173,7 +173,7 @@ class ValidationTests(unittest.TestCase):
 
     def test_inventory_score_must_equal_weakest_surface(self):
         data = assessment()
-        data["scores"]["ARC-09"]["inventory"] = {"data": 3, "files": 2}
+        data["scores"]["ARC-09"]["inventory"] = {"data": 3, "definitions": 3, "files": 2, "secrets": "n/a"}
         del data["scores"]["ARC-08"]["inventory"]
         errs = errors(data)
         self.assertIn("ARC-09: score 3 exceeds the lowest inventory level 2", errs)
@@ -325,12 +325,13 @@ class ReviewRoundTests(unittest.TestCase):
         data["scores"]["ARC-09"] = {"status": "assessed", "score": 2, "grade": "A", "evidence": "x",
                                     "alt_score": 3, "alt_note": "higher", "facets": dict(ALL_FACETS)}
         self.assertIn("ARC-09: inventory criterion read at 3 or more needs an inventory", errors(data))
-        data["scores"]["ARC-09"]["inventory"] = {"data": 3, "files": 2}
+        data["scores"]["ARC-09"]["inventory"] = {"data": 3, "definitions": 3, "files": 2, "secrets": 3}
         self.assertIn("ARC-09: alt_score 3 exceeds the lowest inventory level 2", errors(data))
 
     def test_scoring_caps_any_reading_at_the_weakest_surface(self):
         data = assessment(3)
-        data["scores"]["ARC-09"].update(score=2, alt_score=3, alt_note="higher", inventory={"data": 3, "files": 2})
+        data["scores"]["ARC-09"].update(score=2, alt_score=3, alt_note="higher",
+                                          inventory={"data": 3, "definitions": 3, "files": 2, "secrets": 3})
         res = result(data)
         self.assertEqual(res["variants"]["high"]["effective"]["ARC-09"], 2)
 
@@ -367,6 +368,21 @@ class ReviewRoundTests(unittest.TestCase):
         self.assertIn("ARC-06", sens["raise_headline"])
         self.assertIn("ARC-06", sens["lower_headline"])
         self.assertNotIn("GOV-04", sens["lower_headline"])
+
+    def test_inventory_must_list_every_named_surface(self):
+        data = assessment(3)
+        data["scores"]["ARC-09"]["inventory"] = {"data": 4}
+        self.assertIn('ARC-09: inventory must list every surface, using "n/a" where one does not apply '
+                      '(missing: definitions, files, secrets)', errors(data))
+        data["scores"]["ARC-09"]["inventory"] = {s: "n/a" for s in MODEL["inventories"]["ARC-09"]}
+        self.assertIn("ARC-09: inventory needs at least one surface with a level", errors(data))
+
+    def test_progress_ignores_conditions_that_do_not_apply(self):
+        on = sal(assessment(2))["loops"]["request"]
+        off = sal(assessment(2, facts={"multi_tenant": False, "schema_changes": False,
+                                       "code_release_path": False}))["loops"]["request"]
+        self.assertEqual(off["next_total"], on["next_total"] - 3)
+        self.assertEqual(off["next_total"] - off["next_met"], on["next_total"] - on["next_met"] - 3)
 
 class ScoringTests(unittest.TestCase):
     def test_rounding_is_half_up_and_applied_once(self):

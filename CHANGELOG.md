@@ -80,9 +80,10 @@ All 11 systems were migrated and scored on the new criteria. The OpenHands Autom
   - facets and inventories;
   - upward-only alternates.
 - It reports SAL for the default, opt-in and alternate readings.
-- It reports progress toward the next level for each loop, and the criteria whose one-level change would move the headline.
+- It reports progress toward the next level for each loop, counting only conditions that apply, and the criteria whose one-level change would move the headline.
+- Inventories for failure isolation and backup must list every named surface, with "n/a" where one does not apply.
 - The prescriber lists the next-level blockers before the criterion plan.
-- 50 tests.
+- 52 tests.
 
 ## Public Beta 3 (v0.3.0), 2026-09-30
 

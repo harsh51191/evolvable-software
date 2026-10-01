@@ -6,14 +6,14 @@ This folder scores 11 open-source products with EVOLVE v0.4 from this repository
 
 ## Results (default configuration)
 
-Each loop shows its level and how many of the next level's conditions it already meets.
+Each loop shows its level and how many of the next level's applicable conditions it already meets. Conditions switched off by a scope fact count in neither number.
 
 | System | Archetype | SAL | Request → Release | Issue → Fix | Opportunity → Expansion | With every alternate reading |
 |---|---|---:|---|---|---|---:|
-| n8n | configurable platform | **2** | L2 (14/21) | L2 (14/23) | L1 (3/5) | 2 |
-| OpenClaw | agent runtime | **2** | L2 (14/21) | L2 (15/23) | L1 (3/5) | 2 |
-| Hermes Agent | agent runtime | **1** | L1 (3/4) | L2 (14/23) | L1 (3/5) | 2 |
-| PostHog | focused application | **1** | L2 (12/21) | L1 (4/5) | L1 (3/5) | 2 |
+| n8n | configurable platform | **2** | L2 (12/19) | L2 (12/21) | L1 (3/5) | 2 |
+| OpenClaw | agent runtime | **2** | L2 (12/19) | L2 (13/21) | L1 (3/5) | 2 |
+| Hermes Agent | agent runtime | **1** | L1 (3/4) | L2 (13/22) | L1 (3/5) | 2 |
+| PostHog | focused application | **1** | L2 (11/20) | L1 (4/5) | L1 (3/5) | 2 |
 | Dify | configurable platform | **1** | L1 (2/4) | L1 (2/5) | L1 (2/5) | 1 |
 | Directus | configurable platform | **1** | L1 (1/4) | L1 (1/5) | L1 (2/5) | 1 |
 | Frappe | configurable platform | **1** | L1 (2/4) | L1 (4/5) | L1 (3/5) | 1 |

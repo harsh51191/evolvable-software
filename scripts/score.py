@@ -244,6 +244,11 @@ def _validate_assessed(cid, entry, model, errors):
         errors.append(f"{cid}: inventory must be a non-empty object of surface levels")
         return
     allowed, levels = model["inventories"][cid], []
+    if allowed:
+        missing = [s for s in allowed if s not in inventory]
+        if missing:
+            errors.append(f"{cid}: inventory must list every surface, using \"n/a\" where one does not apply "
+                          f"(missing: {', '.join(missing)})")
     for surface, level in inventory.items():
         if allowed and surface not in allowed:
             errors.append(f"{cid}: inventory surface {surface!r} must be one of {', '.join(allowed)}")
@@ -253,6 +258,8 @@ def _validate_assessed(cid, entry, model, errors):
             errors.append(f"{cid}: inventory level for {surface!r} must be 0..4 or \"n/a\"")
         else:
             levels.append(level)
+    if not levels:
+        errors.append(f"{cid}: inventory needs at least one surface with a level")
     for name, reading in zip(("score", "alt_score", "available_score"),
                              [score] + [entry.get(k) for k in ("alt_score", "available_score")]):
         if _is_int_score(reading) and levels and reading >= 3 and reading > min(levels):
@@ -507,8 +514,10 @@ def loop_levels(data, values, capabilities, model):
                 if cond.get("loop") not in (None, loop):
                     continue
                 ok, needs, observed = ev.test(cond, loop)
-                met, total = counts.get(level, (0, 0))
-                counts[level] = (met + ok, total + 1)
+                if observed != "n/a":
+                    # Conditions that do not apply count in neither the numerator nor the denominator.
+                    met, total = counts.get(level, (0, 0))
+                    counts[level] = (met + ok, total + 1)
                 if not ok:
                     failures.setdefault(level, []).append(
                         {"part": cond["part"], "stage": cond["stage"], "needs": needs, "observed": observed,

@@ -135,11 +135,11 @@ DEL-04 credits both ways a change gets built: an AI that authors governed defini
 | GOV-02 | Audit over entities, definition changes and approvals | Compliance and security | E2 |
 | GOV-03 | Privacy classification, export, erasure and retention | Compliance and security | E3 |
 | GOV-04 | Security as infrastructure | Compliance and security | E4 |
-| GOV-05 | Definitions versioned with rollback (inventory) | Change control | F1 |
+| GOV-05 | Definitions versioned with rollback (inventory; applies when definition_change_path) | Change control | F1 |
 | GOV-06 | Proposal, review and apply as a first-class object with preview | Change control | F2 |
 | GOV-07 | Policy-based apply with a movable human boundary | Change control | F3 |
 | GOV-08 | Upgrade safety | Change control | F4 |
-| GOV-09 | Agent-safe actions (applies when agent_mutations) | AI and self-change safety | K3 |
+| GOV-09 | Agent-safe actions (applies when machine_actions) | AI and self-change safety | K3 |
 | GOV-10 | Bounded self-change | AI and self-change safety | **new** |
 | GOV-11 | Learning-input integrity | AI and self-change safety | **new** |
 
@@ -205,7 +205,7 @@ The 49 carried-over criteria keep their v0.3 anchors in `references/rubric.md`, 
 - **4** Objectives and error budgets feed release decisions: rollout pauses or rolls back when a change burns the budget.
 
 ### ARC-08 Failure isolation and graceful degradation (inventory)
-Inventory: connectors and integrations, plugins and extensions, AI and model providers, tenant workloads, internal services. The score is the level every applicable surface reaches.
+Inventory: connectors and integrations, plugins and extensions, AI and model providers, tenant workloads, internal services. Every surface is listed, with "n/a" where it does not apply; no reading of 3 or more can exceed the weakest applicable surface.
 - **0** One failing dependency fails the whole product.
 - **1** Errors caught locally; no timeouts or isolation policy.
 - **2** Timeouts and retries on outbound calls; some surfaces degrade gracefully.
@@ -213,12 +213,12 @@ Inventory: connectors and integrations, plugins and extensions, AI and model pro
 - **4** Degradation modes declared per capability, exercised by automated fault injection and switched by policy.
 
 ### ARC-09 Backup, restore and recovery (inventory)
-Inventory: data, definitions and configuration, uploaded files, secrets and keys. The score is the level every applicable item reaches.
+Inventory: data, definitions and configuration, uploaded files, secrets and keys. Every item is listed, with "n/a" where it does not apply; no reading of 3 or more can exceed the weakest applicable item. Level 3 is tested recovery; stated recovery objectives are level 4, because for self-hosted software the operator often sets them.
 - **0** No supported backup.
 - **1** Documentation tells operators to back up the database themselves.
 - **2** A built-in or documented backup command; restore manual and untested.
-- **3** Backup and restore supported for every inventory item, restore exercised by automated tests, recovery objectives (RPO, RTO) stated.
-- **4** Point-in-time and per-tenant restore, with recorded restore drills.
+- **3** Backup and restore supported for every inventory item, with restore exercised by automated tests.
+- **4** Recovery objectives (RPO, RTO) stated, point-in-time or per-tenant restore, and recorded restore drills.
 
 ### DEL-01 Request intake into a structured change specification
 - **0** Requests live outside the product (email, chat).
@@ -313,7 +313,7 @@ A condition such as `DEL-05 ≥ 3` uses the criterion's effective score after ca
 | Issue → Fix | Open | DEL-04, or LRN-07 with LRN-08 ≥ 2 |
 | Opportunity → Expansion | EXP-02 | DEL-04, or EXP-03 |
 
-**Rollback path.** GOV-05 for definition changes; DEL-11 as well when `code_release_path` is true. The spine uses the lower of the two.
+**Rollback path.** GOV-05 when `definition_change_path` is true; DEL-11 when `code_release_path` is true. The spine uses the lower of the paths that exist, and at least one path must exist.
 
 | Stage | L1 | L2 | L3 | L4 | L5 |
 |---|---|---|---|---|---|
@@ -353,8 +353,8 @@ This is what stops a product with poor query paths, no horizontal scaling, unkno
 | Level | Conditions |
 |---|---|
 | L1, L2 | – |
-| L3 | GOV-04 ≥ 3 (critical control); GOV-02 ≥ 2; GOV-06 ≥ 2; GOV-08 ≥ 2; GOV-09 ≥ 2 if `agent_mutations`; GOV-10 ≥ 3 and LRN-08 ≥ 2 if `agent_mutations` or `automatic_apply` (critical control) |
-| L4 | GOV-01 – GOV-04 all ≥ 3 where applicable; GOV-07 ≥ 3; GOV-10 ≥ 3; GOV-11 ≥ 3; GOV-09 ≥ 3 if `agent_mutations` |
+| L3 | GOV-04 ≥ 3 (critical control); GOV-02 ≥ 2; GOV-06 ≥ 2; GOV-08 ≥ 2; GOV-09 ≥ 2 if `machine_actions`; GOV-10 ≥ 3 and LRN-08 ≥ 2 if `agent_mutations` or `evolution_auto_apply` (critical control) |
+| L4 | GOV-01 – GOV-04 all ≥ 3 where applicable; GOV-07 ≥ 3; GOV-10 ≥ 3 and GOV-11 ≥ 3 where applicable; GOV-09 ≥ 3 if `machine_actions` |
 | L5 | GOV-07 = 4 and GOV-10 = 4, operated |
 
 ### 7.5 Critical controls
@@ -363,18 +363,18 @@ These are not averaged. Each is an L3 condition in one of the sections above, so
 
 | Control | Passes when | Applies when | Section |
 |---|---|---|---|
-| Definition rollback | GOV-05 ≥ 3 | always | 7.1 |
+| Definition rollback | GOV-05 ≥ 3 | `definition_change_path` | 7.1 |
 | Release rollback | DEL-11 ≥ 3 | `code_release_path` | 7.1 |
 | Safe migrations | ARC-02 ≥ 3 | `schema_changes` | 7.3 |
 | Tested backup and restore | ARC-09 ≥ 3 | `persistent_data` | 7.3 |
 | Tenant isolation | ARC-05 ≥ 3 | `multi_tenant` | 7.3 |
 | Security as infrastructure | GOV-04 ≥ 3 | always | 7.4 |
-| Bounded self-change | GOV-10 ≥ 3 and LRN-08 ≥ 2 | `agent_mutations` or `automatic_apply` | 7.4 |
+| Bounded self-change | GOV-10 ≥ 3 and LRN-08 ≥ 2 | `agent_mutations` or `evolution_auto_apply` | 7.4 |
 
 ## 8. Evidence rules
 
 ### 8.1 Evidence facets and the depth cap
-Every assessed criterion records three cumulative facets:
+Assessed criteria record three facets. They are required on depth-capped criteria for any reading of 3 or more, and accepted anywhere:
 
 - `implemented`: the capability exists in code or shipped configuration;
 - `tested`: automated tests in scope exercise it;
@@ -382,7 +382,7 @@ Every assessed criterion records three cumulative facets:
 
 The facets are recorded separately so operated evidence never implies tested evidence. `tested` and `operated` both require `implemented`.
 
-**Depth cap.** For every ARC criterion and every critical-control criterion, a 3 needs `implemented` and `tested`, and a 4 needs all three facets. Otherwise the score is capped at 2. A repository alone cannot prove production behaviour; this makes that limit visible.
+**Depth cap.** For every ARC criterion and every critical-control criterion, a 3 needs `implemented` and `tested`, otherwise it counts as 2. A 4 needs all three facets, otherwise it counts as 3 when tested and 2 when not. A repository alone cannot prove production behaviour; this makes that limit visible.
 
 ### 8.2 Grades, defaults and alternates
 Carried over: evidence grades A, B, C (C capped at 2); score the default configuration and record opt-ins as `available_score`; `not_evidenced` scores 0 by default and is excluded in the assessed-only reading; single-entity cap; incident deduction; rounding half up, once.
@@ -390,7 +390,7 @@ Carried over: evidence grades A, B, C (C capped at 2); score the default configu
 Changed: **`alt_score` is only ever the higher reading** (`score + 1`). The validator enforces the rubric's existing "take the lower level" rule, and the default reading becomes the low end of every range. The 49 downward alternates in the September field test will be flipped.
 
 ### 8.3 Coverage inventories
-ARC-08, ARC-09 and GOV-05 span several surfaces. The assessment records the inventory of applicable surfaces with a level for each; the criterion score is the level every surface reaches, so one strong surface cannot hide a weak one. The report shows the strongest and weakest surface.
+ARC-08, ARC-09 and GOV-05 span several surfaces. When any reading (score, alternate or opt-in) is 3 or more, the assessment records an inventory with a level for each surface. For ARC-08 and ARC-09 every named surface must appear, with "n/a" where it does not apply; GOV-05 lists the product's own customisation surfaces. At least one surface must have a level, and no reading of 3 or more can exceed the weakest one, so one strong surface cannot hide a weak one. Below 3, the anchors already describe partial coverage and the inventory is optional.
 
 ### 8.4 When repository tooling counts
 The criteria that make the product drive its own change (DEL-01, DEL-04, DEL-09 – DEL-11, LRN-03, LRN-05 – LRN-07, EXP-04 – EXP-06) count tooling only when it is a **first-party evolution system for this product**. It must be all of:
@@ -427,12 +427,15 @@ The five archetypes stay; scope facts now handle applicability for architecture.
 
 ```
 EVOLVE assessment: <product> @ <tip>, <date>, archetype <type>
-Scope: persistent_data, schema_changes, hosted_service, agent_mutations; not multi_tenant, automatic_apply, code_release_path
+Scope: persistent_data, schema_changes, hosted_service, machine_actions, agent_mutations, definition_change_path;
+       not multi_tenant, evolution_auto_apply, code_release_path
 
-SAL 2  ·  Request → Release L2  ·  Issue → Fix L2  ·  Expansion L1   (with opt-in settings: SAL 2)
+SAL 2  ·  Request → Release L2 (12/19 toward L3)  ·  Issue → Fix L2 (12/21)  ·  Expansion L1 (3/5)
+       (with opt-in settings: SAL 2; progress counts only applicable conditions)
 
 Request → Release   stages L3 · spine L3 · architecture L2 · governance L3   -> L2
 Critical controls   definition rollback ✓  migrations ✓  backup ✗ (ARC-09 = 2: restore untested)  security ✓  self-change ✓
+Sensitivity         headline drops if any of DEL-01, LRN-03, GOV-05 falls one level
 
 Profile    Elastic 2.1  Velocity 2.7  Open 2.6  Learn 2.0 (2.0–2.6)  Vet 2.3  Expand 1.2
 Next level Request → Release L3 is blocked by: ARC-09 = 2 (needs 3, tested), ARC-03 = 1 (needs 2)
@@ -466,7 +469,7 @@ Why:
 
 - **Working names only.** "EVOLVE" and "Software Autonomy Level" are not locked. A published npm package already calls itself an "Evolve Multi-Agent SDLC framework" and reports architecture health and evolution readiness (`@huutq88/evolve`). "Software autonomy levels" is also used in self-driving laboratory research. Neither proves a trademark conflict, but both rule out claiming the space is empty. A trademark and prior-use search is required before any public launch.
 - **Stable IDs.** Criterion IDs use descriptive prefixes (`ARC`, `DEL`, `MAL`, `LRN`, `GOV`, `EXP`), so they survive a rename of the framework or of the capability display names.
-- **Names in use.** The repository owner chose EVOLVE as the framework name and `evolvable-software` as the repository and skill name (1 October 2026). The skill and package metadata already use `evolvable-software`. The GitHub repository is still `malleablesoftware` until the owner renames it, and GitHub then redirects the old URL. All of these remain working names until the trademark search below.
+- **Names in use (working, not settled).** EVOLVE is the working framework name. The skill and package metadata use `evolvable-software`, which the repository owner said they preferred for the repository; `evolve-readiness` was also proposed. The GitHub repository stays `malleablesoftware` until the owner confirms a name and renames it. All names remain provisional until the trademark search below.
 
 ## 14. Delivery plan once agreed
 
@@ -485,11 +488,10 @@ Why:
 2. Failing a critical control caps at L2, with each control applied only where its scope fact holds and to the path being assessed.
 3. Strict depth rule, with separate cumulative facets: implemented, tested, operated.
 4. Repository tooling counts only as a first-party evolution system (section 8.4).
-5. Repository and skill name: `evolvable-software`.
 
 **Open:**
 
-1. **Final framework name**, after the trademark and prior-use search.
+1. **Names.** Confirm the framework name (EVOLVE) and the repository and skill name (`evolvable-software`, `evolve-readiness` or another), after the trademark and prior-use search.
 2. **Strictness at L4.** Every applicable ARC criterion at 3 with tested evidence. Right bar, or too high for products that are otherwise strong?
 
 ## 16. Refinements made during implementation and review
@@ -508,6 +510,8 @@ Building the scorer, rescoring 11 systems and a review of the implementation led
 7. **Progress and sensitivity.**
    - Each loop reports how many of the next level's conditions it already meets, so products at the same level can be told apart without lowering the bar.
    - The scorer lists the criteria whose one-level change would move the headline, so a fragile reading is visible.
+   - Progress counts only conditions that apply: a condition switched off by a scope fact counts in neither the numerator nor the denominator, so products of different archetypes compare fairly.
+8. **Complete inventories.** For ARC-08 and ARC-09, every named surface must appear (with "n/a" where it does not apply), and at least one must have a level, so an assessment cannot reach 3 by listing only its strongest surface.
 
 The field-test results are in `assessments/2026-09-field-test/README.md`, and they are provisional:
 

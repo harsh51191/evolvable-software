@@ -39,8 +39,8 @@
           "architecture": 2,
           "governance": 2
         },
-        "next_met": 12,
-        "next_total": 21,
+        "next_met": 11,
+        "next_total": 20,
         "blockers": [
           {
             "part": "spine",

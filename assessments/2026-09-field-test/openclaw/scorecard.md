@@ -23,7 +23,7 @@ Coverage: 53 assessed, 0 not evidenced, 13 not applicable. Grades: 53 A, 0 B, 0 
 
 **SAL 2 (Assisted) · Request → Release L2 · Issue → Fix L2 · Opportunity → Expansion L1**
 
-Progress toward the next level: Request → Release 14 of 21 conditions for L3; Issue → Fix 15 of 23 conditions for L3; Opportunity → Expansion 3 of 5 conditions for L2.
+Progress toward the next level: Request → Release 12 of 19 conditions for L3; Issue → Fix 13 of 21 conditions for L3; Opportunity → Expansion 3 of 5 conditions for L2.
 
 - With opt-in settings: SAL 2 (Assisted) · Request → Release L2 · Issue → Fix L2 · Opportunity → Expansion L1.
 - With every alternate reading: SAL 2 (Assisted) · Request → Release L2 · Issue → Fix L2 · Opportunity → Expansion L1.
