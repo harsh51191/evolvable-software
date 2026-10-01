@@ -1,0 +1,321 @@
+{
+  "product": "OpenCode",
+  "date": "2026-09-30",
+  "source": "github.com/anomalyco/opencode @ 2fa3363c924c5c3e367b84a87ae478296a0ed59b (dev)",
+  "archetype": "agent-runtime",
+  "scope_line": "Scope: the opencode monorepo (agent core, server and HTTP API, SDK and codegen, TUI, desktop, web, plugin SDK, console and enterprise packages, CI). opencode.ai hosted services and models.dev are out of scope.",
+  "scores": {
+    "A1": {
+      "status": "not_applicable",
+      "rationale": "Agent runtime: generic business-object criterion (fixed per-archetype rule).",
+      "if_applicable": 0
+    },
+    "A2": {
+      "status": "not_applicable",
+      "rationale": "Agent runtime: generic business-object criterion (fixed per-archetype rule).",
+      "if_applicable": 1
+    },
+    "A3": {
+      "status": "not_applicable",
+      "rationale": "Agent runtime: generic business-object criterion (fixed per-archetype rule).",
+      "if_applicable": 1
+    },
+    "B1": {
+      "status": "not_applicable",
+      "rationale": "Agent runtime: generic CRUD criterion (fixed per-archetype rule).",
+      "if_applicable": 1
+    },
+    "B2": {
+      "status": "not_applicable",
+      "rationale": "Agent runtime: generic CRUD criterion (fixed per-archetype rule).",
+      "if_applicable": 1
+    },
+    "B3": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "The HTTP API is generated from a typed specification into a TypeScript SDK (packages/httpapi-codegen, packages/sdk/js, .github/workflows/generate.yml); no dry-run."
+    },
+    "C1": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "TUI, desktop and web layouts are code; keybinds are configuration."
+    },
+    "C2": {
+      "status": "not_applicable",
+      "rationale": "Agent runtime: generic CRUD views (fixed per-archetype rule).",
+      "if_applicable": 1
+    },
+    "C3": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Themes are JSON files users can add and select in configuration (packages/opencode/src/config/config.ts); documentation is localised through a sync workflow (.github/workflows/docs-locale-sync.yml)."
+    },
+    "D1": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Custom commands and agents are markdown or JSON definitions (packages/opencode/src/config/command.ts, agent.ts); there is no condition and action engine."
+    },
+    "D2": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "An internal event bus streams events to SDK clients over the server (packages/opencode/src/bus, packages/server/src/handlers/event.ts); no outbound webhooks with retry."
+    },
+    "D3": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Plugins register hooks such as tool.definition, permission.ask, shell.env and command.execute.before (packages/plugin/src/index.ts) and run in-process without a sandbox."
+    },
+    "E1": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Storybook exists for UI components (packages/storybook); no automated accessibility scanning found."
+    },
+    "E2": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Sessions and messages are stored locally; there is no audit store for configuration or permission decisions."
+    },
+    "E3": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Local-first storage, session export and removal of shared sessions (packages/opencode/src/share); not driven by tags."
+    },
+    "E4": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Permission rules with allow, ask and deny actions by tool and pattern (packages/opencode/src/permission/index.ts:33-80, evaluate.ts) and managed enterprise configuration (config/managed.ts); no security scanning in CI."
+    },
+    "F1": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Agents, commands, themes and configuration are files versioned only by the user's own git. Git snapshots with session revert roll back the agent's edits to the user's code (packages/opencode/src/snapshot, session/revert.ts), not OpenCode's own definitions.",
+      "alt_score": 2,
+      "alt_note": "If the agent's work product counts as a customisation surface."
+    },
+    "F2": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "No proposal object for changes to OpenCode's own definitions; its code changes go through pull requests."
+    },
+    "F3": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Permission rules decide per tool and pattern which agent actions run automatically and which ask a human (packages/opencode/src/permission/index.ts:33-80); the policy covers actions, not definition changes.",
+      "alt_score": 3,
+      "alt_note": "Read as a change-control policy, the allow, ask and deny rules are a policy object per change class."
+    },
+    "F4": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Configuration migrations and v2 compatibility (packages/opencode/src/config/tui-migrate.ts, v2-compat.ts); versioned protocol and schema packages (packages/protocol, packages/schema).",
+      "alt_score": 3,
+      "alt_note": "Migrations run automatically and contracts are explicit packages."
+    },
+    "G1": {
+      "status": "not_applicable",
+      "rationale": "Agent runtime: generic-store query performance (fixed per-archetype rule).",
+      "if_applicable": 1
+    },
+    "G2": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Single user per local installation; console and enterprise packages serve teams without evidenced noisy-neighbour controls."
+    },
+    "G3": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "A performance test suite is documented (perf/test-suite.md); no per-surface limits or CI budgets."
+    },
+    "H1": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Client and server architecture: server, TUI, desktop, web, console and cloud functions deploy separately (packages/server, packages/desktop, packages/function, .github/workflows/deploy.yml, containers.yml)."
+    },
+    "H2": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Monorepo packages with explicit protocol and schema packages as contracts (packages/protocol, packages/schema); no architectural lint.",
+      "alt_score": 3,
+      "alt_note": "Explicit API contracts between modules."
+    },
+    "H3": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Tests and typecheck run on pull requests (.github/workflows/test.yml:7, typecheck.yml:6); no accessibility or security checks."
+    },
+    "I1": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Plugins with hooks (packages/plugin), custom agents, commands, modes, themes, MCP servers, formatters, LSP servers and skills, both declarative and code."
+    },
+    "I2": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Plugins and local MCP servers run with full trust; permission rules limit agent tools, not plugin code.",
+      "alt_score": 2,
+      "alt_note": "Permission rules act as an allowlist on agent-written commands."
+    },
+    "I3": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Plugins load from project directories on start and the SDK and server support local iteration; no validators or staged preview.",
+      "alt_score": 3,
+      "alt_note": "The developer loop is live against the real project."
+    },
+    "K1": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Typed HTTP API, SDK and ACP support (packages/opencode/src/acp); OpenCode does not expose itself as an MCP server."
+    },
+    "K2": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Users complete coding tasks conversationally with tool actions; agent definitions can be generated from a natural-language description (packages/opencode/src/agent/generate.txt).",
+      "alt_score": 2,
+      "alt_note": "Natural-language authoring covers agents only."
+    },
+    "K3": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Ask prompts preview tool actions under permission rules, and snapshots allow revert; commands run with the user's ambient authority and there are no idempotency keys."
+    },
+    "N1": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Providers map onto one model interface through a models catalogue snapshot (packages/opencode/src/provider, .github/workflows/models-snapshot.yml)."
+    },
+    "N2": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Providers, MCP servers and LSP servers are configured by users with auth flows (packages/opencode/src/auth, mcp, lsp)."
+    },
+    "N3": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Versioned SDK and protocol packages; no deprecation windows."
+    },
+    "O1": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Kernel of sessions (conversation), agents, tools, permissions, projects and providers, served through TUI, desktop, web, ACP, Slack and GitHub clients (channels)."
+    },
+    "O2": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "New uses are expressible as agents, commands, MCP servers and skills without kernel change; no domain bundles ship in the repository.",
+      "alt_score": 3,
+      "alt_note": "Skill discovery installs remote skill bundles."
+    },
+    "O3": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Agents and commands are shareable files; skills are fetched with a recorded version (packages/opencode/src/skill/discovery.ts:105)."
+    },
+    "J1": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Sessions are stored locally and a stats package aggregates usage (packages/stats); no per-feature instrumentation consumed by the product.",
+      "alt_score": 3,
+      "alt_note": "The event bus is near-real-time to every client."
+    },
+    "J2": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No feedback, rating or evaluation signals in the product."
+    },
+    "J3": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Usage analysis happens outside the product."
+    },
+    "M1": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No proposals for changing OpenCode itself."
+    },
+    "M3": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "OpenCode reviews and triages its own repository's pull requests and issues through its GitHub action (.github/workflows/review.yml, triage.yml, opencode.yml): an AI lane for narrow tasks, run by engineers."
+    },
+    "M4": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No binding of changes to baselines or metrics."
+    },
+    "L1": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Server health handler and machine-readable agent, command, provider and model handlers (packages/server/src/handlers/health.ts and others); no build or version endpoint verified.",
+      "alt_score": 3,
+      "alt_note": "The configuration handlers amount to a snapshot."
+    },
+    "L2": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Nix flake and container definitions reproduce environments (nix/, .github/workflows/nix-eval.yml, containers.yml); no per-change ephemeral environment."
+    },
+    "L3": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Tests with recorded HTTP interactions for determinism (packages/http-recorder) and Storybook; no changed-path map or adoption instrumentation.",
+      "alt_score": 3,
+      "alt_note": "Recorded interactions make journeys deterministic."
+    },
+    "P1": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "People write agents, commands and AGENTS.md by hand; nothing learns from sessions."
+    },
+    "P2": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Changes to OpenCode's definitions are reviewed by people only."
+    }
+  },
+  "limits": "Repository evidence only, dev branch at the tip named above. Enterprise and console behaviour was not traced in depth. Single rater.",
+  "framework_version": "0.3.0",
+  "reading": "**Strongest:** generated API contracts and SDK (B3 3), a client and server architecture (H1 3), and broad extension (I1 3). **Largest gap:** Learning (0.9). By design, OpenCode improves the user's code, not itself: no learning signals, proposals or measurement. Both raters agreed on this under v0.2, and v0.3 does not change it."
+}

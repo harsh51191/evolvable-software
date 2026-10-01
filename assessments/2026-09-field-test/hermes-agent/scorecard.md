@@ -6,7 +6,7 @@ Scope: the hermes-agent repository (agent loop, tools, skills, curator, approval
 
 ## Reading
 
-**Strongest:** Learning (2.5), the highest in the sample. Background review is on by default and turns conversations into skill and memory changes (P1 3). Every skill has usage signals and curator triage (J2 3). Every change is ledgered with rollback (F1 3). **Gaps by default:** skill and memory approval gates are off (F3 2), and learned skills get security and lint checks but no baseline evaluation (P2 2). **With opt-ins** (write approval on, the GEPA optimiser run), Hermes is the only system in the sample that passes every closed-loop stage.
+**Strongest:** Learning (2.5), the highest point estimate in the sample, though its range (2.3–3.1) overlaps OpenClaw and PostHog. Background review is on by default and turns conversations into skill and memory changes (P1 3). Every skill has usage signals and curator triage (J2 3). Every change is ledgered with rollback (F1 3). **Gaps by default:** skill and memory approval gates are off (F3 2), and learned skills get security and lint checks but no baseline evaluation (P2 2). **With opt-ins** (write approval on, the GEPA optimiser run), Hermes is the only system in the sample that passes every closed-loop stage.
 
 ## Limits
 
@@ -21,9 +21,9 @@ Coverage: 42 assessed, 0 not evidenced, 7 not applicable. Grades: 42 A, 0 B, 0 C
 
 | Index | Default | Band | Range with alternate readings | With opt-in settings | Assessed only | If every criterion counted |
 |---|---:|---|---|---:|---:|---:|
-| malleability | 2.4 | mechanism | 2.4–2.5 | 2.4 | 2.4 | 2.0 |
+| malleability | 2.4 | mechanism | 2.3–2.5 | 2.4 | 2.4 | 2.0 |
 | governance | 2.3 | mechanism | 2.3–2.5 | 2.5 | 2.3 | 2.3 |
-| learning | 2.5 | productised | 2.5–2.9 | 2.7 | 2.5 | 2.5 |
+| learning | 2.5 | productised | 2.3–3.1 | 2.7 | 2.5 | 2.5 |
 | factory | 2.0 | mechanism | 2.0–2.3 | 2.0 | 2.0 | 2.0 |
 
 ## Profiles

@@ -1,0 +1,349 @@
+{
+  "product": "Dify",
+  "date": "2026-09-30",
+  "source": "github.com/langgenius/dify @ ea38e484b81b4104736d2484aaa1d0d7ea99627e (main)",
+  "archetype": "configurable-application-platform",
+  "scope_line": "Scope: the dify monorepo (api, web, dify-agent runtime, packages, CLI, docker configuration, CI). The separately released dify-sandbox and plugin-daemon services are assessed through their configuration here. Dify Cloud and the plugin marketplace catalogue are out of scope.",
+  "scores": {
+    "A1": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Entity kinds (apps, workflows, datasets, tools) are fixed models (api/models); new kinds need code, migration and release.",
+      "alt_score": 2,
+      "alt_note": "Apps and datasets behave like runtime-defined entities, though of fixed kinds."
+    },
+    "A2": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "single_entity": true,
+      "evidence": "Knowledge-base documents carry user-defined typed metadata fields (DatasetMetadata, api/models/dataset.py); app input variables are typed with validation. No privacy tag; one entity family."
+    },
+    "A3": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Relations and lifecycle states are coded per feature (draft and published workflows, document indexing states)."
+    },
+    "B1": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Every app gets the same generated service API shaped by its input variables (api/controllers/service_api), plus an OpenAPI surface (api/controllers/openapi, fastopenapi.py); no per-app code.",
+      "alt_score": 2,
+      "alt_note": "Apps are a single entity family, not arbitrary defined types."
+    },
+    "B2": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Publishing a new workflow version changes the app's API inputs and outputs live (api/services/workflow_service.py version handling)."
+    },
+    "B3": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Generated OpenAPI documents (api/controllers/openapi, API_SCHEMA_GUIDE.md), typed SDKs (sdks/) and structured errors. No dry-run.",
+      "alt_score": 2,
+      "alt_note": "Coverage of the whole API by the generated spec was not verified."
+    },
+    "C1": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Workflow canvases and each app's web-app settings (branding, opening statement, suggested questions) are data edited by builders; there is no page layout editor."
+    },
+    "C2": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Chat, completion and workflow web apps render intake forms generically from each app's typed input variables; list and detail views are hand-built.",
+      "alt_score": 3,
+      "alt_note": "Intake is fully generic and logs and annotations views are generic across apps."
+    },
+    "C3": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Design-system themes (packages/dify-ui/src/themes) and 1,401 locale files, with AI translation in CI (.github/workflows/translate-i18n-claude.yml); no tenant theme editor or text overrides.",
+      "alt_score": 3,
+      "alt_note": "The locale pipeline includes AI translation."
+    },
+    "D1": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Workflows and chatflows compose triggers (schedule, webhook, plugin triggers in api/core/trigger), conditions, iteration, code, HTTP, tool and LLM nodes in the UI; debug preview and single-step runs; draft and published versions.",
+      "alt_score": 4,
+      "alt_note": "Versioned, testable and partly AI-assisted (generate_workflow_instruction_suggestions), but not simulatable against history."
+    },
+    "D2": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Inbound webhook and plugin triggers with per-node retry settings and run logs; Dify does not publish its own entity lifecycle events to subscribers."
+    },
+    "D3": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Code nodes run in the separate dify-sandbox service with a worker timeout (SANDBOX_WORKER_TIMEOUT 15) and all network traffic forced through the SSRF proxy (SANDBOX_HTTP_PROXY, docker/.env.example:193-201, api/core/helper/ssrf_proxy.py); triggered by workflow events and requests."
+    },
+    "E1": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Design system (packages/dify-ui) with accessibility lint rules (lint.config.ts) and an axe-based accessibility E2E workflow that runs on demand for a chosen page and WCAG level (.github/workflows/accessibility-e2e.yml:4-21)."
+    },
+    "E2": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Per-feature logs only: authentication audit entities (api/services/entities/auth_audit_entities.py), app and workflow run logs; no generic audit store.",
+      "alt_score": 2,
+      "alt_note": "Run logs are generic across apps."
+    },
+    "E3": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Account deletion service and scheduled message cleanup with retention settings (api/services/account_deletion_service.py, api/schedule/clean_messages.py); no data-subject export."
+    },
+    "E4": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "RBAC resource and agent-access services (api/services/rbac_resource_service.py), SSRF proxy and plugin signature enforcement (FORCE_VERIFYING_SIGNATURE, docker/.env.example:236); no security scanning in CI."
+    },
+    "F1": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Workflows keep numbered published versions (workflow_version_number_service); apps export versioned DSL; other surfaces are unversioned.",
+      "alt_score": 3,
+      "alt_note": "Apps and workflows are the main customisation surfaces."
+    },
+    "F2": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Draft and publish with debug preview for apps and workflows; no review step or proposal object."
+    },
+    "F3": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Every publish is a manual human action; the agent runtime's ask-human layer (dify-agent/src/dify_agent/layers/ask_human/layer.py) gates agent actions, not changes."
+    },
+    "F4": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Imported DSL is checked against the current DSL version and flagged when older or newer (api/services/dsl_version.py, app_dsl_service.py); plugins declare manifests and versions against a stable plugin SDK contract.",
+      "alt_score": 2,
+      "alt_note": "If version warnings on import do not count as automated compatibility checks."
+    },
+    "G1": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Knowledge bases get vector and keyword indexes configured per dataset (api/core/rag); application lists use SQL with Redis caching."
+    },
+    "G2": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Multi-tenant workspaces with per-app and per-tenant rate limits (api/libs/helper.py) and plan quotas; no noisy-neighbour detection.",
+      "alt_score": 3,
+      "alt_note": "Per-tenant limits are present throughout."
+    },
+    "G3": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No load or performance suite and no documented limits found (searched for k6, locust, benchmark and load test).",
+      "alt_score": 1,
+      "alt_note": "Vector-database test suites exercise one surface."
+    },
+    "H1": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "API, worker, web, sandbox, plugin daemon, SSRF proxy and agent runtime are separate containers with separate deploy workflows (9 Dockerfiles; .github/workflows/deploy-agent.yml, deploy-knowledge.yml)."
+    },
+    "H2": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "import-linter layer contracts for the backend (api/.importlinter:1-20) plus ESLint configuration for the frontend.",
+      "alt_score": 2,
+      "alt_note": "Whether the import-linter contract runs as a required CI check was not verified."
+    },
+    "H3": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Main CI on pull requests with no draft filter runs API tests, web tests, style, migration and bundle-size checks (.github/workflows/main-ci.yml, db-migration-test.yml, web-bundle-size.yml); accessibility runs only on demand and there is no security scan."
+    },
+    "I1": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Plugins extend models, tools, agent strategies, endpoints, data sources and triggers; workflow templates and DSL are declarative; there are no plugin points for UI, theme or text.",
+      "alt_score": 3,
+      "alt_note": "Breadth across server surfaces is large."
+    },
+    "I2": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Plugins run in the separate plugin daemon, signatures are verified by default (FORCE_VERIFYING_SIGNATURE true) and outbound traffic goes through the SSRF proxy (docker/.env.example:222-236)."
+    },
+    "I3": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Plugin developers connect a local plugin to a running Dify instance for remote debugging through the daemon's install port (EXPOSE_PLUGIN_DAEMON_PORT, docker/.env.example:222), with logs; builders debug workflows step by step.",
+      "alt_score": 2,
+      "alt_note": "Remote debugging configuration was read from settings, not exercised."
+    },
+    "K1": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Each app can be exposed as an MCP server with its input schema as the tool definition and a per-app server credential (api/controllers/mcp/mcp.py); Dify also consumes MCP tools.",
+      "alt_score": 2,
+      "alt_note": "No capability map for the platform as a whole."
+    },
+    "K2": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "End users complete tasks conversationally in Dify apps grounded on knowledge bases with tool actions; builders get natural-language generators for prompts, code, structured output and workflow instructions (api/core/llm_generator/llm_generator.py:432-813).",
+      "alt_score": 2,
+      "alt_note": "Admin natural-language authoring covers parts of a workflow, not whole definitions."
+    },
+    "K3": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "App-scoped API keys, OAuth and device-flow login (api/libs/oauth_bearer.py, api/services/oauth_device_flow.py), rate limits and per-call logs; no idempotency keys or dry-run."
+    },
+    "N1": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "One model-provider interface maps many LLM vendors onto a canonical model API (api/core/model_manager.py, provider_manager.py); data-source plugins map external content into canonical documents and chunks."
+    },
+    "N2": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Plugin SDK covers credential schemas and OAuth, triggers with subscriptions, data-source sync and install and upgrade lifecycle; admins install from the marketplace; signatures verify publishers.",
+      "alt_score": 4,
+      "alt_note": "Signature verification is a form of certification."
+    },
+    "N3": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Service API is path-versioned (/v1) and documented; no deprecation windows or conflict handling."
+    },
+    "O1": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Kernel of tenants, accounts, apps, workflows, datasets, conversations and messages, tools and plugins, served over web, API, MCP and IM channels; no business-domain nouns."
+    },
+    "O2": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Recommended apps and knowledge-pipeline templates ship domain solutions as app definitions, knowledge and tools on an unchanged kernel (api/constants/recommended_apps.json, pipeline_templates.json)."
+    },
+    "O3": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "App DSL export and import is a versioned bundle of app configuration, workflow graph, model settings and tool references (api/services/app_dsl_service.py, dsl_version.py), plus snippet DSL (snippet_dsl_service.py)."
+    },
+    "J1": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Per-app statistics and workflow run logs update as runs happen (api/controllers/console/app/statistic.py, workflow_statistic.py); tracing to external LLM-ops tools (api/core/ops)."
+    },
+    "J2": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Message feedback (rating, content, source) is linked to messages and conversations (api/models/model.py:296-335) and triaged through logs and annotations; the link to the app configuration version was not verified.",
+      "alt_score": 3,
+      "alt_note": "Messages record the app configuration they ran with."
+    },
+    "J3": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "App statistics combine usage and satisfaction for one app; no joined usage, support and delivery models.",
+      "alt_score": 2,
+      "alt_note": "Satisfaction joins feedback and usage for each app."
+    },
+    "M1": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Dashboards only; suggestions exist for conversation questions, not for software change."
+    },
+    "M3": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "AI generators for code, prompts, structured output and workflow instructions assist builders one step at a time (api/core/llm_generator)."
+    },
+    "M4": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Before-and-after comparison is possible by hand from statistics and traces; nothing binds a published version to a baseline and decision.",
+      "alt_score": 0,
+      "alt_note": "If manual comparison does not count as a mechanism."
+    },
+    "L1": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "/console/api/version and /console/api/ping (api/controllers/console/system.py:27-37) and a worker health check (api/celery_healthcheck.py); no configuration snapshot."
+    },
+    "L2": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Docker Compose stack, seeded E2E runs (e2e/scripts/seed-runner.ts) and branch-triggered dev deploys (.github/workflows/deploy-dev.yml); no per-change ephemeral environment.",
+      "alt_score": 3,
+      "alt_note": "E2E runs create seeded, disposable instances per change."
+    },
+    "L3": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Web and CLI E2E suites (.github/workflows/web-e2e.yml, cli-e2e.yml); no changed-path map or adoption instrumentation at ship."
+    },
+    "P1": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Admins turn logged answers into annotations that the app reuses for similar questions (api/services/annotation_service.py); nothing proposes changes without being asked."
+    },
+    "P2": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Annotations and app changes are applied by people without evaluation against a baseline."
+    }
+  },
+  "limits": "Repository evidence only, main at the tip named above. dify-sandbox and plugin-daemon are separate repositories; their behaviour was taken from configuration here and not read in source. Dify Cloud and enterprise editions are out of scope. Single rater.",
+  "framework_version": "0.3.0",
+  "reading": "**Strongest:** isolation and bundles. Code runs in a separate sandbox behind a forced SSRF proxy, plugins run in a daemon with signature checks, and apps export as versioned DSL (D3 3, I2 3, O3 3). **Learning (1.6):** admins turn logged answers into annotations the app reuses (P1 2), but nothing evaluates changes against a baseline (P2 1), and publishing has no policy gate (F3 1)."
+}

@@ -1,0 +1,346 @@
+{
+  "product": "Frappe Framework",
+  "date": "2026-09-30",
+  "source": "github.com/frappe/frappe @ 82b0384810030c8d347780538821a3b006375d28 (develop)",
+  "archetype": "configurable-application-platform",
+  "scope_line": "Scope: the frappe repository only (framework, Desk UI, website module, automation engine). Apps built on it (ERPNext, HRMS, CRM) and Frappe Cloud are out of scope.",
+  "scores": {
+    "A1": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Sites outside developer mode can create DocTypes with custom=1 in Desk (check_developer_mode, frappe/core/doctype/doctype/doctype.py:329-340); on_update calls frappe.db.updatedb to create or alter the table automatically (doctype.py:539-546). No deploy. No dry-run or policy gate, so not 4."
+    },
+    "A2": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "DocField carries fieldtype, reqd, length, unique, non_negative, min_value, max_value, options-based validation, mandatory_depends_on and a mask flag (frappe/core/doctype/docfield/docfield.json); admins add typed fields through Customize Form and Custom Field. mask is consumed by read paths (frappe/model/meta.py:207, frappe/model/db_query.py:35, frappe/desk/form/load.py:295). Personal-data scope for erasure is declared in code (user_data_fields, frappe/hooks.py:360), not per field, so not 4."
+    },
+    "A3": {
+      "status": "assessed",
+      "score": 4,
+      "grade": "A",
+      "evidence": "Link, Dynamic Link and Table fields declare relations and Workflow DocTypes declare states and transitions in the UI (frappe/workflow/doctype/); the platform enforces transitions (frappe/model/workflow.py:119-246) and link integrity (frappe/model/delete_doc.py:414); both are creatable through the REST API with validation errors, which meets the rubric's definition of AI-authorable.",
+      "alt_score": 3,
+      "alt_note": "If AI-authorable is read as needing an AI authoring feature."
+    },
+    "B1": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "One generic document API serves every DocType: frappe/api/v2.py read_doc, document_list with fields and filters, create_doc, update_doc, delete_doc, get_meta (lines 84-245), plus frappe/api/v1.py. No per-type controllers.",
+      "alt_score": 4,
+      "alt_note": "Projections, filters and validation already derive from the definition at runtime; only 'typed' is missing."
+    },
+    "B2": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Meta is loaded and cached at runtime (frappe/model/meta.py); a new or changed DocType is served by /api/resource and /api/v2 immediately on save. No per-consumer schema versions or dry-run."
+    },
+    "B3": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Introspection through get_meta (frappe/api/v2.py:245) and getdoctype (frappe/desk/form/load.py); Python type stubs generated from definitions (frappe/types/exporter.py). No OpenAPI, no external typed client generation; errors carry exc_type but no field-level schema."
+    },
+    "C1": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Form layout (tab, section and column breaks) is DocType data, overridable per site through Customize Form and DocType Layout (frappe/core/doctype/doctype_layout); Workspace, Web Page, Web Form and Print Format are admin builders with previews (frappe/desk/doctype/workspace, frappe/website/doctype/web_page, frappe/printing/doctype/print_format). A site is the tenant unit."
+    },
+    "C2": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Every DocType gets generic list, report, kanban, calendar, form and quick-entry views rendered from its definition (frappe/public/js/frappe/list, form, views); admins configure List View Settings (frappe/desk/doctype/list_view_settings) and saved report views. No inherited accessibility guarantee, so not 4."
+    },
+    "C3": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Per-site text overrides through the Translation DocType (frappe/core/doctype/translation); locale pipeline through Crowdin workflows (.github/workflows/crowdin-actions-*.yml); Website Theme DocType edits website styling (frappe/website/doctype/website_theme).",
+      "alt_score": 2,
+      "alt_note": "The admin theme editor covers the website only; the Desk application UI offers light and dark modes, not tenant tokens."
+    },
+    "D1": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Automation Flow, Action and Run DocTypes (frappe/automation/doctype) on an engine exposing get_automation_capabilities, validate_action_params and run_manually (frappe/automation_engine/api.py); trial runs simulate wait steps (frappe/automation_engine/tests/test_trial_run.py:115-152); Notification preview_meets_condition (frappe/email/doctype/notification/notification.py:98). Covers custom DocTypes.",
+      "alt_score": 4,
+      "alt_note": "Capabilities are machine-readable and trial runs exist; versioning of flows and AI authoring are not evidenced."
+    },
+    "D2": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Admin-configured Webhook per DocType event with conditions, headers and data mapping (frappe/integrations/doctype/webhook), delivery log (webhook_request_log) and scheduled retries with max_retries (retry_failed_webhooks, test_webhook.py:339-354); durable automation trigger queue with retention (frappe/automation_engine/drainer.py:291, settings.py:18). No replay."
+    },
+    "D3": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Server Script runs under RestrictedPython with allowlisted globals (frappe/utils/safe_exec.py:15-17, 95), triggered by DocType events, API calls, scheduler and permission queries, authored by System Managers when server_script_enabled is set (safe_exec.py:48); outbound requests limited to globally routable http(s) hosts with timeouts (safe_exec.py:372-400, 486). Execution time is bounded only by the worker. No per-hook test harness, so not 4."
+    },
+    "E1": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "A UI kit with tokens exists (ui/, frappe/public/scss) but no automated accessibility scanning was found in CI or tests (no axe, pa11y, jsx-a11y or vuejs-accessibility in the tree).",
+      "alt_score": 2,
+      "alt_note": "The kit-and-tokens half of level 2 is present; the anchors bundle kit and scans, so kit-without-scans fits neither level."
+    },
+    "E2": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Version records field-level changes for DocTypes with track_changes (frappe/core/doctype/doctype/doctype.py:181); Audit Trail compares versions (frappe/core/doctype/audit_trail); Activity, Access, API Request and Permission logs exist; retention through Log Settings (frappe/core/doctype/log_settings/log_settings.py:80-86). Coverage is opt-in per DocType; not tamper-evident.",
+      "alt_score": 3,
+      "alt_note": "Admin UI, retention and config and permission logs exist; only the 'all entities' clause fails because tracking is opt-in."
+    },
+    "E3": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Personal Data Download and Deletion Requests cover every DocType declared in user_data_fields hooks (frappe/hooks.py:360, frappe/website/doctype/personal_data_deletion_request). The declaration is app code, not a field-level tag; retention exists for logs only.",
+      "alt_score": 3,
+      "alt_note": "Erasure is generic across entities; the only gap is that coverage comes from a code hook instead of a tag in the definition."
+    },
+    "E4": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Role permissions are part of every DocType definition (DocPerm, Custom DocPerm, user permissions, permlevels, mask); field validation is generic; semgrep runs on every pull request (.github/workflows/linters.yml:67-72) and Dependabot is configured (.github/dependabot.yml). Whether the check blocks merge is a branch-protection setting not visible in the repository.",
+      "alt_score": 2,
+      "alt_note": "If 'gates every change' needs visible proof that the scan blocks merges."
+    },
+    "F1": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Document changes are versioned with diffs (Version, Audit Trail); deleted documents can be restored (frappe/core/doctype/deleted_document/deleted_document.py:43). No revert-to-version for definitions, layouts or configuration."
+    },
+    "F2": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Customisations move between sites as exported fixtures or Package Releases (frappe/core/doctype/package_release/package_release.py:79-96), an engineer-run stage-and-publish flow. No proposal object with preview."
+    },
+    "F3": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Every definition change is made directly by a person holding the right role; no policy object and no auto-apply classes."
+    },
+    "F4": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Customisations live in separate layers (Custom Field, Property Setter, Client Script, Server Script) that survive bench migrate while standard DocTypes resync; frappe/patches.txt carries migrations. No automated compatibility check of customisations against the next release.",
+      "alt_score": 3,
+      "alt_note": "Customisations are confined to stable layers and migration tooling exists; only automated compatibility checks are missing."
+    },
+    "G1": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Each DocType has its own table, so there is no generic store; DocField.search_index creates database indexes from the definition; lists run through indexed SQL (frappe/model/db_query.py) with Redis meta and document caches; global search table (frappe/utils/global_search.py)."
+    },
+    "G2": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Multi-site benches give each site its own database; per-site request rate limiting (frappe/rate_limiter.py:16-18). No noisy-neighbour detection or isolation verification in the repository."
+    },
+    "G3": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "frappe/tests/test_perf.py and frappe/tests/microbenchmarks exist; no documented per-surface limits or CI budgets."
+    },
+    "H1": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "One Python and JavaScript codebase deployed as a bench (web, workers, scheduler and realtime share the artifact); container images live in a separate repository."
+    },
+    "H2": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Module boundaries are convention; no architectural lint or dependency-graph enforcement found."
+    },
+    "H3": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Server tests, Cypress UI tests, linters with semgrep and a bundle-size check run on every pull request with no draft skip (.github/workflows/server-tests.yml, ui-tests.yml, linters.yml, default-js-bundle-size.yml). No accessibility check.",
+      "alt_score": 3,
+      "alt_note": "Every code change class except accessibility has a pre-land check and drafts are included."
+    },
+    "I1": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Code apps through hooks (hooks.md, frappe/hooks.py) plus declarative layers: Custom Field, Property Setter, Client Script, Server Script, Custom HTML Block, Web Template, Print Format, Workspace, Translation."
+    },
+    "I2": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Server Scripts run in-process under RestrictedPython allowlists with request egress control (frappe/utils/safe_exec.py); installed apps and client scripts run with full trust.",
+      "alt_score": 1,
+      "alt_note": "If the criterion is read for third-party apps, which run with full trust."
+    },
+    "I3": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "bench developer mode, System Console (frappe/desk/doctype/system_console), Recorder and Error Log support local and on-site iteration; no staged branches or preview against a tenant in the repository.",
+      "alt_score": 3,
+      "alt_note": "System Console and Recorder already give validators and logs against a live site."
+    },
+    "K1": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Introspectable meta (get_meta) and automation capability APIs (frappe/automation_engine/api.py); no MCP server or tool surface in the repository."
+    },
+    "K2": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No member-facing assistant or natural-language authoring in the repository (searched for assistant, chat, LLM and copilot features; hits are developer docs only: AGENTS.md, ui/CLAUDE.md)."
+    },
+    "K3": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Per-user API key and secret (frappe/core/doctype/user/user.json:600-620), OAuth scopes (frappe/integrations/doctype/oauth_scope), API Request Log, rate limiting (frappe/rate_limiter.py). No idempotency keys or dry-run."
+    },
+    "N1": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Integrations (Google Calendar and Contacts, LDAP, Connected App) are bespoke modules (frappe/integrations/doctype); Data Import value mapping covers imports only.",
+      "alt_score": 2,
+      "alt_note": "Webhook data mapping and import mapping are configurable mapping layers for narrow flows."
+    },
+    "N2": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Connected App is an admin-configured generic OAuth2 client and Integration Request logs calls (frappe/integrations/doctype/connected_app, integration_request); no connector SDK covering sync and lifecycle."
+    },
+    "N3": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Path-versioned APIs (frappe/api/v1.py, frappe/api/v2.py); no deprecation policy, idempotent sync or conflict handling found."
+    },
+    "O1": {
+      "status": "assessed",
+      "score": 4,
+      "grade": "A",
+      "evidence": "Kernel is User, Role, DocPerm, DocType, File, Communication, Workflow, Notification and Email Account; domains live in separate apps (README.md:22-32 names ERPNext); kernel objects are themselves DocTypes customisable through the same definitions (DocType is a DocType).",
+      "alt_score": 3,
+      "alt_note": "If 'configurable definitions' requires more than kernel objects being customisable DocTypes."
+    },
+    "O2": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "B",
+      "evidence": "README.md:22-32 states ERPNext was built on the framework; several domains ship as separate apps on an unchanged kernel. Those apps contain code as well as definitions; a domain can also be built from custom DocTypes, workflows and server scripts alone.",
+      "alt_score": 4,
+      "alt_note": "Multiple domains already ship as installable bundles with the kernel unchanged, if code-carrying apps count as bundles."
+    },
+    "O3": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Package, Package Release and Package Import DocTypes export and install versioned bundles of DocTypes, scripts and other customisations (frappe/core/doctype/package, package_release, package_import)."
+    },
+    "J1": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Route History, Activity Log and Access Log are written to the site database as events happen and are read by product features (frappe/desk/doctype/route_history); vendor telemetry through pulse and PostHog (frappe/utils/telemetry).",
+      "alt_score": 2,
+      "alt_note": "Only navigation and access events are near-real-time; there is no general per-feature event stream."
+    },
+    "J2": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "No typed feedback or rating objects; Error Log links errors to reference documents but not to the definition version.",
+      "alt_score": 2,
+      "alt_note": "Error Log entries are typed signals linked to documents."
+    },
+    "J3": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "DuckDB Sync copies DocType data for analytics (frappe/core/doctype/duckdb_sync) and reports can join DocTypes, but nothing joins usage, support and delivery data or mines them.",
+      "alt_score": 2,
+      "alt_note": "In-product reporting over the site database is a partial join of sources."
+    },
+    "M1": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "The Recorder's query optimiser proposes database indexes from recorded queries (frappe/core/doctype/recorder/db_optimizer.py:242, recorder.py:159): evidence-backed recommendations for one area."
+    },
+    "M3": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No AI authoring lane in the repository."
+    },
+    "M4": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No binding of changes to baselines or metrics.",
+      "alt_score": 1,
+      "alt_note": "The Recorder supports ad hoc before-and-after checks."
+    },
+    "L1": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "frappe.ping (frappe/__init__.py:1478) and get_versions (frappe/utils/change_log.py:105); System Health Report DocType; no deployed-configuration snapshot endpoint."
+    },
+    "L2": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "bench new-site and CI create fresh sites with test records per run (.github/workflows/server-tests.yml); no per-change ephemeral environment and no feature flags.",
+      "alt_score": 3,
+      "alt_note": "CI already builds a seeded, disposable site per change."
+    },
+    "L3": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Cypress journeys (cypress/integration) and server tests; no changed-path to journey map or adoption instrumentation at ship."
+    },
+    "P1": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "The Recorder proposes database indexes from recorded queries when a person runs it (frappe/core/doctype/recorder/db_optimizer.py:242); nothing proposes changes without being asked."
+    },
+    "P2": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Suggested changes are applied by a person; there is no automated evaluation."
+    }
+  },
+  "limits": "Repository evidence only, develop branch at the tip named above. No running site was inspected, so validation and preview behaviour is read from code, not exercised. Frappe Cloud features (marketplace, staging sites, backups) and apps built on the framework are out of scope. Whether CI checks block merges depends on branch protection, which is not visible in the repository. Single rater; the eight alternate readings mark where a second rater could reasonably differ.",
+  "framework_version": "0.3.0",
+  "reading": "**Strongest:** the highest Change Surface in the sample (3.1). Types, fields, relations, workflows, generic APIs, generated views and installable packages all exist without code, and kernel objects are themselves customisable definitions (O1 4, A3 4). **Largest gap:** Learning (1.3). The Recorder suggests indexes when asked, but nothing learns from use or measures a change (P1 2, M4 0). Governance (1.9) lacks a policy gate and rollback of definitions."
+}

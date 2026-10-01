@@ -23,7 +23,7 @@ Coverage: 41 assessed, 0 not evidenced, 8 not applicable. Grades: 41 A, 0 B, 0 C
 |---|---:|---|---|---:|---:|---:|
 | malleability | 2.1 | mechanism | 2.1–2.3 | 2.2 | 2.1 | 1.8 |
 | governance | 1.8 | mechanism | 1.8–2.3 | 1.9 | 1.8 | 1.8 |
-| learning | 1.5 | mechanism | 1.5 | 1.9 | 1.5 | 1.5 |
+| learning | 1.5 | mechanism | 1.4–1.6 | 1.9 | 1.5 | 1.5 |
 | factory | 1.7 | mechanism | 1.7–2.0 | 1.7 | 1.7 | 1.7 |
 
 ## Profiles

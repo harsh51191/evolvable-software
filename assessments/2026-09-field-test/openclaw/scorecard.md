@@ -23,7 +23,7 @@ Coverage: 42 assessed, 0 not evidenced, 7 not applicable. Grades: 42 A, 0 B, 0 C
 |---|---:|---|---|---:|---:|---:|
 | malleability | 2.4 | mechanism | 2.4–2.9 | 2.4 | 2.4 | 2.1 |
 | governance | 2.4 | mechanism | 2.4–2.8 | 2.5 | 2.4 | 2.4 |
-| learning | 2.4 | mechanism | 2.4–2.7 | 2.4 | 2.4 | 2.4 |
+| learning | 2.4 | mechanism | 2.2–2.9 | 2.4 | 2.4 | 2.4 |
 | factory | 2.7 | productised | 2.7–2.8 | 2.7 | 2.7 | 2.7 |
 
 ## Profiles

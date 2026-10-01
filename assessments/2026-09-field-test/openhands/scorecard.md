@@ -22,7 +22,7 @@ Coverage: 42 assessed, 0 not evidenced, 7 not applicable. Grades: 42 A, 0 B, 0 C
 | Index | Default | Band | Range with alternate readings | With opt-in settings | Assessed only | If every criterion counted |
 |---|---:|---|---|---:|---:|---:|
 | malleability | 2.1 | mechanism | 2.1–2.4 | 2.1 | 2.1 | 1.6 |
-| governance | 1.6 | mechanism | 1.6 | 1.6 | 1.6 | 1.6 |
+| governance | 1.6 | mechanism | 1.5–1.8 | 1.6 | 1.6 | 1.6 |
 | learning | 1.0 | code-only | 1.0 | 1.0 | 1.0 | 1.0 |
 | factory | 2.2 | mechanism | 2.2–2.5 | 2.2 | 2.2 | 2.2 |
 

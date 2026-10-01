@@ -41,7 +41,7 @@ Closed-loop candidate by default: yes or no. With opt-in settings: yes or no. Li
 
 ## Scorecard
 
-Paste the table printed by `scripts/score.py <scores.json>`.
+Paste the table printed by `scripts/score.py <assessment.json>`.
 
 ## Reading
 
@@ -49,7 +49,7 @@ Lead with the largest blocker. Say what the product does by default and what its
 
 ## Prescription
 
-When requested, paste the output of `scripts/score.py <scores.json> --prescribe`. Map planned work to the generated slices without scoring roadmap promises. Label projected indexes as ceilings and re-estimate all relative sizes.
+When requested, paste the output of `scripts/score.py <assessment.json> --prescribe`. Map planned work to the generated slices without scoring roadmap promises. Label projected indexes as ceilings and re-estimate all relative sizes.
 
 ## Limits
 

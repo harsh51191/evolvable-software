@@ -1,0 +1,362 @@
+{
+  "product": "Directus",
+  "date": "2026-09-30",
+  "source": "github.com/directus/directus @ 2878b4ef8ea9c1d09201debe89b3a5dc1d0bf93a (main)",
+  "archetype": "configurable-application-platform",
+  "scope_line": "Scope: the directus monorepo (API, Data Studio app, SDK, CLI, extensions SDK and registry, AI assistant and MCP server). Directus Cloud, the hosted marketplace catalogue and templates published in other repositories are out of scope.",
+  "scores": {
+    "A1": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Admins create collections in the Data Model UI and the API creates real tables with no migration or deploy (api/src/services/collections.ts); the AI assistant can also author collections through zod-validated tools behind an approval gate (api/src/ai/tools/collections/index.ts:20-66, api/src/ai/tools/registry.ts:198-214). No dry-run, so not 4.",
+      "alt_score": 4,
+      "alt_note": "AI authoring through a gate already exists; only dry-run and versioned definitions are missing."
+    },
+    "A2": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Typed fields with validation rules, conditions, required, unique and is_indexed are created in the UI and read by forms and the generated APIs (api/services/fields.ts:62, 1008-1012). v0.3 moved the privacy tag to E3.",
+      "alt_score": 2,
+      "alt_note": "Validation rules are partial for some field types."
+    },
+    "A3": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "M2O, O2M, M2M and M2A relations are declared in the UI with database-level referential actions; lifecycle states are not a feature, and v0.3 accepts either at level 3.",
+      "alt_score": 2,
+      "alt_note": "If lifecycle states are considered central for this product."
+    },
+    "B1": {
+      "status": "assessed",
+      "score": 4,
+      "grade": "A",
+      "evidence": "Generic REST (/items/:collection) and a GraphQL schema generated at runtime from the data model per role (api/src/services/graphql/index.ts:23-89): typed, with field selection, deep filters and permission and field validation from the definition.",
+      "alt_score": 3,
+      "alt_note": "If 'typed projections' requires per-type client types rather than runtime GraphQL types."
+    },
+    "B2": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Schema changes invalidate the cached schema so REST and GraphQL reflect them live. No per-consumer schema versions or dry-run."
+    },
+    "B3": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "/server/specs/oas and /server/specs/graphql are generated from the live schema (api/src/controllers/server.ts:21-37); typed SDK (sdk/); structured error codes (packages/errors). No mutation dry-run, so not 4."
+    },
+    "C1": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Collection layouts (table, cards, calendar, kanban, map), form widths, groups and interface options are stored as presets and field meta and edited in the Data Studio per role (app/src/layouts); Insights dashboards; visual editing of connected frontends (packages/visual-editing). One project per instance, so per-tenant reads as per project.",
+      "alt_score": 2,
+      "alt_note": "No schema validation of layout props and no preview of layout changes before they apply."
+    },
+    "C2": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Every collection renders generic list layouts, item detail and create forms from field meta and interfaces (app/src/layouts, app/src/interfaces); admins configure presets."
+    },
+    "C3": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Admin appearance settings with light and dark theme overrides and custom CSS (api/src/database/seeds/13-settings.yaml, packages/themes), custom translation strings, and 93 locale files maintained through Crowdin (crowdin.yml)."
+    },
+    "D1": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Flows compose triggers (event, schedule, webhook, manual, another flow) and operations (condition, exec, item CRUD, request, notification, mail, transform, trigger) across any collection in the admin UI (api/src/operations, api/src/flows.ts). No test or simulation mode.",
+      "alt_score": 3,
+      "alt_note": "Everything in level 3 except a test mode."
+    },
+    "D2": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Action and filter events fire for every collection including user-defined ones (api/src/emitter.ts); outbound webhooks are Flow request operations with flow logs. No retry or replay in api/src/flows.ts.",
+      "alt_score": 3,
+      "alt_note": "Admin subscriptions with delivery logs exist; only retry is missing."
+    },
+    "D3": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "The exec operation and sandboxed API extensions run in isolated-vm with memory and time limits (FLOWS_RUN_SCRIPT_MAX_MEMORY 32, FLOWS_RUN_SCRIPT_TIMEOUT 10000, packages/env/src/constants/defaults.ts:213-214) and requested scopes including a request URL allowlist (packages/extensions/src/shared/schemas/options.ts:14-27); triggered by events and requests."
+    },
+    "E1": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Component library and theme tokens exist (packages/themes, app/src/components); no automated accessibility scanning in CI or tests.",
+      "alt_score": 2,
+      "alt_note": "Kit and tokens are present; the anchors bundle kit and scans."
+    },
+    "E2": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Activity and revisions record every item mutation including system collections (schema, permissions, settings, flows), with an admin Activity module and retention (ACTIVITY_RETENTION and REVISIONS_RETENTION, packages/env/src/constants/defaults.ts:167-172). There is no approval object, so approvals are not covered.",
+      "alt_score": 3,
+      "alt_note": "All other level-3 clauses are met."
+    },
+    "E3": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "No data-subject export or erasure features and no privacy tags (searched for gdpr, erasure, anonymisation and personal data); admins can export collections and delete items by hand.",
+      "alt_score": 0,
+      "alt_note": "If manual export and deletion do not count as a mechanism."
+    },
+    "E4": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Policies with collection, field and item-level rules apply to every collection including new ones; field validation is generic. CodeQL runs on a schedule, not on pull requests (.github/workflows/codeql-analysis.yml:5), so scanning does not gate change.",
+      "alt_score": 3,
+      "alt_note": "Authorisation is generated per defined type; only the gating clause fails."
+    },
+    "F1": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Revisions can be reverted for items and system records (api/src/services/revisions.ts:13-18); data-model changes have no rollback in the UI.",
+      "alt_score": 3,
+      "alt_note": "Revert works on system collections too, so most customisation surfaces are covered through the API."
+    },
+    "F2": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Content Versioning stages item changes for compare and promote (api/src/services/versions.ts:436-521); definitions and configuration move between projects through schema snapshot, diff and apply (api/src/controllers/schema.ts) and CLI sync pull, diff and push (packages/cli/src/commands/sync), which is an engineer flow.",
+      "alt_score": 3,
+      "alt_note": "Versions with compare-and-promote already form a proposal, review and apply flow, but for content only."
+    },
+    "F3": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Mutating AI tool calls require approval unless the user set that tool to always-allow (api/src/ai/tools/registry.ts:198-214, app/src/ai/stores/use-ai.ts:179-185); deletes can be disabled wholesale (allowDeletes). Approvals are not recorded as audit objects.",
+      "alt_score": 3,
+      "alt_note": "Per-tool approval modes are a policy per change class; only recorded approvals are missing."
+    },
+    "F4": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Extension SDK and types are versioned packages (packages/extensions-sdk, packages/extensions); system migrations run automatically; schema snapshots apply through diff. No automated compatibility check of extensions against a new release was found."
+    },
+    "G1": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Collections are real tables, so there is no generic store; fields marked is_indexed get database indexes (api/src/services/fields.ts:1008-1012); schema and response caching (CACHE_* settings)."
+    },
+    "G2": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "One project per deployment; a pressure limiter is on by default and a rate limiter is available (packages/env/src/constants/defaults.ts:29, 216)."
+    },
+    "G3": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No load or performance suite in the repository and no documented per-surface limits (searched for k6, locust, artillery, benchmark and load test)."
+    },
+    "H1": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "API and Data Studio ship as one Node process and one container image (Dockerfile); packages are separate but deployed together.",
+      "alt_score": 2,
+      "alt_note": "The anchors do not separate 'one artifact' (0) from 'monolith, manual' (1) from a containerised monolith."
+    },
+    "H2": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "pnpm workspace packages with declared dependencies (pnpm-workspace.yaml); no architectural lint."
+    },
+    "H3": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Lint and tests run on pull requests including drafts (.github/workflows/check.yml:3-12), but a Skip Checks label bypasses them (check.yml:30), E2E runs only when labelled (e2e-pr.yml:15) and CodeQL is scheduled."
+    },
+    "I1": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Interfaces, displays, layouts, modules, panels, themes, endpoints, hooks, operations and bundles as code extensions (packages/extensions), plus declarative Flows, presets, translations and theme overrides; in-app marketplace backed by packages/extensions-registry.",
+      "alt_score": 4,
+      "alt_note": "A registry and marketplace exist; plugin points are not generated from definitions."
+    },
+    "I2": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Sandboxed API extensions run in isolated-vm with memory and time limits and a request URL allowlist; marketplace installs default to sandbox trust (MARKETPLACE_TRUST sandbox, packages/env/src/constants/defaults.ts:124). Local non-sandboxed extensions keep full trust."
+    },
+    "I3": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Extensions SDK with create, build and dev commands (packages/create-directus-extension, packages/extensions-sdk) and Docker Compose for local development; no preview against a remote project or staged branches."
+    },
+    "K1": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "MCP server over the same tool registry (api/src/ai/mcp/server.ts) with OAuth scope and audience checks (server.ts:75-102) and zod-typed tools; the schema tool returns the live data model as a capability map.",
+      "alt_score": 4,
+      "alt_note": "Items and schema tools cover user-defined collections at runtime; tools are generic rather than generated per collection."
+    },
+    "K2": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "In-app AI assistant with grounded tools over items, files, schema, relations and flows, running under the user's permissions (api/src/ai/chat, app/src/ai); admins author collections, fields, relations and flows in natural language with an approval card showing the proposed call. LLM tracing to Braintrust or Langfuse (api/src/ai/telemetry); no groundedness evaluation.",
+      "alt_score": 2,
+      "alt_note": "If an approval card is not a preview of the resulting change."
+    },
+    "K3": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "The assistant acts with the user's accountability; MCP clients get OAuth-scoped tokens; mutations need approval; rate limiter and activity rows apply. No idempotency keys or dry-run.",
+      "alt_score": 3,
+      "alt_note": "Scoped identity, approval-as-preview, rate limits and audit are present; idempotency is the gap."
+    },
+    "N1": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "No canonical integration model; integrations are Flow request operations or custom extensions."
+    },
+    "N2": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "The extensions SDK lets engineers build operation extensions that wrap external APIs; no connector definition covering auth, sync and lifecycle.",
+      "alt_score": 1,
+      "alt_note": "If a general extension SDK does not count as a connector SDK."
+    },
+    "N3": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "No path versioning; breaking changes are announced in release notes; no deprecation windows or idempotent sync.",
+      "alt_score": 2,
+      "alt_note": "The API is documented through a generated OpenAPI spec."
+    },
+    "O1": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Kernel is users, roles, policies, permissions, files, collections, flows, comments and notifications, with no domain nouns; system collections accept custom fields.",
+      "alt_score": 4,
+      "alt_note": "System collections are themselves extensible definitions."
+    },
+    "O2": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Any domain can be modelled as collections, relations, flows and policies with no kernel change, but no domain shipped this way is evidenced inside the repository.",
+      "alt_score": 3,
+      "alt_note": "Domain templates exist in other repositories (grade C knowledge), which would prove the path."
+    },
+    "O3": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Schema snapshot and apply cover collections, fields and relations; CLI sync pulls and pushes roles, policies, permissions, flows, operations, dashboards, panels, presets, translations and settings between projects (packages/cli/src/commands/sync). Not a versioned bundle with install semantics.",
+      "alt_score": 3,
+      "alt_note": "A pulled sync directory is a versionable, installable bundle of definitions, layouts and rules."
+    },
+    "J1": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Activity rows are written per request and are queryable by in-product Insights dashboards; vendor telemetry counters (api/src/telemetry); AI telemetry to Braintrust or Langfuse (api/src/ai/telemetry).",
+      "alt_score": 2,
+      "alt_note": "Activity is an audit stream, not per-feature usage instrumentation."
+    },
+    "J2": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Item comments are free text; no typed feedback or rating objects linked to definitions."
+    },
+    "J3": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Insights dashboards can query any collection including activity; no joined usage, support and delivery models or mining.",
+      "alt_score": 2,
+      "alt_note": "In-product dashboards over system collections are a partial join."
+    },
+    "M1": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No recommendation or proposal features; the assistant acts only on request."
+    },
+    "M3": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "An AI authoring lane turns admin requests into schema, flow and item changes behind approvals, one project at a time (api/src/ai/tools); nothing applies accepted proposals across projects.",
+      "alt_score": 1,
+      "alt_note": "If the lane is judged manual per tenant because a human drives every change."
+    },
+    "M4": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No binding of changes to baselines or metrics."
+    },
+    "L1": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "/server/info with version, /server/health, generated specs (api/src/controllers/server.ts:21-80) and /schema/snapshot as a machine-readable configuration snapshot (api/src/controllers/schema.ts)."
+    },
+    "L2": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Versioned container images, a bootstrap command, schema apply and CLI sync recreate a configured instance; E2E tests start instances per database vendor (tests/e2e). No per-change ephemeral environment or feature flags.",
+      "alt_score": 3,
+      "alt_note": "Instances are reproducible from a build id and snapshot in minutes."
+    },
+    "L3": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "E2E API suite across database vendors (tests/e2e), run on pull requests only when labelled; no changed-path map or adoption instrumentation."
+    },
+    "P1": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "The AI assistant acts only on request (api/src/ai); nothing learns from use."
+    },
+    "P2": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "AI-authored changes pass a human approval (api/src/ai/tools/registry.ts:198-214); there is no evaluation against a baseline."
+    }
+  },
+  "limits": "Repository evidence only, main branch at the tip named above. No running instance was inspected, so approval and preview behaviour is read from code. Directus Cloud, the hosted marketplace catalogue and published templates are out of scope. The repository is under a source-available licence, so some features may be licence-gated (api/src/license); entitlement checks were not traced per feature. Single rater; 18 alternate readings mark likely disagreements.",
+  "framework_version": "0.3.0",
+  "reading": "**Strongest:** Malleability (2.6), with runtime-generated typed GraphQL and REST (B1 4) and real sandboxing for scripts and marketplace extensions (D3 3, I2 3). Its AI assistant authors collections and flows behind a per-tool approval gate. **Largest gap:** Learning (1.1). Nothing learns from use, and there are no structured feedback signals (J2 1, P1 1)."
+}

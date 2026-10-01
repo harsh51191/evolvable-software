@@ -191,7 +191,25 @@
     "L3": 2
   },
   "variants": {
-    "alternate": {
+    "low": {
+      "indexes": {
+        "malleability": 2.3,
+        "governance": 1.5,
+        "learning": 0.9,
+        "factory": 2.2
+      },
+      "profiles": {
+        "Change Surface": 2.2,
+        "Governance": 1.5,
+        "Learning": 0.9,
+        "Factory": 2.2,
+        "Agent Interface": 2,
+        "Extension Surface": 2.3,
+        "Operational Scalability": 2
+      },
+      "closed_loop_candidate": false
+    },
+    "high": {
       "indexes": {
         "malleability": 2.4,
         "governance": 1.9,
@@ -203,7 +221,7 @@
         "Governance": 1.9,
         "Learning": 1.0,
         "Factory": 2.7,
-        "Agent Interface": 2,
+        "Agent Interface": 2.3,
         "Extension Surface": 2.7,
         "Operational Scalability": 2
       },

@@ -144,7 +144,7 @@ class ScoringTests(unittest.TestCase):
 
     def test_alternates_produce_a_range(self):
         data = assessment(2)
-        data["scores"]["F1"]["alt_score"] = 4
+        data["scores"]["F1"].update(alt_score=3, alt_note="adjacent level also defensible")
         res = self.result(data)
         low, high = res["ranges"]["governance"]
         self.assertLess(low, high)
@@ -161,6 +161,61 @@ class ScoringTests(unittest.TestCase):
         data = assessment(4)
         data["scores"]["A1"]["grade"] = "C"
         self.assertEqual(self.result(data)["variants"]["default"]["effective"]["A1"], 2)
+
+
+class ReviewFixTests(unittest.TestCase):
+    """Regression tests for the v0.3 review findings."""
+
+    def errors(self, data):
+        return score.validate(data, CRITERIA, ORDER, MODEL)
+
+    def test_opposite_alternates_do_not_cancel(self):
+        data = assessment(2)
+        data["scores"]["J1"].update(alt_score=3, alt_note="higher reading")
+        data["scores"]["J2"].update(alt_score=1, alt_note="lower reading")
+        res = score.score_assessment(data, CRITERIA, ORDER, MODEL)
+        low, high = res["ranges"]["learning"]
+        default = res["variants"]["default"]["indexes"]["learning"]
+        self.assertLess(low, default)
+        self.assertGreater(high, default)
+
+    def test_alt_score_must_be_adjacent_and_explained(self):
+        data = assessment(2)
+        data["scores"]["A1"].update(alt_score=4, alt_note="too far")
+        data["scores"]["A2"]["alt_score"] = 3
+        errs = self.errors(data)
+        self.assertIn("A1: alt_score must be an adjacent level (score +/- 1)", errs)
+        self.assertIn("A2: alt_score needs an alt_note", errs)
+
+    def test_optional_fields_only_on_their_status(self):
+        data = assessment(2, A1={"status": "not_evidenced", "searched": "src/", "alt_score": 1, "alt_note": "x"},
+                          A2={"status": "not_evidenced", "searched": "src/", "available_score": 3})
+        data["scores"]["A3"]["if_applicable"] = 2
+        errs = self.errors(data)
+        self.assertIn("A1: alt_score is only allowed when status is assessed", errs)
+        self.assertIn("A2: available_score is only allowed when status is assessed", errs)
+        self.assertIn("A3: if_applicable is only allowed when status is not_applicable", errs)
+
+    def model_with(self, old, new):
+        tmp = tempfile.mkdtemp()
+        try:
+            path = os.path.join(tmp, "rubric.md")
+            with open(RUBRIC) as handle:
+                text = handle.read()
+            self.assertIn(old, text)
+            with open(path, "w") as handle:
+                handle.write(text.replace(old, new, 1))
+            score.load_rubric(path)
+        finally:
+            shutil.rmtree(tmp)
+
+    def test_overlapping_indexes_are_rejected(self):
+        with self.assertRaises(SystemExit):
+            self.model_with('"governance": ["E", "F"]', '"governance": ["E", "F", "A"]')
+
+    def test_dimension_in_two_profiles_is_rejected(self):
+        with self.assertRaises(SystemExit):
+            self.model_with('"Agent Interface": ["K"]', '"Agent Interface": ["K", "G"]')
 
 
 class OutputTests(unittest.TestCase):

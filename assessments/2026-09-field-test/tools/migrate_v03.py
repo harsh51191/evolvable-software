@@ -93,8 +93,10 @@ CHANGES = {
 SOURCES = {"openhands": "github.com/OpenHands/OpenHands @ 21cc5c6170fe093c0fcd23ffc61949f4933e17b9 (main) + github.com/OpenHands/software-agent-sdk @ 5ffdd2933c51423e302f5ee5e5b66df0ad9cc28a (main)"}
 
 for system, changes in CHANGES.items():
-    path = os.path.join(ROOT, system, "scores.json")
+    path = os.path.join(ROOT, system, "assessment.json")
     data = json.load(open(path))
+    if data.get("framework_version") == "0.3.0":
+        sys.exit(f"{system} is already migrated; this script is a one-off record of the v0.2 to v0.3 changes.")
     data["scores"].pop("M2", None)
     data["scores"].update(changes)
     data["framework_version"] = "0.3.0"

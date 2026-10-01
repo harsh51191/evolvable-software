@@ -27,7 +27,7 @@ def f1(x):
 
 def build(system, criteria, order, titles):
     folder = os.path.join(ROOT, system)
-    path = os.path.join(folder, "scores.json")
+    path = os.path.join(folder, "assessment.json")
     data = json.load(open(path))
     js = subprocess.run([sys.executable, SCORER, path, "--json"], capture_output=True, text=True)
     if js.returncode:

@@ -13,7 +13,8 @@ Criterion entry fields:
   score           0..4, the level in the default configuration (assessed)
   grade           A | B | C (assessed)
   evidence        text (assessed)
-  alt_score       0..4, an adjacent level that is also defensible (optional)
+  alt_score       adjacent level (score +/- 1) that is also defensible (assessed, optional)
+  alt_note        why the alternate is defensible (required with alt_score)
   available_score 0..4, the level with shipped opt-in settings enabled (optional)
   single_entity   true | false (optional)
   incident        true | false (optional)
@@ -36,7 +37,7 @@ DEFAULT_REMEDIATION = os.path.join(HERE, "..", "references", "remediation.md")
 
 STATUSES = ("assessed", "not_evidenced", "not_applicable")
 PLACEHOLDERS = {"", "not evaluated yet", "todo", "tbd", "n/a", "na", "none", "-"}
-VARIANTS = ("default", "alternate", "available", "assessed_only", "all_applicable")
+VARIANTS = ("default", "low", "high", "available", "assessed_only", "all_applicable")
 
 
 class ModelError(SystemExit):
@@ -77,6 +78,21 @@ def load_rubric(path):
             unknown = set(members) - dims
             if unknown:
                 raise ModelError(f"{group} '{name}' names unknown dimensions: {sorted(unknown)}")
+    seen = {}
+    for name, members in model["indexes"].items():
+        for d in members:
+            if d in seen:
+                raise ModelError(f"Dimension {d} is in two indexes: {seen[d]} and {name}")
+            seen[d] = name
+    profile_of = {}
+    for name, members in model["profiles"].items():
+        for d in members:
+            if d in profile_of:
+                raise ModelError(f"Dimension {d} is in two profiles: {profile_of[d]} and {name}")
+            profile_of[d] = name
+    missing_profile = dims - set(profile_of)
+    if missing_profile:
+        raise ModelError(f"Dimensions in no profile: {sorted(missing_profile)}")
     used = {d for members in model["indexes"].values() for d in members}
     used |= {d for members in model["profiles"].values() for d in members}
     unused = dims - used
@@ -157,6 +173,15 @@ def validate(data, criteria, order, model):
         for key in ("alt_score", "available_score", "if_applicable"):
             if key in entry and not _is_int_score(entry[key]):
                 errors.append(f"{cid}: {key} must be an integer 0..4, got {entry[key]!r}")
+        for key, allowed in (("alt_score", "assessed"), ("available_score", "assessed"),
+                             ("if_applicable", "not_applicable")):
+            if key in entry and status != allowed:
+                errors.append(f"{cid}: {key} is only allowed when status is {allowed}")
+        if status == "assessed" and _is_int_score(entry.get("alt_score")) and _is_int_score(entry.get("score")):
+            if abs(entry["alt_score"] - entry["score"]) != 1:
+                errors.append(f"{cid}: alt_score must be an adjacent level (score +/- 1)")
+            if _text(entry, "alt_note").lower() in PLACEHOLDERS:
+                errors.append(f"{cid}: alt_score needs an alt_note")
         if status == "assessed":
             if not _is_int_score(entry.get("score")):
                 errors.append(f"{cid}: score must be an integer 0..4, got {entry.get('score')!r}")
@@ -192,16 +217,13 @@ def effective_scores(data, order, model, variant):
             values[cid] = entry.get("if_applicable") if variant == "all_applicable" else None
             continue
         if status == "not_evidenced":
-            if variant == "assessed_only":
-                values[cid] = None
-            elif variant == "alternate" and "alt_score" in entry:
-                values[cid] = entry["alt_score"]
-            else:
-                values[cid] = 0
+            values[cid] = None if variant == "assessed_only" else 0
             continue
         value = entry["score"]
-        if variant == "alternate" and "alt_score" in entry:
-            value = entry["alt_score"]
+        if variant == "low" and "alt_score" in entry:
+            value = min(value, entry["alt_score"])
+        if variant == "high" and "alt_score" in entry:
+            value = max(value, entry["alt_score"])
         if variant == "available" and "available_score" in entry:
             value = entry["available_score"]
         if str(entry["grade"]).upper() == "C" and value > caps["grade_c_max"]:
@@ -276,9 +298,11 @@ def score_assessment(data, criteria, order, model):
     result["coverage"], result["grades"] = coverage, grades
     ranges = {}
     for name in model["indexes"]:
-        vals = [result["variants"][v]["indexes"][name] for v in ("default", "alternate")]
-        vals = [v for v in vals if v is not None]
-        ranges[name] = [min(vals), max(vals)] if vals else None
+        # Each criterion moves independently to its lower and higher defensible level, so
+        # opposite-direction alternates cannot cancel out. Indexes are monotone in every
+        # criterion, so these two variants are the true bounds.
+        low, high = (result["variants"][v]["indexes"][name] for v in ("low", "high"))
+        ranges[name] = None if low is None else [low, high]
     result["ranges"] = ranges
     return result
 

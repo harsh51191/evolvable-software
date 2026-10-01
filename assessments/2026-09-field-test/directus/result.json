@@ -28,16 +28,16 @@
   },
   "ranges": {
     "malleability": [
-      2.6,
-      2.7
+      2.3,
+      3.0
     ],
     "governance": [
-      1.8,
-      2.4
+      1.6,
+      2.5
     ],
     "learning": [
-      1.0,
-      1.1
+      0.9,
+      1.2
     ],
     "factory": [
       2.0,
@@ -192,20 +192,38 @@
     "L3": 2
   },
   "variants": {
-    "alternate": {
+    "low": {
       "indexes": {
-        "malleability": 2.7,
-        "governance": 2.4,
-        "learning": 1.0,
+        "malleability": 2.3,
+        "governance": 1.6,
+        "learning": 0.9,
+        "factory": 2.0
+      },
+      "profiles": {
+        "Change Surface": 2.5,
+        "Governance": 1.6,
+        "Learning": 0.9,
+        "Factory": 2.0,
+        "Agent Interface": 2.3,
+        "Extension Surface": 1.8,
+        "Operational Scalability": 1.7
+      },
+      "closed_loop_candidate": false
+    },
+    "high": {
+      "indexes": {
+        "malleability": 3.0,
+        "governance": 2.5,
+        "learning": 1.2,
         "factory": 2.3
       },
       "profiles": {
-        "Change Surface": 2.9,
-        "Governance": 2.4,
-        "Learning": 1.0,
+        "Change Surface": 3.2,
+        "Governance": 2.5,
+        "Learning": 1.2,
         "Factory": 2.3,
-        "Agent Interface": 3,
-        "Extension Surface": 2.2,
+        "Agent Interface": 3.3,
+        "Extension Surface": 2.3,
         "Operational Scalability": 1.7
       },
       "closed_loop_candidate": false

@@ -21,9 +21,9 @@ Coverage: 49 assessed, 0 not evidenced, 0 not applicable. Grades: 49 A, 0 B, 0 C
 
 | Index | Default | Band | Range with alternate readings | With opt-in settings | Assessed only | If every criterion counted |
 |---|---:|---|---|---:|---:|---:|
-| malleability | 2.6 | productised | 2.6–2.7 | 2.6 | 2.6 | 2.6 |
-| governance | 1.8 | mechanism | 1.8–2.4 | 1.8 | 1.8 | 1.8 |
-| learning | 1.1 | code-only | 1.0–1.1 | 1.1 | 1.1 | 1.1 |
+| malleability | 2.6 | productised | 2.3–3.0 | 2.6 | 2.6 | 2.6 |
+| governance | 1.8 | mechanism | 1.6–2.5 | 1.8 | 1.8 | 1.8 |
+| learning | 1.1 | code-only | 0.9–1.2 | 1.1 | 1.1 | 1.1 |
 | factory | 2.0 | mechanism | 2.0–2.3 | 2.0 | 2.0 | 2.0 |
 
 ## Profiles

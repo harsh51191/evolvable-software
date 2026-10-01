@@ -1,0 +1,327 @@
+{
+  "product": "LibreChat",
+  "date": "2026-09-30",
+  "source": "github.com/danny-avila/LibreChat @ 14f7b2865692d27364c934ecb9912496371018bb (main)",
+  "archetype": "focused-application",
+  "scope_line": "Scope: the LibreChat monorepo (api, client, packages/api, data-provider, data-schemas, e2e, helm, CI). The hosted code interpreter service, RAG API image and third-party MCP servers are out of scope.",
+  "scores": {
+    "A1": {
+      "status": "not_applicable",
+      "rationale": "Focused application: universal entity criterion (fixed per-archetype rule).",
+      "if_applicable": 1
+    },
+    "A2": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "No user-definable fields; schemas are code (packages/data-schemas/src/schema)."
+    },
+    "A3": {
+      "status": "not_applicable",
+      "rationale": "Focused application: universal entity criterion (fixed per-archetype rule).",
+      "if_applicable": 1
+    },
+    "B1": {
+      "status": "not_applicable",
+      "rationale": "Focused application: universal entity criterion (fixed per-archetype rule).",
+      "if_applicable": 1
+    },
+    "B2": {
+      "status": "not_applicable",
+      "rationale": "Focused application: universal entity criterion (fixed per-archetype rule).",
+      "if_applicable": 1
+    },
+    "B3": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "No published contract for LibreChat's own API; a shared typed client (packages/data-provider) serves the bundled frontend only. Agents are reachable through an OpenAI-compatible API.",
+      "alt_score": 2,
+      "alt_note": "The OpenAI-compatible agents API is a machine-readable contract."
+    },
+    "C1": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Interface settings from librechat.yaml can be overridden per user, group or role in the database (packages/data-schemas/src/types/config.ts:6-14); model specs and presets are data. No layout editor or preview.",
+      "alt_score": 3,
+      "alt_note": "Principal-scoped overrides are tenant-overridable presentation data."
+    },
+    "C2": {
+      "status": "not_applicable",
+      "rationale": "Focused application: generic widgets from entity definitions (fixed per-archetype rule).",
+      "if_applicable": 1
+    },
+    "C3": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Theme registry (packages/client/src/theme) and 86 locale files synced through Locize (.github/workflows/locize-i18n-sync.yml); custom welcome and footer text in configuration; no admin theme editor.",
+      "alt_score": 3,
+      "alt_note": "Per-principal configuration overrides include interface text."
+    },
+    "D1": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Agents can be started by schedules and webhook triggers (api/server/services/Schedules, packages/api/src/agents/triggers); there is no general rules engine."
+    },
+    "D2": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Inbound agent trigger deliveries record succeeded, retry and dead outcomes with stable identities (packages/data-schemas/src/types/triggerDelivery.ts:23-79); LibreChat does not publish its own entity events to subscribers."
+    },
+    "D3": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Admins and users attach MCP servers and OpenAPI actions that run custom server-side logic when agents call them; stdio MCP servers run as unsandboxed local processes; outbound connections have SSRF tests (packages/api/src/mcp/__tests__/MCPConnectionSSRF.test.ts)."
+    },
+    "E1": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "An axe linter workflow runs when triggered manually (.github/workflows/a11y.yml:8-28), Lighthouse audits exist (.github/workflows/lighthouse.yml, e2e/lighthouse), and the ESLint configuration includes accessibility rules.",
+      "alt_score": 3,
+      "alt_note": "If Lighthouse or lint accessibility checks run on every pull request."
+    },
+    "E2": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Admin audit route and audit-log schema (api/server/routes/admin/audit.js, packages/data-schemas/src/types/auditLog.ts); coverage of configuration and definition changes was not verified.",
+      "alt_score": 3,
+      "alt_note": "Admin UI and a generic store exist."
+    },
+    "E3": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Users export conversations and delete their accounts, and an admin deletion script removes user data (config/delete-user.js); not driven by field tags."
+    },
+    "E4": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "ACL-based permissions for agents, prompts and MCP servers (packages/data-schemas/src/types/accessRole.ts, aclEntry.ts) and system grants; no security scanning in CI."
+    },
+    "F1": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Agents keep a versions history (packages/data-schemas/src/schema/agent.ts:125) and prompt groups keep versions with a chosen production version (promptGroup.ts:25); configuration is unversioned in the product.",
+      "alt_score": 3,
+      "alt_note": "Agents and prompts are the main customisation surfaces."
+    },
+    "F2": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Prompt groups stage versions and promote one to production; agents are edited and saved directly; no review step."
+    },
+    "F3": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Every definition change is a direct human action; the approval lifecycle (packages/api/src/stream/ApprovalLifecycle.ts) gates agent tool calls, not changes."
+    },
+    "F4": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "librechat.yaml carries a schema version checked at load, and UPGRADING.md documents migrations; compatibility is mostly manual."
+    },
+    "G1": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "MeiliSearch index for conversations and messages (search/) and MongoDB indexes; no definition-driven mapping."
+    },
+    "G2": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Tenant isolation plugin with a coverage specification (packages/data-schemas/src/models/plugins/tenantIsolation.coverage.spec.ts), per-user token balances and rate limits; no noisy-neighbour detection.",
+      "alt_score": 3,
+      "alt_note": "Data isolation is verified by tests; per-tenant limits are partial."
+    },
+    "G3": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Performance scan and benchmark suites (e2e/perf/scan.ts, e2e/benchmarks) and Lighthouse audits; no documented per-surface limits."
+    },
+    "H1": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "API and client ship together in one image; RAG API, search and a Langfuse fan-out service are separate containers with Helm charts (helm/)."
+    },
+    "H2": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Workspace packages with explicit dependencies and a circular-dependency check (config/circular-deps.mjs)."
+    },
+    "H3": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Backend, frontend, static checks, mocked Playwright journeys and Docker smoke tests run on pull requests (.github/workflows/backend-review.yml, frontend-review.yml, static-checks.yml, playwright-mock.yml); accessibility runs on demand and there is no security scan."
+    },
+    "I1": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "MCP servers, OpenAPI actions, custom endpoints and skills extend agents; no plugin points for UI, layout or theme.",
+      "alt_score": 3,
+      "alt_note": "Declarative (OpenAPI actions, YAML endpoints) and code (MCP) extension both exist."
+    },
+    "I2": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Remote MCP servers use OAuth and SSRF guards; code execution runs in an external sandbox service; stdio MCP servers run with full trust."
+    },
+    "I3": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Local development documentation and a bring-your-own-model E2E harness (e2e/byom)."
+    },
+    "K1": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "LibreChat consumes MCP but does not expose itself as an MCP server (api/server/routes/mcp.js manages client connections); agents are reachable through an OpenAI-compatible API.",
+      "alt_score": 1,
+      "alt_note": "If an OpenAI-compatible chat API is not an introspectable capability surface."
+    },
+    "K2": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Members complete tasks conversationally with retrieval, web search, code and tool actions; there is no natural-language authoring of LibreChat's own definitions.",
+      "alt_score": 3,
+      "alt_note": "The member half of level 3 is fully met."
+    },
+    "K3": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Agent API keys with expiry (packages/data-schemas/src/types/agentApiKey.ts), on-behalf-of token exchange for MCP (api/server/services/OboTokenService.js), tool-call approvals before execution, rate limits, audit logs and idempotent trigger deliveries.",
+      "alt_score": 2,
+      "alt_note": "Idempotency covers trigger deliveries, not API mutations."
+    },
+    "N1": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Custom endpoints map any OpenAI-compatible provider onto the canonical chat interface through YAML configuration alone (librechat.example.yaml:575)."
+    },
+    "N2": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "MCP is the connector standard, with OAuth flows, reconnect management and admin or user installation (api/server/services/initializeMCPs.js, initializeOAuthReconnectManager.js)."
+    },
+    "N3": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "The agents API follows the OpenAI Chat Completions and Responses contracts; LibreChat's own API is unversioned."
+    },
+    "O1": {
+      "status": "not_applicable",
+      "rationale": "Focused application: adjacent-domain criterion (fixed per-archetype rule).",
+      "if_applicable": 2
+    },
+    "O2": {
+      "status": "not_applicable",
+      "rationale": "Focused application: adjacent-domain criterion (fixed per-archetype rule).",
+      "if_applicable": 2
+    },
+    "O3": {
+      "status": "not_applicable",
+      "rationale": "Focused application: adjacent-domain criterion (fixed per-archetype rule).",
+      "if_applicable": 1
+    },
+    "J1": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Token transactions are recorded per request and enforce balances live; OpenTelemetry and Langfuse tracing (otel/).",
+      "alt_score": 2,
+      "alt_note": "Usage accounting rather than behaviour telemetry."
+    },
+    "J2": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Message feedback with rating, tag and text is stored on messages (packages/data-schemas/src/schema/message.ts:103); no triage workflow."
+    },
+    "J3": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "No joined usage, support and delivery models."
+    },
+    "M1": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No recommendation or proposal features."
+    },
+    "M3": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No AI authoring lane for LibreChat's own definitions."
+    },
+    "M4": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No binding of changes to baselines or metrics."
+    },
+    "L1": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "/health (api/server/index.js:328) and a startup configuration endpoint for the client; no build or version endpoint.",
+      "alt_score": 3,
+      "alt_note": "The configuration endpoint is a machine-readable snapshot."
+    },
+    "L2": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Docker Compose and Helm charts, staging image builds (.github/workflows/dev-staging-images.yml) and seeded E2E setup (e2e/setup); no per-change ephemeral environment."
+    },
+    "L3": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Mocked and property-based Playwright journeys (playwright-mock.yml, playwright-bombadil.yml); code-graph test selection runs in observe-only shadow mode (.github/workflows/codegraph-select.yml:1-13); no adoption instrumentation.",
+      "alt_score": 3,
+      "alt_note": "The changed-path map exists, though not yet enforced."
+    },
+    "P1": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "By default nothing learns from use. With the memory block enabled (commented out in librechat.example.yaml:1351-1360), a memory agent stores user facts from recent chat automatically.",
+      "available_score": 3
+    },
+    "P2": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "No checks on learned memories beyond configured key and token limits (librechat.example.yaml:1354-1358)."
+    }
+  },
+  "limits": "Repository evidence only, main at the tip named above. The hosted code interpreter, RAG API and third-party MCP servers are out of scope. Whether the accessibility and Lighthouse checks run on every pull request depends on path filters and inputs that were read, not exercised. Single rater.",
+  "framework_version": "0.3.0",
+  "reading": "**Strongest:** agent-safe actions (K3 3) and connector layers (N1 3, N2 3). **Largest gap:** Learning (1.0): no proposals, no AI authoring of its own configuration, no impact measurement. Enabling the opt-in memory agent raises P1 to 3 and Learning to 1.3."
+}

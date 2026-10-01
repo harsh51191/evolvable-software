@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Unit tests
+        run: python -W error::ResourceWarning -m unittest discover -s tests -v
+      - name: Regenerate the field test and fail on any difference
+        run: |
+          cd assessments/2026-09-field-test
+          python tools/build.py > /dev/null
+          git status --porcelain .
+          git diff --exit-code .
+          test -z "$(git status --porcelain .)"
