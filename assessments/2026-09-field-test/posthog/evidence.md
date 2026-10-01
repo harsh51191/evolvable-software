@@ -13,6 +13,9 @@ Read at github.com/PostHog/posthog @ 645e1a78140757ea1bb9ddeb0ff9d3915c60b6f6 (m
 - **evolution_auto_apply**: false. PostHog AI changes are made on request in a conversation; weekly property materialisation applies without approval (posthog/tasks/scheduled.py:927), but it is scheduled maintenance, not a change from the evolution loop.
 - **definition_change_path**: true. Insights, dashboards, feature flags, actions and approval policies are definitions.
 - **code_release_path**: false. Tasks and Stamphog act on customers' repositories (products/stamphog); no first-party lane ships PostHog code changes.
+- **ai_features**: true. PostHog AI (ee/hogai) and the LLM gateway (services/llm-gateway).
+- **ai_data_access**: true. PostHog AI queries the team's events, insights and taxonomy (ee/hogai/context).
+- **ai_actions**: true. PostHog AI creates and edits insights, dashboards and other objects (ee/hogai/tools).
 
 ## Elastic (ARC)
 
@@ -38,6 +41,7 @@ Read at github.com/PostHog/posthog @ 645e1a78140757ea1bb9ddeb0ff9d3915c60b6f6 (m
 ### Resilience
 
 - **ARC-08 Failure isolation and graceful degradation**: **2** (grade A). The LLM gateway has a circuit breaker for model providers (services/llm-gateway/src/llm_gateway/circuit_breaker.py) and subscriptions auto-disable after repeated failures (ee/tasks/subscriptions/auto_disable.py); other surfaces lack breakers, so a 3 is not defensible under the inventory rule.
+  - AI-qualified reading: **3** (grade A), facets: implemented, tested. LLM gateway circuit breaker and fallback, tested (services/llm-gateway, tests/test_circuit_breaker.py).
 - **ARC-09 Backup, restore and recovery**: **1** (grade A). No backup command in the repository; self-hosted backup is left to the operator.
 
 ## Velocity (DEL)
@@ -45,6 +49,7 @@ Read at github.com/PostHog/posthog @ 645e1a78140757ea1bb9ddeb0ff9d3915c60b6f6 (m
 ### Intake
 
 - **DEL-01 Request intake into a structured change specification**: **2** (grade A). PostHog AI takes requests in conversations stored with the page and objects in context, and has a plan mode that sets out steps before acting (ee/hogai/chat_agent/prompts/plan.py); plans carry no acceptance criteria or risk class.
+  - AI-qualified reading: **2** (grade A). Plan mode before acting (ee/hogai/chat_agent/prompts/plan.py).
 
 ### Build
 
@@ -52,6 +57,8 @@ Read at github.com/PostHog/posthog @ 645e1a78140757ea1bb9ddeb0ff9d3915c60b6f6 (m
 - **DEL-03 Module boundaries enforced by tooling**: **3** (grade A). tach enforces module boundaries and interfaces in CI (tach.toml, .github/workflows/ci-backend.yml) with isolation baselines for product modules (products/isolation_baseline.txt).
 - **DEL-04 AI implementation lane**: **2** (grade A). PostHog AI creates insights, dashboards and other configured objects on request (ee/hogai); Tasks agents that open pull requests in customers' repositories are excluded under the self rule.
   - Higher reading 3: If the Tasks lane counts.
+  - AI-qualified reading: **2** (grade A). PostHog AI builds insights and dashboards on request.
+    - Higher reading 3: Broad object coverage.
 
 ### Verify
 
@@ -122,8 +129,10 @@ Read at github.com/PostHog/posthog @ 645e1a78140757ea1bb9ddeb0ff9d3915c60b6f6 (m
 
 - **MAL-19 Machine-readable capability surface for agents**: **3** (grade A). MCP service typed from the generated OpenAPI schema (services/mcp/src/api/generated.ts) with tools declared per product in YAML (57 products/*/mcp/tools.yaml), scoped keys and OAuth, and MCP evals (services/mcp/evals). Scored at the lower reading under rule 11 because: If generation from API definitions does not count as generation from entity definitions.
   - Higher reading 4: The September v0.3 pass scored 4 on the evidence above.
+  - AI-qualified reading: **3** (grade A). MCP service with typed tools per product and scoped keys (services/mcp).
 - **MAL-20 Conversational operability for users and natural-language authoring for operators**: **3** (grade A). PostHog AI answers members with taxonomy-grounded tools and creates insights, dashboards and other objects (ee/hogai, products/posthog_ai); offline and CI evaluation harnesses (ee/hogai/eval).
   - Higher reading 4: An evaluation harness exists; not every UI action has a conversational equivalent.
+  - AI-qualified reading: **3** (grade A). A grounded assistant that answers and creates objects (ee/hogai).
 
 ## Learn (LRN)
 
@@ -141,15 +150,19 @@ Read at github.com/PostHog/posthog @ 645e1a78140757ea1bb9ddeb0ff9d3915c60b6f6 (m
 
 - **LRN-05 Automated diagnosis**: **1** (grade A). Exceptions are grouped into issues with stack traces by the error tracking product used on itself.
   - Higher reading 2: Grouping with attached context meets level 2.
+  - AI-qualified reading: **0** (grade A). Diagnosis of PostHog's own issues is not model-backed.
 - **LRN-06 Ranked, evidence-backed proposals for change**: **2** (grade A). Query analysis recommends and applies materialised columns (ee/clickhouse/materialized_columns/analyze.py); Signals proposals target customers' repositories and are excluded under the self rule.
   - Higher reading 3: If Signals proposals count.
+  - AI-qualified reading: **0** (grade A). Materialisation recommendations are rule-based.
 
 ### Learn from experience
 
 - **LRN-07 The product turns its own operating experience into candidate changes**: **2** (grade A). A weekly scheduled task analyses the last week of queries and materialises hot properties without being asked (posthog/tasks/scheduled.py:927, ee/settings.py:68-73, ee/clickhouse/materialized_columns/analyze.py:89). Narrow: storage layout only. Scored at the lower reading under rule 11 because: Narrow to one area.
   - Higher reading 3: The September v0.3 pass scored 3 on the evidence above.
+  - AI-qualified reading: **0** (grade A). Column materialisation is heuristic tuning.
 - **LRN-08 Learned changes are validated before they take effect**: **1** (grade A). No evaluation of materialisation changes against a baseline was found.
   - Higher reading 2: Materialisation may be checked in code not read.
+  - AI-qualified reading: **1** (grade A). AI-made changes pass approval policies; no evaluation before apply.
 
 ### Measure
 
@@ -180,9 +193,14 @@ Read at github.com/PostHog/posthog @ 645e1a78140757ea1bb9ddeb0ff9d3915c60b6f6 (m
 
 - **GOV-09 Agent-safe actions**: **2** (grade A). Scoped personal API keys and OAuth (posthog/scopes.py), approval policies on mutating actions, activity log and throttles; client idempotency identifiers on some writes only (posthog/api/data_deletion_request.py:147); no dry-run.
   - Higher reading 3: Scoped identity, policy gates, limits and audit are present.
+  - AI-qualified reading: **2** (grade A). AI acts within the user's team with access control and approval policies; idempotency only on some writes.
+    - Higher reading 3: Approval policies may meet level 3.
 - **GOV-10 Bounded self-change**: **2** (grade A). PostHog AI acts through a fixed tool set with resource-level access control, and approval policies cover registered action classes (products/approvals/backend/policies.py); materialisation has no declared blast-radius limit.
+  - AI-qualified reading: **2** (grade A). A fixed tool set and approval policies; no blast-radius limit.
 - **GOV-11 Learning-input integrity**: **2** (grade A). Third-party text in AI tool output is defanged and fenced as data, not instructions (ee/hogai/utils/untrusted.py); AI changes are attributed in the activity log, but source inputs are not recorded.
   - Higher reading 3: Injection fencing is systematic for session-derived content.
+  - AI-qualified reading: **2** (grade A). Session-derived content is fenced as data (ee/hogai/utils/untrusted.py).
+    - Higher reading 3: Systematic fencing.
 
 ## Expand (EXP)
 
@@ -196,8 +214,32 @@ Read at github.com/PostHog/posthog @ 645e1a78140757ea1bb9ddeb0ff9d3915c60b6f6 (m
 
 - **EXP-04 Unmet-demand sensing**: **1** (grade A). No unmet-demand signals about PostHog itself beyond free-text requests.
 - **EXP-05 Evidence-backed opportunity proposals**: **0** (grade A). No adjacent-capability proposals.
+  - AI-qualified reading: **0** (grade A). No AI involvement in this behaviour.
 
 ### Launch
 
 - **EXP-06 Cohort launch with keep-or-kill**: **2** (grade A). Early access features let users opt into new products and betas (products/early_access_features); no success metric or keep-or-kill record.
   - Higher reading 3: Stage-based releases approach a cohort launch.
+
+## AI Readiness Checks (AIR)
+
+### Context
+
+- **AIR-03 AI-ready data and context access**: **3** (grade A). PostHog AI gets taxonomy, schema and entity context through tools over the team's live data (ee/hogai/context, tools).
+- **AIR-04 Permission-preserving retrieval and tool access**: **3** (grade A), facets: implemented, tested. PostHog AI acts within the user's team with resource-level access control (products/access_control) and approval policies on mutating actions; covered by tests.
+
+### Quality
+
+- **AIR-05 Offline AI evaluation**: **3** (grade A). Maintained offline and CI evaluation suites per capability with scored metrics (ee/hogai/eval/ci: funnel, retention, insight search, memory, root; eval/offline).
+- **AIR-06 Regression gating before release**: **2** (grade A). LLM evals run on pull requests labelled evals-ready (.github/workflows/ci-ai.yml:2-20); they are not automatic for every AI change and no blocking threshold was found.
+
+### Governance
+
+- **AIR-07 AI action tracing and auditability**: **3** (grade A), facets: implemented, tested. AI generations and traces are captured in PostHog's own LLM analytics, and AI changes are attributed in the activity log (ee/hogai/llm.py, ee/hogai/llm_traces_summaries).
+
+### Operations
+
+- **AIR-01 Model and provider portability and resilience**: **3** (grade A). The LLM gateway routes across providers with Cloudflare, Modal and Bedrock fallbacks and a circuit breaker (services/llm-gateway/src/llm_gateway/baseten.py:34, circuit_breaker.py), with tests (tests/test_circuit_breaker.py).
+- **AIR-02 AI usage and per-customer cost controls**: **3** (grade A). Generations are marked billable for AI credits in the usage report and rate-limited (ee/hogai/llm.py:129-167, 282); credits are enforced per organisation through billing.
+- **AIR-08 Production quality, drift and feedback monitoring**: **2** (grade A). Generations, traces and user feedback on PostHog AI are recorded and summarised (ee/hogai/llm_traces_summaries, chat_agent/slash_commands/commands/feedback); no drift alerts found.
+  - Higher reading 3: LLM analytics dashboards per model may act as continuous monitoring.

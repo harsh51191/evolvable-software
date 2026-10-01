@@ -228,7 +228,13 @@
       "grade": "A",
       "evidence": "MCP service typed from the generated OpenAPI schema (services/mcp/src/api/generated.ts) with tools declared per product in YAML (57 products/*/mcp/tools.yaml), scoped keys and OAuth, and MCP evals (services/mcp/evals). Scored at the lower reading under rule 11 because: If generation from API definitions does not count as generation from entity definitions.",
       "alt_score": 4,
-      "alt_note": "The September v0.3 pass scored 4 on the evidence above."
+      "alt_note": "The September v0.3 pass scored 4 on the evidence above.",
+      "ai": {
+        "status": "assessed",
+        "score": 3,
+        "grade": "A",
+        "evidence": "MCP service with typed tools per product and scoped keys (services/mcp)."
+      }
     },
     "MAL-20": {
       "status": "assessed",
@@ -236,7 +242,13 @@
       "grade": "A",
       "evidence": "PostHog AI answers members with taxonomy-grounded tools and creates insights, dashboards and other objects (ee/hogai, products/posthog_ai); offline and CI evaluation harnesses (ee/hogai/eval).",
       "alt_score": 4,
-      "alt_note": "An evaluation harness exists; not every UI action has a conversational equivalent."
+      "alt_note": "An evaluation harness exists; not every UI action has a conversational equivalent.",
+      "ai": {
+        "status": "assessed",
+        "score": 3,
+        "grade": "A",
+        "evidence": "A grounded assistant that answers and creates objects (ee/hogai)."
+      }
     },
     "GOV-09": {
       "status": "assessed",
@@ -244,7 +256,15 @@
       "grade": "A",
       "evidence": "Scoped personal API keys and OAuth (posthog/scopes.py), approval policies on mutating actions, activity log and throttles; client idempotency identifiers on some writes only (posthog/api/data_deletion_request.py:147); no dry-run.",
       "alt_score": 3,
-      "alt_note": "Scoped identity, policy gates, limits and audit are present."
+      "alt_note": "Scoped identity, policy gates, limits and audit are present.",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "AI acts within the user's team with access control and approval policies; idempotency only on some writes.",
+        "alt_score": 3,
+        "alt_note": "Approval policies may meet level 3."
+      }
     },
     "MAL-16": {
       "status": "assessed",
@@ -313,7 +333,13 @@
       "grade": "A",
       "evidence": "Query analysis recommends and applies materialised columns (ee/clickhouse/materialized_columns/analyze.py); Signals proposals target customers' repositories and are excluded under the self rule.",
       "alt_score": 3,
-      "alt_note": "If Signals proposals count."
+      "alt_note": "If Signals proposals count.",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "Materialisation recommendations are rule-based."
+      }
     },
     "DEL-04": {
       "status": "assessed",
@@ -321,7 +347,15 @@
       "grade": "A",
       "evidence": "PostHog AI creates insights, dashboards and other configured objects on request (ee/hogai); Tasks agents that open pull requests in customers' repositories are excluded under the self rule.",
       "alt_score": 3,
-      "alt_note": "If the Tasks lane counts."
+      "alt_note": "If the Tasks lane counts.",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "PostHog AI builds insights and dashboards on request.",
+        "alt_score": 3,
+        "alt_note": "Broad object coverage."
+      }
     },
     "LRN-09": {
       "status": "assessed",
@@ -359,7 +393,13 @@
       "grade": "A",
       "evidence": "A weekly scheduled task analyses the last week of queries and materialises hot properties without being asked (posthog/tasks/scheduled.py:927, ee/settings.py:68-73, ee/clickhouse/materialized_columns/analyze.py:89). Narrow: storage layout only. Scored at the lower reading under rule 11 because: Narrow to one area.",
       "alt_score": 3,
-      "alt_note": "The September v0.3 pass scored 3 on the evidence above."
+      "alt_note": "The September v0.3 pass scored 3 on the evidence above.",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "Column materialisation is heuristic tuning."
+      }
     },
     "LRN-08": {
       "status": "assessed",
@@ -367,7 +407,13 @@
       "grade": "A",
       "evidence": "No evaluation of materialisation changes against a baseline was found.",
       "alt_score": 2,
-      "alt_note": "Materialisation may be checked in code not read."
+      "alt_note": "Materialisation may be checked in code not read.",
+      "ai": {
+        "status": "assessed",
+        "score": 1,
+        "grade": "A",
+        "evidence": "AI-made changes pass approval policies; no evaluation before apply."
+      }
     },
     "ARC-02": {
       "status": "assessed",
@@ -414,7 +460,18 @@
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "The LLM gateway has a circuit breaker for model providers (services/llm-gateway/src/llm_gateway/circuit_breaker.py) and subscriptions auto-disable after repeated failures (ee/tasks/subscriptions/auto_disable.py); other surfaces lack breakers, so a 3 is not defensible under the inventory rule."
+      "evidence": "The LLM gateway has a circuit breaker for model providers (services/llm-gateway/src/llm_gateway/circuit_breaker.py) and subscriptions auto-disable after repeated failures (ee/tasks/subscriptions/auto_disable.py); other surfaces lack breakers, so a 3 is not defensible under the inventory rule.",
+      "ai": {
+        "status": "assessed",
+        "score": 3,
+        "grade": "A",
+        "evidence": "LLM gateway circuit breaker and fallback, tested (services/llm-gateway, tests/test_circuit_breaker.py).",
+        "facets": {
+          "implemented": true,
+          "tested": true,
+          "operated": false
+        }
+      }
     },
     "ARC-09": {
       "status": "assessed",
@@ -426,7 +483,13 @@
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "PostHog AI takes requests in conversations stored with the page and objects in context, and has a plan mode that sets out steps before acting (ee/hogai/chat_agent/prompts/plan.py); plans carry no acceptance criteria or risk class."
+      "evidence": "PostHog AI takes requests in conversations stored with the page and objects in context, and has a plan mode that sets out steps before acting (ee/hogai/chat_agent/prompts/plan.py); plans carry no acceptance criteria or risk class.",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Plan mode before acting (ee/hogai/chat_agent/prompts/plan.py)."
+      }
     },
     "DEL-09": {
       "status": "assessed",
@@ -456,13 +519,25 @@
       "grade": "A",
       "evidence": "Exceptions are grouped into issues with stack traces by the error tracking product used on itself.",
       "alt_score": 2,
-      "alt_note": "Grouping with attached context meets level 2."
+      "alt_note": "Grouping with attached context meets level 2.",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "Diagnosis of PostHog's own issues is not model-backed."
+      }
     },
     "GOV-10": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "PostHog AI acts through a fixed tool set with resource-level access control, and approval policies cover registered action classes (products/approvals/backend/policies.py); materialisation has no declared blast-radius limit."
+      "evidence": "PostHog AI acts through a fixed tool set with resource-level access control, and approval policies cover registered action classes (products/approvals/backend/policies.py); materialisation has no declared blast-radius limit.",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "A fixed tool set and approval policies; no blast-radius limit."
+      }
     },
     "GOV-11": {
       "status": "assessed",
@@ -470,7 +545,15 @@
       "grade": "A",
       "evidence": "Third-party text in AI tool output is defanged and fenced as data, not instructions (ee/hogai/utils/untrusted.py); AI changes are attributed in the activity log, but source inputs are not recorded.",
       "alt_score": 3,
-      "alt_note": "Injection fencing is systematic for session-derived content."
+      "alt_note": "Injection fencing is systematic for session-derived content.",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Session-derived content is fenced as data (ee/hogai/utils/untrusted.py).",
+        "alt_score": 3,
+        "alt_note": "Systematic fencing."
+      }
     },
     "EXP-04": {
       "status": "assessed",
@@ -482,7 +565,13 @@
       "status": "assessed",
       "score": 0,
       "grade": "A",
-      "evidence": "No adjacent-capability proposals."
+      "evidence": "No adjacent-capability proposals.",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "No AI involvement in this behaviour."
+      }
     },
     "EXP-06": {
       "status": "assessed",
@@ -495,10 +584,70 @@
     "DEL-11": {
       "status": "not_applicable",
       "rationale": "Scope fact code_release_path is false: Tasks and Stamphog act on customers' repositories (products/stamphog); no first-party lane ships PostHog code changes."
+    },
+    "AIR-01": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "The LLM gateway routes across providers with Cloudflare, Modal and Bedrock fallbacks and a circuit breaker (services/llm-gateway/src/llm_gateway/baseten.py:34, circuit_breaker.py), with tests (tests/test_circuit_breaker.py)."
+    },
+    "AIR-02": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Generations are marked billable for AI credits in the usage report and rate-limited (ee/hogai/llm.py:129-167, 282); credits are enforced per organisation through billing."
+    },
+    "AIR-03": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "PostHog AI gets taxonomy, schema and entity context through tools over the team's live data (ee/hogai/context, tools)."
+    },
+    "AIR-04": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "PostHog AI acts within the user's team with resource-level access control (products/access_control) and approval policies on mutating actions; covered by tests.",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      }
+    },
+    "AIR-05": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Maintained offline and CI evaluation suites per capability with scored metrics (ee/hogai/eval/ci: funnel, retention, insight search, memory, root; eval/offline)."
+    },
+    "AIR-06": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "LLM evals run on pull requests labelled evals-ready (.github/workflows/ci-ai.yml:2-20); they are not automatic for every AI change and no blocking threshold was found."
+    },
+    "AIR-07": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "AI generations and traces are captured in PostHog's own LLM analytics, and AI changes are attributed in the activity log (ee/hogai/llm.py, ee/hogai/llm_traces_summaries).",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      }
+    },
+    "AIR-08": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Generations, traces and user feedback on PostHog AI are recorded and summarised (ee/hogai/llm_traces_summaries, chat_agent/slash_commands/commands/feedback); no drift alerts found.",
+      "alt_score": 3,
+      "alt_note": "LLM analytics dashboards per model may act as continuous monitoring."
     }
   },
   "limits": "Repository evidence only, master at the tip named above. The repository is very large (about 55,000 files); only the areas cited were read, so some capabilities are likely under-scored (for example versioning and rollback). Cloud operations, dogfooding practice and incident history are invisible here. Egress controls for Hog functions were searched for and not found; they may exist in infrastructure code outside the paths read. Single rater. Under the v0.3 self rule, Signals, Tasks and experiments on customers' products are excluded from scoring.",
-  "framework_version": "0.4.0",
+  "framework_version": "0.5.0",
   "reading": "**SAL 1.** Request → Release reaches L2: PostHog AI plans before acting and builds insights and dashboards (DEL-01 2, DEL-04 2). Issue → Fix stops at L1 because nothing diagnoses PostHog's own issues (LRN-05 1); its Signals product does this for customers' products and is excluded under the self rule. **Strengths:** migration risk analysis in CI (ARC-02 3), Temporal and Celery work (ARC-04 3), and feature flags on its own code (DEL-09 2). **Blocks L3:** no backup in the repository (ARC-09 1), and definition rollback covers only some surfaces (GOV-05 2).",
   "framework": "EVOLVE",
   "scope_facts": {
@@ -537,6 +686,18 @@
     "code_release_path": {
       "value": false,
       "evidence": "Tasks and Stamphog act on customers' repositories (products/stamphog); no first-party lane ships PostHog code changes."
+    },
+    "ai_features": {
+      "value": true,
+      "evidence": "PostHog AI (ee/hogai) and the LLM gateway (services/llm-gateway)."
+    },
+    "ai_data_access": {
+      "value": true,
+      "evidence": "PostHog AI queries the team's events, insights and taxonomy (ee/hogai/context)."
+    },
+    "ai_actions": {
+      "value": true,
+      "evidence": "PostHog AI creates and edits insights, dashboards and other objects (ee/hogai/tools)."
     }
   }
 }

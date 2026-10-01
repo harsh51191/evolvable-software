@@ -1,6 +1,6 @@
-# Field test: 11 open-source systems under EVOLVE v0.4
+# Field test: 11 open-source systems under EVOLVE v0.5
 
-This folder scores 11 open-source products with EVOLVE v0.4 from this repository. The same systems were scored under MSR v0.2 and v0.3 in September 2026; this pass migrates those inputs and adds the 17 new criteria, scope facts, evidence facets and inventories.
+This folder scores 11 open-source products with EVOLVE from this repository: SAL under the v0.4 rules, and AI Readiness under v0.5. The same systems were scored under MSR v0.2 and v0.3 in September 2026; this pass migrates those inputs and adds the 17 new criteria, scope facts, evidence facets and inventories.
 
 > **Provisional.** These results come from one rater reading public source code. They are not maintainer-reviewed, and the 17 new criteria have not had a second independent assessment. Where repository evidence is missing, a criterion scores 0, which can understate products whose capabilities live elsewhere. Before quoting or comparing these results, give each project's maintainers a chance to correct the evidence.
 
@@ -32,7 +32,34 @@ Opt-in settings change no headline level. `comparison.md` also covers:
 
 Each system folder has `scope.md`, `evidence.md` (every score with file paths), `assessment.json` (the scorer input), `result.json` and `scorecard.md`.
 
-## What the results say
+## AI Readiness (provisional, single rater)
+
+> **Not independently reviewed.** AI Readiness was added in v0.5 and scored by one rater from public source code. Treat every level below as provisional until a second rater and the maintainers have checked the evidence.
+
+| System | AI Readiness | Context | Quality | Governance | Operations | Gates failed |
+|---|---|---:|---:|---:|---:|---|
+| n8n | **L2** Deployed with material control gaps | 3 | 2 | 2 | 2 | evals, traces |
+| OpenHands | **L2** Deployed with material control gaps | 3 | 2 | 2 | 2 | evals |
+| PostHog | **L2** Deployed with material control gaps | 3 | 2 | 2 | 2 | evals |
+| Dify | **L1** Experimental | 2 | 1 | 2 | 2 | access, evals |
+| Discourse (opt-in) | **L1** Experimental | 3 | 1 | 3 | 2 | evals |
+| Hermes Agent | **L1** Experimental | 3 | 1 | 2 | 2 | evals |
+| OpenClaw | **L1** Experimental | 3 | 1 | 2 | 2 | evals |
+| OpenCode | **L1** Experimental | 3 | 1 | 2 | 1 | evals |
+| Directus | **L0** No production AI foundation | 3 | 0 | 1 | 1 | evals, traces |
+| LibreChat | **L0** No production AI foundation | 2 | 0 | 2 | 2 | access, evals, traces |
+| Frappe | no AI features | – | – | – | – | – |
+
+Discourse ships its AI plugin switched off, so its default reading is "no AI features" and the row shows the opt-in reading. `comparison.md` adds the alternate readings and the unscored AI Capability Footprint.
+
+What the results say:
+
+- **Quality is the weakest dimension almost everywhere.** No product blocks a release on an AI regression: the best (PostHog, n8n, OpenHands) run evaluations on labelled or path-filtered pull requests or on releases, without a blocking threshold. Every product with AI therefore fails the regression gate and is capped at L2.
+- **Context is the strongest.** Most products ground the model in live product data and run tools with the user's permissions. Dify and LibreChat retrieve with the app's or agent's knowledge rather than each end user's permissions, so they fail the access gate.
+- **Traceability splits the field.** Discourse, Dify, PostHog and the agent runtimes log every model call and tool action against a user. Directus, n8n and LibreChat trace only optionally or without the model and prompt.
+- **What AI does is narrower than how widely it is deployed.** The footprint shows AI operating the product (assistants, MCP servers) in nearly every case, but diagnosing or improving the product itself only in Hermes and OpenClaw, and proposing adjacent capabilities nowhere above 1.
+
+## What the SAL results say
 
 - **No system reached L3 in this repository-based, single-rater assessment.** Each fails at least one critical control:
   - **Definition rollback fails in all eleven.** Rollback covers some surfaces but not all: workflows but not credentials, or skills but not memory and configuration.
@@ -69,6 +96,10 @@ Each system folder has `scope.md`, `evidence.md` (every score with file paths), 
 
 The v0.3 headline numbers are kept in `tools/v03_comparison.json`, and the v0.2 numbers in `tools/v02_comparison.json`.
 
+## What changed in v0.5
+
+`tools/migrate_v05.py` adds the three AI scope facts, the eight AIR checks and an AI-qualified reading of 13 existing criteria for every product with AI features, each with its evidence. It does not change any SAL input, so every SAL result above is unchanged.
+
 ## How the scores were produced
 
 - **Evidence.** Shallow clones of each project's default branch, read on 30 September 2026 (1 October for the automation repository). Every score cites code or in-repository documentation at the named commit. No running instances were used, so no criterion has the operated facet.
@@ -77,7 +108,7 @@ The v0.3 headline numbers are kept in `tools/v03_comparison.json`, and the v0.2 
 - **Defaults.** Where a shipped opt-in setting changes a level, it is recorded as `available_score`.
 - **Rater.** Claude, as a single rater.
   - A second rater independently rescored the v0.3 Learn and Vet criteria. Its boundary disagreements are applied as rubric clarifications, but that dataset is not yet in this repository, so its agreement figures are not quoted here.
-  - The 17 new criteria need their own second pass.
+  - The 17 new criteria need their own second pass, and so do the eight AIR checks and the 13 AI-qualified readings.
 
 ## Regenerate
 

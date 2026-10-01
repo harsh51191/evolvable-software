@@ -1,6 +1,6 @@
-# OpenHands (Agent Canvas + software-agent-sdk): EVOLVE v0.4 scorecard
+# OpenHands (Agent Canvas + software-agent-sdk): EVOLVE v0.5 scorecard
 
-Evaluator: Claude, single rater. Framework: EVOLVE 0.4.0 in this repository.
+Evaluator: Claude, single rater. Framework: EVOLVE 0.5.0 in this repository.
 
 Scope: the Agent Canvas (OpenHands repository), the software-agent-sdk that runs agents, and the Automation Service (OpenHands/automation) that schedules and dispatches automations. OpenHands Cloud operations are out of scope.
 
@@ -13,11 +13,11 @@ Scope: the Agent Canvas (OpenHands repository), the software-agent-sdk that runs
 Repository evidence only. The Automation Service was added for v0.4 after the inter-rater study found it missing; it is beta. No live runs. Single rater.
 
 ---
-Framework EVOLVE 0.4.0. Date 2026-09-30. Source github.com/OpenHands/OpenHands @ 21cc5c6170fe093c0fcd23ffc61949f4933e17b9 (main) + github.com/OpenHands/software-agent-sdk @ 5ffdd2933c51423e302f5ee5e5b66df0ad9cc28a (main) + github.com/OpenHands/automation @ ec4c5cc0cb05f3fb01816b36ff6271f6680b6675 (main, 2026-09-30). Archetype **agent-runtime**.
+Framework EVOLVE 0.5.0. Date 2026-09-30. Source github.com/OpenHands/OpenHands @ 21cc5c6170fe093c0fcd23ffc61949f4933e17b9 (main) + github.com/OpenHands/software-agent-sdk @ 5ffdd2933c51423e302f5ee5e5b66df0ad9cc28a (main) + github.com/OpenHands/automation @ ec4c5cc0cb05f3fb01816b36ff6271f6680b6675 (main, 2026-09-30). Archetype **agent-runtime**.
 
-Scope facts true: persistent_data, schema_changes, multi_tenant, hosted_service, machine_actions, definition_change_path. False: agent_mutations, evolution_auto_apply, code_release_path.
+Scope facts true: persistent_data, schema_changes, multi_tenant, hosted_service, machine_actions, definition_change_path, ai_features, ai_data_access, ai_actions. False: agent_mutations, evolution_auto_apply, code_release_path.
 
-Coverage: 56 assessed, 0 not evidenced, 10 not applicable. Grades: 56 A, 0 B, 0 C.
+Coverage: 64 assessed, 0 not evidenced, 10 not applicable. Grades: 64 A, 0 B, 0 C.
 
 ## Software Autonomy Level
 
@@ -68,6 +68,39 @@ Progress toward the next level: Request → Release 1 of 4 conditions for L2; Is
 | Vet (GOV) | 1.7 | 1.7–1.8 | 2.0 | 1.7 | 1.4 |
 | Expand (EXP) | 1.0 | 1.0–1.1 | 1.0 | 1.0 | 1.0 |
 
+## AI Readiness
+
+How safely can the product run AI in production? Separate from SAL, which it never changes.
+
+**AI Readiness L2 (Deployed with material control gaps) · Context 3 · Quality 2 · Governance 2 · Operations 2 · not production-governed**
+
+- With opt-in settings: AI Readiness L2 (Deployed with material control gaps) · Context 3 · Quality 2 · Governance 3 · Operations 2 · not production-governed.
+- With every alternate reading: AI Readiness L2 (Deployed with material control gaps) · Context 3 · Quality 2 · Governance 2 · Operations 2 · not production-governed.
+
+| Dimension | Level | Contributors |
+|---|---:|---|
+| Context | 3 | AIR-03 3, AIR-04 3 |
+| Quality | 2 | AIR-05 3, AIR-06 2 |
+| Governance | 2 | AIR-07 3, GOV-09 (AI) 2 |
+| Operations | 2 | AIR-01 3, AIR-02 2, AIR-08 1, ARC-08 (AI) 3 |
+
+| AI gate | Needs | Observed | Status |
+|---|---|---|---|
+| Permission-preserving access | AIR-04 ≥ 3 | 3 | pass |
+| Regression evaluation before release | AIR-06 ≥ 3 | 2 | fail |
+| Traceability of consequential AI actions | AIR-07 ≥ 3 | 3 | pass |
+
+### AI Capability Footprint
+
+What the product's AI does. Unscored: it never changes AI Readiness or SAL.
+
+| Area | Level | Readings |
+|---|---:|---|
+| Operate | 2 | MAL-19 2, MAL-20 2 |
+| Build | 0 | DEL-01 0, DEL-04 1 |
+| Diagnose and improve | 0 | LRN-05 0, LRN-06 0, LRN-07 0, LRN-08 n/a |
+| Expand | 0 | EXP-05 0 |
+
 ## Area means
 
 | Area | Default |
@@ -108,12 +141,12 @@ Progress toward the next level: Request → Release 1 of 4 conditions for L2; Is
 | ARC-05 Tenant isolation and noisy-neighbour controls | assessed | 2 |  |  | A |  | Single user by default, with a Helm chart for team deployments (helm/agent-canvas). |
 | ARC-06 Ceilings measured, not discovered in incidents | assessed | 0 |  |  | A |  | No performance suite or documented limits (searched for benchmark, load test and perf). |
 | ARC-07 Service objectives defined and monitored | assessed | 1 | 2 |  | A |  | Telemetry for runs and the key-value store (openhands/automation/telemetry.py, kv_metrics.py); no objectives. |
-| ARC-08 Failure isolation and graceful degradation | assessed | 2 |  |  | A |  | Each run executes in its own sandbox with timeouts and cleanup (openhands/automation/watchdog.py); repeatedly failing automations are disabled (migrations/versions/020_add_automation_disabled_reason.py). |
+| ARC-08 Failure isolation and graceful degradation | assessed | 2 |  |  | A |  | AI-qualified reading: 3. Each run executes in its own sandbox with timeouts and cleanup (openhands/automation/watchdog.py); repeatedly failing automations are disabled (migrations/versions/020_add_automation_disabled_reason.py). |
 | ARC-09 Backup, restore and recovery | assessed | 0 |  |  | A |  | No backup command or documented backup for the Automation Service database or storage. |
-| DEL-01 Request intake into a structured change specification | assessed | 0 |  |  | A |  | No request or feature-request object for changing the product was found; requests live outside it. |
+| DEL-01 Request intake into a structured change specification | assessed | 0 |  |  | A |  | AI-qualified reading: 0. No request or feature-request object for changing the product was found; requests live outside it. |
 | DEL-02 Layers deploy independently | assessed | 3 |  |  | A |  | The canvas deploys separately from the Agent Server and Automation Server behind an API contract, as an npm library, desktop app, container and Helm chart (docs/architecture.md, electron/, docker/, helm/). |
 | DEL-03 Module boundaries enforced by tooling | assessed | 2 |  |  | A |  | Library entrypoints and lint configuration; no architectural boundary tests. |
-| DEL-04 AI implementation lane | assessed | 1 | 2 |  | A |  | Automations run coding agents on users' repositories (automation repository README); nothing implements changes to OpenHands' own definitions. Recorded under the self rule. |
+| DEL-04 AI implementation lane | assessed | 1 | 2 |  | A |  | AI-qualified reading: 1. Automations run coding agents on users' repositories (automation repository README); nothing implements changes to OpenHands' own definitions. Recorded under the self rule. |
 | DEL-05 Every change class has an automated pre-land check | assessed | 2 | 3 |  | A |  | Lint, unit tests and builds on Ubuntu and Windows plus mocked-LLM Playwright E2E on pull requests (.github/workflows/ci.yml:4-66, mock-llm-e2e.yml); mutation testing (stryker.config.mjs); no accessibility or security checks. |
 | DEL-06 Verification surface | assessed | 2 |  |  | A |  | Backend server_info with runtime services (docs/architecture.md) and container health in the entrypoint (docker/entrypoint.sh). |
 | DEL-07 Environment reproducibility | assessed | 2 |  |  | A |  | Docker, Helm and desktop builds; mocked-LLM Docker E2E stands up an environment per run (.github/workflows/mock-llm-docker-e2e.yml). |
@@ -139,16 +172,16 @@ Progress toward the next level: Request → Release 1 of 4 conditions for L2; Is
 | MAL-16 Canonical data model with a mapping layer | assessed | 3 |  |  | A |  | OpenHands, Claude Code, Codex, Gemini and other ACP agents map onto one agent protocol, so adding an agent is configuration (docs/ACP_AGENTS.md). |
 | MAL-17 Connector definition or SDK | assessed | 2 | 3 |  | A |  | Backends (local, Docker, VM, cloud) and ACP agents are configurable; no connector SDK with lifecycle. |
 | MAL-18 Stable versioned contracts | assessed | 2 |  |  | A |  | Relies on the versioned Agent Server API and ACP; no deprecation windows in the canvas. |
-| MAL-19 Machine-readable capability surface for agents | assessed | 2 |  |  | A |  | The canvas consumes MCP and exposes a UI tool that lets agents drive the canvas (tools/canvas_ui_tool.py); no MCP server for the canvas itself. |
-| MAL-20 Conversational operability for users and natural-language authoring for operators | assessed | 2 |  |  | A |  | Users run agent conversations with actions through the canvas; there is no natural-language authoring of canvas definitions. |
+| MAL-19 Machine-readable capability surface for agents | assessed | 2 |  |  | A |  | AI-qualified reading: 2. The canvas consumes MCP and exposes a UI tool that lets agents drive the canvas (tools/canvas_ui_tool.py); no MCP server for the canvas itself. |
+| MAL-20 Conversational operability for users and natural-language authoring for operators | assessed | 2 |  |  | A |  | AI-qualified reading: 2. Users run agent conversations with actions through the canvas; there is no natural-language authoring of canvas definitions. |
 | LRN-01 Telemetry accessible to the platform in near real time | assessed | 2 |  |  | A |  | Consent-gated product analytics to PostHog (src/services/telemetry.ts); not available to product features. |
 | LRN-02 Structured learning signals | assessed | 1 |  |  | A |  | No typed feedback or learning signals in the canvas or the SDK. |
 | LRN-03 User-issue detection | assessed | 2 |  |  | A |  | Runs record failure kinds and status details, and unhealthy automations are detected (openhands/automation/watchdog.py, migrations/versions/016_add_run_status_detail.py). |
 | LRN-04 Cross-source mining inside the product | assessed | 1 |  |  | A |  | No joined mining in the canvas. |
-| LRN-05 Automated diagnosis | assessed | 2 |  |  | A |  | Failed runs keep their phase, failure kind and conversation for inspection (docs/run-phase-reporting.md). |
-| LRN-06 Ranked, evidence-backed proposals for change | assessed | 0 |  |  | A |  | No proposals for changing the canvas. |
-| LRN-07 The product turns its own operating experience into candidate changes | assessed | 1 |  |  | A |  | No learning from sessions was found in the SDK (searched openhands-sdk/openhands/sdk/skills, context, agent). |
-| LRN-08 Learned changes are validated before they take effect | assessed | 1 |  |  | A |  | Critics evaluate task output for iterative refinement (openhands-sdk/openhands/sdk/critic), not changes to the agent itself. |
+| LRN-05 Automated diagnosis | assessed | 2 |  |  | A |  | AI-qualified reading: 0. Failed runs keep their phase, failure kind and conversation for inspection (docs/run-phase-reporting.md). |
+| LRN-06 Ranked, evidence-backed proposals for change | assessed | 0 |  |  | A |  | AI-qualified reading: 0. No proposals for changing the canvas. |
+| LRN-07 The product turns its own operating experience into candidate changes | assessed | 1 |  |  | A |  | AI-qualified reading: 0. No learning from sessions was found in the SDK (searched openhands-sdk/openhands/sdk/skills, context, agent). |
+| LRN-08 Learned changes are validated before they take effect | assessed | 1 |  |  | A |  | AI-qualified reading: not applicable. Critics evaluate task output for iterative refinement (openhands-sdk/openhands/sdk/critic), not changes to the agent itself. |
 | LRN-09 Post-change impact is measured against a declared baseline | assessed | 1 | 2 |  | A |  | Plugin automations tag each run with its experiment and variant (openhands/automation/presets/plugin/sdk_main.py:514-530), so variants can be compared by hand; nothing records a baseline or decision. |
 | GOV-01 Accessibility inherited from a component kit and continuously verified | assessed | 1 | 2 |  | A |  | Component library with accessibility lint rules (eslint.config.js); no automated accessibility scans. Scored at the lower reading under rule 11 because: If lint rules without scans count as no automation. |
 | GOV-02 Audit generic over entities, definition changes and approvals | assessed | 1 |  |  | A |  | No audit store in the canvas; durable audit is documented only through an external DefenseClaw integration (docs/DefenseClaw.md). |
@@ -158,15 +191,23 @@ Progress toward the next level: Request → Release 1 of 4 conditions for L2; Is
 | GOV-06 Proposal, review, apply as a first-class object with preview | assessed | 1 |  |  | A |  | No proposal object for changes. |
 | GOV-07 Policy-based apply with recorded approvals and a movable human boundary | assessed | 2 |  |  | A |  | Confirmation policies (never, always, confirm risky) decide which agent actions need a person (openhands-sdk/openhands/sdk/security/confirmation_policy.py:27-43); they govern actions, not changes to the agent itself. |
 | GOV-08 Upgrade safety | assessed | 3 |  |  | A |  | CI checks REST API breakage, persisted-settings compatibility and deprecations on every change (software-agent-sdk .github/workflows/agent-server-rest-api-breakage.yml, persisted-settings-compat.yml, deprecation-check.yml). |
-| GOV-09 Agent-safe actions | assessed | 2 |  | 3 | A |  | The default confirmation policy is NeverConfirm (openhands-sdk/openhands/sdk/conversation/state.py:123); with ConfirmRisky, LLM security analyzers classify each action's risk and risky ones pause for a person (security/llm_analyzer.py, toolshield_llm_analyzer.py, ensemble.py). |
-| GOV-10 Bounded self-change | not_applicable | excluded |  |  | - |  | No self-change path. |
-| GOV-11 Learning-input integrity | not_applicable | excluded |  |  | - |  | No self-change path. |
+| GOV-09 Agent-safe actions | assessed | 2 |  | 3 | A |  | AI-qualified reading: 2. The default confirmation policy is NeverConfirm (openhands-sdk/openhands/sdk/conversation/state.py:123); with ConfirmRisky, LLM security analyzers classify each action's risk and risky ones pause for a person (security/llm_analyzer.py, toolshield_llm_analyzer.py, ensemble.py). |
+| GOV-10 Bounded self-change | not_applicable | excluded |  |  | - |  | AI-qualified reading: not applicable. No self-change path. |
+| GOV-11 Learning-input integrity | not_applicable | excluded |  |  | - |  | AI-qualified reading: not applicable. No self-change path. |
 | EXP-01 Kernel concepts are domain-neutral | assessed | 2 | 3 |  | A |  | Kernel of conversations, backends, automations, profiles and skills with no business-domain nouns; channels exist only as automation outputs. |
 | EXP-02 A new domain is expressible without kernel change | assessed | 2 |  |  | A |  | Automation templates cover new tasks without kernel change (src/routes/automation-templates.tsx). |
 | EXP-03 A domain ships as an installable bundle | assessed | 2 |  |  | A |  | Automation templates and git sync; installable canvas extensions are partly shipped. |
 | EXP-04 Unmet-demand sensing | assessed | 0 |  |  | A |  | No record of unmet intents was found. |
-| EXP-05 Evidence-backed opportunity proposals | assessed | 0 |  |  | A |  | No adjacent-capability proposals. |
+| EXP-05 Evidence-backed opportunity proposals | assessed | 0 |  |  | A |  | AI-qualified reading: 0. No adjacent-capability proposals. |
 | EXP-06 Cohort launch with keep-or-kill | assessed | 1 |  |  | A |  | Presets and plugins are available to every organisation. |
+| AIR-03 AI-ready data and context access | assessed | 3 |  |  | A |  | Agents work in a sandboxed workspace with repository files, skills and microagents loaded automatically. |
+| AIR-04 Permission-preserving retrieval and tool access | assessed | 3 |  |  | A | IT | Each conversation runs in its own sandbox with the user's provider tokens; automations use per-user API keys (automation repository: openhands/automation/auth.py), with tests. |
+| AIR-05 Offline AI evaluation | assessed | 3 |  |  | A |  | Behaviour and integration test suites for agents (tests/integration) and SWE-bench evaluation runs (.github/workflows/run-eval.yml). |
+| AIR-06 Regression gating before release | assessed | 2 |  |  | A |  | Integration tests and evaluations run on labelled pull requests and releases (.github/workflows/integration-runner.yml, run-eval.yml); not blocking by default. |
+| AIR-07 AI action tracing and auditability | assessed | 3 |  |  | A | IT | The event stream persists every action, observation and tool call per conversation, with LLM call metadata (openhands-sdk/openhands/sdk/conversation). |
+| AIR-01 Model and provider portability and resilience | assessed | 3 |  |  | A |  | LLM fallback strategy on connection, rate-limit and server errors, plus routers (openhands-sdk/openhands/sdk/llm/fallback_strategy.py, router), with tests (tests/sdk/llm/test_llm_fallback.py). |
+| AIR-02 AI usage and per-customer cost controls | assessed | 2 | 3 |  | A |  | Conversation cost and budget-exceeded handling (fallback_strategy.py), and run cost recorded per automation (automation repository: migrations/versions/013_add_run_cost.py); no per-user budgets. |
+| AIR-08 Production quality, drift and feedback monitoring | assessed | 1 |  |  | A |  | Critics score task output during a run; no production quality monitoring. |
 
 Facets: I implemented, T tested, O operated.
 

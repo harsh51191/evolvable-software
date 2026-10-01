@@ -15,6 +15,11 @@ Assessment date. Evaluator. Declared archetype. Scope. Repositories and immutabl
 | evolution_auto_apply | | |
 | definition_change_path | | |
 | code_release_path | | |
+| ai_features | | |
+| ai_data_access | | |
+| ai_actions | | |
+
+For an AI fact that a shipped opt-in setting turns on, give both values.
 
 ## Software Autonomy Level
 
@@ -54,6 +59,34 @@ For each loop, list every unmet condition for the next level, with the observed 
 | Learn (LRN) | | | | |
 | Vet (GOV) | | | | |
 | Expand (EXP) | | | | |
+
+## AI Readiness
+
+Omit this section when `ai_features` is false by default and with opt-in settings. AI Readiness is separate from SAL and never changes it.
+
+Headline: **AI Readiness Ln (name)** · Context n · Quality n · Governance n · Operations n · gate label if capped. Give the opt-in and alternate readings beside it.
+
+| Dimension | Level | Contributors |
+|---|---:|---|
+| Context | | AIR-03, AIR-04 |
+| Quality | | AIR-05, AIR-06 |
+| Governance | | AIR-07, GOV-09 to GOV-11 (AI), LRN-08 (AI) when agent_mutations |
+| Operations | | AIR-01, AIR-02, AIR-08, ARC-08 (AI) |
+
+| AI gate | Needs | Observed | Status |
+|---|---|---|---|
+| Permission-preserving access | AIR-04 ≥ 3 | | |
+| Regression evaluation before release | AIR-06 ≥ 3 | | |
+| Traceability of consequential AI actions | AIR-07 ≥ 3 | | |
+
+### AI Capability Footprint (unscored)
+
+| Area | Readings |
+|---|---|
+| Operate | MAL-19, MAL-20 (AI) |
+| Build | DEL-01, DEL-04 (AI) |
+| Diagnose and improve | LRN-05 to LRN-08 (AI) |
+| Expand | EXP-05 (AI) |
 
 ## Evidence coverage
 

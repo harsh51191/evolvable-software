@@ -13,6 +13,9 @@ Read at github.com/directus/directus @ 2878b4ef8ea9c1d09201debe89b3a5dc1d0bf93a 
 - **evolution_auto_apply**: false. Mutating AI tool calls require approval unless a user sets a tool to always-allow (api/src/ai/tools/registry.ts:198-214).
 - **definition_change_path**: true. Collections, fields, flows, roles and settings are definitions.
 - **code_release_path**: false. The AI lane changes definitions, not Directus code.
+- **ai_features**: true. The AI assistant and MCP server (api/src/ai).
+- **ai_data_access**: true. AI tools read items, files, schema and flows (api/src/ai/tools).
+- **ai_actions**: true. AI tools create and change collections, fields, flows and items behind approvals (api/src/ai/tools/registry.ts).
 
 ## Elastic (ARC)
 
@@ -37,6 +40,7 @@ Read at github.com/directus/directus @ 2878b4ef8ea9c1d09201debe89b3a5dc1d0bf93a 
 ### Resilience
 
 - **ARC-08 Failure isolation and graceful degradation**: **2** (grade A). Sandboxed extensions run in an isolated VM with limits (api/src/extensions/lib/sandbox); the pressure limiter sheds load (packages/env/src/constants/defaults.ts:29). Other surfaces have no breakers.
+  - AI-qualified reading: **1** (grade A). Model errors are returned to the chat; no timeouts or breakers around model calls were found (api/src/ai/chat/lib).
 - **ARC-09 Backup, restore and recovery**: **1** (grade A). No backup command. Schema snapshots move definitions between instances, but data and files are left to the database and storage provider.
 
 ## Velocity (DEL)
@@ -45,6 +49,7 @@ Read at github.com/directus/directus @ 2878b4ef8ea9c1d09201debe89b3a5dc1d0bf93a 
 
 - **DEL-01 Request intake into a structured change specification**: **1** (grade A). Requests reach the AI assistant as free-text chat (api/src/ai/chat); nothing structures them into a specification.
   - Higher reading 2: The chat keeps the request with the collections it touches.
+  - AI-qualified reading: **1** (grade A). The model receives free-text requests in chat; nothing structures them.
 
 ### Build
 
@@ -53,6 +58,8 @@ Read at github.com/directus/directus @ 2878b4ef8ea9c1d09201debe89b3a5dc1d0bf93a 
 - **DEL-03 Module boundaries enforced by tooling**: **2** (grade A). pnpm workspace packages with declared dependencies (pnpm-workspace.yaml); no architectural lint.
 - **DEL-04 AI implementation lane**: **1** (grade A). An AI authoring lane turns admin requests into schema, flow and item changes behind approvals, one project at a time (api/src/ai/tools); nothing applies accepted proposals across projects. Scored at the lower reading under rule 11 because: If the lane is judged manual per tenant because a human drives every change.
   - Higher reading 2: The September v0.3 pass scored 2 on the evidence above.
+  - AI-qualified reading: **1** (grade A). The AI lane drafts schema, flow and item changes behind approvals.
+    - Higher reading 2: An AI lane for narrow tasks on request.
 
 ### Verify
 
@@ -120,8 +127,10 @@ Read at github.com/directus/directus @ 2878b4ef8ea9c1d09201debe89b3a5dc1d0bf93a 
 
 - **MAL-19 Machine-readable capability surface for agents**: **3** (grade A). MCP server over the same tool registry (api/src/ai/mcp/server.ts) with OAuth scope and audience checks (server.ts:75-102) and zod-typed tools; the schema tool returns the live data model as a capability map.
   - Higher reading 4: Items and schema tools cover user-defined collections at runtime; tools are generic rather than generated per collection.
+  - AI-qualified reading: **3** (grade A). MCP server over the AI tool registry with OAuth scopes (api/src/ai/mcp/server.ts).
 - **MAL-20 Conversational operability for users and natural-language authoring for operators**: **2** (grade A). In-app AI assistant with grounded tools over items, files, schema, relations and flows, running under the user's permissions (api/src/ai/chat, app/src/ai); admins author collections, fields, relations and flows in natural language with an approval card showing the proposed call. LLM tracing to Braintrust or Langfuse (api/src/ai/telemetry); no groundedness evaluation. Scored at the lower reading under rule 11 because: If an approval card is not a preview of the resulting change.
   - Higher reading 3: The September v0.3 pass scored 3 on the evidence above.
+  - AI-qualified reading: **2** (grade A). A grounded model-backed assistant for operators (api/src/ai/chat).
 
 ## Learn (LRN)
 
@@ -137,12 +146,16 @@ Read at github.com/directus/directus @ 2878b4ef8ea9c1d09201debe89b3a5dc1d0bf93a 
 ### Diagnose and propose
 
 - **LRN-05 Automated diagnosis**: **1** (grade A). Engineers read logs; no grouping or attached context.
+  - AI-qualified reading: **0** (grade A). No AI involvement in this behaviour.
 - **LRN-06 Ranked, evidence-backed proposals for change**: **0** (grade A). No recommendation or proposal features; the assistant acts only on request.
+  - AI-qualified reading: **0** (grade A). No AI involvement in this behaviour.
 
 ### Learn from experience
 
 - **LRN-07 The product turns its own operating experience into candidate changes**: **1** (grade A). The AI assistant acts only on request (api/src/ai); nothing learns from use.
+  - AI-qualified reading: **0** (grade A). No AI involvement in this behaviour.
 - **LRN-08 Learned changes are validated before they take effect**: **1** (grade A). AI-authored changes pass a human approval (api/src/ai/tools/registry.ts:198-214); there is no evaluation against a baseline.
+  - AI-qualified reading: **1** (grade A). AI-made changes get human approval only (api/src/ai/tools/registry.ts:198-214).
 
 ### Measure
 
@@ -174,8 +187,11 @@ Read at github.com/directus/directus @ 2878b4ef8ea9c1d09201debe89b3a5dc1d0bf93a 
 
 - **GOV-09 Agent-safe actions**: **2** (grade A). The assistant acts with the user's accountability; MCP clients get OAuth-scoped tokens; mutations need approval; rate limiter and activity rows apply. No idempotency keys or dry-run.
   - Higher reading 3: Scoped identity, approval-as-preview, rate limits and audit are present; idempotency is the gap.
+  - AI-qualified reading: **2** (grade A). AI acts with the user's accountability and mutations need approval; no idempotency or dry-run.
 - **GOV-10 Bounded self-change**: **2** (grade A). Each AI tool can require approval and deletes can be disabled wholesale (api/src/ai/tools/registry.ts:198-214); there is no per-period or blast-radius limit.
+  - AI-qualified reading: **2** (grade A). Per-tool approval and a switch to disable deletes; no blast-radius limit.
 - **GOV-11 Learning-input integrity**: **1** (grade A). AI changes are recorded as revisions by the acting user, but inputs carry no provenance and nothing separates untrusted content from instructions (api/src/ai).
+  - AI-qualified reading: **1** (grade A). Untrusted content is not fenced from instructions.
 
 ## Expand (EXP)
 
@@ -192,8 +208,31 @@ Read at github.com/directus/directus @ 2878b4ef8ea9c1d09201debe89b3a5dc1d0bf93a 
 
 - **EXP-04 Unmet-demand sensing**: **0** (grade A). No record of failed searches or unsupported requests was found.
 - **EXP-05 Evidence-backed opportunity proposals**: **0** (grade A). No adjacent-capability proposals.
+  - AI-qualified reading: **0** (grade A). No AI involvement in this behaviour.
 
 ### Launch
 
 - **EXP-06 Cohort launch with keep-or-kill**: **1** (grade A). Extensions are installed per project; there is no cohort launch.
   - Higher reading 2: Roles and policies can expose new collections to selected users.
+
+## AI Readiness Checks (AIR)
+
+### Context
+
+- **AIR-03 AI-ready data and context access**: **3** (grade A). Schema-aware tools read live collections, fields, relations, items and files (api/src/ai/tools/schema, items, files); results come from the source records.
+- **AIR-04 Permission-preserving retrieval and tool access**: **3** (grade A), facets: implemented, tested. Tool calls run through services with the requesting user's accountability, so Directus permissions apply (api/src/ai/tools/items, tests pass accountability through: items/index.test.ts).
+
+### Quality
+
+- **AIR-05 Offline AI evaluation**: **0** (grade A). No evaluation harness for the assistant (searched api/src/ai for eval).
+- **AIR-06 Regression gating before release**: **0** (grade A). No evaluation in CI; AI changes ship unevaluated (.github/workflows).
+
+### Governance
+
+- **AIR-07 AI action tracing and auditability**: **2** (grade A). Opt-in Langfuse and Braintrust telemetry records model calls with user, role, provider and model (api/src/ai/telemetry); revisions record data changes by the user, without the model or prompt.
+
+### Operations
+
+- **AIR-01 Model and provider portability and resilience**: **2** (grade A). OpenAI, Anthropic, Google and OpenAI-compatible providers configured by admins, model chosen in the chat (api/src/ai/providers/registry.ts); no fallback or declared resilience strategy.
+- **AIR-02 AI usage and per-customer cost controls**: **1** (grade A). Usage is streamed to the client per request (api/src/ai/chat/controllers/chat.post.ts:71-72); not recorded per user, and no budgets.
+- **AIR-08 Production quality, drift and feedback monitoring**: **0** (grade A). No feedback or quality monitoring for the assistant.

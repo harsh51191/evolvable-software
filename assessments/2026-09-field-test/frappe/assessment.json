@@ -463,10 +463,42 @@
     "GOV-11": {
       "status": "not_applicable",
       "rationale": "Scope fact agent_mutations and evolution_auto_apply is false: No first-party AI or agent changes Frappe definitions in this repository."
+    },
+    "AIR-01": {
+      "status": "not_applicable",
+      "rationale": "ai_features is false: No model-backed features in the framework (searched frappe/ for openai, anthropic, llm)."
+    },
+    "AIR-02": {
+      "status": "not_applicable",
+      "rationale": "ai_features is false: No model-backed features in the framework (searched frappe/ for openai, anthropic, llm)."
+    },
+    "AIR-03": {
+      "status": "not_applicable",
+      "rationale": "ai_features is false: No model-backed features in the framework (searched frappe/ for openai, anthropic, llm)."
+    },
+    "AIR-04": {
+      "status": "not_applicable",
+      "rationale": "ai_features is false: No model-backed features in the framework (searched frappe/ for openai, anthropic, llm)."
+    },
+    "AIR-05": {
+      "status": "not_applicable",
+      "rationale": "ai_features is false: No model-backed features in the framework (searched frappe/ for openai, anthropic, llm)."
+    },
+    "AIR-06": {
+      "status": "not_applicable",
+      "rationale": "ai_features is false: No model-backed features in the framework (searched frappe/ for openai, anthropic, llm)."
+    },
+    "AIR-07": {
+      "status": "not_applicable",
+      "rationale": "ai_features is false: No model-backed features in the framework (searched frappe/ for openai, anthropic, llm)."
+    },
+    "AIR-08": {
+      "status": "not_applicable",
+      "rationale": "ai_features is false: No model-backed features in the framework (searched frappe/ for openai, anthropic, llm)."
     }
   },
   "limits": "Repository evidence only, develop branch at the tip named above. No running site was inspected, so validation and preview behaviour is read from code, not exercised. Frappe Cloud features (marketplace, staging sites, backups) and apps built on the framework are out of scope. Whether CI checks block merges depends on branch protection, which is not visible in the repository. Single rater; the eight alternate readings mark where a second rater could reasonably differ.",
-  "framework_version": "0.4.0",
+  "framework_version": "0.5.0",
   "reading": "**SAL 1.** Operators reshape Frappe without code (Open 2.3), so every loop reaches L1, but nothing in the product drafts or builds a change (DEL-04 0) and requests have no intake (DEL-01 0), so no loop reaches L2. **Architecture:** backup and restore of data and files are tested end to end, but restoring the site secrets is not (ARC-09 2), and migrations are forward-only (ARC-02 1). **Next level:** an AI lane that drafts DocType, workflow or report changes as proposals, and structured request intake.",
   "framework": "EVOLVE",
   "scope_facts": {
@@ -505,6 +537,18 @@
     "code_release_path": {
       "value": false,
       "evidence": "No first-party evolution system ships code changes; releases are made by engineers."
+    },
+    "ai_features": {
+      "value": false,
+      "evidence": "No model-backed features in the framework (searched frappe/ for openai, anthropic, llm)."
+    },
+    "ai_data_access": {
+      "value": false,
+      "evidence": "No AI features."
+    },
+    "ai_actions": {
+      "value": false,
+      "evidence": "No AI features."
     }
   }
 }

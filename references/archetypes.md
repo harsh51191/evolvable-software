@@ -45,6 +45,10 @@ A focused application may exclude EXP-01 to EXP-03, but never EXP-04 to EXP-06: 
 | Learning signals (LRN-02) | Per-skill usage and patch counts, corrections, ratings, evaluation outcomes |
 | Learn from experience (LRN-07, LRN-08) | Background review, reflection or experience review that writes skills or memory, and any evaluation of those changes |
 
+## AI Readiness for agent runtimes
+
+For a product whose core is an LLM agent, `ai_features`, `ai_data_access` and `ai_actions` are usually all true. Read AIR-04 as acting within the user's own permissions plus pairing and approval controls on who can instruct the agent, and AIR-07 as session and tool-call logs that tie each action to a model and a request.
+
 ## Reading the rubric for developer platforms
 
 A reviewed, validated declarative configuration path (for example configuration in version control that the product validates and previews) is a supported path and can reach level 3. Hand-edited files that nothing validates stay at level 2.

@@ -1,6 +1,6 @@
-# OpenCode: EVOLVE v0.4 scorecard
+# OpenCode: EVOLVE v0.5 scorecard
 
-Evaluator: Claude, single rater. Framework: EVOLVE 0.4.0 in this repository.
+Evaluator: Claude, single rater. Framework: EVOLVE 0.5.0 in this repository.
 
 Scope: the opencode monorepo (agent core, server and HTTP API, SDK and codegen, TUI, desktop, web, plugin SDK, console and enterprise packages, CI). opencode.ai hosted services and models.dev are out of scope.
 
@@ -13,11 +13,11 @@ Scope: the opencode monorepo (agent core, server and HTTP API, SDK and codegen, 
 Repository evidence only, dev branch at the tip named above. Enterprise and console behaviour was not traced in depth. Single rater.
 
 ---
-Framework EVOLVE 0.4.0. Date 2026-09-30. Source github.com/anomalyco/opencode @ 2fa3363c924c5c3e367b84a87ae478296a0ed59b (dev). Archetype **agent-runtime**.
+Framework EVOLVE 0.5.0. Date 2026-09-30. Source github.com/anomalyco/opencode @ 2fa3363c924c5c3e367b84a87ae478296a0ed59b (dev). Archetype **agent-runtime**.
 
-Scope facts true: persistent_data, schema_changes, machine_actions, definition_change_path. False: multi_tenant, hosted_service, agent_mutations, evolution_auto_apply, code_release_path.
+Scope facts true: persistent_data, schema_changes, machine_actions, definition_change_path, ai_features, ai_data_access, ai_actions. False: multi_tenant, hosted_service, agent_mutations, evolution_auto_apply, code_release_path.
 
-Coverage: 51 assessed, 0 not evidenced, 15 not applicable. Grades: 51 A, 0 B, 0 C.
+Coverage: 59 assessed, 0 not evidenced, 15 not applicable. Grades: 59 A, 0 B, 0 C.
 
 ## Software Autonomy Level
 
@@ -68,6 +68,39 @@ Progress toward the next level: Request → Release 1 of 2 conditions for L1; Is
 | Vet (GOV) | 1.7 | 1.7–1.9 | 1.7 | 1.7 | 1.4 |
 | Expand (EXP) | 1.1 | 1.1–1.2 | 1.1 | 1.1 | 1.1 |
 
+## AI Readiness
+
+How safely can the product run AI in production? Separate from SAL, which it never changes.
+
+**AI Readiness L1 (Experimental) · Context 3 · Quality 1 · Governance 2 · Operations 1 · not production-governed**
+
+- With opt-in settings: AI Readiness L1 (Experimental) · Context 3 · Quality 1 · Governance 2 · Operations 1 · not production-governed.
+- With every alternate reading: AI Readiness L1 (Experimental) · Context 3 · Quality 1 · Governance 2 · Operations 1 · not production-governed.
+
+| Dimension | Level | Contributors |
+|---|---:|---|
+| Context | 3 | AIR-03 3, AIR-04 3 |
+| Quality | 1 | AIR-05 1, AIR-06 1 |
+| Governance | 2 | AIR-07 3, GOV-09 (AI) 2 |
+| Operations | 1 | AIR-01 2, AIR-02 2, AIR-08 0, ARC-08 (AI) 2 |
+
+| AI gate | Needs | Observed | Status |
+|---|---|---|---|
+| Permission-preserving access | AIR-04 ≥ 3 | 3 | pass |
+| Regression evaluation before release | AIR-06 ≥ 3 | 1 | fail |
+| Traceability of consequential AI actions | AIR-07 ≥ 3 | 3 | pass |
+
+### AI Capability Footprint
+
+What the product's AI does. Unscored: it never changes AI Readiness or SAL.
+
+| Area | Level | Readings |
+|---|---:|---|
+| Operate | 2 | MAL-19 2, MAL-20 2 |
+| Build | 0 | DEL-01 0, DEL-04 1 |
+| Diagnose and improve | 0 | LRN-05 0, LRN-06 0, LRN-07 0, LRN-08 n/a |
+| Expand | 0 | EXP-05 0 |
+
 ## Area means
 
 | Area | Default |
@@ -106,12 +139,12 @@ Progress toward the next level: Request → Release 1 of 2 conditions for L1; Is
 | ARC-05 Tenant isolation and noisy-neighbour controls | not_applicable | excluded |  |  | - |  | Scope fact multi_tenant is false: A local single-user tool. |
 | ARC-06 Ceilings measured, not discovered in incidents | not_applicable | excluded |  |  | - |  | Scope fact hosted_service is false: A local CLI and TUI with an optional local server; the console and cloud functions are separate products outside this scope. |
 | ARC-07 Service objectives defined and monitored | not_applicable | excluded |  |  | - |  | Scope fact hosted_service is false: A local CLI and TUI with an optional local server; the console and cloud functions are separate products outside this scope. |
-| ARC-08 Failure isolation and graceful degradation | assessed | 2 |  |  | A |  | Provider calls are retried with back-off (packages/opencode/src/session/retry.ts); MCP servers and LSPs run as separate processes. |
+| ARC-08 Failure isolation and graceful degradation | assessed | 2 |  |  | A |  | AI-qualified reading: 2. Provider calls are retried with back-off (packages/opencode/src/session/retry.ts); MCP servers and LSPs run as separate processes. |
 | ARC-09 Backup, restore and recovery | assessed | 1 |  |  | A |  | Sessions can be exported and imported one at a time (packages/opencode/src/cli/cmd/export.ts, import.ts); configuration lives in files. |
-| DEL-01 Request intake into a structured change specification | assessed | 0 |  |  | A |  | No request or feature-request object for changing the product was found; requests live outside it. |
+| DEL-01 Request intake into a structured change specification | assessed | 0 |  |  | A |  | AI-qualified reading: 0. No request or feature-request object for changing the product was found; requests live outside it. |
 | DEL-02 Layers deploy independently | assessed | 3 |  |  | A |  | Client and server architecture: server, TUI, desktop, web, console and cloud functions deploy separately (packages/server, packages/desktop, packages/function, .github/workflows/deploy.yml, containers.yml). |
 | DEL-03 Module boundaries enforced by tooling | assessed | 2 | 3 |  | A |  | Monorepo packages with explicit protocol and schema packages as contracts (packages/protocol, packages/schema); no architectural lint. |
-| DEL-04 AI implementation lane | assessed | 1 | 2 |  | A |  | The team runs OpenCode's general GitHub agent on this repository for reviews and triage (.github/workflows/review.yml, triage.yml, opencode.yml). Under rubric rule 12 that is a team's use of a coding agent, not a first-party evolution system for OpenCode. |
+| DEL-04 AI implementation lane | assessed | 1 | 2 |  | A |  | AI-qualified reading: 1. The team runs OpenCode's general GitHub agent on this repository for reviews and triage (.github/workflows/review.yml, triage.yml, opencode.yml). Under rubric rule 12 that is a team's use of a coding agent, not a first-party evolution system for OpenCode. |
 | DEL-05 Every change class has an automated pre-land check | assessed | 2 |  |  | A |  | Tests and typecheck run on pull requests (.github/workflows/test.yml:7, typecheck.yml:6); no accessibility or security checks. |
 | DEL-06 Verification surface | assessed | 2 | 3 |  | A |  | Server health handler and machine-readable agent, command, provider and model handlers (packages/server/src/handlers/health.ts and others); no build or version endpoint verified. |
 | DEL-07 Environment reproducibility | assessed | 2 |  |  | A |  | Nix flake and container definitions reproduce environments (nix/, .github/workflows/nix-eval.yml, containers.yml); no per-change ephemeral environment. |
@@ -137,16 +170,16 @@ Progress toward the next level: Request → Release 1 of 2 conditions for L1; Is
 | MAL-16 Canonical data model with a mapping layer | assessed | 3 |  |  | A |  | Providers map onto one model interface through a models catalogue snapshot (packages/opencode/src/provider, .github/workflows/models-snapshot.yml). |
 | MAL-17 Connector definition or SDK | assessed | 3 |  |  | A |  | Providers, MCP servers and LSP servers are configured by users with auth flows (packages/opencode/src/auth, mcp, lsp). |
 | MAL-18 Stable versioned contracts | assessed | 2 |  |  | A |  | Versioned SDK and protocol packages; no deprecation windows. |
-| MAL-19 Machine-readable capability surface for agents | assessed | 2 |  |  | A |  | Typed HTTP API, SDK and ACP support (packages/opencode/src/acp); OpenCode does not expose itself as an MCP server. |
-| MAL-20 Conversational operability for users and natural-language authoring for operators | assessed | 2 | 3 |  | A |  | Users complete coding tasks conversationally with tool actions; agent definitions can be generated from a natural-language description (packages/opencode/src/agent/generate.txt). Scored at the lower reading under rule 11 because: Natural-language authoring covers agents only. |
+| MAL-19 Machine-readable capability surface for agents | assessed | 2 |  |  | A |  | AI-qualified reading: 2. Typed HTTP API, SDK and ACP support (packages/opencode/src/acp); OpenCode does not expose itself as an MCP server. |
+| MAL-20 Conversational operability for users and natural-language authoring for operators | assessed | 2 | 3 |  | A |  | AI-qualified reading: 2. Users complete coding tasks conversationally with tool actions; agent definitions can be generated from a natural-language description (packages/opencode/src/agent/generate.txt). Scored at the lower reading under rule 11 because: Natural-language authoring covers agents only. |
 | LRN-01 Telemetry accessible to the platform in near real time | assessed | 2 | 3 |  | A |  | Sessions are stored locally and a stats package aggregates usage (packages/stats); no per-feature instrumentation consumed by the product. |
 | LRN-02 Structured learning signals | assessed | 0 |  |  | A |  | No feedback, rating or evaluation signals in the product. |
 | LRN-03 User-issue detection | assessed | 1 |  |  | A |  | Logs for engineers. |
 | LRN-04 Cross-source mining inside the product | assessed | 1 |  |  | A |  | Usage analysis happens outside the product. |
-| LRN-05 Automated diagnosis | assessed | 1 |  |  | A |  | Engineers read logs. |
-| LRN-06 Ranked, evidence-backed proposals for change | assessed | 0 |  |  | A |  | No proposals for changing OpenCode itself. |
-| LRN-07 The product turns its own operating experience into candidate changes | assessed | 1 |  |  | A |  | People write agents, commands and AGENTS.md by hand; nothing learns from sessions. |
-| LRN-08 Learned changes are validated before they take effect | assessed | 1 |  |  | A |  | Changes to OpenCode's definitions are reviewed by people only. |
+| LRN-05 Automated diagnosis | assessed | 1 |  |  | A |  | AI-qualified reading: 0. Engineers read logs. |
+| LRN-06 Ranked, evidence-backed proposals for change | assessed | 0 |  |  | A |  | AI-qualified reading: 0. No proposals for changing OpenCode itself. |
+| LRN-07 The product turns its own operating experience into candidate changes | assessed | 1 |  |  | A |  | AI-qualified reading: 0. People write agents, commands and AGENTS.md by hand; nothing learns from sessions. |
+| LRN-08 Learned changes are validated before they take effect | assessed | 1 |  |  | A |  | AI-qualified reading: not applicable. Changes to OpenCode's definitions are reviewed by people only. |
 | LRN-09 Post-change impact is measured against a declared baseline | assessed | 0 |  |  | A |  | No binding of changes to baselines or metrics. |
 | GOV-01 Accessibility inherited from a component kit and continuously verified | assessed | 1 |  |  | A |  | Storybook exists for UI components (packages/storybook); no automated accessibility scanning found. |
 | GOV-02 Audit generic over entities, definition changes and approvals | assessed | 1 |  |  | A |  | Sessions and messages are stored locally; there is no audit store for configuration or permission decisions. |
@@ -156,15 +189,23 @@ Progress toward the next level: Request → Release 1 of 2 conditions for L1; Is
 | GOV-06 Proposal, review, apply as a first-class object with preview | assessed | 1 |  |  | A |  | No proposal object for changes to OpenCode's own definitions; its code changes go through pull requests. |
 | GOV-07 Policy-based apply with recorded approvals and a movable human boundary | assessed | 2 | 3 |  | A |  | Permission rules decide per tool and pattern which agent actions run automatically and which ask a human (packages/opencode/src/permission/index.ts:33-80); the policy covers actions, not definition changes. |
 | GOV-08 Upgrade safety | assessed | 2 | 3 |  | A |  | Configuration migrations and v2 compatibility (packages/opencode/src/config/tui-migrate.ts, v2-compat.ts); versioned protocol and schema packages (packages/protocol, packages/schema). |
-| GOV-09 Agent-safe actions | assessed | 2 |  |  | A |  | Ask prompts preview tool actions under permission rules, and snapshots allow revert; commands run with the user's ambient authority and there are no idempotency keys. |
-| GOV-10 Bounded self-change | not_applicable | excluded |  |  | - |  | No self-change path. |
-| GOV-11 Learning-input integrity | not_applicable | excluded |  |  | - |  | No self-change path. |
+| GOV-09 Agent-safe actions | assessed | 2 |  |  | A |  | AI-qualified reading: 2. Ask prompts preview tool actions under permission rules, and snapshots allow revert; commands run with the user's ambient authority and there are no idempotency keys. |
+| GOV-10 Bounded self-change | not_applicable | excluded |  |  | - |  | AI-qualified reading: not applicable. No self-change path. |
+| GOV-11 Learning-input integrity | not_applicable | excluded |  |  | - |  | AI-qualified reading: not applicable. No self-change path. |
 | EXP-01 Kernel concepts are domain-neutral | assessed | 3 |  |  | A |  | Kernel of sessions (conversation), agents, tools, permissions, projects and providers, served through TUI, desktop, web, ACP, Slack and GitHub clients (channels). |
 | EXP-02 A new domain is expressible without kernel change | assessed | 2 | 3 |  | A |  | New uses are expressible as agents, commands, MCP servers and skills without kernel change; no domain bundles ship in the repository. |
 | EXP-03 A domain ships as an installable bundle | assessed | 2 |  |  | A |  | Agents and commands are shareable files; skills are fetched with a recorded version (packages/opencode/src/skill/discovery.ts:105). |
 | EXP-04 Unmet-demand sensing | assessed | 0 |  |  | A |  | No record of unmet intents was found. |
-| EXP-05 Evidence-backed opportunity proposals | assessed | 0 |  |  | A |  | No adjacent-capability proposals. |
+| EXP-05 Evidence-backed opportunity proposals | assessed | 0 |  |  | A |  | AI-qualified reading: 0. No adjacent-capability proposals. |
 | EXP-06 Cohort launch with keep-or-kill | assessed | 1 |  |  | A |  | Plugins and agents apply to the whole installation. |
+| AIR-03 AI-ready data and context access | assessed | 3 |  |  | A |  | Read, grep, glob and LSP tools give live, attributed workspace context, plus AGENTS.md instructions. |
+| AIR-04 Permission-preserving retrieval and tool access | assessed | 3 |  |  | A | IT | A local agent acting with the user's permissions; permission rules allow, ask or deny each tool and pattern, enforced in code (packages/opencode/src/permission/evaluate.ts), with tests. |
+| AIR-05 Offline AI evaluation | assessed | 1 |  |  | A |  | No evaluation harness in the repository. |
+| AIR-06 Regression gating before release | assessed | 1 |  |  | A |  | No evaluation gates in CI. |
+| AIR-07 AI action tracing and auditability | assessed | 3 |  |  | A | IT | Sessions store every message, tool call, model and cost, and snapshots record file changes for revert (packages/opencode/src/session, snapshot). |
+| AIR-01 Model and provider portability and resilience | assessed | 2 |  |  | A |  | Many providers through models.dev, with model choice per agent in configuration; retries with back-off (packages/opencode/src/session/retry.ts), no declared fallback. |
+| AIR-02 AI usage and per-customer cost controls | assessed | 2 |  |  | A |  | Tokens and cost per session are recorded and shown by opencode stats (packages/opencode/src/cli/cmd/stats.ts); no spend limit. |
+| AIR-08 Production quality, drift and feedback monitoring | assessed | 0 |  |  | A |  | No feedback or quality monitoring. |
 
 Facets: I implemented, T tested, O operated.
 

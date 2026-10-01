@@ -200,7 +200,13 @@
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "MCP channel-bridge server exposing channel tools (src/mcp/channel-server.ts, channel-tools.ts), an MCP registry and a typed gateway protocol."
+      "evidence": "MCP channel-bridge server exposing channel tools (src/mcp/channel-server.ts, channel-tools.ts), an MCP registry and a typed gateway protocol.",
+      "ai": {
+        "status": "assessed",
+        "score": 3,
+        "grade": "A",
+        "evidence": "MCP channel-bridge server and typed gateway protocol (src/mcp)."
+      }
     },
     "MAL-20": {
       "status": "assessed",
@@ -208,13 +214,27 @@
       "grade": "A",
       "evidence": "Users complete tasks conversationally across messaging channels with tool actions; operators configure OpenClaw in natural language through the system agent, which plans one safe command and waits for approval of the pending proposal (src/system-agent/assistant.ts, approval-intent.ts); skills are authored in chat.",
       "alt_score": 4,
-      "alt_note": "Most operations have conversational equivalents."
+      "alt_note": "Most operations have conversational equivalents.",
+      "ai": {
+        "status": "assessed",
+        "score": 3,
+        "grade": "A",
+        "evidence": "Model-backed conversation across channels; configuration by natural language.",
+        "alt_score": 4,
+        "alt_note": "Broad coverage."
+      }
     },
     "GOV-09": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Pairing identities for senders, exec approvals previewing commands, tool policies, sandboxing, idempotency keys on gateway methods (94 non-test files under src/gateway) and audit events for tool actions."
+      "evidence": "Pairing identities for senders, exec approvals previewing commands, tool policies, sandboxing, idempotency keys on gateway methods (94 non-test files under src/gateway) and audit events for tool actions.",
+      "ai": {
+        "status": "assessed",
+        "score": 3,
+        "grade": "A",
+        "evidence": "Pairing identities, exec approvals with previews, tool policies and idempotency keys for agent actions."
+      }
     },
     "MAL-16": {
       "status": "assessed",
@@ -282,7 +302,15 @@
       "grade": "A",
       "evidence": "The experience review scheduler turns observed runs into skill proposals when the system is idle (src/skills/workshop/experience-review-scheduler.ts, experience-review.ts, proposal-generation.ts); proposals are evidence-backed but not ranked by expected impact.",
       "alt_score": 3,
-      "alt_note": "Proposals carry their originating experience as evidence."
+      "alt_note": "Proposals carry their originating experience as evidence.",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Experience review proposes skills from observed runs.",
+        "alt_score": 3,
+        "alt_note": "Ranked when idle."
+      }
     },
     "DEL-04": {
       "status": "assessed",
@@ -290,7 +318,15 @@
       "grade": "A",
       "evidence": "By default the autonomous experience review drafts and applies skill proposals (autonomous.mode auto, approvalPolicy auto, src/skills/workshop/config.ts:15-20), under the Workshop's policy, revisions and rollback. Scored at the lower reading under rule 11 because: Changes apply per installation, not across tenants.",
       "alt_score": 3,
-      "alt_note": "The September v0.3 pass scored 3 on the evidence above."
+      "alt_note": "The September v0.3 pass scored 3 on the evidence above.",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Experience review drafts and applies skills.",
+        "alt_score": 3,
+        "alt_note": "Autonomous by default."
+      }
     },
     "LRN-09": {
       "status": "assessed",
@@ -326,13 +362,27 @@
       "grade": "A",
       "evidence": "With autonomous.mode auto by default, the experience review scheduler turns observed runs into skill proposals when the system is idle (src/skills/workshop/experience-review-scheduler.ts, proposal-generation.ts).",
       "alt_score": 4,
-      "alt_note": "The curator tracks which skills persist."
+      "alt_note": "The curator tracks which skills persist.",
+      "ai": {
+        "status": "assessed",
+        "score": 3,
+        "grade": "A",
+        "evidence": "Model review of runs drafts skills unprompted by default.",
+        "alt_score": 4,
+        "alt_note": "Autonomous mode."
+      }
     },
     "LRN-08": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Proposals are scanned before apply (src/skills/workshop/proposal-scan.ts), and evaluator hooks can compare against the baseline and block, but no evaluator ships (none in extensions/)."
+      "evidence": "Proposals are scanned before apply (src/skills/workshop/proposal-scan.ts), and evaluator hooks can compare against the baseline and block, but no evaluator ships (none in extensions/).",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "AI-made proposals are scanned before apply; no evaluator ships."
+      }
     },
     "ARC-02": {
       "status": "assessed",
@@ -344,7 +394,18 @@
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Agents can declare model fallbacks (src/agents/agent-scope-config.ts); plugins run in-process, so a 3 is not defensible under the inventory rule."
+      "evidence": "Agents can declare model fallbacks (src/agents/agent-scope-config.ts); plugins run in-process, so a 3 is not defensible under the inventory rule.",
+      "ai": {
+        "status": "assessed",
+        "score": 3,
+        "grade": "A",
+        "evidence": "Model fallback attempts and configured provider fallback, tested.",
+        "facets": {
+          "implemented": true,
+          "tested": true,
+          "operated": false
+        }
+      }
     },
     "ARC-09": {
       "status": "assessed",
@@ -369,7 +430,15 @@
       "grade": "A",
       "evidence": "The /learn command turns a request into requirements and sources and stages a pending skill proposal for review, revising existing Workshop skills before creating new ones (src/skills/workshop/learn-prompt.ts). No acceptance criteria or risk class.",
       "alt_score": 3,
-      "alt_note": "A pending, reviewed draft that accounts for existing skills approaches level 3."
+      "alt_note": "A pending, reviewed draft that accounts for existing skills approaches level 3.",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "/learn turns a request into a pending skill proposal (src/skills/workshop/learn-prompt.ts).",
+        "alt_score": 3,
+        "alt_note": "Close to a specification."
+      }
     },
     "DEL-09": {
       "status": "assessed",
@@ -393,13 +462,25 @@
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "openclaw doctor diagnoses configuration and runtime problems; experience review attaches the observed runs to proposals."
+      "evidence": "openclaw doctor diagnoses configuration and runtime problems; experience review attaches the observed runs to proposals.",
+      "ai": {
+        "status": "assessed",
+        "score": 1,
+        "grade": "A",
+        "evidence": "The agent explains errors when asked; doctor checks are rule-based."
+      }
     },
     "GOV-10": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Workshop policy limits proposal size and origins (src/skills/workshop/policy.ts, proposal-origin-validation.ts); there is no per-period or blast-radius limit."
+      "evidence": "Workshop policy limits proposal size and origins (src/skills/workshop/policy.ts, proposal-origin-validation.ts); there is no per-period or blast-radius limit.",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Proposal size and origin limits; no blast-radius limit."
+      }
     },
     "GOV-11": {
       "status": "assessed",
@@ -407,7 +488,15 @@
       "grade": "A",
       "evidence": "Every proposal records its origin agent, session, run and message (src/skills/workshop/proposal-origin-validation.ts) and is scanned before apply (proposal-scan.ts); with approvalPolicy auto, session content alone can drive an applied change.",
       "alt_score": 3,
-      "alt_note": "Provenance and scanning meet level 3 apart from the default auto-apply."
+      "alt_note": "Provenance and scanning meet level 3 apart from the default auto-apply.",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Origin recorded and proposals scanned; auto-apply by default.",
+        "alt_score": 3,
+        "alt_note": "Both present."
+      }
     },
     "EXP-04": {
       "status": "assessed",
@@ -419,7 +508,13 @@
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "Experience review proposes skills for observed tasks, not capabilities nobody has used yet."
+      "evidence": "Experience review proposes skills for observed tasks, not capabilities nobody has used yet.",
+      "ai": {
+        "status": "assessed",
+        "score": 1,
+        "grade": "A",
+        "evidence": "Proposes skills for observed tasks only."
+      }
     },
     "EXP-06": {
       "status": "assessed",
@@ -442,10 +537,68 @@
     "DEL-11": {
       "status": "not_applicable",
       "rationale": "Scope fact code_release_path is false: The self-improvement path changes skills, not OpenClaw code."
+    },
+    "AIR-01": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Model fallback with candidate generation and configured provider fallback, with tests (src/agents/model-fallback-attempt.ts, configured-provider-fallback.ts, configured-provider-fallback.test.ts)."
+    },
+    "AIR-02": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Agent run usage is recorded (src/infra/agent-run-usage.ts); no spend limit per user."
+    },
+    "AIR-03": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Memory host, context engine and session memory search assemble context automatically (src/memory, src/context-engine)."
+    },
+    "AIR-04": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "A personal agent acting with the owner's permissions; DM pairing restricts who can instruct it, tool policies and exec approvals gate actions, with tests (src/pairing, src/agents/bash-tools.exec-approval-followup.test.ts).",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      }
+    },
+    "AIR-05": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Evaluator hooks exist for skill proposals but no evaluation set ships."
+    },
+    "AIR-06": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "No evaluation gates in CI."
+    },
+    "AIR-07": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "An agent event audit store with typed events and queries (src/audit/agent-event-audit.ts, audit-event-store.ts, audit-event-queries.ts) and session transcripts.",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      }
+    },
+    "AIR-08": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Diagnostic events only; no quality or feedback monitoring."
     }
   },
   "limits": "Repository evidence only, main at the tip named above. ClawHub (registry and scanning) is a separate repository. No evaluator plugin is bundled, so measurement depends on third-party or user plugins. The experience review was read from code and tests, not run. Single rater.",
-  "framework_version": "0.4.0",
+  "framework_version": "0.5.0",
   "reading": "**SAL 2**, joint highest. /learn turns a request into a pending skill proposal (DEL-01 2), and the experience review drafts and applies skills from observed runs (LRN-07 3), so both core loops reach L2. Backup and restore are verified and tested across state, configuration, credentials and skills (ARC-09 3). **Blocks L3:** configuration has only rotating backups, not operator rollback (GOV-05 2, inventory); skill changes have no staged exposure (DEL-09 1); the default auto-apply has no declared blast-radius limit (GOV-10 2).",
   "framework": "EVOLVE",
   "scope_facts": {
@@ -484,6 +637,18 @@
     "code_release_path": {
       "value": false,
       "evidence": "The self-improvement path changes skills, not OpenClaw code."
+    },
+    "ai_features": {
+      "value": true,
+      "evidence": "The product is an LLM agent."
+    },
+    "ai_data_access": {
+      "value": true,
+      "evidence": "Reads memory, sessions and workspace files (src/memory, src/context-engine)."
+    },
+    "ai_actions": {
+      "value": true,
+      "evidence": "Runs commands, sends channel messages and changes skills (src/agents, src/skills)."
     }
   }
 }

@@ -13,6 +13,9 @@ Read at github.com/danny-avila/LibreChat @ 14f7b2865692d27364c934ecb991249637101
 - **evolution_auto_apply**: false. Definition changes are direct human actions by default.
 - **definition_change_path**: true. librechat.yaml, agents and prompts are definitions.
 - **code_release_path**: false. No first-party evolution system ships code changes.
+- **ai_features**: true. Chat with many model providers and agents (packages/api/src/endpoints, agents).
+- **ai_data_access**: true. File search over uploaded files (api/app/clients/tools/util/fileSearch.js).
+- **ai_actions**: true. Agents call tools and MCP servers that act on external systems (packages/api/src/mcp).
 
 ## Elastic (ARC)
 
@@ -37,6 +40,7 @@ Read at github.com/danny-avila/LibreChat @ 14f7b2865692d27364c934ecb991249637101
 ### Resilience
 
 - **ARC-08 Failure isolation and graceful degradation**: **2** (grade A). Provider calls have timeouts and errors are contained per conversation; MCP servers run as separate connections.
+  - AI-qualified reading: **2** (grade A). Timeouts on provider calls (packages/api/src/endpoints/openai/config.ts); errors contained per conversation.
 - **ARC-09 Backup, restore and recovery**: **0** (grade A). No backup command or documented backup in the repository.
   - Higher reading 1: MongoDB tooling is the implied path.
 
@@ -45,12 +49,14 @@ Read at github.com/danny-avila/LibreChat @ 14f7b2865692d27364c934ecb991249637101
 ### Intake
 
 - **DEL-01 Request intake into a structured change specification**: **0** (grade A). No request or feature-request object for changing the product was found; requests live outside it.
+  - AI-qualified reading: **0** (grade A). No AI involvement in this behaviour.
 
 ### Build
 
 - **DEL-02 Layers deploy independently**: **2** (grade A). API and client ship together in one image; RAG API, search and a Langfuse fan-out service are separate containers with Helm charts (helm/).
 - **DEL-03 Module boundaries enforced by tooling**: **2** (grade A). Workspace packages with explicit dependencies and a circular-dependency check (config/circular-deps.mjs).
 - **DEL-04 AI implementation lane**: **0** (grade A). No AI authoring lane for LibreChat's own definitions.
+  - AI-qualified reading: **0** (grade A). No AI involvement in this behaviour.
 
 ### Verify
 
@@ -113,8 +119,10 @@ Read at github.com/danny-avila/LibreChat @ 14f7b2865692d27364c934ecb991249637101
 
 - **MAL-19 Machine-readable capability surface for agents**: **1** (grade A). LibreChat consumes MCP but does not expose itself as an MCP server (api/server/routes/mcp.js manages client connections); agents are reachable through an OpenAI-compatible API. Scored at the lower reading under rule 11 because: If an OpenAI-compatible chat API is not an introspectable capability surface.
   - Higher reading 2: The September v0.3 pass scored 2 on the evidence above.
+  - AI-qualified reading: **1** (grade A). Consumes MCP; exposes no MCP server for agents.
 - **MAL-20 Conversational operability for users and natural-language authoring for operators**: **2** (grade A). Members complete tasks conversationally with retrieval, web search, code and tool actions; there is no natural-language authoring of LibreChat's own definitions.
   - Higher reading 3: The member half of level 3 is fully met.
+  - AI-qualified reading: **2** (grade A). Grounded chat with retrieval and tools for members.
 
 ## Learn (LRN)
 
@@ -129,12 +137,16 @@ Read at github.com/danny-avila/LibreChat @ 14f7b2865692d27364c934ecb991249637101
 ### Diagnose and propose
 
 - **LRN-05 Automated diagnosis**: **1** (grade A). Engineers read logs.
+  - AI-qualified reading: **0** (grade A). No AI involvement in this behaviour.
 - **LRN-06 Ranked, evidence-backed proposals for change**: **0** (grade A). No recommendation or proposal features.
+  - AI-qualified reading: **0** (grade A). No AI involvement in this behaviour.
 
 ### Learn from experience
 
 - **LRN-07 The product turns its own operating experience into candidate changes**: **1** (grade A), **3** with opt-in settings. By default nothing learns from use. With the memory block enabled (commented out in librechat.example.yaml:1351-1360), a memory agent stores user facts from recent chat automatically.
+  - AI-qualified reading: **0** (grade A), **3** with opt-in settings. Off by default.
 - **LRN-08 Learned changes are validated before they take effect**: **1** (grade A). No checks on learned memories beyond configured key and token limits (librechat.example.yaml:1354-1358).
+  - AI-qualified reading: **not applicable**. agent_mutations is false.
 
 ### Measure
 
@@ -162,8 +174,11 @@ Read at github.com/danny-avila/LibreChat @ 14f7b2865692d27364c934ecb991249637101
 
 - **GOV-09 Agent-safe actions**: **2** (grade A). Agent API keys with expiry (packages/data-schemas/src/types/agentApiKey.ts), on-behalf-of token exchange for MCP (api/server/services/OboTokenService.js), tool-call approvals before execution, rate limits, audit logs and idempotent trigger deliveries. Scored at the lower reading under rule 11 because: Idempotency covers trigger deliveries, not API mutations.
   - Higher reading 3: The September v0.3 pass scored 3 on the evidence above.
+  - AI-qualified reading: **2** (grade A). Agent API keys, on-behalf-of token exchange for MCP and tool-call approvals (api/server/services/OboTokenService.js).
 - **GOV-10 Bounded self-change**: **not applicable**. No self-change path by default; the memory agent is opt-in. If counted: 1.
+  - AI-qualified reading: **not applicable**. GOV-10 is not applicable.
 - **GOV-11 Learning-input integrity**: **not applicable**. No self-change path by default. If counted: 1.
+  - AI-qualified reading: **not applicable**. GOV-11 is not applicable.
 
 ## Expand (EXP)
 
@@ -177,7 +192,31 @@ Read at github.com/danny-avila/LibreChat @ 14f7b2865692d27364c934ecb991249637101
 
 - **EXP-04 Unmet-demand sensing**: **0** (grade A). No record of unmet intents was found.
 - **EXP-05 Evidence-backed opportunity proposals**: **0** (grade A). No adjacent-capability proposals.
+  - AI-qualified reading: **0** (grade A). No AI involvement in this behaviour.
 
 ### Launch
 
 - **EXP-06 Cohort launch with keep-or-kill**: **2** (grade A). Agents, prompts and MCP servers can be shared with selected users and groups through ACLs (packages/data-schemas/src/types/aclEntry.ts).
+
+## AI Readiness Checks (AIR)
+
+### Context
+
+- **AIR-03 AI-ready data and context access**: **2** (grade A). File search over uploaded files through the RAG API (api/app/clients/tools/util/fileSearch.js); other product data is not indexed.
+- **AIR-04 Permission-preserving retrieval and tool access**: **2** (grade A), facets: implemented, tested. Retrieval covers files attached to the conversation or agent; agents shared through ACLs carry their builder's files to other users.
+  - Higher reading 3: Per-user file ownership checks may meet level 3.
+
+### Quality
+
+- **AIR-05 Offline AI evaluation**: **0** (grade A). No evaluation harness.
+- **AIR-06 Regression gating before release**: **1** (grade A). Configuration changes are tested manually in chat.
+
+### Governance
+
+- **AIR-07 AI action tracing and auditability**: **2** (grade A). Messages store model, tokens and tool calls; Langfuse fan-out tracing is optional (packages/api/src/langfuse, traces/handlers.ts).
+
+### Operations
+
+- **AIR-01 Model and provider portability and resilience**: **2** (grade A). Admins configure many providers and model specs (librechat.yaml, packages/api/src/endpoints); no declared resilience strategy.
+- **AIR-02 AI usage and per-customer cost controls**: **2** (grade A), **3** with opt-in settings. Token transactions recorded per user; balances that limit spending are opt-in (librechat.example.yaml:363-378).
+- **AIR-08 Production quality, drift and feedback monitoring**: **2** (grade A). Users rate messages with tags, and admin insights summarise usage (packages/data-schemas/src/schema/message.ts:103, packages/api/src/insights); no drift alerts.

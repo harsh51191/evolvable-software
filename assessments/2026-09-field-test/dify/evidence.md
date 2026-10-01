@@ -13,6 +13,9 @@ Read at github.com/langgenius/dify @ ea38e484b81b4104736d2484aaa1d0d7ea99627e (m
 - **evolution_auto_apply**: false. Every publish is a manual human action.
 - **definition_change_path**: true. Apps, workflows, prompts and datasets are definitions.
 - **code_release_path**: false. No first-party evolution system ships code changes.
+- **ai_features**: true. LLM apps, agents and workflows are the product (api/core).
+- **ai_data_access**: true. Knowledge-base retrieval (api/core/rag).
+- **ai_actions**: true. Agent and workflow tools call external services and write data (api/core/tools).
 
 ## Elastic (ARC)
 
@@ -37,6 +40,8 @@ Read at github.com/langgenius/dify @ ea38e484b81b4104736d2484aaa1d0d7ea99627e (m
 ### Resilience
 
 - **ARC-08 Failure isolation and graceful degradation**: **2** (grade A). Model load balancing with cooldown across credentials (api/core/model_manager.py:68-130); plugins run in a separate daemon and code in a sandbox service. Connectors and internal services have no breakers, so a 3 is not defensible under the inventory rule.
+  - AI-qualified reading: **2** (grade A), facets: implemented. Load balancing with cooldown across credentials (api/core/model_manager.py).
+    - Higher reading 3: Cooldown acts as a breaker.
 - **ARC-09 Backup, restore and recovery**: **1** (grade A). No backup command; Docker volume backup is left to operators.
 
 ## Velocity (DEL)
@@ -44,6 +49,7 @@ Read at github.com/langgenius/dify @ ea38e484b81b4104736d2484aaa1d0d7ea99627e (m
 ### Intake
 
 - **DEL-01 Request intake into a structured change specification**: **0** (grade A). No request or feature-request object for changing the product was found; requests live outside it.
+  - AI-qualified reading: **0** (grade A). No AI involvement in this behaviour.
 
 ### Build
 
@@ -51,6 +57,7 @@ Read at github.com/langgenius/dify @ ea38e484b81b4104736d2484aaa1d0d7ea99627e (m
 - **DEL-03 Module boundaries enforced by tooling**: **2** (grade A). import-linter layer contracts for the backend (api/.importlinter:1-20) plus ESLint configuration for the frontend. Scored at the lower reading under rule 11 because: Whether the import-linter contract runs as a required CI check was not verified.
   - Higher reading 3: The September v0.3 pass scored 3 on the evidence above.
 - **DEL-04 AI implementation lane**: **2** (grade A). AI generators for code, prompts, structured output and workflow instructions assist builders one step at a time (api/core/llm_generator).
+  - AI-qualified reading: **2** (grade A). AI generators draft prompts, code and workflow steps (api/core/llm_generator).
 
 ### Verify
 
@@ -117,8 +124,10 @@ Read at github.com/langgenius/dify @ ea38e484b81b4104736d2484aaa1d0d7ea99627e (m
 
 - **MAL-19 Machine-readable capability surface for agents**: **2** (grade A). Each app can be exposed as an MCP server with its input schema as the tool definition and a per-app server credential (api/controllers/mcp/mcp.py); Dify also consumes MCP tools. Scored at the lower reading under rule 11 because: No capability map for the platform as a whole.
   - Higher reading 3: The September v0.3 pass scored 3 on the evidence above.
+  - AI-qualified reading: **2** (grade A). Apps exposed as MCP servers with a per-app credential (api/controllers/mcp/mcp.py).
 - **MAL-20 Conversational operability for users and natural-language authoring for operators**: **2** (grade A). End users complete tasks conversationally in Dify apps grounded on knowledge bases with tool actions; builders get natural-language generators for prompts, code, structured output and workflow instructions (api/core/llm_generator/llm_generator.py:432-813). Scored at the lower reading under rule 11 because: Admin natural-language authoring covers parts of a workflow, not whole definitions.
   - Higher reading 3: The September v0.3 pass scored 3 on the evidence above.
+  - AI-qualified reading: **2** (grade A). Grounded end-user apps and builder generators.
 
 ## Learn (LRN)
 
@@ -135,12 +144,16 @@ Read at github.com/langgenius/dify @ ea38e484b81b4104736d2484aaa1d0d7ea99627e (m
 
 - **LRN-05 Automated diagnosis**: **1** (grade A). Run traces show node-level errors per run; there is no grouping.
   - Higher reading 2: Per-run traces attach context.
+  - AI-qualified reading: **0** (grade A). No AI involvement in this behaviour.
 - **LRN-06 Ranked, evidence-backed proposals for change**: **1** (grade A). Dashboards only; suggestions exist for conversation questions, not for software change.
+  - AI-qualified reading: **0** (grade A). No AI involvement in this behaviour.
 
 ### Learn from experience
 
 - **LRN-07 The product turns its own operating experience into candidate changes**: **2** (grade A). Admins turn logged answers into annotations that the app reuses for similar questions (api/services/annotation_service.py); nothing proposes changes without being asked.
+  - AI-qualified reading: **0** (grade A). Annotations are curated by people.
 - **LRN-08 Learned changes are validated before they take effect**: **1** (grade A). Annotations and app changes are applied by people without evaluation against a baseline.
+  - AI-qualified reading: **not applicable**. agent_mutations is false.
 
 ### Measure
 
@@ -168,8 +181,11 @@ Read at github.com/langgenius/dify @ ea38e484b81b4104736d2484aaa1d0d7ea99627e (m
 ### AI and self-change safety
 
 - **GOV-09 Agent-safe actions**: **2** (grade A). App-scoped API keys, OAuth and device-flow login (api/libs/oauth_bearer.py, api/services/oauth_device_flow.py), rate limits and per-call logs; no idempotency keys or dry-run.
+  - AI-qualified reading: **1** (grade A). Agent tools run with credentials configured by the builder, shared across end users.
 - **GOV-10 Bounded self-change**: **not applicable**. No self-change path: AI drafts are saved by a person. If counted: 1.
+  - AI-qualified reading: **not applicable**. GOV-10 is not applicable.
 - **GOV-11 Learning-input integrity**: **not applicable**. No self-change path. If counted: 1.
+  - AI-qualified reading: **not applicable**. GOV-11 is not applicable.
 
 ## Expand (EXP)
 
@@ -183,7 +199,30 @@ Read at github.com/langgenius/dify @ ea38e484b81b4104736d2484aaa1d0d7ea99627e (m
 
 - **EXP-04 Unmet-demand sensing**: **0** (grade A). No record of unmet intents was found.
 - **EXP-05 Evidence-backed opportunity proposals**: **0** (grade A). No adjacent-capability proposals.
+  - AI-qualified reading: **0** (grade A). No AI involvement in this behaviour.
 
 ### Launch
 
 - **EXP-06 Cohort launch with keep-or-kill**: **2** (grade A). Plugins from the marketplace are installed per workspace (api/services/plugin); no success metric or keep-or-kill record.
+
+## AI Readiness Checks (AIR)
+
+### Context
+
+- **AIR-03 AI-ready data and context access**: **3** (grade A). Knowledge bases with indexing, retrieval and citations (api/core/rag).
+- **AIR-04 Permission-preserving retrieval and tool access**: **2** (grade A). Dataset permissions control which builders can attach knowledge (api/services/knowledge_retrieval_inner_service.py), but published apps retrieve with the app's datasets, not each end user's permissions.
+
+### Quality
+
+- **AIR-05 Offline AI evaluation**: **1** (grade A). Builders test prompts manually in debug and preview; no evaluation harness.
+- **AIR-06 Regression gating before release**: **1** (grade A). Publishing follows manual testing; nothing blocks a regression.
+
+### Governance
+
+- **AIR-07 AI action tracing and auditability**: **3** (grade A), facets: implemented, tested. Every message and workflow run is logged with inputs, outputs, model, tokens and node and tool executions, viewable by builders, with optional Langfuse, LangSmith and other tracing (api/core/ops/ops_trace_manager.py).
+
+### Operations
+
+- **AIR-01 Model and provider portability and resilience**: **3** (grade A). Builders choose models per app from many providers; load balancing with cooldown fails over across credentials, with tests (api/core/model_manager.py:68-130, tests/unit_tests/services/test_model_load_balancing_service.py).
+- **AIR-02 AI usage and per-customer cost controls**: **3** (grade A). Token usage and cost recorded per message, credit usage and billing quota reservation per tenant (api/core/credit_usage.py, api/services/billing_service.py:77-89).
+- **AIR-08 Production quality, drift and feedback monitoring**: **2** (grade A). End-user likes and dislikes and app statistics (satisfaction, tokens) per app (api/models/model.py:1299-1302); no drift alerts.

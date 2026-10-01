@@ -1,5 +1,5 @@
 name: evolvable-software
-description: EVOLVE assessment of how ready a software product is to evolve itself safely. Reports a Software Autonomy Level (L0-L5) for three loops (request to release, issue to fix, opportunity to expansion) with the conditions that block the next level, critical controls, and a six-capability profile (Elastic, Velocity, Open, Learn, Vet, Expand), plus prerequisite-ordered remediation.
+description: EVOLVE assessment of how ready a software product is to evolve itself safely. Reports a Software Autonomy Level (L0-L5) for three loops (request to release, issue to fix, opportunity to expansion) with the conditions that block the next level, critical controls, and a six-capability profile (Elastic, Velocity, Open, Learn, Vet, Expand), plus AI Readiness (Context, Quality, Governance, Operations) with three gates, an unscored AI Capability Footprint, and prerequisite-ordered remediation.
 author: Vellanki Sriharsha
 date_added: 2026-09-27
 version: public-beta-4

@@ -188,20 +188,39 @@
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "The canvas consumes MCP and exposes a UI tool that lets agents drive the canvas (tools/canvas_ui_tool.py); no MCP server for the canvas itself."
+      "evidence": "The canvas consumes MCP and exposes a UI tool that lets agents drive the canvas (tools/canvas_ui_tool.py); no MCP server for the canvas itself.",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "A UI tool lets agents drive the canvas; no MCP server for it."
+      }
     },
     "MAL-20": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Users run agent conversations with actions through the canvas; there is no natural-language authoring of canvas definitions."
+      "evidence": "Users run agent conversations with actions through the canvas; there is no natural-language authoring of canvas definitions.",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Model-backed agent conversations through the canvas."
+      }
     },
     "GOV-09": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
       "evidence": "The default confirmation policy is NeverConfirm (openhands-sdk/openhands/sdk/conversation/state.py:123); with ConfirmRisky, LLM security analyzers classify each action's risk and risky ones pause for a person (security/llm_analyzer.py, toolshield_llm_analyzer.py, ensemble.py).",
-      "available_score": 3
+      "available_score": 3,
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Confirmation policy defaults to never; with ConfirmRisky, an LLM security analyser classifies actions (openhands-sdk/openhands/sdk/conversation/state.py:123).",
+        "available_score": 3
+      }
     },
     "MAL-16": {
       "status": "assessed",
@@ -265,7 +284,13 @@
       "status": "assessed",
       "score": 0,
       "grade": "A",
-      "evidence": "No proposals for changing the canvas."
+      "evidence": "No proposals for changing the canvas.",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "No AI involvement in this behaviour."
+      }
     },
     "DEL-04": {
       "status": "assessed",
@@ -273,7 +298,15 @@
       "grade": "A",
       "evidence": "Automations run coding agents on users' repositories (automation repository README); nothing implements changes to OpenHands' own definitions. Recorded under the self rule.",
       "alt_score": 2,
-      "alt_note": "Automations configured in OpenHands are operator-configured behaviour run by an AI lane."
+      "alt_note": "Automations configured in OpenHands are operator-configured behaviour run by an AI lane.",
+      "ai": {
+        "status": "assessed",
+        "score": 1,
+        "grade": "A",
+        "evidence": "Automations change users' repositories, not OpenHands itself.",
+        "alt_score": 2,
+        "alt_note": "Operator-configured automations."
+      }
     },
     "LRN-09": {
       "status": "assessed",
@@ -307,13 +340,23 @@
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "No learning from sessions was found in the SDK (searched openhands-sdk/openhands/sdk/skills, context, agent)."
+      "evidence": "No learning from sessions was found in the SDK (searched openhands-sdk/openhands/sdk/skills, context, agent).",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "No AI involvement in this behaviour."
+      }
     },
     "LRN-08": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "Critics evaluate task output for iterative refinement (openhands-sdk/openhands/sdk/critic), not changes to the agent itself."
+      "evidence": "Critics evaluate task output for iterative refinement (openhands-sdk/openhands/sdk/critic), not changes to the agent itself.",
+      "ai": {
+        "status": "not_applicable",
+        "rationale": "agent_mutations is false."
+      }
     },
     "ARC-02": {
       "status": "assessed",
@@ -359,7 +402,18 @@
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Each run executes in its own sandbox with timeouts and cleanup (openhands/automation/watchdog.py); repeatedly failing automations are disabled (migrations/versions/020_add_automation_disabled_reason.py)."
+      "evidence": "Each run executes in its own sandbox with timeouts and cleanup (openhands/automation/watchdog.py); repeatedly failing automations are disabled (migrations/versions/020_add_automation_disabled_reason.py).",
+      "ai": {
+        "status": "assessed",
+        "score": 3,
+        "grade": "A",
+        "evidence": "Fallback strategy on provider errors, tested (tests/sdk/llm/test_llm_fallback.py).",
+        "facets": {
+          "implemented": true,
+          "tested": true,
+          "operated": false
+        }
+      }
     },
     "ARC-09": {
       "status": "assessed",
@@ -371,7 +425,13 @@
       "status": "assessed",
       "score": 0,
       "grade": "A",
-      "evidence": "No request or feature-request object for changing the product was found; requests live outside it."
+      "evidence": "No request or feature-request object for changing the product was found; requests live outside it.",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "No AI involvement in this behaviour."
+      }
     },
     "DEL-09": {
       "status": "assessed",
@@ -395,17 +455,31 @@
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Failed runs keep their phase, failure kind and conversation for inspection (docs/run-phase-reporting.md)."
+      "evidence": "Failed runs keep their phase, failure kind and conversation for inspection (docs/run-phase-reporting.md).",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "Run failure kinds are rule-based."
+      }
     },
     "GOV-10": {
       "status": "not_applicable",
       "rationale": "No self-change path.",
-      "if_applicable": 1
+      "if_applicable": 1,
+      "ai": {
+        "status": "not_applicable",
+        "rationale": "GOV-10 is not applicable."
+      }
     },
     "GOV-11": {
       "status": "not_applicable",
       "rationale": "No self-change path.",
-      "if_applicable": 1
+      "if_applicable": 1,
+      "ai": {
+        "status": "not_applicable",
+        "rationale": "GOV-11 is not applicable."
+      }
     },
     "EXP-04": {
       "status": "assessed",
@@ -417,7 +491,13 @@
       "status": "assessed",
       "score": 0,
       "grade": "A",
-      "evidence": "No adjacent-capability proposals."
+      "evidence": "No adjacent-capability proposals.",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "No AI involvement in this behaviour."
+      }
     },
     "EXP-06": {
       "status": "assessed",
@@ -428,10 +508,70 @@
     "DEL-11": {
       "status": "not_applicable",
       "rationale": "Scope fact code_release_path is false: Automations act on users' repositories; no first-party lane ships OpenHands code changes."
+    },
+    "AIR-01": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "LLM fallback strategy on connection, rate-limit and server errors, plus routers (openhands-sdk/openhands/sdk/llm/fallback_strategy.py, router), with tests (tests/sdk/llm/test_llm_fallback.py)."
+    },
+    "AIR-02": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Conversation cost and budget-exceeded handling (fallback_strategy.py), and run cost recorded per automation (automation repository: migrations/versions/013_add_run_cost.py); no per-user budgets.",
+      "alt_score": 3,
+      "alt_note": "A per-conversation budget limits spend."
+    },
+    "AIR-03": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Agents work in a sandboxed workspace with repository files, skills and microagents loaded automatically."
+    },
+    "AIR-04": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Each conversation runs in its own sandbox with the user's provider tokens; automations use per-user API keys (automation repository: openhands/automation/auth.py), with tests.",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      }
+    },
+    "AIR-05": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Behaviour and integration test suites for agents (tests/integration) and SWE-bench evaluation runs (.github/workflows/run-eval.yml)."
+    },
+    "AIR-06": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Integration tests and evaluations run on labelled pull requests and releases (.github/workflows/integration-runner.yml, run-eval.yml); not blocking by default."
+    },
+    "AIR-07": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "The event stream persists every action, observation and tool call per conversation, with LLM call metadata (openhands-sdk/openhands/sdk/conversation).",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      }
+    },
+    "AIR-08": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Critics score task output during a run; no production quality monitoring."
     }
   },
   "limits": "Repository evidence only. The Automation Service was added for v0.4 after the inter-rater study found it missing; it is beta. No live runs. Single rater.",
-  "framework_version": "0.4.0",
+  "framework_version": "0.5.0",
   "reading": "**SAL 1.** With the Automation Service now in scope, OpenHands has a hosted, multi-organisation architecture, but no load suite (ARC-06 0) or backup (ARC-09 0), which caps the foundation at L1. Automations run coding agents on users' repositories, which the self rule excludes (DEL-04 1). Runs record failure kinds and unhealthy automations are disabled automatically (LRN-03 2, DEL-10 2). **Next level:** backup and capacity evidence for the Automation Service, and a lane that improves OpenHands' own skills and automations.",
   "framework": "EVOLVE",
   "scope_facts": {
@@ -470,6 +610,18 @@
     "code_release_path": {
       "value": false,
       "evidence": "Automations act on users' repositories; no first-party lane ships OpenHands code changes."
+    },
+    "ai_features": {
+      "value": true,
+      "evidence": "The product runs LLM agents (openhands-sdk)."
+    },
+    "ai_data_access": {
+      "value": true,
+      "evidence": "Agents read repositories and workspace files in their sandbox."
+    },
+    "ai_actions": {
+      "value": true,
+      "evidence": "Agents edit code, run commands and open pull requests; automations run them unattended."
     }
   }
 }

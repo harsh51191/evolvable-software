@@ -205,14 +205,27 @@
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Core MCP server with typed tools and output schemas (lib/discourse_mcp, tools for topics, posts, search, users, themes, site settings and moderation), per-primitive required scopes and annotations (primitive.rb:14-78), OAuth and group scopes and a catalog; plugins register further tools."
+      "evidence": "Core MCP server with typed tools and output schemas (lib/discourse_mcp, tools for topics, posts, search, users, themes, site settings and moderation), per-primitive required scopes and annotations (primitive.rb:14-78), OAuth and group scopes and a catalog; plugins register further tools.",
+      "ai": {
+        "status": "assessed",
+        "score": 3,
+        "grade": "A",
+        "evidence": "Core MCP server with typed tools and scopes (lib/discourse_mcp)."
+      }
     },
     "MAL-20": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
       "evidence": "By default only the tutorial narrative bot is conversational (plugins/discourse-narrative-bot). With discourse-ai on (default false), AI agents answer members with retrieval and tools, and admins author workflows in natural language.",
-      "available_score": 3
+      "available_score": 3,
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "Off by default.",
+        "available_score": 3
+      }
     },
     "GOV-09": {
       "status": "assessed",
@@ -220,7 +233,14 @@
       "grade": "A",
       "evidence": "Granular API key scopes, user API key scopes and MCP OAuth scopes (app/models/api_key_scope.rb, user_api_key_scope.rb, mcp_oauth_authorization_scope.rb); MCP audit log; rate limiters. Idempotency is only an annotation hint; no dry-run.",
       "alt_score": 3,
-      "alt_note": "Scoped identity, audit and rate limits are strong; only idempotency keys and dry-run are missing."
+      "alt_note": "Scoped identity, audit and rate limits are strong; only idempotency keys and dry-run are missing.",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "Off by default.",
+        "available_score": 3
+      }
     },
     "MAL-16": {
       "status": "assessed",
@@ -283,14 +303,27 @@
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Problem checks raise admin notices recommending configuration fixes (app/services/problem_check): recommendations for one area."
+      "evidence": "Problem checks raise admin notices recommending configuration fixes (app/services/problem_check): recommendations for one area.",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "Problem checks are rules."
+      }
     },
     "DEL-04": {
       "status": "assessed",
       "score": 0,
       "grade": "A",
       "evidence": "By default there is no AI authoring lane; the beta workflows AI author is one when enabled.",
-      "available_score": 2
+      "available_score": 2,
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "Off by default.",
+        "available_score": 2
+      }
     },
     "LRN-09": {
       "status": "assessed",
@@ -322,14 +355,24 @@
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Problem checks run on a schedule and raise configuration recommendations (app/services/problem_check); they are rules, not learning from experience."
+      "evidence": "Problem checks run on a schedule and raise configuration recommendations (app/services/problem_check); they are rules, not learning from experience.",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "No AI involvement in this behaviour."
+      }
     },
     "LRN-08": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
       "evidence": "By default, changes are reviewed by people. With the workflows beta, AI proposals are validated with workflow_validate_patch before an admin applies them.",
-      "available_score": 2
+      "available_score": 2,
+      "ai": {
+        "status": "not_applicable",
+        "rationale": "agent_mutations is false."
+      }
     },
     "ARC-02": {
       "status": "assessed",
@@ -378,7 +421,14 @@
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Outbound requests go through FinalDestination with timeouts, and safe mode disables plugins and themes for a session (config/routes.rb:2036). Plugins run in-process."
+      "evidence": "Outbound requests go through FinalDestination with timeouts, and safe mode disables plugins and themes for a session (config/routes.rb:2036). Plugins run in-process.",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "Off by default.",
+        "available_score": 2
+      }
     },
     "ARC-09": {
       "status": "assessed",
@@ -403,7 +453,13 @@
       "grade": "A",
       "evidence": "Communities collect requests as topics; the bundled topic-voting plugin ranks them (plugins/discourse-topic-voting). They are not linked to the settings or screens involved.",
       "alt_score": 2,
-      "alt_note": "Voting adds structure to requests."
+      "alt_note": "Voting adds structure to requests.",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "No AI involvement in this behaviour."
+      }
     },
     "DEL-09": {
       "status": "assessed",
@@ -429,17 +485,31 @@
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Logster groups identical errors and attaches the environment of each occurrence."
+      "evidence": "Logster groups identical errors and attaches the environment of each occurrence.",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "Logster grouping is rule-based."
+      }
     },
     "GOV-10": {
       "status": "not_applicable",
       "rationale": "No self-change path by default: discourse-ai and the workflows AI author are off.",
-      "if_applicable": 2
+      "if_applicable": 2,
+      "ai": {
+        "status": "not_applicable",
+        "rationale": "GOV-10 is not applicable."
+      }
     },
     "GOV-11": {
       "status": "not_applicable",
       "rationale": "No self-change path by default.",
-      "if_applicable": 1
+      "if_applicable": 1,
+      "ai": {
+        "status": "not_applicable",
+        "rationale": "GOV-11 is not applicable."
+      }
     },
     "EXP-04": {
       "status": "assessed",
@@ -451,7 +521,13 @@
       "status": "assessed",
       "score": 0,
       "grade": "A",
-      "evidence": "No adjacent-capability proposals."
+      "evidence": "No adjacent-capability proposals.",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "No AI involvement in this behaviour."
+      }
     },
     "EXP-06": {
       "status": "assessed",
@@ -462,10 +538,68 @@
     "DEL-11": {
       "status": "not_applicable",
       "rationale": "Scope fact code_release_path is false: No first-party evolution system ships code changes."
+    },
+    "AIR-01": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Admins configure LLM models per provider and assign them per agent and feature (app/models/llm_model.rb); no fallback when a model fails. Scored as shipped, with discourse-ai enabled."
+    },
+    "AIR-02": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Per-group LLM quotas on tokens and usages per period, credit allocations and daily usage (app/models/llm_quota.rb, llm_credit_allocation.rb, llm_credit_daily_usage.rb), with admin screens."
+    },
+    "AIR-03": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Embeddings, semantic search and RAG fragments kept up to date by jobs (app/models/rag_document_fragment.rb, embedding_definition.rb); agents search and read topics with citations."
+    },
+    "AIR-04": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Agent tools read with an anonymous Guardian unless private reading is allowed, then with the user's Guardian (lib/agents/tools/read.rb:51-62); 34 tools use Guardian checks, with specs.",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      }
+    },
+    "AIR-05": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "An evaluation harness with an LLM judge (plugins/discourse-ai/evals/lib/eval.rb, judge.rb) run from the command line; datasets live outside this repository."
+    },
+    "AIR-06": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Evaluations are not run in CI; prompt and model changes are reviewed manually."
+    },
+    "AIR-07": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Every LLM call is logged with user, topic, model, feature, request and response payloads and tokens (app/models/ai_api_audit_log.rb, migration 20230424055354); tool actions are recorded and can be reviewed (ai_tool_action.rb, reviewable_ai_tool_action.rb).",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      }
+    },
+    "AIR-08": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Accuracy of AI triage against moderator decisions and spam logs are recorded per model and feature (app/models/model_accuracy.rb, ai_spam_log.rb); no drift alerts."
     }
   },
   "limits": "Repository evidence only, main branch at the tip named above. discourse-ai, discourse-workflows and parts of the MCP surface ship disabled by default as betas; they were scored as shipped, and the alternates show the effect of discounting them. Hosted Discourse operations (incidents, ephemeral environments, telemetry pipelines) are invisible here. Single rater.",
-  "framework_version": "0.4.0",
+  "framework_version": "0.5.0",
   "reading": "**SAL 1.** Admins configure Discourse without code, and it passes two critical controls that most systems fail: SafeMigrate and deferred column drops enforce expand-and-contract (ARC-02 3), and backup and restore of the database and uploads are tested (ARC-09 3). There is no AI lane by default (DEL-04 0), and as a focused application with adjacent-domain criteria excluded, Opportunity → Expansion stays at L0. **Learn:** search logs already record searches without results (EXP-04 2), the raw material for unmet-demand sensing. **Next level:** turn on and productise the workflows AI author, and cluster search misses and topic votes into proposals.",
   "framework": "EVOLVE",
   "scope_facts": {
@@ -504,6 +638,21 @@
     "code_release_path": {
       "value": false,
       "evidence": "No first-party evolution system ships code changes."
+    },
+    "ai_features": {
+      "value": false,
+      "evidence": "discourse-ai ships bundled but discourse_ai_enabled defaults to false (plugins/discourse-ai/config/settings.yml:2-3).",
+      "available_value": true
+    },
+    "ai_data_access": {
+      "value": false,
+      "evidence": "Off by default; when enabled, agents search and read topics and RAG documents.",
+      "available_value": true
+    },
+    "ai_actions": {
+      "value": false,
+      "evidence": "Off by default; when enabled, agent tools edit posts, change categories and site settings (plugins/discourse-ai/lib/agents/tools).",
+      "available_value": true
     }
   }
 }

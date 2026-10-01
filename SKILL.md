@@ -77,7 +77,7 @@ python3 <skill-dir>/scripts/init_scores.py --product "<software name>" --archety
 
 ### 3. Declare the scope facts
 
-Set each of the nine facts in `references/rubric.md` (persistent data, schema changes, multi-tenant, hosted service, machine actions, agent mutations, evolution auto-apply, definition change path, code release path) to true or false with evidence, for the default configuration. They decide which criteria and critical controls apply, including which rollback each change path needs. A wrongly declared fact is a finding, not a shortcut.
+Set each of the twelve facts in `references/rubric.md` (persistent data, schema changes, multi-tenant, hosted service, machine actions, agent mutations, evolution auto-apply, definition change path, code release path, and the AI facts `ai_features`, `ai_data_access`, `ai_actions`) to true or false with evidence, for the default configuration. Where a shipped opt-in setting turns an AI fact on, record `available_value: true`. They decide which criteria and critical controls apply, including which rollback each change path needs. A wrongly declared fact is a finding, not a shortcut.
 
 ### 4. Gather evidence
 
@@ -94,6 +94,8 @@ Evidence grades:
 ### 5. Score
 
 Use the anchored levels in `references/rubric.md`. Between two levels, score the lower and record the higher as `alt_score` (always `score + 1`). Score what exists now and in the default configuration; record shipped opt-in settings as `available_score`. Learning, intake, implementation-lane and expansion criteria credit changes to the product's own behaviour, not to other software it works on, and count repository tooling only when it is a supported first-party evolution system (rubric rule 12).
+
+If `ai_features` is true in either reading, score the eight AIR checks and add an `ai` reading to each of the 13 reused criteria (MAL-19, MAL-20, DEL-01, DEL-04, LRN-05 to LRN-08, EXP-05, GOV-09 to GOV-11, ARC-08), scored only on AI-backed behaviour. Missing AI behaviour scores 0, not `not_applicable`.
 
 For architecture and critical-control criteria read at 3 or more, record `facets`: implemented, tested and operated. For ARC-08, ARC-09 and GOV-05 at 3 or more, record an `inventory` with a level per surface.
 
@@ -123,6 +125,7 @@ Use `references/scorecard-template.md`. Report:
 - critical controls and which fail;
 - what blocks the next level of each loop;
 - the profile with ranges, the opt-in reading and the scope facts;
+- AI Readiness (level, dimensions, gates) and the unscored AI Capability Footprint, kept separate from SAL;
 - coverage, uncertainty, exclusions and every cap or deduction;
 - repository and operational evidence limits;
 - the remediation sequence when requested.
@@ -145,6 +148,7 @@ Never call a product "self-evolving" from a level alone; L3 and above are readin
 - `references/remediation.md`: prerequisite-aware moves to levels 3 and 4.
 - `references/scorecard-template.md`: report structure.
 - `spec/evolve-v0.4-draft.md`: design and decisions.
+- `spec/ai-readiness-v0.5-draft.md`: AI Readiness design and decisions.
 - `scripts/init_scores.py`: input template generator.
 - `scripts/score.py`: validator, scorer and prescriber.
 - `tests/test_score.py`: scorer tests.

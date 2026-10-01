@@ -229,7 +229,13 @@
       "grade": "A",
       "evidence": "MCP server over the same tool registry (api/src/ai/mcp/server.ts) with OAuth scope and audience checks (server.ts:75-102) and zod-typed tools; the schema tool returns the live data model as a capability map.",
       "alt_score": 4,
-      "alt_note": "Items and schema tools cover user-defined collections at runtime; tools are generic rather than generated per collection."
+      "alt_note": "Items and schema tools cover user-defined collections at runtime; tools are generic rather than generated per collection.",
+      "ai": {
+        "status": "assessed",
+        "score": 3,
+        "grade": "A",
+        "evidence": "MCP server over the AI tool registry with OAuth scopes (api/src/ai/mcp/server.ts)."
+      }
     },
     "MAL-20": {
       "status": "assessed",
@@ -237,7 +243,13 @@
       "grade": "A",
       "evidence": "In-app AI assistant with grounded tools over items, files, schema, relations and flows, running under the user's permissions (api/src/ai/chat, app/src/ai); admins author collections, fields, relations and flows in natural language with an approval card showing the proposed call. LLM tracing to Braintrust or Langfuse (api/src/ai/telemetry); no groundedness evaluation. Scored at the lower reading under rule 11 because: If an approval card is not a preview of the resulting change.",
       "alt_score": 3,
-      "alt_note": "The September v0.3 pass scored 3 on the evidence above."
+      "alt_note": "The September v0.3 pass scored 3 on the evidence above.",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "A grounded model-backed assistant for operators (api/src/ai/chat)."
+      }
     },
     "GOV-09": {
       "status": "assessed",
@@ -245,7 +257,13 @@
       "grade": "A",
       "evidence": "The assistant acts with the user's accountability; MCP clients get OAuth-scoped tokens; mutations need approval; rate limiter and activity rows apply. No idempotency keys or dry-run.",
       "alt_score": 3,
-      "alt_note": "Scoped identity, approval-as-preview, rate limits and audit are present; idempotency is the gap."
+      "alt_note": "Scoped identity, approval-as-preview, rate limits and audit are present; idempotency is the gap.",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "AI acts with the user's accountability and mutations need approval; no idempotency or dry-run."
+      }
     },
     "MAL-16": {
       "status": "assessed",
@@ -319,7 +337,13 @@
       "status": "assessed",
       "score": 0,
       "grade": "A",
-      "evidence": "No recommendation or proposal features; the assistant acts only on request."
+      "evidence": "No recommendation or proposal features; the assistant acts only on request.",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "No AI involvement in this behaviour."
+      }
     },
     "DEL-04": {
       "status": "assessed",
@@ -327,7 +351,15 @@
       "grade": "A",
       "evidence": "An AI authoring lane turns admin requests into schema, flow and item changes behind approvals, one project at a time (api/src/ai/tools); nothing applies accepted proposals across projects. Scored at the lower reading under rule 11 because: If the lane is judged manual per tenant because a human drives every change.",
       "alt_score": 2,
-      "alt_note": "The September v0.3 pass scored 2 on the evidence above."
+      "alt_note": "The September v0.3 pass scored 2 on the evidence above.",
+      "ai": {
+        "status": "assessed",
+        "score": 1,
+        "grade": "A",
+        "evidence": "The AI lane drafts schema, flow and item changes behind approvals.",
+        "alt_score": 2,
+        "alt_note": "An AI lane for narrow tasks on request."
+      }
     },
     "LRN-09": {
       "status": "assessed",
@@ -359,13 +391,25 @@
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "The AI assistant acts only on request (api/src/ai); nothing learns from use."
+      "evidence": "The AI assistant acts only on request (api/src/ai); nothing learns from use.",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "No AI involvement in this behaviour."
+      }
     },
     "LRN-08": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "AI-authored changes pass a human approval (api/src/ai/tools/registry.ts:198-214); there is no evaluation against a baseline."
+      "evidence": "AI-authored changes pass a human approval (api/src/ai/tools/registry.ts:198-214); there is no evaluation against a baseline.",
+      "ai": {
+        "status": "assessed",
+        "score": 1,
+        "grade": "A",
+        "evidence": "AI-made changes get human approval only (api/src/ai/tools/registry.ts:198-214)."
+      }
     },
     "ARC-02": {
       "status": "assessed",
@@ -404,7 +448,13 @@
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Sandboxed extensions run in an isolated VM with limits (api/src/extensions/lib/sandbox); the pressure limiter sheds load (packages/env/src/constants/defaults.ts:29). Other surfaces have no breakers."
+      "evidence": "Sandboxed extensions run in an isolated VM with limits (api/src/extensions/lib/sandbox); the pressure limiter sheds load (packages/env/src/constants/defaults.ts:29). Other surfaces have no breakers.",
+      "ai": {
+        "status": "assessed",
+        "score": 1,
+        "grade": "A",
+        "evidence": "Model errors are returned to the chat; no timeouts or breakers around model calls were found (api/src/ai/chat/lib)."
+      }
     },
     "ARC-09": {
       "status": "assessed",
@@ -418,7 +468,13 @@
       "grade": "A",
       "evidence": "Requests reach the AI assistant as free-text chat (api/src/ai/chat); nothing structures them into a specification.",
       "alt_score": 2,
-      "alt_note": "The chat keeps the request with the collections it touches."
+      "alt_note": "The chat keeps the request with the collections it touches.",
+      "ai": {
+        "status": "assessed",
+        "score": 1,
+        "grade": "A",
+        "evidence": "The model receives free-text requests in chat; nothing structures them."
+      }
     },
     "DEL-09": {
       "status": "assessed",
@@ -442,19 +498,37 @@
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "Engineers read logs; no grouping or attached context."
+      "evidence": "Engineers read logs; no grouping or attached context.",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "No AI involvement in this behaviour."
+      }
     },
     "GOV-10": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Each AI tool can require approval and deletes can be disabled wholesale (api/src/ai/tools/registry.ts:198-214); there is no per-period or blast-radius limit."
+      "evidence": "Each AI tool can require approval and deletes can be disabled wholesale (api/src/ai/tools/registry.ts:198-214); there is no per-period or blast-radius limit.",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Per-tool approval and a switch to disable deletes; no blast-radius limit."
+      }
     },
     "GOV-11": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "AI changes are recorded as revisions by the acting user, but inputs carry no provenance and nothing separates untrusted content from instructions (api/src/ai)."
+      "evidence": "AI changes are recorded as revisions by the acting user, but inputs carry no provenance and nothing separates untrusted content from instructions (api/src/ai).",
+      "ai": {
+        "status": "assessed",
+        "score": 1,
+        "grade": "A",
+        "evidence": "Untrusted content is not fenced from instructions."
+      }
     },
     "EXP-04": {
       "status": "assessed",
@@ -466,7 +540,13 @@
       "status": "assessed",
       "score": 0,
       "grade": "A",
-      "evidence": "No adjacent-capability proposals."
+      "evidence": "No adjacent-capability proposals.",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "No AI involvement in this behaviour."
+      }
     },
     "EXP-06": {
       "status": "assessed",
@@ -479,10 +559,63 @@
     "DEL-11": {
       "status": "not_applicable",
       "rationale": "Scope fact code_release_path is false: The AI lane changes definitions, not Directus code."
+    },
+    "AIR-01": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "OpenAI, Anthropic, Google and OpenAI-compatible providers configured by admins, model chosen in the chat (api/src/ai/providers/registry.ts); no fallback or declared resilience strategy."
+    },
+    "AIR-02": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Usage is streamed to the client per request (api/src/ai/chat/controllers/chat.post.ts:71-72); not recorded per user, and no budgets."
+    },
+    "AIR-03": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Schema-aware tools read live collections, fields, relations, items and files (api/src/ai/tools/schema, items, files); results come from the source records."
+    },
+    "AIR-04": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Tool calls run through services with the requesting user's accountability, so Directus permissions apply (api/src/ai/tools/items, tests pass accountability through: items/index.test.ts).",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      }
+    },
+    "AIR-05": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No evaluation harness for the assistant (searched api/src/ai for eval)."
+    },
+    "AIR-06": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No evaluation in CI; AI changes ship unevaluated (.github/workflows)."
+    },
+    "AIR-07": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Opt-in Langfuse and Braintrust telemetry records model calls with user, role, provider and model (api/src/ai/telemetry); revisions record data changes by the user, without the model or prompt."
+    },
+    "AIR-08": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No feedback or quality monitoring for the assistant."
     }
   },
   "limits": "Repository evidence only, main branch at the tip named above. No running instance was inspected, so approval and preview behaviour is read from code. Directus Cloud, the hosted marketplace catalogue and published templates are out of scope. The repository is under a source-available licence, so some features may be licence-gated (api/src/license); entitlement checks were not traced per feature. Single rater; 18 alternate readings mark likely disagreements.",
-  "framework_version": "0.4.0",
+  "framework_version": "0.5.0",
   "reading": "**SAL 1.** Every loop reaches L1 through the data-model editor and flow logs, which record each operation's success or failure (LRN-03 2). The AI assistant drafts schema and flow changes behind approvals but is scored at its lower reading (DEL-04 1), and Learn is the weakest capability (0.8). **Architecture:** no load suite (ARC-06 0) and no backup command (ARC-09 1) hold the architecture foundation at L1. **Next level:** structured request intake and a stronger AI lane, plus capacity and backup evidence.",
   "framework": "EVOLVE",
   "scope_facts": {
@@ -521,6 +654,18 @@
     "code_release_path": {
       "value": false,
       "evidence": "The AI lane changes definitions, not Directus code."
+    },
+    "ai_features": {
+      "value": true,
+      "evidence": "The AI assistant and MCP server (api/src/ai)."
+    },
+    "ai_data_access": {
+      "value": true,
+      "evidence": "AI tools read items, files, schema and flows (api/src/ai/tools)."
+    },
+    "ai_actions": {
+      "value": true,
+      "evidence": "AI tools create and change collections, fields, flows and items behind approvals (api/src/ai/tools/registry.ts)."
     }
   }
 }

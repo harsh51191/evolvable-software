@@ -34,11 +34,22 @@ Behind the levels is the **EVOLVE profile**: six capabilities, each scored 0 to 
 | **V** | Vet (`GOV`) | Is every change reviewed, policy-gated, audited and reversible, including the changes it makes to itself? |
 | **E** | Expand (`EXP`) | Does it find and launch adjacent value? |
 
-This is a **public beta**. It is designed to produce a falsifiable assessment, not a universal software leaderboard. `spec/evolve-v0.4-draft.md` explains the design and every decision behind it.
+Beside SAL, EVOLVE reports **AI Readiness** for products with AI features: how safely the product runs AI in production. It is never folded into SAL.
+
+| Dimension | Checks |
+|---|---|
+| Context | grounding in the product's own data (AIR-03); permission-preserving access (AIR-04) |
+| Quality | evaluation sets (AIR-05); regression evaluation before release (AIR-06) |
+| Governance | AI action traceability (AIR-07), plus the AI-specific readings of agent authority, scope limits and untrusted-input handling |
+| Operations | provider resilience (AIR-01), cost controls (AIR-02), quality monitoring (AIR-08), plus the AI-provider part of failure isolation |
+
+Each dimension is the floor of its mean; the headline is the weakest dimension, from **L0 No production AI foundation** to **L4 Adaptive and operationally proven**. Three gates (permission-preserving access, regression evaluation, traceability) cap it at L2, labelled *not production-governed*. An unscored **AI Capability Footprint** describes what the AI does (operate, build, diagnose and improve, expand) without rewarding it.
+
+This is a **public beta**. It is designed to produce a falsifiable assessment, not a universal software leaderboard. `spec/evolve-v0.4-draft.md` explains the design and every decision behind it; `spec/ai-readiness-v0.5-draft.md` covers AI Readiness.
 
 ## What is included
 
-- 66 anchored criteria in six capabilities, each with a 0–4 ladder.
+- 66 anchored criteria in six capabilities, each with a 0–4 ladder, plus eight AI Readiness checks (AIR) and AI-qualified readings of 13 existing criteria.
 - Three loops, each scored by its weakest stage. A loop's level is the lowest of four parts: the loop's own stages, a shared release spine (build, verify, stage, release, observe, roll back), an architecture foundation and a governance ceiling.
 - Seven critical controls:
   - definition rollback;
@@ -50,7 +61,7 @@ This is a **public beta**. It is designed to produce a falsifiable assessment, n
   - bounded self-change.
 
   A failed applicable control caps every loop at L2.
-- Nine scope facts that decide which criteria and controls apply, so a local tool is not failed on tenant isolation and a product that only changes through code is not failed on definition rollback.
+- Twelve scope facts (nine for change, three for AI) that decide which criteria and controls apply, so a local tool is not failed on tenant isolation and a product that only changes through code is not failed on definition rollback.
 - Evidence grades, evidence facets (implemented, tested, operated) and a depth cap: architecture and control criteria need tested evidence for a 3 and operated evidence for a 4.
 - Scoring of the default configuration, with shipped opt-in settings and higher alternate readings reported separately.
 - Enforced archetype exclusions and an interpretation guide for agent runtimes and developer platforms.
@@ -124,6 +135,7 @@ Optional fields:
 - `facets`: implemented, tested, operated.
 - `inventory`: a level per surface, for criteria that span several surfaces.
 - `if_applicable`: what an excluded criterion would score.
+- `ai`: an AI-qualified reading of the 13 criteria that AI Readiness reuses, scored only on AI-backed behaviour. Required when `ai_features` is true.
 
 ## Important limits
 
@@ -139,6 +151,7 @@ Optional fields:
 SKILL.md                          Agent instructions
 metadata.yaml                     Package metadata
 spec/evolve-v0.4-draft.md         Design and decisions
+spec/ai-readiness-v0.5-draft.md   AI Readiness design and decisions
 references/rubric.md              Criteria, anchored levels and the scoring model
 references/archetypes.md          Applicability and interpretation guidance
 references/evidence-plan.md       Evidence collection plan
@@ -153,7 +166,7 @@ CHANGELOG.md                      Version history
 
 ## Name and version
 
-EVOLVE v0.4.0, public beta 4, 1 October 2026. EVOLVE was previously the Malleability and Self-Evolution Readiness (MSR) framework; see `CHANGELOG.md` for what changed and why. "EVOLVE" and "Software Autonomy Level" are working names until a trademark and prior-use search is complete.
+EVOLVE v0.5.0 (AI Readiness, unreleased branch), 1 October 2026. EVOLVE was previously the Malleability and Self-Evolution Readiness (MSR) framework; see `CHANGELOG.md` for what changed and why. "EVOLVE" and "Software Autonomy Level" are working names until a trademark and prior-use search is complete.
 
 ## License
 

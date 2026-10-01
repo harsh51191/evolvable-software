@@ -4,7 +4,7 @@
   "source": "github.com/danny-avila/LibreChat @ 14f7b2865692d27364c934ecb9912496371018bb (main)",
   "archetype": "focused-application",
   "framework": "EVOLVE",
-  "framework_version": "0.4.0",
+  "framework_version": "0.5.0",
   "scope_facts": {
     "persistent_data": true,
     "schema_changes": true,
@@ -14,15 +14,18 @@
     "agent_mutations": false,
     "evolution_auto_apply": false,
     "definition_change_path": true,
-    "code_release_path": false
+    "code_release_path": false,
+    "ai_features": true,
+    "ai_data_access": true,
+    "ai_actions": true
   },
   "coverage": {
-    "assessed": 55,
+    "assessed": 63,
     "not_evidenced": 0,
     "not_applicable": 11
   },
   "grades": {
-    "A": 55,
+    "A": 63,
     "B": 0,
     "C": 0
   },
@@ -144,6 +147,281 @@
     "lower_headline": [],
     "raise_loop": {},
     "lower_loop": {}
+  },
+  "ai_readiness": {
+    "default": {
+      "status": "assessed",
+      "level": 0,
+      "name": "No production AI foundation",
+      "uncapped": 0,
+      "label": "not production-governed",
+      "dimensions": {
+        "Context": {
+          "level": 2,
+          "contributors": {
+            "AIR-03": 2,
+            "AIR-04": 2
+          }
+        },
+        "Quality": {
+          "level": 0,
+          "contributors": {
+            "AIR-05": 0,
+            "AIR-06": 1
+          }
+        },
+        "Governance": {
+          "level": 2,
+          "contributors": {
+            "AIR-07": 2,
+            "GOV-09 (AI)": 2
+          }
+        },
+        "Operations": {
+          "level": 2,
+          "contributors": {
+            "AIR-01": 2,
+            "AIR-02": 2,
+            "AIR-08": 2,
+            "ARC-08 (AI)": 2
+          }
+        }
+      },
+      "gates": [
+        {
+          "gate": "Permission-preserving access",
+          "needs": "AIR-04 ≥ 3",
+          "observed": 2,
+          "status": "fail"
+        },
+        {
+          "gate": "Regression evaluation before release",
+          "needs": "AIR-06 ≥ 3",
+          "observed": 1,
+          "status": "fail"
+        },
+        {
+          "gate": "Traceability of consequential AI actions",
+          "needs": "AIR-07 ≥ 3",
+          "observed": 2,
+          "status": "fail"
+        }
+      ],
+      "not_evidenced": [],
+      "footprint": {
+        "Operate": {
+          "level": 1,
+          "readings": {
+            "MAL-19": 1,
+            "MAL-20": 2
+          }
+        },
+        "Build": {
+          "level": 0,
+          "readings": {
+            "DEL-01": 0,
+            "DEL-04": 0
+          }
+        },
+        "Diagnose and improve": {
+          "level": 0,
+          "readings": {
+            "LRN-05": 0,
+            "LRN-06": 0,
+            "LRN-07": 0,
+            "LRN-08": null
+          }
+        },
+        "Expand": {
+          "level": 0,
+          "readings": {
+            "EXP-05": 0
+          }
+        }
+      }
+    },
+    "high": {
+      "status": "assessed",
+      "level": 0,
+      "name": "No production AI foundation",
+      "uncapped": 0,
+      "label": "not production-governed",
+      "dimensions": {
+        "Context": {
+          "level": 2,
+          "contributors": {
+            "AIR-03": 2,
+            "AIR-04": 3
+          }
+        },
+        "Quality": {
+          "level": 0,
+          "contributors": {
+            "AIR-05": 0,
+            "AIR-06": 1
+          }
+        },
+        "Governance": {
+          "level": 2,
+          "contributors": {
+            "AIR-07": 2,
+            "GOV-09 (AI)": 2
+          }
+        },
+        "Operations": {
+          "level": 2,
+          "contributors": {
+            "AIR-01": 2,
+            "AIR-02": 2,
+            "AIR-08": 2,
+            "ARC-08 (AI)": 2
+          }
+        }
+      },
+      "gates": [
+        {
+          "gate": "Permission-preserving access",
+          "needs": "AIR-04 ≥ 3",
+          "observed": 3,
+          "status": "pass"
+        },
+        {
+          "gate": "Regression evaluation before release",
+          "needs": "AIR-06 ≥ 3",
+          "observed": 1,
+          "status": "fail"
+        },
+        {
+          "gate": "Traceability of consequential AI actions",
+          "needs": "AIR-07 ≥ 3",
+          "observed": 2,
+          "status": "fail"
+        }
+      ],
+      "not_evidenced": [],
+      "footprint": {
+        "Operate": {
+          "level": 1,
+          "readings": {
+            "MAL-19": 1,
+            "MAL-20": 2
+          }
+        },
+        "Build": {
+          "level": 0,
+          "readings": {
+            "DEL-01": 0,
+            "DEL-04": 0
+          }
+        },
+        "Diagnose and improve": {
+          "level": 0,
+          "readings": {
+            "LRN-05": 0,
+            "LRN-06": 0,
+            "LRN-07": 0,
+            "LRN-08": null
+          }
+        },
+        "Expand": {
+          "level": 0,
+          "readings": {
+            "EXP-05": 0
+          }
+        }
+      }
+    },
+    "available": {
+      "status": "assessed",
+      "level": 0,
+      "name": "No production AI foundation",
+      "uncapped": 0,
+      "label": "not production-governed",
+      "dimensions": {
+        "Context": {
+          "level": 2,
+          "contributors": {
+            "AIR-03": 2,
+            "AIR-04": 2
+          }
+        },
+        "Quality": {
+          "level": 0,
+          "contributors": {
+            "AIR-05": 0,
+            "AIR-06": 1
+          }
+        },
+        "Governance": {
+          "level": 2,
+          "contributors": {
+            "AIR-07": 2,
+            "GOV-09 (AI)": 2
+          }
+        },
+        "Operations": {
+          "level": 2,
+          "contributors": {
+            "AIR-01": 2,
+            "AIR-02": 3,
+            "AIR-08": 2,
+            "ARC-08 (AI)": 2
+          }
+        }
+      },
+      "gates": [
+        {
+          "gate": "Permission-preserving access",
+          "needs": "AIR-04 ≥ 3",
+          "observed": 2,
+          "status": "fail"
+        },
+        {
+          "gate": "Regression evaluation before release",
+          "needs": "AIR-06 ≥ 3",
+          "observed": 1,
+          "status": "fail"
+        },
+        {
+          "gate": "Traceability of consequential AI actions",
+          "needs": "AIR-07 ≥ 3",
+          "observed": 2,
+          "status": "fail"
+        }
+      ],
+      "not_evidenced": [],
+      "footprint": {
+        "Operate": {
+          "level": 1,
+          "readings": {
+            "MAL-19": 1,
+            "MAL-20": 2
+          }
+        },
+        "Build": {
+          "level": 0,
+          "readings": {
+            "DEL-01": 0,
+            "DEL-04": 0
+          }
+        },
+        "Diagnose and improve": {
+          "level": 1,
+          "readings": {
+            "LRN-05": 0,
+            "LRN-06": 0,
+            "LRN-07": 3,
+            "LRN-08": null
+          }
+        },
+        "Expand": {
+          "level": 0,
+          "readings": {
+            "EXP-05": 0
+          }
+        }
+      }
+    }
   },
   "capabilities": {
     "ARC": 1.4,
@@ -272,7 +550,15 @@
     "EXP-03": null,
     "EXP-04": 0,
     "EXP-05": 0,
-    "EXP-06": 2
+    "EXP-06": 2,
+    "AIR-03": 2,
+    "AIR-04": 2,
+    "AIR-05": 0,
+    "AIR-06": 1,
+    "AIR-07": 2,
+    "AIR-01": 2,
+    "AIR-02": 2,
+    "AIR-08": 2
   },
   "variants": {
     "high": {
@@ -382,5 +668,5 @@
       }
     }
   },
-  "criteria_in_rubric": 66
+  "criteria_in_rubric": 74
 }

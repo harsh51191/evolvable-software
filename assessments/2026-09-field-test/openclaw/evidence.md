@@ -13,6 +13,9 @@ Read at github.com/openclaw/openclaw @ df2a29cac9ad37c31a0f5a0d977ba3e4fd833cb0 
 - **evolution_auto_apply**: true. autonomous.mode auto and approvalPolicy auto are the defaults (src/skills/workshop/config.ts:15-20).
 - **definition_change_path**: true. Skills, memory and configuration are its definitions.
 - **code_release_path**: false. The self-improvement path changes skills, not OpenClaw code.
+- **ai_features**: true. The product is an LLM agent.
+- **ai_data_access**: true. Reads memory, sessions and workspace files (src/memory, src/context-engine).
+- **ai_actions**: true. Runs commands, sends channel messages and changes skills (src/agents, src/skills).
 
 ## Elastic (ARC)
 
@@ -35,6 +38,7 @@ Read at github.com/openclaw/openclaw @ df2a29cac9ad37c31a0f5a0d977ba3e4fd833cb0 
 ### Resilience
 
 - **ARC-08 Failure isolation and graceful degradation**: **2** (grade A). Agents can declare model fallbacks (src/agents/agent-scope-config.ts); plugins run in-process, so a 3 is not defensible under the inventory rule.
+  - AI-qualified reading: **3** (grade A), facets: implemented, tested. Model fallback attempts and configured provider fallback, tested.
 - **ARC-09 Backup, restore and recovery**: **3** (grade A), facets: implemented, tested. Backup covers state, configuration, credentials, workspaces, agents and managed skills (src/commands/backup-shared.ts:76), with verification, scheduling and a restore test that round-trips into a fresh target with a matching inventory (src/commands/backup-restore.test.ts:176). Private captures are excluded by design. No recovery objectives are stated (level 4).
   - Inventory: data 3, definitions 3, files 3, secrets 3
 
@@ -44,6 +48,8 @@ Read at github.com/openclaw/openclaw @ df2a29cac9ad37c31a0f5a0d977ba3e4fd833cb0 
 
 - **DEL-01 Request intake into a structured change specification**: **2** (grade A). The /learn command turns a request into requirements and sources and stages a pending skill proposal for review, revising existing Workshop skills before creating new ones (src/skills/workshop/learn-prompt.ts). No acceptance criteria or risk class.
   - Higher reading 3: A pending, reviewed draft that accounts for existing skills approaches level 3.
+  - AI-qualified reading: **2** (grade A). /learn turns a request into a pending skill proposal (src/skills/workshop/learn-prompt.ts).
+    - Higher reading 3: Close to a specification.
 
 ### Build
 
@@ -51,6 +57,8 @@ Read at github.com/openclaw/openclaw @ df2a29cac9ad37c31a0f5a0d977ba3e4fd833cb0 
 - **DEL-03 Module boundaries enforced by tooling**: **3** (grade A). Separate TypeScript projects for core, extensions, UI and scripts (tsconfig.core.json, tsconfig.extensions.projects.json) and a plugin activation boundary test (src/plugin-activation-boundary.test.ts).
 - **DEL-04 AI implementation lane**: **2** (grade A). By default the autonomous experience review drafts and applies skill proposals (autonomous.mode auto, approvalPolicy auto, src/skills/workshop/config.ts:15-20), under the Workshop's policy, revisions and rollback. Scored at the lower reading under rule 11 because: Changes apply per installation, not across tenants.
   - Higher reading 3: The September v0.3 pass scored 3 on the evidence above.
+  - AI-qualified reading: **2** (grade A). Experience review drafts and applies skills.
+    - Higher reading 3: Autonomous by default.
 
 ### Verify
 
@@ -113,8 +121,11 @@ Read at github.com/openclaw/openclaw @ df2a29cac9ad37c31a0f5a0d977ba3e4fd833cb0 
 ### Agent interface
 
 - **MAL-19 Machine-readable capability surface for agents**: **3** (grade A). MCP channel-bridge server exposing channel tools (src/mcp/channel-server.ts, channel-tools.ts), an MCP registry and a typed gateway protocol.
+  - AI-qualified reading: **3** (grade A). MCP channel-bridge server and typed gateway protocol (src/mcp).
 - **MAL-20 Conversational operability for users and natural-language authoring for operators**: **3** (grade A). Users complete tasks conversationally across messaging channels with tool actions; operators configure OpenClaw in natural language through the system agent, which plans one safe command and waits for approval of the pending proposal (src/system-agent/assistant.ts, approval-intent.ts); skills are authored in chat.
   - Higher reading 4: Most operations have conversational equivalents.
+  - AI-qualified reading: **3** (grade A). Model-backed conversation across channels; configuration by natural language.
+    - Higher reading 4: Broad coverage.
 
 ## Learn (LRN)
 
@@ -130,14 +141,20 @@ Read at github.com/openclaw/openclaw @ df2a29cac9ad37c31a0f5a0d977ba3e4fd833cb0 
 ### Diagnose and propose
 
 - **LRN-05 Automated diagnosis**: **2** (grade A). openclaw doctor diagnoses configuration and runtime problems; experience review attaches the observed runs to proposals.
+  - AI-qualified reading: **1** (grade A). The agent explains errors when asked; doctor checks are rule-based.
 - **LRN-06 Ranked, evidence-backed proposals for change**: **2** (grade A). The experience review scheduler turns observed runs into skill proposals when the system is idle (src/skills/workshop/experience-review-scheduler.ts, experience-review.ts, proposal-generation.ts); proposals are evidence-backed but not ranked by expected impact.
   - Higher reading 3: Proposals carry their originating experience as evidence.
+  - AI-qualified reading: **2** (grade A). Experience review proposes skills from observed runs.
+    - Higher reading 3: Ranked when idle.
 
 ### Learn from experience
 
 - **LRN-07 The product turns its own operating experience into candidate changes**: **3** (grade A). With autonomous.mode auto by default, the experience review scheduler turns observed runs into skill proposals when the system is idle (src/skills/workshop/experience-review-scheduler.ts, proposal-generation.ts).
   - Higher reading 4: The curator tracks which skills persist.
+  - AI-qualified reading: **3** (grade A). Model review of runs drafts skills unprompted by default.
+    - Higher reading 4: Autonomous mode.
 - **LRN-08 Learned changes are validated before they take effect**: **2** (grade A). Proposals are scanned before apply (src/skills/workshop/proposal-scan.ts), and evaluator hooks can compare against the baseline and block, but no evaluator ships (none in extensions/).
+  - AI-qualified reading: **2** (grade A). AI-made proposals are scanned before apply; no evaluator ships.
 
 ### Measure
 
@@ -166,9 +183,13 @@ Read at github.com/openclaw/openclaw @ df2a29cac9ad37c31a0f5a0d977ba3e4fd833cb0 
 ### AI and self-change safety
 
 - **GOV-09 Agent-safe actions**: **3** (grade A). Pairing identities for senders, exec approvals previewing commands, tool policies, sandboxing, idempotency keys on gateway methods (94 non-test files under src/gateway) and audit events for tool actions.
+  - AI-qualified reading: **3** (grade A). Pairing identities, exec approvals with previews, tool policies and idempotency keys for agent actions.
 - **GOV-10 Bounded self-change**: **2** (grade A). Workshop policy limits proposal size and origins (src/skills/workshop/policy.ts, proposal-origin-validation.ts); there is no per-period or blast-radius limit.
+  - AI-qualified reading: **2** (grade A). Proposal size and origin limits; no blast-radius limit.
 - **GOV-11 Learning-input integrity**: **2** (grade A). Every proposal records its origin agent, session, run and message (src/skills/workshop/proposal-origin-validation.ts) and is scanned before apply (proposal-scan.ts); with approvalPolicy auto, session content alone can drive an applied change.
   - Higher reading 3: Provenance and scanning meet level 3 apart from the default auto-apply.
+  - AI-qualified reading: **2** (grade A). Origin recorded and proposals scanned; auto-apply by default.
+    - Higher reading 3: Both present.
 
 ## Expand (EXP)
 
@@ -183,7 +204,30 @@ Read at github.com/openclaw/openclaw @ df2a29cac9ad37c31a0f5a0d977ba3e4fd833cb0 
 
 - **EXP-04 Unmet-demand sensing**: **1** (grade A). Unserved requests stay in session history.
 - **EXP-05 Evidence-backed opportunity proposals**: **1** (grade A). Experience review proposes skills for observed tasks, not capabilities nobody has used yet.
+  - AI-qualified reading: **1** (grade A). Proposes skills for observed tasks only.
 
 ### Launch
 
 - **EXP-06 Cohort launch with keep-or-kill**: **1** (grade A). New skills apply to the whole installation at once.
+
+## AI Readiness Checks (AIR)
+
+### Context
+
+- **AIR-03 AI-ready data and context access**: **3** (grade A). Memory host, context engine and session memory search assemble context automatically (src/memory, src/context-engine).
+- **AIR-04 Permission-preserving retrieval and tool access**: **3** (grade A), facets: implemented, tested. A personal agent acting with the owner's permissions; DM pairing restricts who can instruct it, tool policies and exec approvals gate actions, with tests (src/pairing, src/agents/bash-tools.exec-approval-followup.test.ts).
+
+### Quality
+
+- **AIR-05 Offline AI evaluation**: **1** (grade A). Evaluator hooks exist for skill proposals but no evaluation set ships.
+- **AIR-06 Regression gating before release**: **1** (grade A). No evaluation gates in CI.
+
+### Governance
+
+- **AIR-07 AI action tracing and auditability**: **3** (grade A), facets: implemented, tested. An agent event audit store with typed events and queries (src/audit/agent-event-audit.ts, audit-event-store.ts, audit-event-queries.ts) and session transcripts.
+
+### Operations
+
+- **AIR-01 Model and provider portability and resilience**: **3** (grade A). Model fallback with candidate generation and configured provider fallback, with tests (src/agents/model-fallback-attempt.ts, configured-provider-fallback.ts, configured-provider-fallback.test.ts).
+- **AIR-02 AI usage and per-customer cost controls**: **2** (grade A). Agent run usage is recorded (src/infra/agent-run-usage.ts); no spend limit per user.
+- **AIR-08 Production quality, drift and feedback monitoring**: **1** (grade A). Diagnostic events only; no quality or feedback monitoring.

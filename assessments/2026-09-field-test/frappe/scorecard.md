@@ -1,6 +1,6 @@
-# Frappe Framework: EVOLVE v0.4 scorecard
+# Frappe Framework: EVOLVE v0.5 scorecard
 
-Evaluator: Claude, single rater. Framework: EVOLVE 0.4.0 in this repository.
+Evaluator: Claude, single rater. Framework: EVOLVE 0.5.0 in this repository.
 
 Scope: the frappe repository only (framework, Desk UI, website module, automation engine). Apps built on it (ERPNext, HRMS, CRM) and Frappe Cloud are out of scope.
 
@@ -13,11 +13,11 @@ Scope: the frappe repository only (framework, Desk UI, website module, automatio
 Repository evidence only, develop branch at the tip named above. No running site was inspected, so validation and preview behaviour is read from code, not exercised. Frappe Cloud features (marketplace, staging sites, backups) and apps built on the framework are out of scope. Whether CI checks block merges depends on branch protection, which is not visible in the repository. Single rater; the eight alternate readings mark where a second rater could reasonably differ.
 
 ---
-Framework EVOLVE 0.4.0. Date 2026-09-30. Source github.com/frappe/frappe @ 82b0384810030c8d347780538821a3b006375d28 (develop). Archetype **configurable-application-platform**.
+Framework EVOLVE 0.5.0. Date 2026-09-30. Source github.com/frappe/frappe @ 82b0384810030c8d347780538821a3b006375d28 (develop). Archetype **configurable-application-platform**.
 
-Scope facts true: persistent_data, schema_changes, multi_tenant, hosted_service, machine_actions, definition_change_path. False: agent_mutations, evolution_auto_apply, code_release_path.
+Scope facts true: persistent_data, schema_changes, multi_tenant, hosted_service, machine_actions, definition_change_path. False: agent_mutations, evolution_auto_apply, code_release_path, ai_features, ai_data_access, ai_actions.
 
-Coverage: 63 assessed, 0 not evidenced, 3 not applicable. Grades: 62 A, 1 B, 0 C.
+Coverage: 63 assessed, 0 not evidenced, 11 not applicable. Grades: 62 A, 1 B, 0 C.
 
 ## Software Autonomy Level
 
@@ -67,6 +67,26 @@ Progress toward the next level: Request → Release 2 of 4 conditions for L2; Is
 | Learn (LRN) | 1.3 | 1.3–1.7 | 1.3 | 1.3 | 1.3 |
 | Vet (GOV) | 1.8 | 1.8–2.3 | 1.8 | 1.8 | 1.8 |
 | Expand (EXP) | 1.7 | 1.7–1.9 | 1.7 | 1.7 | 1.7 |
+
+## AI Readiness
+
+How safely can the product run AI in production? Separate from SAL, which it never changes.
+
+**no AI features**
+
+- With opt-in settings: no AI features.
+- With every alternate reading: no AI features.
+
+### AI Capability Footprint
+
+What the product's AI does. Unscored: it never changes AI Readiness or SAL.
+
+| Area | Level | Readings |
+|---|---:|---|
+| Operate | 0 | MAL-19 0, MAL-20 0 |
+| Build | 0 | DEL-01 0, DEL-04 0 |
+| Diagnose and improve | 0 | LRN-05 0, LRN-06 0, LRN-07 0, LRN-08 0 |
+| Expand | 0 | EXP-05 0 |
 
 ## Area means
 
@@ -168,6 +188,14 @@ Progress toward the next level: Request → Release 2 of 4 conditions for L2; Is
 | EXP-04 Unmet-demand sensing | assessed | 0 |  |  | A |  | No record of failed searches or unsupported requests was found (frappe/search, frappe/desk). |
 | EXP-05 Evidence-backed opportunity proposals | assessed | 0 |  |  | A |  | No adjacent-capability proposals. |
 | EXP-06 Cohort launch with keep-or-kill | assessed | 2 |  |  | A |  | An app (bundle) can be installed and enabled for selected sites (frappe/commands/site.py:559, 1053); there is no success metric or keep-or-kill record. |
+| AIR-03 AI-ready data and context access | not_applicable | excluded |  |  | - |  | ai_features is false: No model-backed features in the framework (searched frappe/ for openai, anthropic, llm). |
+| AIR-04 Permission-preserving retrieval and tool access | not_applicable | excluded |  |  | - |  | ai_features is false: No model-backed features in the framework (searched frappe/ for openai, anthropic, llm). |
+| AIR-05 Offline AI evaluation | not_applicable | excluded |  |  | - |  | ai_features is false: No model-backed features in the framework (searched frappe/ for openai, anthropic, llm). |
+| AIR-06 Regression gating before release | not_applicable | excluded |  |  | - |  | ai_features is false: No model-backed features in the framework (searched frappe/ for openai, anthropic, llm). |
+| AIR-07 AI action tracing and auditability | not_applicable | excluded |  |  | - |  | ai_features is false: No model-backed features in the framework (searched frappe/ for openai, anthropic, llm). |
+| AIR-01 Model and provider portability and resilience | not_applicable | excluded |  |  | - |  | ai_features is false: No model-backed features in the framework (searched frappe/ for openai, anthropic, llm). |
+| AIR-02 AI usage and per-customer cost controls | not_applicable | excluded |  |  | - |  | ai_features is false: No model-backed features in the framework (searched frappe/ for openai, anthropic, llm). |
+| AIR-08 Production quality, drift and feedback monitoring | not_applicable | excluded |  |  | - |  | ai_features is false: No model-backed features in the framework (searched frappe/ for openai, anthropic, llm). |
 
 Facets: I implemented, T tested, O operated.
 

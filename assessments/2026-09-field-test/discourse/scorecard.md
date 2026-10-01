@@ -1,6 +1,6 @@
-# Discourse: EVOLVE v0.4 scorecard
+# Discourse: EVOLVE v0.5 scorecard
 
-Evaluator: Claude, single rater. Framework: EVOLVE 0.4.0 in this repository.
+Evaluator: Claude, single rater. Framework: EVOLVE 0.5.0 in this repository.
 
 Scope: the discourse repository including the plugins bundled in plugins/ (automation, discourse-ai, discourse-workflows, data explorer, chat and others) and the core MCP server. Several of these ship disabled by default as betas. Hosted Discourse and the separate theme CLI and Docker repositories are out of scope.
 
@@ -13,11 +13,11 @@ Scope: the discourse repository including the plugins bundled in plugins/ (autom
 Repository evidence only, main branch at the tip named above. discourse-ai, discourse-workflows and parts of the MCP surface ship disabled by default as betas; they were scored as shipped, and the alternates show the effect of discounting them. Hosted Discourse operations (incidents, ephemeral environments, telemetry pipelines) are invisible here. Single rater.
 
 ---
-Framework EVOLVE 0.4.0. Date 2026-09-30. Source github.com/discourse/discourse @ 2590ea9db1b7c38dcf80298aefd3e7cb3afe1f2b (main). Archetype **focused-application**.
+Framework EVOLVE 0.5.0. Date 2026-09-30. Source github.com/discourse/discourse @ 2590ea9db1b7c38dcf80298aefd3e7cb3afe1f2b (main). Archetype **focused-application**.
 
-Scope facts true: persistent_data, schema_changes, multi_tenant, hosted_service, machine_actions, definition_change_path. False: agent_mutations, evolution_auto_apply, code_release_path.
+Scope facts true: persistent_data, schema_changes, multi_tenant, hosted_service, machine_actions, definition_change_path. False: agent_mutations, evolution_auto_apply, code_release_path, ai_features, ai_data_access, ai_actions.
 
-Coverage: 55 assessed, 0 not evidenced, 11 not applicable. Grades: 55 A, 0 B, 0 C.
+Coverage: 63 assessed, 0 not evidenced, 11 not applicable. Grades: 63 A, 0 B, 0 C.
 
 ## Software Autonomy Level
 
@@ -72,6 +72,41 @@ Caps and deductions applied:
 
 - MAL-02: single-entity caps 3 -> 2
 
+## AI Readiness
+
+How safely can the product run AI in production? Separate from SAL, which it never changes.
+
+**no AI features**
+
+- With opt-in settings: AI Readiness L1 (Experimental) · Context 3 · Quality 1 · Governance 3 · Operations 2 · not production-governed.
+- With every alternate reading: no AI features.
+
+No AI features by default; the tables below show the opt-in reading.
+
+| Dimension | Level | Contributors |
+|---|---:|---|
+| Context | 3 | AIR-03 3, AIR-04 3 |
+| Quality | 1 | AIR-05 2, AIR-06 1 |
+| Governance | 3 | AIR-07 3, GOV-09 (AI) 3 |
+| Operations | 2 | AIR-01 2, AIR-02 3, AIR-08 2, ARC-08 (AI) 2 |
+
+| AI gate | Needs | Observed | Status |
+|---|---|---|---|
+| Permission-preserving access | AIR-04 ≥ 3 | 3 | pass |
+| Regression evaluation before release | AIR-06 ≥ 3 | 1 | fail |
+| Traceability of consequential AI actions | AIR-07 ≥ 3 | 3 | pass |
+
+### AI Capability Footprint
+
+What the product's AI does. Unscored: it never changes AI Readiness or SAL.
+
+| Area | Level | Readings |
+|---|---:|---|
+| Operate | 3 | MAL-19 3, MAL-20 3 |
+| Build | 1 | DEL-01 0, DEL-04 2 |
+| Diagnose and improve | 0 | LRN-05 0, LRN-06 0, LRN-07 0, LRN-08 n/a |
+| Expand | 0 | EXP-05 0 |
+
 ## Area means
 
 | Area | Default |
@@ -112,12 +147,12 @@ Caps and deductions applied:
 | ARC-05 Tenant isolation and noisy-neighbour controls | assessed | 2 | 3 |  | A | IT | Multisite hosting with a database per site and pervasive rate limiters; no noisy-neighbour detection or isolation verification in the repository. |
 | ARC-06 Ceilings measured, not discovered in incidents | assessed | 2 |  |  | A |  | Benchmark script (script/bench.rb); no documented per-surface limits or CI budgets. |
 | ARC-07 Service objectives defined and monitored | assessed | 1 |  |  | A |  | No published objectives in this repository; the prometheus exporter is a separate plugin not bundled here. |
-| ARC-08 Failure isolation and graceful degradation | assessed | 2 |  |  | A |  | Outbound requests go through FinalDestination with timeouts, and safe mode disables plugins and themes for a session (config/routes.rb:2036). Plugins run in-process. |
+| ARC-08 Failure isolation and graceful degradation | assessed | 2 |  |  | A |  | AI-qualified reading: 0. Outbound requests go through FinalDestination with timeouts, and safe mode disables plugins and themes for a session (config/routes.rb:2036). Plugins run in-process. |
 | ARC-09 Backup, restore and recovery | assessed | 3 |  |  | A | IT | Inventory: data 3, definitions 3, files 3, secrets n/a. Built-in backup and restore of the database (data, site settings, themes) and uploads to local or S3 stores, with restore specs for both, including multisite (lib/backup_restore, spec/lib/backup_restore/database_restorer_spec.rb, uploads_restorer_spec.rb). Secrets live in the deployment environment, outside the product. No recovery objectives are stated (level 4). |
-| DEL-01 Request intake into a structured change specification | assessed | 1 | 2 |  | A |  | Communities collect requests as topics; the bundled topic-voting plugin ranks them (plugins/discourse-topic-voting). They are not linked to the settings or screens involved. |
+| DEL-01 Request intake into a structured change specification | assessed | 1 | 2 |  | A |  | AI-qualified reading: 0. Communities collect requests as topics; the bundled topic-voting plugin ranks them (plugins/discourse-topic-voting). They are not linked to the settings or screens involved. |
 | DEL-02 Layers deploy independently | assessed | 1 |  |  | A |  | Rails and Ember monolith deployed as one application; container tooling lives in a separate repository. |
 | DEL-03 Module boundaries enforced by tooling | assessed | 1 |  |  | A |  | Plugin API is a contract, but internal module boundaries are convention; no architectural lint. |
-| DEL-04 AI implementation lane | assessed | 0 |  | 2 | A |  | By default there is no AI authoring lane; the beta workflows AI author is one when enabled. |
+| DEL-04 AI implementation lane | assessed | 0 |  | 2 | A |  | AI-qualified reading: 0. By default there is no AI authoring lane; the beta workflows AI author is one when enabled. |
 | DEL-05 Every change class has an automated pre-land check | assessed | 2 | 3 |  | A |  | Tests, linting and migration tests run on every pull request with no draft filter (.github/workflows/tests.yml:3-26, linting.yml, migration-tests.yml); no accessibility or security scan in CI. |
 | DEL-06 Verification surface | assessed | 2 |  |  | A |  | Health endpoint /srv/status (config/routes.rb:135) and version through the about endpoint; no deployed-configuration snapshot. |
 | DEL-07 Environment reproducibility | assessed | 2 | 3 |  | A |  | Scripted Docker development environment (bin/docker/boot_dev), test database setup, and upcoming-change flags that ship features off by default; no per-change ephemeral environment in the repository. |
@@ -143,16 +178,16 @@ Caps and deductions applied:
 | MAL-16 Canonical data model with a mapping layer | assessed | 1 |  |  | A |  | Integrations are bespoke plugins (discourse-zendesk-plugin, discourse-github, import scripts); no canonical integration model. |
 | MAL-17 Connector definition or SDK | assessed | 2 |  |  | A |  | Chat integration has a provider framework (plugins/discourse-chat-integration/lib/discourse_chat_integration/provider) and beta workflows have typed credential definitions (credential_types); no general connector SDK with lifecycle. |
 | MAL-18 Stable versioned contracts | assessed | 1 | 2 |  | A |  | No path versioning; plugin-API deprecations are structured, but the HTTP API has no deprecation windows. |
-| MAL-19 Machine-readable capability surface for agents | assessed | 3 |  |  | A |  | Core MCP server with typed tools and output schemas (lib/discourse_mcp, tools for topics, posts, search, users, themes, site settings and moderation), per-primitive required scopes and annotations (primitive.rb:14-78), OAuth and group scopes and a catalog; plugins register further tools. |
-| MAL-20 Conversational operability for users and natural-language authoring for operators | assessed | 1 |  | 3 | A |  | By default only the tutorial narrative bot is conversational (plugins/discourse-narrative-bot). With discourse-ai on (default false), AI agents answer members with retrieval and tools, and admins author workflows in natural language. |
+| MAL-19 Machine-readable capability surface for agents | assessed | 3 |  |  | A |  | AI-qualified reading: 3. Core MCP server with typed tools and output schemas (lib/discourse_mcp, tools for topics, posts, search, users, themes, site settings and moderation), per-primitive required scopes and annotations (primitive.rb:14-78), OAuth and group scopes and a catalog; plugins register further tools. |
+| MAL-20 Conversational operability for users and natural-language authoring for operators | assessed | 1 |  | 3 | A |  | AI-qualified reading: 0. By default only the tutorial narrative bot is conversational (plugins/discourse-narrative-bot). With discourse-ai on (default false), AI agents answer members with retrieval and tools, and admins author workflows in natural language. |
 | LRN-01 Telemetry accessible to the platform in near real time | assessed | 2 | 3 |  | A |  | User actions, visits, post timings and search logs are recorded as they happen and feed product features such as top topics and admin reports. Scored at the lower reading under rule 11 because: Engagement tables, not a per-feature event stream. |
 | LRN-02 Structured learning signals | assessed | 2 |  |  | A |  | Typed flags feed a review queue with triage (app/models/reviewable.rb); they concern content, not the product's definitions and versions. |
 | LRN-03 User-issue detection | assessed | 2 |  |  | A |  | Logster records server and browser errors in an admin UI (Gemfile:220); problem checks raise configuration issues (app/services/problem_check). |
 | LRN-04 Cross-source mining inside the product | assessed | 2 | 3 |  | A |  | Data Explorer runs saved SQL over the whole site database including usage, moderation and support data (plugins/discourse-data-explorer); no continuous mining. |
-| LRN-05 Automated diagnosis | assessed | 2 |  |  | A |  | Logster groups identical errors and attaches the environment of each occurrence. |
-| LRN-06 Ranked, evidence-backed proposals for change | assessed | 2 |  |  | A |  | Problem checks raise admin notices recommending configuration fixes (app/services/problem_check): recommendations for one area. |
-| LRN-07 The product turns its own operating experience into candidate changes | assessed | 2 |  |  | A |  | Problem checks run on a schedule and raise configuration recommendations (app/services/problem_check); they are rules, not learning from experience. |
-| LRN-08 Learned changes are validated before they take effect | assessed | 1 |  | 2 | A |  | By default, changes are reviewed by people. With the workflows beta, AI proposals are validated with workflow_validate_patch before an admin applies them. |
+| LRN-05 Automated diagnosis | assessed | 2 |  |  | A |  | AI-qualified reading: 0. Logster groups identical errors and attaches the environment of each occurrence. |
+| LRN-06 Ranked, evidence-backed proposals for change | assessed | 2 |  |  | A |  | AI-qualified reading: 0. Problem checks raise admin notices recommending configuration fixes (app/services/problem_check): recommendations for one area. |
+| LRN-07 The product turns its own operating experience into candidate changes | assessed | 2 |  |  | A |  | AI-qualified reading: 0. Problem checks run on a schedule and raise configuration recommendations (app/services/problem_check); they are rules, not learning from experience. |
+| LRN-08 Learned changes are validated before they take effect | assessed | 1 |  | 2 | A |  | AI-qualified reading: not applicable. By default, changes are reviewed by people. With the workflows beta, AI proposals are validated with workflow_validate_patch before an admin applies them. |
 | LRN-09 Post-change impact is measured against a declared baseline | assessed | 0 |  |  | A |  | No binding of changes to baselines or metrics. |
 | GOV-01 Accessibility inherited from a component kit and continuously verified | assessed | 1 | 2 |  | A |  | An accessibility service and dialog components exist (frontend/discourse/tests/helpers/qunit-helpers.js:102 imports discourse/services/a11y); no automated accessibility scanning in CI. |
 | GOV-02 Audit generic over entities, definition changes and approvals | assessed | 2 | 3 |  | A |  | Staff action logs record admin actions including site-setting changes with old and new values (app/services/staff_action_logger.rb) with an admin UI; post revisions and reviewable history; an MCP audit log with retention (config/site_settings.yml:4535). Ordinary entity mutations are not all audited. |
@@ -162,15 +197,23 @@ Caps and deductions applied:
 | GOV-06 Proposal, review, apply as a first-class object with preview | assessed | 1 |  | 2 | A |  | By default, admins change settings and themes directly. With the beta workflows plugin on, an AI author writes risk-rated draft proposals that are validated and applied by an admin (plugins/discourse-workflows/lib/discourse_workflows/ai_workflow_author.rb:39-67). |
 | GOV-07 Policy-based apply with recorded approvals and a movable human boundary | assessed | 1 | 2 |  | A |  | Admins apply changes directly; the upcoming-changes framework controls rollout of Discourse's own features by status and group (lib/upcoming_changes, plugins/discourse-workflows/config/settings.yml:4-11). |
 | GOV-08 Upgrade safety | assessed | 3 |  |  | A |  | Plugins and themes pin compatible commits per core version (lib/version_compatibility.rb, lib/tasks/compatibility.rake); a structured deprecation API with since and drop_from (lib/discourse.rb:1185-1189); theme settings migrations (app/models/theme_settings_migration.rb). |
-| GOV-09 Agent-safe actions | assessed | 2 | 3 |  | A |  | Granular API key scopes, user API key scopes and MCP OAuth scopes (app/models/api_key_scope.rb, user_api_key_scope.rb, mcp_oauth_authorization_scope.rb); MCP audit log; rate limiters. Idempotency is only an annotation hint; no dry-run. |
-| GOV-10 Bounded self-change | not_applicable | excluded |  |  | - |  | No self-change path by default: discourse-ai and the workflows AI author are off. |
-| GOV-11 Learning-input integrity | not_applicable | excluded |  |  | - |  | No self-change path by default. |
+| GOV-09 Agent-safe actions | assessed | 2 | 3 |  | A |  | AI-qualified reading: 0. Granular API key scopes, user API key scopes and MCP OAuth scopes (app/models/api_key_scope.rb, user_api_key_scope.rb, mcp_oauth_authorization_scope.rb); MCP audit log; rate limiters. Idempotency is only an annotation hint; no dry-run. |
+| GOV-10 Bounded self-change | not_applicable | excluded |  |  | - |  | AI-qualified reading: not applicable. No self-change path by default: discourse-ai and the workflows AI author are off. |
+| GOV-11 Learning-input integrity | not_applicable | excluded |  |  | - |  | AI-qualified reading: not applicable. No self-change path by default. |
 | EXP-01 Kernel concepts are domain-neutral | not_applicable | excluded |  |  | - |  | Focused application: adjacent-domain criterion (fixed per-archetype rule). Note that Discourse's kernel of users, groups, posts, topics, permissions and chat channels matches the rubric's level-3 kernel almost word for word. |
 | EXP-02 A new domain is expressible without kernel change | not_applicable | excluded |  |  | - |  | Focused application: adjacent-domain criterion (fixed per-archetype rule). Chat, events, assignment, subscriptions and voting ship as code plugins on an unchanged core. |
 | EXP-03 A domain ships as an installable bundle | not_applicable | excluded |  |  | - |  | Focused application: adjacent-domain criterion (fixed per-archetype rule). |
 | EXP-04 Unmet-demand sensing | assessed | 2 |  |  | A |  | Search logs record terms and whether a result was clicked, with an admin report of searches without results (app/models/search_log.rb). |
-| EXP-05 Evidence-backed opportunity proposals | assessed | 0 |  |  | A |  | No adjacent-capability proposals. |
+| EXP-05 Evidence-backed opportunity proposals | assessed | 0 |  |  | A |  | AI-qualified reading: 0. No adjacent-capability proposals. |
 | EXP-06 Cohort launch with keep-or-kill | assessed | 2 |  |  | A |  | Features and plugins can be enabled for selected groups, for example through upcoming changes and group settings (lib/upcoming_changes); there is no success metric or keep-or-kill record. |
+| AIR-03 AI-ready data and context access | assessed | 3 |  |  | A |  | Embeddings, semantic search and RAG fragments kept up to date by jobs (app/models/rag_document_fragment.rb, embedding_definition.rb); agents search and read topics with citations. |
+| AIR-04 Permission-preserving retrieval and tool access | assessed | 3 |  |  | A | IT | Agent tools read with an anonymous Guardian unless private reading is allowed, then with the user's Guardian (lib/agents/tools/read.rb:51-62); 34 tools use Guardian checks, with specs. |
+| AIR-05 Offline AI evaluation | assessed | 2 |  |  | A |  | An evaluation harness with an LLM judge (plugins/discourse-ai/evals/lib/eval.rb, judge.rb) run from the command line; datasets live outside this repository. |
+| AIR-06 Regression gating before release | assessed | 1 |  |  | A |  | Evaluations are not run in CI; prompt and model changes are reviewed manually. |
+| AIR-07 AI action tracing and auditability | assessed | 3 |  |  | A | IT | Every LLM call is logged with user, topic, model, feature, request and response payloads and tokens (app/models/ai_api_audit_log.rb, migration 20230424055354); tool actions are recorded and can be reviewed (ai_tool_action.rb, reviewable_ai_tool_action.rb). |
+| AIR-01 Model and provider portability and resilience | assessed | 2 |  |  | A |  | Admins configure LLM models per provider and assign them per agent and feature (app/models/llm_model.rb); no fallback when a model fails. Scored as shipped, with discourse-ai enabled. |
+| AIR-02 AI usage and per-customer cost controls | assessed | 3 |  |  | A |  | Per-group LLM quotas on tokens and usages per period, credit allocations and daily usage (app/models/llm_quota.rb, llm_credit_allocation.rb, llm_credit_daily_usage.rb), with admin screens. |
+| AIR-08 Production quality, drift and feedback monitoring | assessed | 2 |  |  | A |  | Accuracy of AI triage against moderator decisions and spam logs are recorded per model and feature (app/models/model_accuracy.rb, ai_spam_log.rb); no drift alerts. |
 
 Facets: I implemented, T tested, O operated.
 

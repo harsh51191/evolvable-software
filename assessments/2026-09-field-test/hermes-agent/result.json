@@ -4,7 +4,7 @@
   "source": "github.com/NousResearch/hermes-agent @ bddd22be7c2e5f7630c3d90507e6e7280ff092e3 (main) + github.com/NousResearch/hermes-agent-self-evolution @ 0a929e3aa20e15cf04dc7c28492a7d41a5139125 (main, last commit 2026-06-17)",
   "archetype": "agent-runtime",
   "framework": "EVOLVE",
-  "framework_version": "0.4.0",
+  "framework_version": "0.5.0",
   "scope_facts": {
     "persistent_data": true,
     "schema_changes": true,
@@ -14,15 +14,18 @@
     "agent_mutations": true,
     "evolution_auto_apply": true,
     "definition_change_path": true,
-    "code_release_path": true
+    "code_release_path": true,
+    "ai_features": true,
+    "ai_data_access": true,
+    "ai_actions": true
   },
   "coverage": {
-    "assessed": 54,
+    "assessed": 62,
     "not_evidenced": 0,
     "not_applicable": 12
   },
   "grades": {
-    "A": 54,
+    "A": 62,
     "B": 0,
     "C": 0
   },
@@ -235,6 +238,290 @@
       ]
     }
   },
+  "ai_readiness": {
+    "default": {
+      "status": "assessed",
+      "level": 1,
+      "name": "Experimental",
+      "uncapped": 1,
+      "label": "not production-governed",
+      "dimensions": {
+        "Context": {
+          "level": 3,
+          "contributors": {
+            "AIR-03": 3,
+            "AIR-04": 3
+          }
+        },
+        "Quality": {
+          "level": 1,
+          "contributors": {
+            "AIR-05": 2,
+            "AIR-06": 1
+          }
+        },
+        "Governance": {
+          "level": 2,
+          "contributors": {
+            "AIR-07": 3,
+            "GOV-09 (AI)": 2,
+            "GOV-10 (AI)": 2,
+            "GOV-11 (AI)": 2,
+            "LRN-08 (AI)": 2
+          }
+        },
+        "Operations": {
+          "level": 2,
+          "contributors": {
+            "AIR-01": 3,
+            "AIR-02": 2,
+            "AIR-08": 1,
+            "ARC-08 (AI)": 3
+          }
+        }
+      },
+      "gates": [
+        {
+          "gate": "Permission-preserving access",
+          "needs": "AIR-04 ≥ 3",
+          "observed": 3,
+          "status": "pass"
+        },
+        {
+          "gate": "Regression evaluation before release",
+          "needs": "AIR-06 ≥ 3",
+          "observed": 1,
+          "status": "fail"
+        },
+        {
+          "gate": "Traceability of consequential AI actions",
+          "needs": "AIR-07 ≥ 3",
+          "observed": 3,
+          "status": "pass"
+        }
+      ],
+      "not_evidenced": [],
+      "footprint": {
+        "Operate": {
+          "level": 2,
+          "readings": {
+            "MAL-19": 2,
+            "MAL-20": 3
+          }
+        },
+        "Build": {
+          "level": 1,
+          "readings": {
+            "DEL-01": 1,
+            "DEL-04": 2
+          }
+        },
+        "Diagnose and improve": {
+          "level": 2,
+          "readings": {
+            "LRN-05": 1,
+            "LRN-06": 2,
+            "LRN-07": 3,
+            "LRN-08": 2
+          }
+        },
+        "Expand": {
+          "level": 1,
+          "readings": {
+            "EXP-05": 1
+          }
+        }
+      }
+    },
+    "high": {
+      "status": "assessed",
+      "level": 1,
+      "name": "Experimental",
+      "uncapped": 1,
+      "label": "not production-governed",
+      "dimensions": {
+        "Context": {
+          "level": 3,
+          "contributors": {
+            "AIR-03": 3,
+            "AIR-04": 3
+          }
+        },
+        "Quality": {
+          "level": 1,
+          "contributors": {
+            "AIR-05": 2,
+            "AIR-06": 1
+          }
+        },
+        "Governance": {
+          "level": 2,
+          "contributors": {
+            "AIR-07": 3,
+            "GOV-09 (AI)": 3,
+            "GOV-10 (AI)": 2,
+            "GOV-11 (AI)": 3,
+            "LRN-08 (AI)": 2
+          }
+        },
+        "Operations": {
+          "level": 2,
+          "contributors": {
+            "AIR-01": 3,
+            "AIR-02": 3,
+            "AIR-08": 1,
+            "ARC-08 (AI)": 3
+          }
+        }
+      },
+      "gates": [
+        {
+          "gate": "Permission-preserving access",
+          "needs": "AIR-04 ≥ 3",
+          "observed": 3,
+          "status": "pass"
+        },
+        {
+          "gate": "Regression evaluation before release",
+          "needs": "AIR-06 ≥ 3",
+          "observed": 1,
+          "status": "fail"
+        },
+        {
+          "gate": "Traceability of consequential AI actions",
+          "needs": "AIR-07 ≥ 3",
+          "observed": 3,
+          "status": "pass"
+        }
+      ],
+      "not_evidenced": [],
+      "footprint": {
+        "Operate": {
+          "level": 3,
+          "readings": {
+            "MAL-19": 3,
+            "MAL-20": 4
+          }
+        },
+        "Build": {
+          "level": 2,
+          "readings": {
+            "DEL-01": 2,
+            "DEL-04": 3
+          }
+        },
+        "Diagnose and improve": {
+          "level": 2,
+          "readings": {
+            "LRN-05": 1,
+            "LRN-06": 3,
+            "LRN-07": 4,
+            "LRN-08": 2
+          }
+        },
+        "Expand": {
+          "level": 1,
+          "readings": {
+            "EXP-05": 1
+          }
+        }
+      }
+    },
+    "available": {
+      "status": "assessed",
+      "level": 1,
+      "name": "Experimental",
+      "uncapped": 1,
+      "label": "not production-governed",
+      "dimensions": {
+        "Context": {
+          "level": 3,
+          "contributors": {
+            "AIR-03": 3,
+            "AIR-04": 3
+          }
+        },
+        "Quality": {
+          "level": 1,
+          "contributors": {
+            "AIR-05": 2,
+            "AIR-06": 1
+          }
+        },
+        "Governance": {
+          "level": 2,
+          "contributors": {
+            "AIR-07": 3,
+            "GOV-09 (AI)": 2,
+            "GOV-10 (AI)": 2,
+            "GOV-11 (AI)": 2,
+            "LRN-08 (AI)": 3
+          }
+        },
+        "Operations": {
+          "level": 2,
+          "contributors": {
+            "AIR-01": 3,
+            "AIR-02": 2,
+            "AIR-08": 1,
+            "ARC-08 (AI)": 3
+          }
+        }
+      },
+      "gates": [
+        {
+          "gate": "Permission-preserving access",
+          "needs": "AIR-04 ≥ 3",
+          "observed": 3,
+          "status": "pass"
+        },
+        {
+          "gate": "Regression evaluation before release",
+          "needs": "AIR-06 ≥ 3",
+          "observed": 1,
+          "status": "fail"
+        },
+        {
+          "gate": "Traceability of consequential AI actions",
+          "needs": "AIR-07 ≥ 3",
+          "observed": 3,
+          "status": "pass"
+        }
+      ],
+      "not_evidenced": [],
+      "footprint": {
+        "Operate": {
+          "level": 2,
+          "readings": {
+            "MAL-19": 2,
+            "MAL-20": 3
+          }
+        },
+        "Build": {
+          "level": 1,
+          "readings": {
+            "DEL-01": 1,
+            "DEL-04": 2
+          }
+        },
+        "Diagnose and improve": {
+          "level": 2,
+          "readings": {
+            "LRN-05": 1,
+            "LRN-06": 2,
+            "LRN-07": 3,
+            "LRN-08": 3
+          }
+        },
+        "Expand": {
+          "level": 1,
+          "readings": {
+            "EXP-05": 1
+          }
+        }
+      }
+    }
+  },
   "capabilities": {
     "ARC": 2.3,
     "DEL": 1.8,
@@ -360,7 +647,15 @@
     "EXP-03": 3,
     "EXP-04": 1,
     "EXP-05": 1,
-    "EXP-06": 1
+    "EXP-06": 1,
+    "AIR-03": 3,
+    "AIR-04": 3,
+    "AIR-05": 2,
+    "AIR-06": 1,
+    "AIR-07": 3,
+    "AIR-01": 3,
+    "AIR-02": 2,
+    "AIR-08": 1
   },
   "variants": {
     "high": {
@@ -470,5 +765,5 @@
       }
     }
   },
-  "criteria_in_rubric": 66
+  "criteria_in_rubric": 74
 }

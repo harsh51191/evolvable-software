@@ -222,7 +222,13 @@
       "grade": "A",
       "evidence": "Each app can be exposed as an MCP server with its input schema as the tool definition and a per-app server credential (api/controllers/mcp/mcp.py); Dify also consumes MCP tools. Scored at the lower reading under rule 11 because: No capability map for the platform as a whole.",
       "alt_score": 3,
-      "alt_note": "The September v0.3 pass scored 3 on the evidence above."
+      "alt_note": "The September v0.3 pass scored 3 on the evidence above.",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Apps exposed as MCP servers with a per-app credential (api/controllers/mcp/mcp.py)."
+      }
     },
     "MAL-20": {
       "status": "assessed",
@@ -230,13 +236,25 @@
       "grade": "A",
       "evidence": "End users complete tasks conversationally in Dify apps grounded on knowledge bases with tool actions; builders get natural-language generators for prompts, code, structured output and workflow instructions (api/core/llm_generator/llm_generator.py:432-813). Scored at the lower reading under rule 11 because: Admin natural-language authoring covers parts of a workflow, not whole definitions.",
       "alt_score": 3,
-      "alt_note": "The September v0.3 pass scored 3 on the evidence above."
+      "alt_note": "The September v0.3 pass scored 3 on the evidence above.",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Grounded end-user apps and builder generators."
+      }
     },
     "GOV-09": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "App-scoped API keys, OAuth and device-flow login (api/libs/oauth_bearer.py, api/services/oauth_device_flow.py), rate limits and per-call logs; no idempotency keys or dry-run."
+      "evidence": "App-scoped API keys, OAuth and device-flow login (api/libs/oauth_bearer.py, api/services/oauth_device_flow.py), rate limits and per-call logs; no idempotency keys or dry-run.",
+      "ai": {
+        "status": "assessed",
+        "score": 1,
+        "grade": "A",
+        "evidence": "Agent tools run with credentials configured by the builder, shared across end users."
+      }
     },
     "MAL-16": {
       "status": "assessed",
@@ -302,13 +320,25 @@
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "Dashboards only; suggestions exist for conversation questions, not for software change."
+      "evidence": "Dashboards only; suggestions exist for conversation questions, not for software change.",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "No AI involvement in this behaviour."
+      }
     },
     "DEL-04": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "AI generators for code, prompts, structured output and workflow instructions assist builders one step at a time (api/core/llm_generator)."
+      "evidence": "AI generators for code, prompts, structured output and workflow instructions assist builders one step at a time (api/core/llm_generator).",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "AI generators draft prompts, code and workflow steps (api/core/llm_generator)."
+      }
     },
     "LRN-09": {
       "status": "assessed",
@@ -342,13 +372,23 @@
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Admins turn logged answers into annotations that the app reuses for similar questions (api/services/annotation_service.py); nothing proposes changes without being asked."
+      "evidence": "Admins turn logged answers into annotations that the app reuses for similar questions (api/services/annotation_service.py); nothing proposes changes without being asked.",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "Annotations are curated by people."
+      }
     },
     "LRN-08": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "Annotations and app changes are applied by people without evaluation against a baseline."
+      "evidence": "Annotations and app changes are applied by people without evaluation against a baseline.",
+      "ai": {
+        "status": "not_applicable",
+        "rationale": "agent_mutations is false."
+      }
     },
     "ARC-02": {
       "status": "assessed",
@@ -378,7 +418,20 @@
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Model load balancing with cooldown across credentials (api/core/model_manager.py:68-130); plugins run in a separate daemon and code in a sandbox service. Connectors and internal services have no breakers, so a 3 is not defensible under the inventory rule."
+      "evidence": "Model load balancing with cooldown across credentials (api/core/model_manager.py:68-130); plugins run in a separate daemon and code in a sandbox service. Connectors and internal services have no breakers, so a 3 is not defensible under the inventory rule.",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Load balancing with cooldown across credentials (api/core/model_manager.py).",
+        "alt_score": 3,
+        "alt_note": "Cooldown acts as a breaker.",
+        "facets": {
+          "implemented": true,
+          "tested": false,
+          "operated": false
+        }
+      }
     },
     "ARC-09": {
       "status": "assessed",
@@ -390,7 +443,13 @@
       "status": "assessed",
       "score": 0,
       "grade": "A",
-      "evidence": "No request or feature-request object for changing the product was found; requests live outside it."
+      "evidence": "No request or feature-request object for changing the product was found; requests live outside it.",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "No AI involvement in this behaviour."
+      }
     },
     "DEL-09": {
       "status": "assessed",
@@ -416,17 +475,31 @@
       "grade": "A",
       "evidence": "Run traces show node-level errors per run; there is no grouping.",
       "alt_score": 2,
-      "alt_note": "Per-run traces attach context."
+      "alt_note": "Per-run traces attach context.",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "No AI involvement in this behaviour."
+      }
     },
     "GOV-10": {
       "status": "not_applicable",
       "rationale": "No self-change path: AI drafts are saved by a person.",
-      "if_applicable": 1
+      "if_applicable": 1,
+      "ai": {
+        "status": "not_applicable",
+        "rationale": "GOV-10 is not applicable."
+      }
     },
     "GOV-11": {
       "status": "not_applicable",
       "rationale": "No self-change path.",
-      "if_applicable": 1
+      "if_applicable": 1,
+      "ai": {
+        "status": "not_applicable",
+        "rationale": "GOV-11 is not applicable."
+      }
     },
     "EXP-04": {
       "status": "assessed",
@@ -438,7 +511,13 @@
       "status": "assessed",
       "score": 0,
       "grade": "A",
-      "evidence": "No adjacent-capability proposals."
+      "evidence": "No adjacent-capability proposals.",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "No AI involvement in this behaviour."
+      }
     },
     "EXP-06": {
       "status": "assessed",
@@ -449,10 +528,63 @@
     "DEL-11": {
       "status": "not_applicable",
       "rationale": "Scope fact code_release_path is false: No first-party evolution system ships code changes."
+    },
+    "AIR-01": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Builders choose models per app from many providers; load balancing with cooldown fails over across credentials, with tests (api/core/model_manager.py:68-130, tests/unit_tests/services/test_model_load_balancing_service.py)."
+    },
+    "AIR-02": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Token usage and cost recorded per message, credit usage and billing quota reservation per tenant (api/core/credit_usage.py, api/services/billing_service.py:77-89)."
+    },
+    "AIR-03": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Knowledge bases with indexing, retrieval and citations (api/core/rag)."
+    },
+    "AIR-04": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Dataset permissions control which builders can attach knowledge (api/services/knowledge_retrieval_inner_service.py), but published apps retrieve with the app's datasets, not each end user's permissions."
+    },
+    "AIR-05": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Builders test prompts manually in debug and preview; no evaluation harness."
+    },
+    "AIR-06": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Publishing follows manual testing; nothing blocks a regression."
+    },
+    "AIR-07": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Every message and workflow run is logged with inputs, outputs, model, tokens and node and tool executions, viewable by builders, with optional Langfuse, LangSmith and other tracing (api/core/ops/ops_trace_manager.py).",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      }
+    },
+    "AIR-08": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "End-user likes and dislikes and app statistics (satisfaction, tokens) per app (api/models/model.py:1299-1302); no drift alerts."
     }
   },
   "limits": "Repository evidence only, main at the tip named above. dify-sandbox and plugin-daemon are separate repositories; their behaviour was taken from configuration here and not read in source. Dify Cloud and enterprise editions are out of scope. Single rater.",
-  "framework_version": "0.4.0",
+  "framework_version": "0.5.0",
   "reading": "**SAL 1.** Builders reshape apps and workflows without code (Open 2.2), and the AI generators draft prompts and code (DEL-04 2), but there is no intake (DEL-01 0) and no load suite (ARC-06 0), which caps the architecture foundation at L1. **Issue → Fix:** end users' likes and dislikes are recorded per app (LRN-03 2), but there is no grouping or diagnosis (LRN-05 1). **Next level:** structured requests, failure grouping, and measured capacity.",
   "framework": "EVOLVE",
   "scope_facts": {
@@ -491,6 +623,18 @@
     "code_release_path": {
       "value": false,
       "evidence": "No first-party evolution system ships code changes."
+    },
+    "ai_features": {
+      "value": true,
+      "evidence": "LLM apps, agents and workflows are the product (api/core)."
+    },
+    "ai_data_access": {
+      "value": true,
+      "evidence": "Knowledge-base retrieval (api/core/rag)."
+    },
+    "ai_actions": {
+      "value": true,
+      "evidence": "Agent and workflow tools call external services and write data (api/core/tools)."
     }
   }
 }

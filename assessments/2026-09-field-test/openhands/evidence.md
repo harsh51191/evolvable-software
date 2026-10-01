@@ -13,6 +13,9 @@ Read at github.com/OpenHands/OpenHands @ 21cc5c6170fe093c0fcd23ffc61949f4933e17b
 - **evolution_auto_apply**: false. Nothing changes OpenHands' own definitions automatically.
 - **definition_change_path**: true. Automations, skills and settings are definitions.
 - **code_release_path**: false. Automations act on users' repositories; no first-party lane ships OpenHands code changes.
+- **ai_features**: true. The product runs LLM agents (openhands-sdk).
+- **ai_data_access**: true. Agents read repositories and workspace files in their sandbox.
+- **ai_actions**: true. Agents edit code, run commands and open pull requests; automations run them unattended.
 
 ## Elastic (ARC)
 
@@ -38,6 +41,7 @@ Read at github.com/OpenHands/OpenHands @ 21cc5c6170fe093c0fcd23ffc61949f4933e17b
 ### Resilience
 
 - **ARC-08 Failure isolation and graceful degradation**: **2** (grade A). Each run executes in its own sandbox with timeouts and cleanup (openhands/automation/watchdog.py); repeatedly failing automations are disabled (migrations/versions/020_add_automation_disabled_reason.py).
+  - AI-qualified reading: **3** (grade A), facets: implemented, tested. Fallback strategy on provider errors, tested (tests/sdk/llm/test_llm_fallback.py).
 - **ARC-09 Backup, restore and recovery**: **0** (grade A). No backup command or documented backup for the Automation Service database or storage.
 
 ## Velocity (DEL)
@@ -45,6 +49,7 @@ Read at github.com/OpenHands/OpenHands @ 21cc5c6170fe093c0fcd23ffc61949f4933e17b
 ### Intake
 
 - **DEL-01 Request intake into a structured change specification**: **0** (grade A). No request or feature-request object for changing the product was found; requests live outside it.
+  - AI-qualified reading: **0** (grade A). No AI involvement in this behaviour.
 
 ### Build
 
@@ -52,6 +57,8 @@ Read at github.com/OpenHands/OpenHands @ 21cc5c6170fe093c0fcd23ffc61949f4933e17b
 - **DEL-03 Module boundaries enforced by tooling**: **2** (grade A). Library entrypoints and lint configuration; no architectural boundary tests.
 - **DEL-04 AI implementation lane**: **1** (grade A). Automations run coding agents on users' repositories (automation repository README); nothing implements changes to OpenHands' own definitions. Recorded under the self rule.
   - Higher reading 2: Automations configured in OpenHands are operator-configured behaviour run by an AI lane.
+  - AI-qualified reading: **1** (grade A). Automations change users' repositories, not OpenHands itself.
+    - Higher reading 2: Operator-configured automations.
 
 ### Verify
 
@@ -113,7 +120,9 @@ Read at github.com/OpenHands/OpenHands @ 21cc5c6170fe093c0fcd23ffc61949f4933e17b
 ### Agent interface
 
 - **MAL-19 Machine-readable capability surface for agents**: **2** (grade A). The canvas consumes MCP and exposes a UI tool that lets agents drive the canvas (tools/canvas_ui_tool.py); no MCP server for the canvas itself.
+  - AI-qualified reading: **2** (grade A). A UI tool lets agents drive the canvas; no MCP server for it.
 - **MAL-20 Conversational operability for users and natural-language authoring for operators**: **2** (grade A). Users run agent conversations with actions through the canvas; there is no natural-language authoring of canvas definitions.
+  - AI-qualified reading: **2** (grade A). Model-backed agent conversations through the canvas.
 
 ## Learn (LRN)
 
@@ -127,12 +136,16 @@ Read at github.com/OpenHands/OpenHands @ 21cc5c6170fe093c0fcd23ffc61949f4933e17b
 ### Diagnose and propose
 
 - **LRN-05 Automated diagnosis**: **2** (grade A). Failed runs keep their phase, failure kind and conversation for inspection (docs/run-phase-reporting.md).
+  - AI-qualified reading: **0** (grade A). Run failure kinds are rule-based.
 - **LRN-06 Ranked, evidence-backed proposals for change**: **0** (grade A). No proposals for changing the canvas.
+  - AI-qualified reading: **0** (grade A). No AI involvement in this behaviour.
 
 ### Learn from experience
 
 - **LRN-07 The product turns its own operating experience into candidate changes**: **1** (grade A). No learning from sessions was found in the SDK (searched openhands-sdk/openhands/sdk/skills, context, agent).
+  - AI-qualified reading: **0** (grade A). No AI involvement in this behaviour.
 - **LRN-08 Learned changes are validated before they take effect**: **1** (grade A). Critics evaluate task output for iterative refinement (openhands-sdk/openhands/sdk/critic), not changes to the agent itself.
+  - AI-qualified reading: **not applicable**. agent_mutations is false.
 
 ### Measure
 
@@ -160,8 +173,11 @@ Read at github.com/OpenHands/OpenHands @ 21cc5c6170fe093c0fcd23ffc61949f4933e17b
 ### AI and self-change safety
 
 - **GOV-09 Agent-safe actions**: **2** (grade A), **3** with opt-in settings. The default confirmation policy is NeverConfirm (openhands-sdk/openhands/sdk/conversation/state.py:123); with ConfirmRisky, LLM security analyzers classify each action's risk and risky ones pause for a person (security/llm_analyzer.py, toolshield_llm_analyzer.py, ensemble.py).
+  - AI-qualified reading: **2** (grade A), **3** with opt-in settings. Confirmation policy defaults to never; with ConfirmRisky, an LLM security analyser classifies actions (openhands-sdk/openhands/sdk/conversation/state.py:123).
 - **GOV-10 Bounded self-change**: **not applicable**. No self-change path. If counted: 1.
+  - AI-qualified reading: **not applicable**. GOV-10 is not applicable.
 - **GOV-11 Learning-input integrity**: **not applicable**. No self-change path. If counted: 1.
+  - AI-qualified reading: **not applicable**. GOV-11 is not applicable.
 
 ## Expand (EXP)
 
@@ -176,7 +192,31 @@ Read at github.com/OpenHands/OpenHands @ 21cc5c6170fe093c0fcd23ffc61949f4933e17b
 
 - **EXP-04 Unmet-demand sensing**: **0** (grade A). No record of unmet intents was found.
 - **EXP-05 Evidence-backed opportunity proposals**: **0** (grade A). No adjacent-capability proposals.
+  - AI-qualified reading: **0** (grade A). No AI involvement in this behaviour.
 
 ### Launch
 
 - **EXP-06 Cohort launch with keep-or-kill**: **1** (grade A). Presets and plugins are available to every organisation.
+
+## AI Readiness Checks (AIR)
+
+### Context
+
+- **AIR-03 AI-ready data and context access**: **3** (grade A). Agents work in a sandboxed workspace with repository files, skills and microagents loaded automatically.
+- **AIR-04 Permission-preserving retrieval and tool access**: **3** (grade A), facets: implemented, tested. Each conversation runs in its own sandbox with the user's provider tokens; automations use per-user API keys (automation repository: openhands/automation/auth.py), with tests.
+
+### Quality
+
+- **AIR-05 Offline AI evaluation**: **3** (grade A). Behaviour and integration test suites for agents (tests/integration) and SWE-bench evaluation runs (.github/workflows/run-eval.yml).
+- **AIR-06 Regression gating before release**: **2** (grade A). Integration tests and evaluations run on labelled pull requests and releases (.github/workflows/integration-runner.yml, run-eval.yml); not blocking by default.
+
+### Governance
+
+- **AIR-07 AI action tracing and auditability**: **3** (grade A), facets: implemented, tested. The event stream persists every action, observation and tool call per conversation, with LLM call metadata (openhands-sdk/openhands/sdk/conversation).
+
+### Operations
+
+- **AIR-01 Model and provider portability and resilience**: **3** (grade A). LLM fallback strategy on connection, rate-limit and server errors, plus routers (openhands-sdk/openhands/sdk/llm/fallback_strategy.py, router), with tests (tests/sdk/llm/test_llm_fallback.py).
+- **AIR-02 AI usage and per-customer cost controls**: **2** (grade A). Conversation cost and budget-exceeded handling (fallback_strategy.py), and run cost recorded per automation (automation repository: migrations/versions/013_add_run_cost.py); no per-user budgets.
+  - Higher reading 3: A per-conversation budget limits spend.
+- **AIR-08 Production quality, drift and feedback monitoring**: **1** (grade A). Critics score task output during a run; no production quality monitoring.

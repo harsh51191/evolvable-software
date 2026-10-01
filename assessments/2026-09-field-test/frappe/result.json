@@ -4,7 +4,7 @@
   "source": "github.com/frappe/frappe @ 82b0384810030c8d347780538821a3b006375d28 (develop)",
   "archetype": "configurable-application-platform",
   "framework": "EVOLVE",
-  "framework_version": "0.4.0",
+  "framework_version": "0.5.0",
   "scope_facts": {
     "persistent_data": true,
     "schema_changes": true,
@@ -14,12 +14,15 @@
     "agent_mutations": false,
     "evolution_auto_apply": false,
     "definition_change_path": true,
-    "code_release_path": false
+    "code_release_path": false,
+    "ai_features": false,
+    "ai_data_access": false,
+    "ai_actions": false
   },
   "coverage": {
     "assessed": 63,
     "not_evidenced": 0,
-    "not_applicable": 3
+    "not_applicable": 11
   },
   "grades": {
     "A": 62,
@@ -177,6 +180,110 @@
       ]
     }
   },
+  "ai_readiness": {
+    "default": {
+      "status": "no_ai_features",
+      "footprint": {
+        "Operate": {
+          "level": 0,
+          "readings": {
+            "MAL-19": 0,
+            "MAL-20": 0
+          }
+        },
+        "Build": {
+          "level": 0,
+          "readings": {
+            "DEL-01": 0,
+            "DEL-04": 0
+          }
+        },
+        "Diagnose and improve": {
+          "level": 0,
+          "readings": {
+            "LRN-05": 0,
+            "LRN-06": 0,
+            "LRN-07": 0,
+            "LRN-08": 0
+          }
+        },
+        "Expand": {
+          "level": 0,
+          "readings": {
+            "EXP-05": 0
+          }
+        }
+      }
+    },
+    "high": {
+      "status": "no_ai_features",
+      "footprint": {
+        "Operate": {
+          "level": 0,
+          "readings": {
+            "MAL-19": 0,
+            "MAL-20": 0
+          }
+        },
+        "Build": {
+          "level": 0,
+          "readings": {
+            "DEL-01": 0,
+            "DEL-04": 0
+          }
+        },
+        "Diagnose and improve": {
+          "level": 0,
+          "readings": {
+            "LRN-05": 0,
+            "LRN-06": 0,
+            "LRN-07": 0,
+            "LRN-08": 0
+          }
+        },
+        "Expand": {
+          "level": 0,
+          "readings": {
+            "EXP-05": 0
+          }
+        }
+      }
+    },
+    "available": {
+      "status": "no_ai_features",
+      "footprint": {
+        "Operate": {
+          "level": 0,
+          "readings": {
+            "MAL-19": 0,
+            "MAL-20": 0
+          }
+        },
+        "Build": {
+          "level": 0,
+          "readings": {
+            "DEL-01": 0,
+            "DEL-04": 0
+          }
+        },
+        "Diagnose and improve": {
+          "level": 0,
+          "readings": {
+            "LRN-05": 0,
+            "LRN-06": 0,
+            "LRN-07": 0,
+            "LRN-08": 0
+          }
+        },
+        "Expand": {
+          "level": 0,
+          "readings": {
+            "EXP-05": 0
+          }
+        }
+      }
+    }
+  },
   "capabilities": {
     "ARC": 1.9,
     "DEL": 1.0,
@@ -305,7 +412,15 @@
     "EXP-03": 3,
     "EXP-04": 0,
     "EXP-05": 0,
-    "EXP-06": 2
+    "EXP-06": 2,
+    "AIR-03": null,
+    "AIR-04": null,
+    "AIR-05": null,
+    "AIR-06": null,
+    "AIR-07": null,
+    "AIR-01": null,
+    "AIR-02": null,
+    "AIR-08": null
   },
   "variants": {
     "high": {
@@ -415,5 +530,5 @@
       }
     }
   },
-  "criteria_in_rubric": 66
+  "criteria_in_rubric": 74
 }

@@ -196,7 +196,15 @@
       "grade": "A",
       "evidence": "MCP server exposing conversation, messaging, event and approval tools (mcp_serve.py) and an ACP adapter for editors (acp_adapter/); typed tool registry (model_tools.py). Scored at the lower reading under rule 11 because: The MCP surface covers messaging, not the full capability set.",
       "alt_score": 3,
-      "alt_note": "The September v0.3 pass scored 3 on the evidence above."
+      "alt_note": "The September v0.3 pass scored 3 on the evidence above.",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "MCP server and ACP adapter (mcp_serve.py, acp_adapter).",
+        "alt_score": 3,
+        "alt_note": "Typed tool registry."
+      }
     },
     "MAL-20": {
       "status": "assessed",
@@ -204,7 +212,15 @@
       "grade": "A",
       "evidence": "Users complete tasks conversationally across CLI, desktop and messaging platforms with tool actions; users author skills, memory and cron jobs in natural language, with staged approvals as preview when enabled; evaluation probes (evals/) and GEPA evaluation datasets.",
       "alt_score": 4,
-      "alt_note": "Almost every capability is reachable conversationally."
+      "alt_note": "Almost every capability is reachable conversationally.",
+      "ai": {
+        "status": "assessed",
+        "score": 3,
+        "grade": "A",
+        "evidence": "Model-backed conversation across platforms; skills and memory authored in natural language.",
+        "alt_score": 4,
+        "alt_note": "Broad coverage."
+      }
     },
     "GOV-09": {
       "status": "assessed",
@@ -212,7 +228,15 @@
       "grade": "A",
       "evidence": "Dangerous-command approvals with LLM risk classification and floors, tirith scanning, sandbox backends, subagent auto-deny and session audit; commands otherwise run with the user's ambient authority; no idempotency keys.",
       "alt_score": 3,
-      "alt_note": "Per-action risk classification and approval previews are level 3 and 4 features."
+      "alt_note": "Per-action risk classification and approval previews are level 3 and 4 features.",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Dangerous commands need approval with LLM risk classification; the agent acts with the user's authority.",
+        "alt_score": 3,
+        "alt_note": "Approval floors."
+      }
     },
     "MAL-16": {
       "status": "assessed",
@@ -284,7 +308,15 @@
       "grade": "A",
       "evidence": "After each turn a background fork proposes skill and memory updates grounded in the conversation (agent/background_review.py); GEPA ranks skill variants on a Pareto front with evaluation evidence (self-evolution repo). Covers skills only.",
       "alt_score": 3,
-      "alt_note": "Ranked, evidence-backed proposals with expected impact exist for the agent's main behaviour surface."
+      "alt_note": "Ranked, evidence-backed proposals with expected impact exist for the agent's main behaviour surface.",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "A background fork proposes skill and memory updates from the conversation.",
+        "alt_score": 3,
+        "alt_note": "GEPA ranks variants."
+      }
     },
     "DEL-04": {
       "status": "assessed",
@@ -292,7 +324,15 @@
       "grade": "A",
       "evidence": "The background review is an autonomous authoring lane that applies skill and memory changes every turn (agent/background_review.py); GEPA improvements reach every user through upstream pull requests. Scored at the lower reading under rule 11 because: The cross-user path depends on an offline companion tool.",
       "alt_score": 3,
-      "alt_note": "The September v0.3 pass scored 3 on the evidence above."
+      "alt_note": "The September v0.3 pass scored 3 on the evidence above.",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Background review is a model lane that applies skill and memory changes.",
+        "alt_score": 3,
+        "alt_note": "Autonomous by default."
+      }
     },
     "LRN-09": {
       "status": "assessed",
@@ -328,7 +368,15 @@
       "grade": "A",
       "evidence": "background_review is enabled by default (hermes_cli/config_defaults.py:814): after turns, a forked agent decides whether to save or update skills and memory (agent/background_review.py).",
       "alt_score": 4,
-      "alt_note": "The curator's consolidation learns which skills stick, but only when enabled."
+      "alt_note": "The curator's consolidation learns which skills stick, but only when enabled.",
+      "ai": {
+        "status": "assessed",
+        "score": 3,
+        "grade": "A",
+        "evidence": "Model reflection after turns writes skills and memory by default.",
+        "alt_score": 4,
+        "alt_note": "Learns from GEPA results."
+      }
     },
     "LRN-08": {
       "status": "assessed",
@@ -340,6 +388,18 @@
         "implemented": true,
         "tested": true,
         "operated": false
+      },
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "AI-written skills pass scans, AST audits and a linter.",
+        "available_score": 3,
+        "facets": {
+          "implemented": true,
+          "tested": true,
+          "operated": false
+        }
       }
     },
     "ARC-02": {
@@ -359,7 +419,18 @@
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Fallback providers and credential pools take over when a primary model fails (agent/agent_init.py, tests/agent/test_restore_primary_pool_reselect.py); tool and MCP failures are contained to the turn. Plugins and gateway platforms have no breakers, so a 3 is not defensible under the inventory rule."
+      "evidence": "Fallback providers and credential pools take over when a primary model fails (agent/agent_init.py, tests/agent/test_restore_primary_pool_reselect.py); tool and MCP failures are contained to the turn. Plugins and gateway platforms have no breakers, so a 3 is not defensible under the inventory rule.",
+      "ai": {
+        "status": "assessed",
+        "score": 3,
+        "grade": "A",
+        "evidence": "Fallback providers and credential pools contain provider failure, with tests.",
+        "facets": {
+          "implemented": true,
+          "tested": true,
+          "operated": false
+        }
+      }
     },
     "ARC-09": {
       "status": "assessed",
@@ -384,7 +455,15 @@
       "grade": "A",
       "evidence": "Requests are chat turns; the agent can create a skill when asked, without a specification step.",
       "alt_score": 2,
-      "alt_note": "Skill creation on request records name and description."
+      "alt_note": "Skill creation on request records name and description.",
+      "ai": {
+        "status": "assessed",
+        "score": 1,
+        "grade": "A",
+        "evidence": "Requests arrive as chat turns.",
+        "alt_score": 2,
+        "alt_note": "Skill creation records name and description."
+      }
     },
     "DEL-09": {
       "status": "assessed",
@@ -421,13 +500,25 @@
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "hermes doctor diagnoses setup problems and cron error diagnostics attach context to failing jobs (hermes_cli/main.py:2567)."
+      "evidence": "hermes doctor diagnoses setup problems and cron error diagnostics attach context to failing jobs (hermes_cli/main.py:2567).",
+      "ai": {
+        "status": "assessed",
+        "score": 1,
+        "grade": "A",
+        "evidence": "The agent explains errors when asked; hermes doctor is rule-based."
+      }
     },
     "GOV-10": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Protected instruction files always need a person, and skill writes pass scans and an AST audit (tools/skills_guard.py); there is no declared scope or rate limit for background changes."
+      "evidence": "Protected instruction files always need a person, and skill writes pass scans and an AST audit (tools/skills_guard.py); there is no declared scope or rate limit for background changes.",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Protected files and write scans; no declared scope or rate limit."
+      }
     },
     "GOV-11": {
       "status": "assessed",
@@ -435,7 +526,15 @@
       "grade": "A",
       "evidence": "The skill ledger records the actor of every mutation (tools/skill_ledger.py:54-68) and the skills guard scans writes for injection and exfiltration patterns (tools/skills_guard.py:42-140); session content can still drive an automatically applied skill change.",
       "alt_score": 3,
-      "alt_note": "Provenance and injection scanning are both present."
+      "alt_note": "Provenance and injection scanning are both present.",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Ledger actor and injection scans on skill writes.",
+        "alt_score": 3,
+        "alt_note": "Both present."
+      }
     },
     "EXP-04": {
       "status": "assessed",
@@ -447,7 +546,13 @@
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "Background review creates skills for tasks it has just done; it does not propose capabilities nobody has used yet."
+      "evidence": "Background review creates skills for tasks it has just done; it does not propose capabilities nobody has used yet.",
+      "ai": {
+        "status": "assessed",
+        "score": 1,
+        "grade": "A",
+        "evidence": "Creates skills for tasks it has done; no unprompted proposals."
+      }
     },
     "EXP-06": {
       "status": "assessed",
@@ -466,10 +571,70 @@
     "ARC-07": {
       "status": "not_applicable",
       "rationale": "Scope fact hosted_service is false: A local single-user agent; the gateway relays messaging platforms for the same user."
+    },
+    "AIR-01": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Fallback providers and credential pools take over when a primary model fails, with tests (agent/agent_init.py, tests/agent/test_restore_primary_pool_reselect.py)."
+    },
+    "AIR-02": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Usage and pricing per turn and per account are tracked (agent/usage_pricing.py, turn_usage.py, billing_usage.py) and iterations are budgeted (agent/iteration_budget.py); no spend limit per user.",
+      "alt_score": 3,
+      "alt_note": "Iteration budgets bound usage per task."
+    },
+    "AIR-03": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Session search over full-text indexes, memory and skills injected into context, with memory provider plugins (hermes_state_fts.py, plugins)."
+    },
+    "AIR-04": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "A single-user agent acting with the user's own permissions; the gateway accepts only paired users, profiles isolate homes, and dangerous commands need approval (tools/approval_smart.py), with security tests (tests/security).",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      }
+    },
+    "AIR-05": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Regression probes named after failures found in use (evals/) and GEPA skill evaluation in the companion repository, run on request."
+    },
+    "AIR-06": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Evaluations are not part of CI."
+    },
+    "AIR-07": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Sessions record every message, tool call and model in the state database, with trajectories and trace upload (agent/trajectory.py, trace_upload.py, hermes_state_*.py), queryable through hermes sessions and insights.",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      }
+    },
+    "AIR-08": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Skill usage counts feed the curator; no quality or feedback monitoring of the agent's answers."
     }
   },
   "limits": "Repository evidence only. The self-evolution repository's last commit is 2026-06-17, and only phase 1 (skills) is implemented; phases 2 and 3 were not scored. No live runs were performed, so the effects of background review and the curator are read from code and documentation. Single rater.",
-  "framework_version": "0.4.0",
+  "framework_version": "0.5.0",
   "reading": "**SAL 1.** Issue → Fix reaches L2: background review turns corrections and failures into skill and memory changes by default (LRN-07 3), and hermes doctor diagnoses setup problems (LRN-05 2). Request → Release stops at L1 because requests are chat turns with no specification step (DEL-01 1); raising that one criterion would lift the headline. **Controls:** backup and restore cover every surface including secrets and are tested (ARC-09 3), but configuration and memory lack the rollback skills have (GOV-05 2, inventory) and background changes have no declared scope or rate limit (GOV-10 2).",
   "framework": "EVOLVE",
   "scope_facts": {
@@ -508,6 +673,18 @@
     "code_release_path": {
       "value": true,
       "evidence": "The first-party GEPA optimiser proposes improved skills as pull requests to this repository, shipped in releases (hermes-agent-self-evolution)."
+    },
+    "ai_features": {
+      "value": true,
+      "evidence": "The product is an LLM agent."
+    },
+    "ai_data_access": {
+      "value": true,
+      "evidence": "Reads the user's files, sessions, memory and skills (session search, memory providers)."
+    },
+    "ai_actions": {
+      "value": true,
+      "evidence": "Runs commands, edits files and sends messages on the user's behalf (tools/)."
     }
   }
 }

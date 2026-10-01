@@ -1,6 +1,6 @@
-# n8n: EVOLVE v0.4 scorecard
+# n8n: EVOLVE v0.5 scorecard
 
-Evaluator: Claude, single rater. Framework: EVOLVE 0.4.0 in this repository.
+Evaluator: Claude, single rater. Framework: EVOLVE 0.5.0 in this repository.
 
 Scope: the n8n monorepo including source-available enterprise modules (*.ee), Instance AI, chat hub, MCP, task runners and CI. n8n Cloud operations and the external template gallery are out of scope.
 
@@ -13,11 +13,11 @@ Scope: the n8n monorepo including source-available enterprise modules (*.ee), In
 Repository evidence only, master at the tip named above. Enterprise modules (*.ee) are included; they need a licence to run. n8n Cloud operations, the template gallery and community-node certification processes are outside the repository. Single rater.
 
 ---
-Framework EVOLVE 0.4.0. Date 2026-09-30. Source github.com/n8n-io/n8n @ c17c48043eb1080e5ae9795ea3a384960f8748f1 (master). Archetype **configurable-application-platform**.
+Framework EVOLVE 0.5.0. Date 2026-09-30. Source github.com/n8n-io/n8n @ c17c48043eb1080e5ae9795ea3a384960f8748f1 (master). Archetype **configurable-application-platform**.
 
-Scope facts true: persistent_data, schema_changes, hosted_service, machine_actions, agent_mutations, definition_change_path. False: multi_tenant, evolution_auto_apply, code_release_path.
+Scope facts true: persistent_data, schema_changes, hosted_service, machine_actions, agent_mutations, definition_change_path, ai_features, ai_data_access, ai_actions. False: multi_tenant, evolution_auto_apply, code_release_path.
 
-Coverage: 64 assessed, 0 not evidenced, 2 not applicable. Grades: 64 A, 0 B, 0 C.
+Coverage: 72 assessed, 0 not evidenced, 2 not applicable. Grades: 72 A, 0 B, 0 C.
 
 ## Software Autonomy Level
 
@@ -68,6 +68,39 @@ Progress toward the next level: Request → Release 12 of 19 conditions for L3; 
 | Vet (GOV) | 2.3 | 2.3–2.8 | 2.3 | 2.3 | 2.3 |
 | Expand (EXP) | 1.1 | 1.1–1.4 | 1.1 | 1.1 | 1.1 |
 
+## AI Readiness
+
+How safely can the product run AI in production? Separate from SAL, which it never changes.
+
+**AI Readiness L2 (Deployed with material control gaps) · Context 3 · Quality 2 · Governance 2 · Operations 2 · not production-governed**
+
+- With opt-in settings: AI Readiness L2 (Deployed with material control gaps) · Context 3 · Quality 2 · Governance 2 · Operations 2 · not production-governed.
+- With every alternate reading: AI Readiness L2 (Deployed with material control gaps) · Context 3 · Quality 3 · Governance 2 · Operations 2.
+
+| Dimension | Level | Contributors |
+|---|---:|---|
+| Context | 3 | AIR-03 3, AIR-04 3 |
+| Quality | 2 | AIR-05 3, AIR-06 2 |
+| Governance | 2 | AIR-07 2, GOV-09 (AI) 2, GOV-10 (AI) 2, GOV-11 (AI) 2, LRN-08 (AI) 2 |
+| Operations | 2 | AIR-01 3, AIR-02 3, AIR-08 2, ARC-08 (AI) 2 |
+
+| AI gate | Needs | Observed | Status |
+|---|---|---|---|
+| Permission-preserving access | AIR-04 ≥ 3 | 3 | pass |
+| Regression evaluation before release | AIR-06 ≥ 3 | 2 | fail |
+| Traceability of consequential AI actions | AIR-07 ≥ 3 | 2 | fail |
+
+### AI Capability Footprint
+
+What the product's AI does. Unscored: it never changes AI Readiness or SAL.
+
+| Area | Level | Readings |
+|---|---:|---|
+| Operate | 3 | MAL-19 3, MAL-20 3 |
+| Build | 2 | DEL-01 2, DEL-04 2 |
+| Diagnose and improve | 1 | LRN-05 2, LRN-06 0, LRN-07 0, LRN-08 2 |
+| Expand | 0 | EXP-05 0 |
+
 ## Area means
 
 | Area | Default |
@@ -109,12 +142,12 @@ Progress toward the next level: Request → Release 12 of 19 conditions for L3; 
 | ARC-05 Tenant isolation and noisy-neighbour controls | not_applicable | excluded |  |  | - |  | Scope fact multi_tenant is false: One instance per customer; projects separate work inside an instance but are not isolated tenants. |
 | ARC-06 Ceilings measured, not discovered in incidents | assessed | 2 | 3 |  | A | IT | Performance E2E runs on pull requests (ci-pull-requests.yml:492, test-e2e-performance-reusable.yml) and nightly benchmarks (test-benchmark-nightly.yml, packages/@n8n/benchmark); per-surface limits not documented in the repository. |
 | ARC-07 Service objectives defined and monitored | assessed | 2 |  |  | A |  | Prometheus metrics endpoint (packages/cli/src/metrics/prometheus); no published objectives. |
-| ARC-08 Failure isolation and graceful degradation | assessed | 2 |  |  | A |  | Code nodes run in separate task-runner processes (packages/@n8n/task-runner, task-runner-python); nodes have retry-on-fail and timeouts; community nodes run in-process. |
+| ARC-08 Failure isolation and graceful degradation | assessed | 2 |  |  | A |  | AI-qualified reading: 2. Code nodes run in separate task-runner processes (packages/@n8n/task-runner, task-runner-python); nodes have retry-on-fail and timeouts; community nodes run in-process. |
 | ARC-09 Backup, restore and recovery | assessed | 2 |  |  | A |  | export:entities and import:entities move every database entity, optionally with data-table rows (packages/cli/src/commands/export/entities.ts); binary data and the encryption key are separate; no restore test or recovery objectives. |
-| DEL-01 Request intake into a structured change specification | assessed | 2 | 3 |  | A |  | The AI workflow builder plans before building: it asks typed clarifying questions and produces a plan with a trigger, steps, suggested nodes and specifications that the user approves (packages/@n8n/ai-workflow-builder.ee/src/types/planning.ts, agents/planner.agent.ts). The plan has no acceptance criteria or risk class. |
+| DEL-01 Request intake into a structured change specification | assessed | 2 | 3 |  | A |  | AI-qualified reading: 2. The AI workflow builder plans before building: it asks typed clarifying questions and produces a plan with a trigger, steps, suggested nodes and specifications that the user approves (packages/@n8n/ai-workflow-builder.ee/src/types/planning.ts, agents/planner.agent.ts). The plan has no acceptance criteria or risk class. |
 | DEL-02 Layers deploy independently | assessed | 2 |  |  | A |  | Main, worker, webhook and task-runner processes ship as separate container images from one monorepo build (12 Dockerfiles). |
 | DEL-03 Module boundaries enforced by tooling | assessed | 2 | 3 |  | A |  | pnpm workspace packages, a module system with explicit registration, and import restrictions in package lint configs (packages/cli/eslint.config.mjs); Playwright architecture enforced by janitor (packages/testing/janitor). |
-| DEL-04 AI implementation lane | assessed | 2 | 3 |  | A |  | AI workflow builder and Instance AI turn requests into workflow changes behind approvals, per instance. |
+| DEL-04 AI implementation lane | assessed | 2 | 3 |  | A |  | AI-qualified reading: 2. AI workflow builder and Instance AI turn requests into workflow changes behind approvals, per instance. |
 | DEL-05 Every change class has an automated pre-land check | assessed | 3 |  |  | A |  | Pull requests run unit, lint, E2E (including axe fixtures), database, smoke, frontend declaration, performance and security jobs with no draft filter (.github/workflows/ci-pull-requests.yml:280-508). |
 | DEL-06 Verification surface | assessed | 2 | 3 |  | A |  | /healthz and /healthz/readiness (packages/cli/src/abstract-server.ts:139), Prometheus metrics (server.ts:172), instance version history (packages/cli/src/modules/instance-version-history) and settings APIs exposing configuration. Scored at the lower reading under rule 11 because: If the settings API is not a deployed-configuration snapshot. |
 | DEL-07 Environment reproducibility | assessed | 3 |  |  | A |  | One preview codespace per pull request from the master prebuild (scripts/codespace-preview/preview.mjs), instance seeding scripts (scripts/instance-seeding), nightly benchmark infrastructure created and destroyed (test-benchmark-destroy-nightly.yml). |
@@ -140,16 +173,16 @@ Progress toward the next level: Request → Release 12 of 19 conditions for L3; 
 | MAL-16 Canonical data model with a mapping layer | assessed | 2 | 3 |  | A |  | All connectors exchange a common item format and are joined by configurable mapping (expressions and field mapping in the UI), so a second system is mapping configuration (packages/workflow). Scored at the lower reading under rule 11 because: No canonical domain model, only a canonical transport format. |
 | MAL-17 Connector definition or SDK | assessed | 3 | 4 |  | A |  | Node SDK with credential types for auth, trigger and polling patterns and versioning (packages/@n8n/create-node, packages/@n8n/node-cli); admins install community connectors in the UI. |
 | MAL-18 Stable versioned contracts | assessed | 2 |  |  | A |  | Path-versioned public API (packages/cli/src/public-api/v1) with documented breaking changes (packages/cli/BREAKING-CHANGES.md); no deprecation windows. |
-| MAL-19 Machine-readable capability surface for agents | assessed | 3 | 4 |  | A |  | Instance MCP server with scoped API keys, per-workflow tool availability and MCP evaluations (packages/cli/src/modules/mcp: mcp-scopes.ts, mcp-tool-availability.ts, evaluations). |
-| MAL-20 Conversational operability for users and natural-language authoring for operators | assessed | 3 | 4 |  | A |  | Instance AI gives a natural-language interface to workflows, executions, credentials and nodes, with plans and approval cards before execution (packages/@n8n/instance-ai/docs/architecture.md, tools.md:18-82); chat hub for members (packages/cli/src/modules/chat-hub); Instance AI evaluations run in CI (.github/workflows/ci-instance-ai-evals.yml). |
+| MAL-19 Machine-readable capability surface for agents | assessed | 3 | 4 |  | A |  | AI-qualified reading: 3. Instance MCP server with scoped API keys, per-workflow tool availability and MCP evaluations (packages/cli/src/modules/mcp: mcp-scopes.ts, mcp-tool-availability.ts, evaluations). |
+| MAL-20 Conversational operability for users and natural-language authoring for operators | assessed | 3 | 4 |  | A |  | AI-qualified reading: 3. Instance AI gives a natural-language interface to workflows, executions, credentials and nodes, with plans and approval cards before execution (packages/@n8n/instance-ai/docs/architecture.md, tools.md:18-82); chat hub for members (packages/cli/src/modules/chat-hub); Instance AI evaluations run in CI (.github/workflows/ci-instance-ai-evals.yml). |
 | LRN-01 Telemetry accessible to the platform in near real time | assessed | 3 |  |  | A |  | The insights module collects execution counts, failures and time saved continuously and shows them in the product (packages/cli/src/modules/insights); vendor telemetry with redaction (packages/@n8n/telemetry). |
 | LRN-02 Structured learning signals | assessed | 2 | 3 |  | A |  | Evaluation test runs record metrics per workflow (packages/@n8n/db/src/entities/test-run.ee.ts) and insights record per-workflow outcomes; no triage workflow. |
 | LRN-03 User-issue detection | assessed | 2 | 3 |  | A |  | Insights report failures and failure rates per workflow (packages/cli/src/modules/insights/insights.service.ts:181-268) and error workflows fire on failures. |
 | LRN-04 Cross-source mining inside the product | assessed | 1 |  |  | A |  | Insights cover executions only; nothing joins usage, support and delivery data. |
-| LRN-05 Automated diagnosis | assessed | 2 | 3 |  | A |  | Failed executions keep the failing node, input and error; the AI assistant can explain a node error on request. |
-| LRN-06 Ranked, evidence-backed proposals for change | assessed | 2 |  |  | A |  | The breaking-changes detection report recommends fixes before upgrades (packages/cli/src/modules/breaking-changes/detection-report.ts): evidence-backed recommendations for one area. |
-| LRN-07 The product turns its own operating experience into candidate changes | assessed | 1 | 2 |  | A |  | The AI workflow builder and Instance AI change workflows when asked; nothing learns from runs without being asked. |
-| LRN-08 Learned changes are validated before they take effect | assessed | 2 | 3 |  | A | IT | Evaluations can compare a workflow version against a dataset before publishing (packages/cli/src/evaluation.ee), but they are run by people and are not tied to the publish decision. |
+| LRN-05 Automated diagnosis | assessed | 2 | 3 |  | A |  | AI-qualified reading: 2. Failed executions keep the failing node, input and error; the AI assistant can explain a node error on request. |
+| LRN-06 Ranked, evidence-backed proposals for change | assessed | 2 |  |  | A |  | AI-qualified reading: 0. The breaking-changes detection report recommends fixes before upgrades (packages/cli/src/modules/breaking-changes/detection-report.ts): evidence-backed recommendations for one area. |
+| LRN-07 The product turns its own operating experience into candidate changes | assessed | 1 | 2 |  | A |  | AI-qualified reading: 0. The AI workflow builder and Instance AI change workflows when asked; nothing learns from runs without being asked. |
+| LRN-08 Learned changes are validated before they take effect | assessed | 2 | 3 |  | A | IT | AI-qualified reading: 2. Evaluations can compare a workflow version against a dataset before publishing (packages/cli/src/evaluation.ee), but they are run by people and are not tied to the publish decision. |
 | LRN-09 Post-change impact is measured against a declared baseline | assessed | 2 | 3 |  | A |  | Evaluations run workflows over datasets and record metrics per test run (packages/cli/src/evaluation.ee, test-run.ee entity); agent evals rate agents (packages/cli/src/modules/agent-evals). Runs are not bound to a keep, revise or rollback decision. |
 | GOV-01 Accessibility inherited from a component kit and continuously verified | assessed | 2 | 3 |  | A |  | Design-system components and axe-core scanning through a Playwright fixture (packages/testing/playwright/fixtures/a11y.ts) used by a few E2E tests. |
 | GOV-02 Audit generic over entities, definition changes and approvals | assessed | 2 | 3 |  | A |  | Audit events for users, workflows and credentials on the event bus, exported through log streaming; policy decisions are audited (packages/cli/src/modules/policy-infrastructure/policy-decision-audit.ts); workflow review activity is recorded (workflow-review-activity.service.ts); execution pruning sets retention. Scored at the lower reading under rule 11 because: Coverage across every entity and an in-product audit viewer were not verified. |
@@ -159,15 +192,23 @@ Progress toward the next level: Request → Release 12 of 19 conditions for L3; 
 | GOV-06 Proposal, review, apply as a first-class object with preview | assessed | 3 |  |  | A |  | Workflow review requests with an inbox, decision policy and a publish guard that blocks publishing until approved (packages/cli/src/modules/workflow-reviews.ee, workflow-review-publish-guard.service.ts:11-29); git-backed environments let changes be staged on another instance first (packages/cli/src/modules/source-control.ee). |
 | GOV-07 Policy-based apply with recorded approvals and a movable human boundary | assessed | 3 |  |  | A |  | Shared policy infrastructure runs registered @PolicyCheck classes at fixed points with cleared or blocked outcomes and audited decisions (packages/cli/src/modules/policy-infrastructure/README.md); review decision policy (workflow-review-decision-policy.ts). |
 | GOV-08 Upgrade safety | assessed | 3 | 4 |  | A |  | Nodes are versioned so existing workflows keep their typeVersion; a breaking-changes module scans workflows and configuration against the target version with a rule registry and migration services (packages/cli/src/modules/breaking-changes/README.md); node engine compatibility checks (packages/@n8n/node-engine-compatibility). Scored at the lower reading under rule 11 because: If migrations are applied rather than proposed, or breaking changes lack a policy exception. |
-| GOV-09 Agent-safe actions | assessed | 2 | 3 |  | A |  | Scoped API keys and MCP scopes, approval cards for AI actions, policy checks and audit events; no idempotency keys or dry-run for API mutations. |
-| GOV-10 Bounded self-change | assessed | 2 |  |  | A |  | Admin type-availability policies restrict which node types any change may use, enforced at save and publish (packages/cli/src/modules/type-availability-policies); no per-period or blast-radius limits. |
-| GOV-11 Learning-input integrity | assessed | 2 | 3 |  | A |  | Instance AI wraps resolved node parameters and external responses as untrusted data (packages/cli/src/modules/instance-ai/extract-resolved-node-parameters.ts:378-382); changes do not record their source inputs. |
+| GOV-09 Agent-safe actions | assessed | 2 | 3 |  | A |  | AI-qualified reading: 2. Scoped API keys and MCP scopes, approval cards for AI actions, policy checks and audit events; no idempotency keys or dry-run for API mutations. |
+| GOV-10 Bounded self-change | assessed | 2 |  |  | A |  | AI-qualified reading: 2. Admin type-availability policies restrict which node types any change may use, enforced at save and publish (packages/cli/src/modules/type-availability-policies); no per-period or blast-radius limits. |
+| GOV-11 Learning-input integrity | assessed | 2 | 3 |  | A |  | AI-qualified reading: 2. Instance AI wraps resolved node parameters and external responses as untrusted data (packages/cli/src/modules/instance-ai/extract-resolved-node-parameters.ts:378-382); changes do not record their source inputs. |
 | EXP-01 Kernel concepts are domain-neutral | assessed | 3 | 4 |  | A |  | Kernel of users and SSO, projects and roles, workflows, credentials, executions, data tables, chat and triggers from any channel; no business-domain nouns in core. |
 | EXP-02 A new domain is expressible without kernel change | assessed | 2 | 3 |  | A |  | New domains are expressible as workflows, credentials and data tables with no kernel change, but no domain shipped this way is evidenced inside the repository. |
 | EXP-03 A domain ships as an installable bundle | assessed | 2 | 3 |  | A |  | Workflows export and import as JSON; source control pushes and pulls workflows, credential stubs, variables and tags between instances. |
 | EXP-04 Unmet-demand sensing | assessed | 0 |  |  | A |  | No record of unmet intents was found. |
-| EXP-05 Evidence-backed opportunity proposals | assessed | 0 |  |  | A |  | No adjacent-capability proposals. |
+| EXP-05 Evidence-backed opportunity proposals | assessed | 0 |  |  | A |  | AI-qualified reading: 0. No adjacent-capability proposals. |
 | EXP-06 Cohort launch with keep-or-kill | assessed | 1 |  |  | A |  | New capabilities ship to all users of an instance. |
+| AIR-03 AI-ready data and context access | assessed | 3 |  |  | A |  | The builder gets node types and workflow context; Instance AI resolves workflows, executions and node parameters live (packages/cli/src/modules/instance-ai/instance-context.service.ts). |
+| AIR-04 Permission-preserving retrieval and tool access | assessed | 3 |  |  | A | IT | Instance AI looks up workflows within the user's scopes (instance-ai.adapter.service.ts) with folder-scope tests (__tests__/instance-ai-folder-scope.test.ts, instance-ai-folder-scoped-listing.integration.test.ts). |
+| AIR-05 Offline AI evaluation | assessed | 3 |  |  | A |  | Evaluation harness with evaluators, datasets and LangSmith runs for the workflow builder and Instance AI (packages/@n8n/ai-workflow-builder.ee/evaluations). |
+| AIR-06 Regression gating before release | assessed | 2 | 3 |  | A | IT | Instance AI evals run automatically on pull requests touching AI paths (.github/workflows/ci-instance-ai-evals.yml:18-21) and builder evals on minor releases (test-evals-ai-release.yml); no blocking threshold was found. |
+| AIR-07 AI action tracing and auditability | assessed | 2 | 3 |  | A | IT | Instance AI tracing service (packages/cli/src/modules/instance-ai/tracing) and audit events for approved actions; model and prompt version are not recorded with each change. |
+| AIR-01 Model and provider portability and resilience | assessed | 3 |  |  | A |  | AI agent nodes support a fallback model (packages/@n8n/nodes-langchain/nodes/agents/Agent/agents/utils.ts, ToolsAgent/common.ts), and operators choose models per node. |
+| AIR-02 AI usage and per-customer cost controls | assessed | 3 |  |  | A |  | Instance AI credits are tracked and enforced per instance with a credit display (packages/cli/src/modules/instance-ai/instance-ai-credit.service.ts, instance-ai-credit-display.ts). |
+| AIR-08 Production quality, drift and feedback monitoring | assessed | 2 |  |  | A |  | Evaluation metrics per test run and failure rates per workflow are recorded (packages/cli/src/evaluation.ee, modules/insights); no drift alerts. |
 
 Facets: I implemented, T tested, O operated.
 

@@ -13,6 +13,9 @@ Read at github.com/discourse/discourse @ 2590ea9db1b7c38dcf80298aefd3e7cb3afe1f2
 - **evolution_auto_apply**: false. Admins apply changes directly; nothing applies definition changes automatically by default.
 - **definition_change_path**: true. Site settings, themes, categories and automations are definitions.
 - **code_release_path**: false. No first-party evolution system ships code changes.
+- **ai_features**: false. discourse-ai ships bundled but discourse_ai_enabled defaults to false (plugins/discourse-ai/config/settings.yml:2-3).
+- **ai_data_access**: false. Off by default; when enabled, agents search and read topics and RAG documents.
+- **ai_actions**: false. Off by default; when enabled, agent tools edit posts, change categories and site settings (plugins/discourse-ai/lib/agents/tools).
 
 ## Elastic (ARC)
 
@@ -38,6 +41,7 @@ Read at github.com/discourse/discourse @ 2590ea9db1b7c38dcf80298aefd3e7cb3afe1f2
 ### Resilience
 
 - **ARC-08 Failure isolation and graceful degradation**: **2** (grade A). Outbound requests go through FinalDestination with timeouts, and safe mode disables plugins and themes for a session (config/routes.rb:2036). Plugins run in-process.
+  - AI-qualified reading: **0** (grade A), **2** with opt-in settings. Off by default.
 - **ARC-09 Backup, restore and recovery**: **3** (grade A), facets: implemented, tested. Built-in backup and restore of the database (data, site settings, themes) and uploads to local or S3 stores, with restore specs for both, including multisite (lib/backup_restore, spec/lib/backup_restore/database_restorer_spec.rb, uploads_restorer_spec.rb). Secrets live in the deployment environment, outside the product. No recovery objectives are stated (level 4).
   - Inventory: data 3, definitions 3, files 3, secrets n/a
 
@@ -47,12 +51,14 @@ Read at github.com/discourse/discourse @ 2590ea9db1b7c38dcf80298aefd3e7cb3afe1f2
 
 - **DEL-01 Request intake into a structured change specification**: **1** (grade A). Communities collect requests as topics; the bundled topic-voting plugin ranks them (plugins/discourse-topic-voting). They are not linked to the settings or screens involved.
   - Higher reading 2: Voting adds structure to requests.
+  - AI-qualified reading: **0** (grade A). No AI involvement in this behaviour.
 
 ### Build
 
 - **DEL-02 Layers deploy independently**: **1** (grade A). Rails and Ember monolith deployed as one application; container tooling lives in a separate repository.
 - **DEL-03 Module boundaries enforced by tooling**: **1** (grade A). Plugin API is a contract, but internal module boundaries are convention; no architectural lint.
 - **DEL-04 AI implementation lane**: **0** (grade A), **2** with opt-in settings. By default there is no AI authoring lane; the beta workflows AI author is one when enabled.
+  - AI-qualified reading: **0** (grade A), **2** with opt-in settings. Off by default.
 
 ### Verify
 
@@ -115,7 +121,9 @@ Read at github.com/discourse/discourse @ 2590ea9db1b7c38dcf80298aefd3e7cb3afe1f2
 ### Agent interface
 
 - **MAL-19 Machine-readable capability surface for agents**: **3** (grade A). Core MCP server with typed tools and output schemas (lib/discourse_mcp, tools for topics, posts, search, users, themes, site settings and moderation), per-primitive required scopes and annotations (primitive.rb:14-78), OAuth and group scopes and a catalog; plugins register further tools.
+  - AI-qualified reading: **3** (grade A). Core MCP server with typed tools and scopes (lib/discourse_mcp).
 - **MAL-20 Conversational operability for users and natural-language authoring for operators**: **1** (grade A), **3** with opt-in settings. By default only the tutorial narrative bot is conversational (plugins/discourse-narrative-bot). With discourse-ai on (default false), AI agents answer members with retrieval and tools, and admins author workflows in natural language.
+  - AI-qualified reading: **0** (grade A), **3** with opt-in settings. Off by default.
 
 ## Learn (LRN)
 
@@ -131,12 +139,16 @@ Read at github.com/discourse/discourse @ 2590ea9db1b7c38dcf80298aefd3e7cb3afe1f2
 ### Diagnose and propose
 
 - **LRN-05 Automated diagnosis**: **2** (grade A). Logster groups identical errors and attaches the environment of each occurrence.
+  - AI-qualified reading: **0** (grade A). Logster grouping is rule-based.
 - **LRN-06 Ranked, evidence-backed proposals for change**: **2** (grade A). Problem checks raise admin notices recommending configuration fixes (app/services/problem_check): recommendations for one area.
+  - AI-qualified reading: **0** (grade A). Problem checks are rules.
 
 ### Learn from experience
 
 - **LRN-07 The product turns its own operating experience into candidate changes**: **2** (grade A). Problem checks run on a schedule and raise configuration recommendations (app/services/problem_check); they are rules, not learning from experience.
+  - AI-qualified reading: **0** (grade A). No AI involvement in this behaviour.
 - **LRN-08 Learned changes are validated before they take effect**: **1** (grade A), **2** with opt-in settings. By default, changes are reviewed by people. With the workflows beta, AI proposals are validated with workflow_validate_patch before an admin applies them.
+  - AI-qualified reading: **not applicable**. agent_mutations is false.
 
 ### Measure
 
@@ -166,8 +178,11 @@ Read at github.com/discourse/discourse @ 2590ea9db1b7c38dcf80298aefd3e7cb3afe1f2
 
 - **GOV-09 Agent-safe actions**: **2** (grade A). Granular API key scopes, user API key scopes and MCP OAuth scopes (app/models/api_key_scope.rb, user_api_key_scope.rb, mcp_oauth_authorization_scope.rb); MCP audit log; rate limiters. Idempotency is only an annotation hint; no dry-run.
   - Higher reading 3: Scoped identity, audit and rate limits are strong; only idempotency keys and dry-run are missing.
+  - AI-qualified reading: **0** (grade A), **3** with opt-in settings. Off by default.
 - **GOV-10 Bounded self-change**: **not applicable**. No self-change path by default: discourse-ai and the workflows AI author are off. If counted: 2.
+  - AI-qualified reading: **not applicable**. GOV-10 is not applicable.
 - **GOV-11 Learning-input integrity**: **not applicable**. No self-change path by default. If counted: 1.
+  - AI-qualified reading: **not applicable**. GOV-11 is not applicable.
 
 ## Expand (EXP)
 
@@ -181,7 +196,30 @@ Read at github.com/discourse/discourse @ 2590ea9db1b7c38dcf80298aefd3e7cb3afe1f2
 
 - **EXP-04 Unmet-demand sensing**: **2** (grade A). Search logs record terms and whether a result was clicked, with an admin report of searches without results (app/models/search_log.rb).
 - **EXP-05 Evidence-backed opportunity proposals**: **0** (grade A). No adjacent-capability proposals.
+  - AI-qualified reading: **0** (grade A). No AI involvement in this behaviour.
 
 ### Launch
 
 - **EXP-06 Cohort launch with keep-or-kill**: **2** (grade A). Features and plugins can be enabled for selected groups, for example through upcoming changes and group settings (lib/upcoming_changes); there is no success metric or keep-or-kill record.
+
+## AI Readiness Checks (AIR)
+
+### Context
+
+- **AIR-03 AI-ready data and context access**: **3** (grade A). Embeddings, semantic search and RAG fragments kept up to date by jobs (app/models/rag_document_fragment.rb, embedding_definition.rb); agents search and read topics with citations.
+- **AIR-04 Permission-preserving retrieval and tool access**: **3** (grade A), facets: implemented, tested. Agent tools read with an anonymous Guardian unless private reading is allowed, then with the user's Guardian (lib/agents/tools/read.rb:51-62); 34 tools use Guardian checks, with specs.
+
+### Quality
+
+- **AIR-05 Offline AI evaluation**: **2** (grade A). An evaluation harness with an LLM judge (plugins/discourse-ai/evals/lib/eval.rb, judge.rb) run from the command line; datasets live outside this repository.
+- **AIR-06 Regression gating before release**: **1** (grade A). Evaluations are not run in CI; prompt and model changes are reviewed manually.
+
+### Governance
+
+- **AIR-07 AI action tracing and auditability**: **3** (grade A), facets: implemented, tested. Every LLM call is logged with user, topic, model, feature, request and response payloads and tokens (app/models/ai_api_audit_log.rb, migration 20230424055354); tool actions are recorded and can be reviewed (ai_tool_action.rb, reviewable_ai_tool_action.rb).
+
+### Operations
+
+- **AIR-01 Model and provider portability and resilience**: **2** (grade A). Admins configure LLM models per provider and assign them per agent and feature (app/models/llm_model.rb); no fallback when a model fails. Scored as shipped, with discourse-ai enabled.
+- **AIR-02 AI usage and per-customer cost controls**: **3** (grade A). Per-group LLM quotas on tokens and usages per period, credit allocations and daily usage (app/models/llm_quota.rb, llm_credit_allocation.rb, llm_credit_daily_usage.rb), with admin screens.
+- **AIR-08 Production quality, drift and feedback monitoring**: **2** (grade A). Accuracy of AI triage against moderator decisions and spam logs are recorded per model and feature (app/models/model_accuracy.rb, ai_spam_log.rb); no drift alerts.

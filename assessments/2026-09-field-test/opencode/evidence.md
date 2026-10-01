@@ -13,6 +13,9 @@ Read at github.com/anomalyco/opencode @ 2fa3363c924c5c3e367b84a87ae478296a0ed59b
 - **evolution_auto_apply**: false. Nothing changes OpenCode's definitions automatically.
 - **definition_change_path**: true. Agents, commands, themes and configuration files are its definitions.
 - **code_release_path**: false. The GitHub agent the team runs on this repository is the product's general coding agent, not a first-party evolution system for OpenCode (rubric rule 12).
+- **ai_features**: true. The product is an LLM coding agent.
+- **ai_data_access**: true. Reads the workspace through read, grep, glob and LSP tools.
+- **ai_actions**: true. Edits files and runs shell commands (packages/opencode/src/tool).
 
 ## Elastic (ARC)
 
@@ -36,6 +39,7 @@ Read at github.com/anomalyco/opencode @ 2fa3363c924c5c3e367b84a87ae478296a0ed59b
 ### Resilience
 
 - **ARC-08 Failure isolation and graceful degradation**: **2** (grade A). Provider calls are retried with back-off (packages/opencode/src/session/retry.ts); MCP servers and LSPs run as separate processes.
+  - AI-qualified reading: **2** (grade A). Provider calls retried with back-off (packages/opencode/src/session/retry.ts).
 - **ARC-09 Backup, restore and recovery**: **1** (grade A). Sessions can be exported and imported one at a time (packages/opencode/src/cli/cmd/export.ts, import.ts); configuration lives in files.
 
 ## Velocity (DEL)
@@ -43,6 +47,7 @@ Read at github.com/anomalyco/opencode @ 2fa3363c924c5c3e367b84a87ae478296a0ed59b
 ### Intake
 
 - **DEL-01 Request intake into a structured change specification**: **0** (grade A). No request or feature-request object for changing the product was found; requests live outside it.
+  - AI-qualified reading: **0** (grade A). AI works on users' code, not on OpenCode's own changes.
 
 ### Build
 
@@ -51,6 +56,8 @@ Read at github.com/anomalyco/opencode @ 2fa3363c924c5c3e367b84a87ae478296a0ed59b
   - Higher reading 3: Explicit API contracts between modules.
 - **DEL-04 AI implementation lane**: **1** (grade A). The team runs OpenCode's general GitHub agent on this repository for reviews and triage (.github/workflows/review.yml, triage.yml, opencode.yml). Under rubric rule 12 that is a team's use of a coding agent, not a first-party evolution system for OpenCode.
   - Higher reading 2: If the GitHub agent is read as part of the product's own evolution system, it is an AI lane for narrow tasks.
+  - AI-qualified reading: **1** (grade A). The team's GitHub agent is not a first-party evolution system (rule 12).
+    - Higher reading 2: Narrow AI lane.
 
 ### Verify
 
@@ -110,8 +117,11 @@ Read at github.com/anomalyco/opencode @ 2fa3363c924c5c3e367b84a87ae478296a0ed59b
 ### Agent interface
 
 - **MAL-19 Machine-readable capability surface for agents**: **2** (grade A). Typed HTTP API, SDK and ACP support (packages/opencode/src/acp); OpenCode does not expose itself as an MCP server.
+  - AI-qualified reading: **2** (grade A). HTTP API, SDK and ACP; no MCP server for agents.
 - **MAL-20 Conversational operability for users and natural-language authoring for operators**: **2** (grade A). Users complete coding tasks conversationally with tool actions; agent definitions can be generated from a natural-language description (packages/opencode/src/agent/generate.txt). Scored at the lower reading under rule 11 because: Natural-language authoring covers agents only.
   - Higher reading 3: The September v0.3 pass scored 3 on the evidence above.
+  - AI-qualified reading: **2** (grade A). Model-backed coding conversation; agents generated from descriptions.
+    - Higher reading 3: Broad coverage.
 
 ## Learn (LRN)
 
@@ -126,12 +136,16 @@ Read at github.com/anomalyco/opencode @ 2fa3363c924c5c3e367b84a87ae478296a0ed59b
 ### Diagnose and propose
 
 - **LRN-05 Automated diagnosis**: **1** (grade A). Engineers read logs.
+  - AI-qualified reading: **0** (grade A). No AI involvement in this behaviour.
 - **LRN-06 Ranked, evidence-backed proposals for change**: **0** (grade A). No proposals for changing OpenCode itself.
+  - AI-qualified reading: **0** (grade A). No AI involvement in this behaviour.
 
 ### Learn from experience
 
 - **LRN-07 The product turns its own operating experience into candidate changes**: **1** (grade A). People write agents, commands and AGENTS.md by hand; nothing learns from sessions.
+  - AI-qualified reading: **0** (grade A). No AI involvement in this behaviour.
 - **LRN-08 Learned changes are validated before they take effect**: **1** (grade A). Changes to OpenCode's definitions are reviewed by people only.
+  - AI-qualified reading: **not applicable**. agent_mutations is false.
 
 ### Measure
 
@@ -159,8 +173,11 @@ Read at github.com/anomalyco/opencode @ 2fa3363c924c5c3e367b84a87ae478296a0ed59b
 ### AI and self-change safety
 
 - **GOV-09 Agent-safe actions**: **2** (grade A). Ask prompts preview tool actions under permission rules, and snapshots allow revert; commands run with the user's ambient authority and there are no idempotency keys.
+  - AI-qualified reading: **2** (grade A). Permission rules preview actions with ask prompts; commands run with the user's ambient authority.
 - **GOV-10 Bounded self-change**: **not applicable**. No self-change path. If counted: 1.
+  - AI-qualified reading: **not applicable**. GOV-10 is not applicable.
 - **GOV-11 Learning-input integrity**: **not applicable**. No self-change path. If counted: 1.
+  - AI-qualified reading: **not applicable**. GOV-11 is not applicable.
 
 ## Expand (EXP)
 
@@ -175,7 +192,30 @@ Read at github.com/anomalyco/opencode @ 2fa3363c924c5c3e367b84a87ae478296a0ed59b
 
 - **EXP-04 Unmet-demand sensing**: **0** (grade A). No record of unmet intents was found.
 - **EXP-05 Evidence-backed opportunity proposals**: **0** (grade A). No adjacent-capability proposals.
+  - AI-qualified reading: **0** (grade A). No AI involvement in this behaviour.
 
 ### Launch
 
 - **EXP-06 Cohort launch with keep-or-kill**: **1** (grade A). Plugins and agents apply to the whole installation.
+
+## AI Readiness Checks (AIR)
+
+### Context
+
+- **AIR-03 AI-ready data and context access**: **3** (grade A). Read, grep, glob and LSP tools give live, attributed workspace context, plus AGENTS.md instructions.
+- **AIR-04 Permission-preserving retrieval and tool access**: **3** (grade A), facets: implemented, tested. A local agent acting with the user's permissions; permission rules allow, ask or deny each tool and pattern, enforced in code (packages/opencode/src/permission/evaluate.ts), with tests.
+
+### Quality
+
+- **AIR-05 Offline AI evaluation**: **1** (grade A). No evaluation harness in the repository.
+- **AIR-06 Regression gating before release**: **1** (grade A). No evaluation gates in CI.
+
+### Governance
+
+- **AIR-07 AI action tracing and auditability**: **3** (grade A), facets: implemented, tested. Sessions store every message, tool call, model and cost, and snapshots record file changes for revert (packages/opencode/src/session, snapshot).
+
+### Operations
+
+- **AIR-01 Model and provider portability and resilience**: **2** (grade A). Many providers through models.dev, with model choice per agent in configuration; retries with back-off (packages/opencode/src/session/retry.ts), no declared fallback.
+- **AIR-02 AI usage and per-customer cost controls**: **2** (grade A). Tokens and cost per session are recorded and shown by opencode stats (packages/opencode/src/cli/cmd/stats.ts); no spend limit.
+- **AIR-08 Production quality, drift and feedback monitoring**: **0** (grade A). No feedback or quality monitoring.

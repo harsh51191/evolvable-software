@@ -4,7 +4,7 @@
   "source": "github.com/OpenHands/OpenHands @ 21cc5c6170fe093c0fcd23ffc61949f4933e17b9 (main) + github.com/OpenHands/software-agent-sdk @ 5ffdd2933c51423e302f5ee5e5b66df0ad9cc28a (main) + github.com/OpenHands/automation @ ec4c5cc0cb05f3fb01816b36ff6271f6680b6675 (main, 2026-09-30)",
   "archetype": "agent-runtime",
   "framework": "EVOLVE",
-  "framework_version": "0.4.0",
+  "framework_version": "0.5.0",
   "scope_facts": {
     "persistent_data": true,
     "schema_changes": true,
@@ -14,15 +14,18 @@
     "agent_mutations": false,
     "evolution_auto_apply": false,
     "definition_change_path": true,
-    "code_release_path": false
+    "code_release_path": false,
+    "ai_features": true,
+    "ai_data_access": true,
+    "ai_actions": true
   },
   "coverage": {
-    "assessed": 56,
+    "assessed": 64,
     "not_evidenced": 0,
     "not_applicable": 10
   },
   "grades": {
-    "A": 56,
+    "A": 64,
     "B": 0,
     "C": 0
   },
@@ -216,6 +219,281 @@
       ]
     }
   },
+  "ai_readiness": {
+    "default": {
+      "status": "assessed",
+      "level": 2,
+      "name": "Deployed with material control gaps",
+      "uncapped": 2,
+      "label": "not production-governed",
+      "dimensions": {
+        "Context": {
+          "level": 3,
+          "contributors": {
+            "AIR-03": 3,
+            "AIR-04": 3
+          }
+        },
+        "Quality": {
+          "level": 2,
+          "contributors": {
+            "AIR-05": 3,
+            "AIR-06": 2
+          }
+        },
+        "Governance": {
+          "level": 2,
+          "contributors": {
+            "AIR-07": 3,
+            "GOV-09 (AI)": 2
+          }
+        },
+        "Operations": {
+          "level": 2,
+          "contributors": {
+            "AIR-01": 3,
+            "AIR-02": 2,
+            "AIR-08": 1,
+            "ARC-08 (AI)": 3
+          }
+        }
+      },
+      "gates": [
+        {
+          "gate": "Permission-preserving access",
+          "needs": "AIR-04 ≥ 3",
+          "observed": 3,
+          "status": "pass"
+        },
+        {
+          "gate": "Regression evaluation before release",
+          "needs": "AIR-06 ≥ 3",
+          "observed": 2,
+          "status": "fail"
+        },
+        {
+          "gate": "Traceability of consequential AI actions",
+          "needs": "AIR-07 ≥ 3",
+          "observed": 3,
+          "status": "pass"
+        }
+      ],
+      "not_evidenced": [],
+      "footprint": {
+        "Operate": {
+          "level": 2,
+          "readings": {
+            "MAL-19": 2,
+            "MAL-20": 2
+          }
+        },
+        "Build": {
+          "level": 0,
+          "readings": {
+            "DEL-01": 0,
+            "DEL-04": 1
+          }
+        },
+        "Diagnose and improve": {
+          "level": 0,
+          "readings": {
+            "LRN-05": 0,
+            "LRN-06": 0,
+            "LRN-07": 0,
+            "LRN-08": null
+          }
+        },
+        "Expand": {
+          "level": 0,
+          "readings": {
+            "EXP-05": 0
+          }
+        }
+      }
+    },
+    "high": {
+      "status": "assessed",
+      "level": 2,
+      "name": "Deployed with material control gaps",
+      "uncapped": 2,
+      "label": "not production-governed",
+      "dimensions": {
+        "Context": {
+          "level": 3,
+          "contributors": {
+            "AIR-03": 3,
+            "AIR-04": 3
+          }
+        },
+        "Quality": {
+          "level": 2,
+          "contributors": {
+            "AIR-05": 3,
+            "AIR-06": 2
+          }
+        },
+        "Governance": {
+          "level": 2,
+          "contributors": {
+            "AIR-07": 3,
+            "GOV-09 (AI)": 2
+          }
+        },
+        "Operations": {
+          "level": 2,
+          "contributors": {
+            "AIR-01": 3,
+            "AIR-02": 3,
+            "AIR-08": 1,
+            "ARC-08 (AI)": 3
+          }
+        }
+      },
+      "gates": [
+        {
+          "gate": "Permission-preserving access",
+          "needs": "AIR-04 ≥ 3",
+          "observed": 3,
+          "status": "pass"
+        },
+        {
+          "gate": "Regression evaluation before release",
+          "needs": "AIR-06 ≥ 3",
+          "observed": 2,
+          "status": "fail"
+        },
+        {
+          "gate": "Traceability of consequential AI actions",
+          "needs": "AIR-07 ≥ 3",
+          "observed": 3,
+          "status": "pass"
+        }
+      ],
+      "not_evidenced": [],
+      "footprint": {
+        "Operate": {
+          "level": 2,
+          "readings": {
+            "MAL-19": 2,
+            "MAL-20": 2
+          }
+        },
+        "Build": {
+          "level": 1,
+          "readings": {
+            "DEL-01": 0,
+            "DEL-04": 2
+          }
+        },
+        "Diagnose and improve": {
+          "level": 0,
+          "readings": {
+            "LRN-05": 0,
+            "LRN-06": 0,
+            "LRN-07": 0,
+            "LRN-08": null
+          }
+        },
+        "Expand": {
+          "level": 0,
+          "readings": {
+            "EXP-05": 0
+          }
+        }
+      }
+    },
+    "available": {
+      "status": "assessed",
+      "level": 2,
+      "name": "Deployed with material control gaps",
+      "uncapped": 2,
+      "label": "not production-governed",
+      "dimensions": {
+        "Context": {
+          "level": 3,
+          "contributors": {
+            "AIR-03": 3,
+            "AIR-04": 3
+          }
+        },
+        "Quality": {
+          "level": 2,
+          "contributors": {
+            "AIR-05": 3,
+            "AIR-06": 2
+          }
+        },
+        "Governance": {
+          "level": 3,
+          "contributors": {
+            "AIR-07": 3,
+            "GOV-09 (AI)": 3
+          }
+        },
+        "Operations": {
+          "level": 2,
+          "contributors": {
+            "AIR-01": 3,
+            "AIR-02": 2,
+            "AIR-08": 1,
+            "ARC-08 (AI)": 3
+          }
+        }
+      },
+      "gates": [
+        {
+          "gate": "Permission-preserving access",
+          "needs": "AIR-04 ≥ 3",
+          "observed": 3,
+          "status": "pass"
+        },
+        {
+          "gate": "Regression evaluation before release",
+          "needs": "AIR-06 ≥ 3",
+          "observed": 2,
+          "status": "fail"
+        },
+        {
+          "gate": "Traceability of consequential AI actions",
+          "needs": "AIR-07 ≥ 3",
+          "observed": 3,
+          "status": "pass"
+        }
+      ],
+      "not_evidenced": [],
+      "footprint": {
+        "Operate": {
+          "level": 2,
+          "readings": {
+            "MAL-19": 2,
+            "MAL-20": 2
+          }
+        },
+        "Build": {
+          "level": 0,
+          "readings": {
+            "DEL-01": 0,
+            "DEL-04": 1
+          }
+        },
+        "Diagnose and improve": {
+          "level": 0,
+          "readings": {
+            "LRN-05": 0,
+            "LRN-06": 0,
+            "LRN-07": 0,
+            "LRN-08": null
+          }
+        },
+        "Expand": {
+          "level": 0,
+          "readings": {
+            "EXP-05": 0
+          }
+        }
+      }
+    }
+  },
   "capabilities": {
     "ARC": 1.4,
     "DEL": 1.5,
@@ -343,7 +621,15 @@
     "EXP-03": 2,
     "EXP-04": 0,
     "EXP-05": 0,
-    "EXP-06": 1
+    "EXP-06": 1,
+    "AIR-03": 3,
+    "AIR-04": 3,
+    "AIR-05": 3,
+    "AIR-06": 2,
+    "AIR-07": 3,
+    "AIR-01": 3,
+    "AIR-02": 2,
+    "AIR-08": 1
   },
   "variants": {
     "high": {
@@ -453,5 +739,5 @@
       }
     }
   },
-  "criteria_in_rubric": 66
+  "criteria_in_rubric": 74
 }

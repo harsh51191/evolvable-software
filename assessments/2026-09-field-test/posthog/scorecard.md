@@ -1,6 +1,6 @@
-# PostHog: EVOLVE v0.4 scorecard
+# PostHog: EVOLVE v0.5 scorecard
 
-Evaluator: Claude, single rater. Framework: EVOLVE 0.4.0 in this repository.
+Evaluator: Claude, single rater. Framework: EVOLVE 0.5.0 in this repository.
 
 Scope: the posthog monorepo (Django app, products/, ee/, Node CDP services, Rust services, MCP service, CI). PostHog Cloud operations and separate SDK repositories are out of scope. Many products here run PostHog's evolve loop for customers' software; see the construct note in the reading.
 
@@ -13,11 +13,11 @@ Scope: the posthog monorepo (Django app, products/, ee/, Node CDP services, Rust
 Repository evidence only, master at the tip named above. The repository is very large (about 55,000 files); only the areas cited were read, so some capabilities are likely under-scored (for example versioning and rollback). Cloud operations, dogfooding practice and incident history are invisible here. Egress controls for Hog functions were searched for and not found; they may exist in infrastructure code outside the paths read. Single rater. Under the v0.3 self rule, Signals, Tasks and experiments on customers' products are excluded from scoring.
 
 ---
-Framework EVOLVE 0.4.0. Date 2026-09-30. Source github.com/PostHog/posthog @ 645e1a78140757ea1bb9ddeb0ff9d3915c60b6f6 (master). Archetype **focused-application**.
+Framework EVOLVE 0.5.0. Date 2026-09-30. Source github.com/PostHog/posthog @ 645e1a78140757ea1bb9ddeb0ff9d3915c60b6f6 (master). Archetype **focused-application**.
 
-Scope facts true: persistent_data, schema_changes, multi_tenant, hosted_service, machine_actions, agent_mutations, definition_change_path. False: evolution_auto_apply, code_release_path.
+Scope facts true: persistent_data, schema_changes, multi_tenant, hosted_service, machine_actions, agent_mutations, definition_change_path, ai_features, ai_data_access, ai_actions. False: evolution_auto_apply, code_release_path.
 
-Coverage: 57 assessed, 0 not evidenced, 9 not applicable. Grades: 57 A, 0 B, 0 C.
+Coverage: 65 assessed, 0 not evidenced, 9 not applicable. Grades: 65 A, 0 B, 0 C.
 
 ## Software Autonomy Level
 
@@ -68,6 +68,39 @@ Progress toward the next level: Request → Release 11 of 20 conditions for L3; 
 | Vet (GOV) | 2.1 | 2.1–2.6 | 2.1 | 2.1 | 2.1 |
 | Expand (EXP) | 1.3 | 1.3–1.8 | 1.3 | 1.3 | 1.5 |
 
+## AI Readiness
+
+How safely can the product run AI in production? Separate from SAL, which it never changes.
+
+**AI Readiness L2 (Deployed with material control gaps) · Context 3 · Quality 2 · Governance 2 · Operations 2 · not production-governed**
+
+- With opt-in settings: AI Readiness L2 (Deployed with material control gaps) · Context 3 · Quality 2 · Governance 2 · Operations 2 · not production-governed.
+- With every alternate reading: AI Readiness L2 (Deployed with material control gaps) · Context 3 · Quality 2 · Governance 2 · Operations 3 · not production-governed.
+
+| Dimension | Level | Contributors |
+|---|---:|---|
+| Context | 3 | AIR-03 3, AIR-04 3 |
+| Quality | 2 | AIR-05 3, AIR-06 2 |
+| Governance | 2 | AIR-07 3, GOV-09 (AI) 2, GOV-10 (AI) 2, GOV-11 (AI) 2, LRN-08 (AI) 1 |
+| Operations | 2 | AIR-01 3, AIR-02 3, AIR-08 2, ARC-08 (AI) 3 |
+
+| AI gate | Needs | Observed | Status |
+|---|---|---|---|
+| Permission-preserving access | AIR-04 ≥ 3 | 3 | pass |
+| Regression evaluation before release | AIR-06 ≥ 3 | 2 | fail |
+| Traceability of consequential AI actions | AIR-07 ≥ 3 | 3 | pass |
+
+### AI Capability Footprint
+
+What the product's AI does. Unscored: it never changes AI Readiness or SAL.
+
+| Area | Level | Readings |
+|---|---:|---|
+| Operate | 3 | MAL-19 3, MAL-20 3 |
+| Build | 2 | DEL-01 2, DEL-04 2 |
+| Diagnose and improve | 0 | LRN-05 0, LRN-06 0, LRN-07 0, LRN-08 1 |
+| Expand | 0 | EXP-05 0 |
+
 ## Area means
 
 | Area | Default |
@@ -108,12 +141,12 @@ Progress toward the next level: Request → Release 11 of 20 conditions for L3; 
 | ARC-05 Tenant isolation and noisy-neighbour controls | assessed | 2 | 3 |  | A | IT | Multi-tenant organisations and projects with quota limiting and per-team throttles; no noisy-neighbour detection evidenced. |
 | ARC-06 Ceilings measured, not discovered in incidents | assessed | 2 |  |  | A |  | Performance suites exist (services/mcp/vitest.perf.config.mts and service benchmarks); no documented per-surface limits. |
 | ARC-07 Service objectives defined and monitored | assessed | 2 |  |  | A |  | Prometheus metrics across services (for example services/llm-gateway/src/llm_gateway/metrics/prometheus.py); no published objectives in the repository. |
-| ARC-08 Failure isolation and graceful degradation | assessed | 2 |  |  | A |  | The LLM gateway has a circuit breaker for model providers (services/llm-gateway/src/llm_gateway/circuit_breaker.py) and subscriptions auto-disable after repeated failures (ee/tasks/subscriptions/auto_disable.py); other surfaces lack breakers, so a 3 is not defensible under the inventory rule. |
+| ARC-08 Failure isolation and graceful degradation | assessed | 2 |  |  | A |  | AI-qualified reading: 3. The LLM gateway has a circuit breaker for model providers (services/llm-gateway/src/llm_gateway/circuit_breaker.py) and subscriptions auto-disable after repeated failures (ee/tasks/subscriptions/auto_disable.py); other surfaces lack breakers, so a 3 is not defensible under the inventory rule. |
 | ARC-09 Backup, restore and recovery | assessed | 1 |  |  | A |  | No backup command in the repository; self-hosted backup is left to the operator. |
-| DEL-01 Request intake into a structured change specification | assessed | 2 |  |  | A |  | PostHog AI takes requests in conversations stored with the page and objects in context, and has a plan mode that sets out steps before acting (ee/hogai/chat_agent/prompts/plan.py); plans carry no acceptance criteria or risk class. |
+| DEL-01 Request intake into a structured change specification | assessed | 2 |  |  | A |  | AI-qualified reading: 2. PostHog AI takes requests in conversations stored with the page and objects in context, and has a plan mode that sets out steps before acting (ee/hogai/chat_agent/prompts/plan.py); plans carry no acceptance criteria or risk class. |
 | DEL-02 Layers deploy independently | assessed | 3 |  |  | A |  | Independently deployable services with their own images: Django web, Node CDP and ingestion, Rust capture and flag services, and an MCP worker on Cloudflare (25 Dockerfiles; rust/, nodejs/, services/mcp/wrangler.jsonc). |
 | DEL-03 Module boundaries enforced by tooling | assessed | 3 |  |  | A |  | tach enforces module boundaries and interfaces in CI (tach.toml, .github/workflows/ci-backend.yml) with isolation baselines for product modules (products/isolation_baseline.txt). |
-| DEL-04 AI implementation lane | assessed | 2 | 3 |  | A |  | PostHog AI creates insights, dashboards and other configured objects on request (ee/hogai); Tasks agents that open pull requests in customers' repositories are excluded under the self rule. |
+| DEL-04 AI implementation lane | assessed | 2 | 3 |  | A |  | AI-qualified reading: 2. PostHog AI creates insights, dashboards and other configured objects on request (ee/hogai); Tasks agents that open pull requests in customers' repositories are excluded under the self rule. |
 | DEL-05 Every change class has an automated pre-land check | assessed | 2 | 3 |  | A |  | Backend, frontend, Rust, Playwright, Storybook, migration and semgrep checks run on pull requests with impacted-target selection from the import map (.github/scripts/tach_map.py); no accessibility check. |
 | DEL-06 Verification surface | assessed | 2 | 3 |  | A |  | _health, livez and _readyz endpoints (posthog/urls.py:125-133); no machine-readable deployed-configuration snapshot evidenced. |
 | DEL-07 Environment reproducibility | assessed | 3 |  |  | A |  | Optional per-pull-request Hogbox environments restore a migrated, demo-seeded database, apply the PR's migrations, hibernate to save cost and are cleaned up (.github/workflows/hogbox-preview-env.yml, hogbox-preview-cleanup.yml). |
@@ -139,16 +172,16 @@ Progress toward the next level: Request → Release 11 of 20 conditions for L3; 
 | MAL-16 Canonical data model with a mapping layer | assessed | 2 | 3 |  | A |  | Revenue analytics maps Stripe and event-based sources onto one canonical set of revenue views (products/revenue_analytics/backend/views/sources); warehouse sources share one import framework (products/warehouse_sources). Scored at the lower reading under rule 11 because: The canonical model covers one domain (revenue). |
 | MAL-17 Connector definition or SDK | assessed | 3 |  |  | A |  | Warehouse source definitions and CDP destination templates follow shared interfaces covering auth, sync schedules, incremental sync and delivery; admins install and configure them in the UI. |
 | MAL-18 Stable versioned contracts | assessed | 1 | 2 |  | A |  | API paths are unversioned; incremental warehouse sync merges by primary key; no public deprecation windows. |
-| MAL-19 Machine-readable capability surface for agents | assessed | 3 | 4 |  | A |  | MCP service typed from the generated OpenAPI schema (services/mcp/src/api/generated.ts) with tools declared per product in YAML (57 products/*/mcp/tools.yaml), scoped keys and OAuth, and MCP evals (services/mcp/evals). Scored at the lower reading under rule 11 because: If generation from API definitions does not count as generation from entity definitions. |
-| MAL-20 Conversational operability for users and natural-language authoring for operators | assessed | 3 | 4 |  | A |  | PostHog AI answers members with taxonomy-grounded tools and creates insights, dashboards and other objects (ee/hogai, products/posthog_ai); offline and CI evaluation harnesses (ee/hogai/eval). |
+| MAL-19 Machine-readable capability surface for agents | assessed | 3 | 4 |  | A |  | AI-qualified reading: 3. MCP service typed from the generated OpenAPI schema (services/mcp/src/api/generated.ts) with tools declared per product in YAML (57 products/*/mcp/tools.yaml), scoped keys and OAuth, and MCP evals (services/mcp/evals). Scored at the lower reading under rule 11 because: If generation from API definitions does not count as generation from entity definitions. |
+| MAL-20 Conversational operability for users and natural-language authoring for operators | assessed | 3 | 4 |  | A |  | AI-qualified reading: 3. PostHog AI answers members with taxonomy-grounded tools and creates insights, dashboards and other objects (ee/hogai, products/posthog_ai); offline and CI evaluation harnesses (ee/hogai/eval). |
 | LRN-01 Telemetry accessible to the platform in near real time | assessed | 3 | 4 |  | A |  | Events stream into ClickHouse within seconds and feed product features; PostHog instruments its own product with the same SDKs. |
 | LRN-02 Structured learning signals | assessed | 1 | 2 |  | A |  | Under the self rule, surveys and Signals concern customers' products and are not counted; no typed signals about PostHog's own configured definitions were found (searched products/signals, products/surveys, ee/hogai). |
 | LRN-03 User-issue detection | assessed | 2 |  |  | A |  | The app captures its own exceptions into PostHog's error tracking (frontend/src/lib/colors.ts:80, products/error_tracking); friction detection for customers' products (products/signals) is excluded under the self rule. |
 | LRN-04 Cross-source mining inside the product | assessed | 2 | 3 |  | A |  | Under the self rule, Signals (which mines customers' products) is not counted; PostHog analyses its own query logs to decide what to materialise (ee/clickhouse/materialized_columns/analyze.py:89). |
-| LRN-05 Automated diagnosis | assessed | 1 | 2 |  | A |  | Exceptions are grouped into issues with stack traces by the error tracking product used on itself. |
-| LRN-06 Ranked, evidence-backed proposals for change | assessed | 2 | 3 |  | A |  | Query analysis recommends and applies materialised columns (ee/clickhouse/materialized_columns/analyze.py); Signals proposals target customers' repositories and are excluded under the self rule. |
-| LRN-07 The product turns its own operating experience into candidate changes | assessed | 2 | 3 |  | A |  | A weekly scheduled task analyses the last week of queries and materialises hot properties without being asked (posthog/tasks/scheduled.py:927, ee/settings.py:68-73, ee/clickhouse/materialized_columns/analyze.py:89). Narrow: storage layout only. Scored at the lower reading under rule 11 because: Narrow to one area. |
-| LRN-08 Learned changes are validated before they take effect | assessed | 1 | 2 |  | A |  | No evaluation of materialisation changes against a baseline was found. |
+| LRN-05 Automated diagnosis | assessed | 1 | 2 |  | A |  | AI-qualified reading: 0. Exceptions are grouped into issues with stack traces by the error tracking product used on itself. |
+| LRN-06 Ranked, evidence-backed proposals for change | assessed | 2 | 3 |  | A |  | AI-qualified reading: 0. Query analysis recommends and applies materialised columns (ee/clickhouse/materialized_columns/analyze.py); Signals proposals target customers' repositories and are excluded under the self rule. |
+| LRN-07 The product turns its own operating experience into candidate changes | assessed | 2 | 3 |  | A |  | AI-qualified reading: 0. A weekly scheduled task analyses the last week of queries and materialises hot properties without being asked (posthog/tasks/scheduled.py:927, ee/settings.py:68-73, ee/clickhouse/materialized_columns/analyze.py:89). Narrow: storage layout only. Scored at the lower reading under rule 11 because: Narrow to one area. |
+| LRN-08 Learned changes are validated before they take effect | assessed | 1 | 2 |  | A |  | AI-qualified reading: 1. No evaluation of materialisation changes against a baseline was found. |
 | LRN-09 Post-change impact is measured against a declared baseline | assessed | 2 | 3 |  | A |  | Report metrics re-run stored queries over trailing windows to track a report's impact (products/signals/backend/report_metrics.py); experiments compare variants against control. Neither binds the applied change's version to a keep, revise or rollback decision. |
 | GOV-01 Accessibility inherited from a component kit and continuously verified | assessed | 1 | 2 |  | A |  | Design system with tokens (packages/quill) and Storybook visual tests (.github/workflows/ci-storybook.yml); no automated accessibility scanning (the Playwright audit workflow audits flakes). |
 | GOV-02 Audit generic over entities, definition changes and approvals | assessed | 2 | 3 |  | A |  | Activity logging on most models with an activity page (posthog/models/activity_logging), retention by entitlement (retention.py:71), and recorded approval decisions on change requests (products/approvals/backend/models.py:112-140). Scored at the lower reading under rule 11 because: Activity logging covers most, not all, models. |
@@ -158,15 +191,23 @@ Progress toward the next level: Request → Release 11 of 20 conditions for L3; 
 | GOV-06 Proposal, review, apply as a first-class object with preview | assessed | 2 | 3 |  | A |  | Change requests carry the intended change, a validation status and a policy snapshot, and are reviewed and then applied (products/approvals/backend/models.py:15-65); scheduled changes for flags (products/approvals/backend/scheduled_changes.py). No staging-data preview. |
 | GOV-07 Policy-based apply with recorded approvals and a movable human boundary | assessed | 3 |  |  | A |  | Approval policies per registered action class with conditions evaluated on the change intent, named approvers, bypass roles and recorded Approval decisions (products/approvals/backend/policies.py:37-147, actions/registry.py, models.py:112-140). |
 | GOV-08 Upgrade safety | assessed | 2 |  |  | A |  | Customer definitions (insights, flags, functions) are data carried forward by Django migrations; no automated compatibility check or versioned extension contract was found. |
-| GOV-09 Agent-safe actions | assessed | 2 | 3 |  | A |  | Scoped personal API keys and OAuth (posthog/scopes.py), approval policies on mutating actions, activity log and throttles; client idempotency identifiers on some writes only (posthog/api/data_deletion_request.py:147); no dry-run. |
-| GOV-10 Bounded self-change | assessed | 2 |  |  | A |  | PostHog AI acts through a fixed tool set with resource-level access control, and approval policies cover registered action classes (products/approvals/backend/policies.py); materialisation has no declared blast-radius limit. |
-| GOV-11 Learning-input integrity | assessed | 2 | 3 |  | A |  | Third-party text in AI tool output is defanged and fenced as data, not instructions (ee/hogai/utils/untrusted.py); AI changes are attributed in the activity log, but source inputs are not recorded. |
+| GOV-09 Agent-safe actions | assessed | 2 | 3 |  | A |  | AI-qualified reading: 2. Scoped personal API keys and OAuth (posthog/scopes.py), approval policies on mutating actions, activity log and throttles; client idempotency identifiers on some writes only (posthog/api/data_deletion_request.py:147); no dry-run. |
+| GOV-10 Bounded self-change | assessed | 2 |  |  | A |  | AI-qualified reading: 2. PostHog AI acts through a fixed tool set with resource-level access control, and approval policies cover registered action classes (products/approvals/backend/policies.py); materialisation has no declared blast-radius limit. |
+| GOV-11 Learning-input integrity | assessed | 2 | 3 |  | A |  | AI-qualified reading: 2. Third-party text in AI tool output is defanged and fenced as data, not instructions (ee/hogai/utils/untrusted.py); AI changes are attributed in the activity log, but source inputs are not recorded. |
 | EXP-01 Kernel concepts are domain-neutral | not_applicable | excluded |  |  | - |  | Focused application: adjacent-domain criterion (fixed per-archetype rule). |
 | EXP-02 A new domain is expressible without kernel change | not_applicable | excluded |  |  | - |  | Focused application: adjacent-domain criterion (fixed per-archetype rule). More than 60 product modules extend the events and persons kernel. |
 | EXP-03 A domain ships as an installable bundle | not_applicable | excluded |  |  | - |  | Focused application: adjacent-domain criterion (fixed per-archetype rule). |
 | EXP-04 Unmet-demand sensing | assessed | 1 |  |  | A |  | No unmet-demand signals about PostHog itself beyond free-text requests. |
-| EXP-05 Evidence-backed opportunity proposals | assessed | 0 |  |  | A |  | No adjacent-capability proposals. |
+| EXP-05 Evidence-backed opportunity proposals | assessed | 0 |  |  | A |  | AI-qualified reading: 0. No adjacent-capability proposals. |
 | EXP-06 Cohort launch with keep-or-kill | assessed | 2 | 3 |  | A |  | Early access features let users opt into new products and betas (products/early_access_features); no success metric or keep-or-kill record. |
+| AIR-03 AI-ready data and context access | assessed | 3 |  |  | A |  | PostHog AI gets taxonomy, schema and entity context through tools over the team's live data (ee/hogai/context, tools). |
+| AIR-04 Permission-preserving retrieval and tool access | assessed | 3 |  |  | A | IT | PostHog AI acts within the user's team with resource-level access control (products/access_control) and approval policies on mutating actions; covered by tests. |
+| AIR-05 Offline AI evaluation | assessed | 3 |  |  | A |  | Maintained offline and CI evaluation suites per capability with scored metrics (ee/hogai/eval/ci: funnel, retention, insight search, memory, root; eval/offline). |
+| AIR-06 Regression gating before release | assessed | 2 |  |  | A |  | LLM evals run on pull requests labelled evals-ready (.github/workflows/ci-ai.yml:2-20); they are not automatic for every AI change and no blocking threshold was found. |
+| AIR-07 AI action tracing and auditability | assessed | 3 |  |  | A | IT | AI generations and traces are captured in PostHog's own LLM analytics, and AI changes are attributed in the activity log (ee/hogai/llm.py, ee/hogai/llm_traces_summaries). |
+| AIR-01 Model and provider portability and resilience | assessed | 3 |  |  | A |  | The LLM gateway routes across providers with Cloudflare, Modal and Bedrock fallbacks and a circuit breaker (services/llm-gateway/src/llm_gateway/baseten.py:34, circuit_breaker.py), with tests (tests/test_circuit_breaker.py). |
+| AIR-02 AI usage and per-customer cost controls | assessed | 3 |  |  | A |  | Generations are marked billable for AI credits in the usage report and rate-limited (ee/hogai/llm.py:129-167, 282); credits are enforced per organisation through billing. |
+| AIR-08 Production quality, drift and feedback monitoring | assessed | 2 | 3 |  | A |  | Generations, traces and user feedback on PostHog AI are recorded and summarised (ee/hogai/llm_traces_summaries, chat_agent/slash_commands/commands/feedback); no drift alerts found. |
 
 Facets: I implemented, T tested, O operated.
 

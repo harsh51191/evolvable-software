@@ -13,6 +13,9 @@ Read at github.com/frappe/frappe @ 82b0384810030c8d347780538821a3b006375d28 (dev
 - **evolution_auto_apply**: false. Every definition change is made by a person with the right role; nothing applies changes automatically.
 - **definition_change_path**: true. DocTypes, workflows, print formats and settings are definitions.
 - **code_release_path**: false. No first-party evolution system ships code changes; releases are made by engineers.
+- **ai_features**: false. No model-backed features in the framework (searched frappe/ for openai, anthropic, llm).
+- **ai_data_access**: false. No AI features.
+- **ai_actions**: false. No AI features.
 
 ## Elastic (ARC)
 
@@ -191,3 +194,25 @@ Read at github.com/frappe/frappe @ 82b0384810030c8d347780538821a3b006375d28 (dev
 ### Launch
 
 - **EXP-06 Cohort launch with keep-or-kill**: **2** (grade A). An app (bundle) can be installed and enabled for selected sites (frappe/commands/site.py:559, 1053); there is no success metric or keep-or-kill record.
+
+## AI Readiness Checks (AIR)
+
+### Context
+
+- **AIR-03 AI-ready data and context access**: **not applicable**. ai_features is false: No model-backed features in the framework (searched frappe/ for openai, anthropic, llm).
+- **AIR-04 Permission-preserving retrieval and tool access**: **not applicable**. ai_features is false: No model-backed features in the framework (searched frappe/ for openai, anthropic, llm).
+
+### Quality
+
+- **AIR-05 Offline AI evaluation**: **not applicable**. ai_features is false: No model-backed features in the framework (searched frappe/ for openai, anthropic, llm).
+- **AIR-06 Regression gating before release**: **not applicable**. ai_features is false: No model-backed features in the framework (searched frappe/ for openai, anthropic, llm).
+
+### Governance
+
+- **AIR-07 AI action tracing and auditability**: **not applicable**. ai_features is false: No model-backed features in the framework (searched frappe/ for openai, anthropic, llm).
+
+### Operations
+
+- **AIR-01 Model and provider portability and resilience**: **not applicable**. ai_features is false: No model-backed features in the framework (searched frappe/ for openai, anthropic, llm).
+- **AIR-02 AI usage and per-customer cost controls**: **not applicable**. ai_features is false: No model-backed features in the framework (searched frappe/ for openai, anthropic, llm).
+- **AIR-08 Production quality, drift and feedback monitoring**: **not applicable**. ai_features is false: No model-backed features in the framework (searched frappe/ for openai, anthropic, llm).

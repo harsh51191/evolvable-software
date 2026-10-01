@@ -13,6 +13,9 @@ Read at github.com/n8n-io/n8n @ c17c48043eb1080e5ae9795ea3a384960f8748f1 (master
 - **evolution_auto_apply**: false. AI-built changes pass approvals before they apply.
 - **definition_change_path**: true. Workflows, credentials, variables and data tables are definitions.
 - **code_release_path**: false. The AI lanes change workflows, not n8n code.
+- **ai_features**: true. AI workflow builder, Instance AI and AI agent nodes (packages/@n8n/ai-workflow-builder.ee, packages/cli/src/modules/instance-ai).
+- **ai_data_access**: true. Instance AI reads workflows, executions and node parameters (packages/cli/src/modules/instance-ai).
+- **ai_actions**: true. Instance AI and the builder create and change workflows behind approvals.
 
 ## Elastic (ARC)
 
@@ -37,6 +40,8 @@ Read at github.com/n8n-io/n8n @ c17c48043eb1080e5ae9795ea3a384960f8748f1 (master
 ### Resilience
 
 - **ARC-08 Failure isolation and graceful degradation**: **2** (grade A). Code nodes run in separate task-runner processes (packages/@n8n/task-runner, task-runner-python); nodes have retry-on-fail and timeouts; community nodes run in-process.
+  - AI-qualified reading: **2** (grade A), facets: implemented. Retry-on-fail, timeouts and fallback models on agent nodes.
+    - Higher reading 3: Fallback models contain provider failure.
 - **ARC-09 Backup, restore and recovery**: **2** (grade A). export:entities and import:entities move every database entity, optionally with data-table rows (packages/cli/src/commands/export/entities.ts); binary data and the encryption key are separate; no restore test or recovery objectives.
 
 ## Velocity (DEL)
@@ -45,6 +50,8 @@ Read at github.com/n8n-io/n8n @ c17c48043eb1080e5ae9795ea3a384960f8748f1 (master
 
 - **DEL-01 Request intake into a structured change specification**: **2** (grade A). The AI workflow builder plans before building: it asks typed clarifying questions and produces a plan with a trigger, steps, suggested nodes and specifications that the user approves (packages/@n8n/ai-workflow-builder.ee/src/types/planning.ts, agents/planner.agent.ts). The plan has no acceptance criteria or risk class.
   - Higher reading 3: A confirmed, structured plan with clarifying questions approaches levels 3 and 4.
+  - AI-qualified reading: **2** (grade A). The planner asks clarifying questions and drafts a plan (ai-workflow-builder.ee/src/types/planning.ts).
+    - Higher reading 3: Close to a specification.
 
 ### Build
 
@@ -53,6 +60,8 @@ Read at github.com/n8n-io/n8n @ c17c48043eb1080e5ae9795ea3a384960f8748f1 (master
   - Higher reading 3: Lint-enforced boundaries plus API types between packages.
 - **DEL-04 AI implementation lane**: **2** (grade A). AI workflow builder and Instance AI turn requests into workflow changes behind approvals, per instance.
   - Higher reading 3: The lane is broad and governed, not narrow and engineer-run.
+  - AI-qualified reading: **2** (grade A). The builder and Instance AI change workflows behind approvals.
+    - Higher reading 3: Wide coverage.
 
 ### Verify
 
@@ -122,8 +131,10 @@ Read at github.com/n8n-io/n8n @ c17c48043eb1080e5ae9795ea3a384960f8748f1 (master
 
 - **MAL-19 Machine-readable capability surface for agents**: **3** (grade A). Instance MCP server with scoped API keys, per-workflow tool availability and MCP evaluations (packages/cli/src/modules/mcp: mcp-scopes.ts, mcp-tool-availability.ts, evaluations).
   - Higher reading 4: Each exposed workflow becomes a tool whose schema comes from its trigger definition.
+  - AI-qualified reading: **3** (grade A). Instance MCP server with scoped keys (packages/cli/src/modules/mcp).
 - **MAL-20 Conversational operability for users and natural-language authoring for operators**: **3** (grade A). Instance AI gives a natural-language interface to workflows, executions, credentials and nodes, with plans and approval cards before execution (packages/@n8n/instance-ai/docs/architecture.md, tools.md:18-82); chat hub for members (packages/cli/src/modules/chat-hub); Instance AI evaluations run in CI (.github/workflows/ci-instance-ai-evals.yml).
   - Higher reading 4: Instance AI aims to make workflows reachable without the UI and is evaluated in CI.
+  - AI-qualified reading: **3** (grade A). Instance AI grounded in workflows and executions, with plans and approvals.
 
 ## Learn (LRN)
 
@@ -140,14 +151,19 @@ Read at github.com/n8n-io/n8n @ c17c48043eb1080e5ae9795ea3a384960f8748f1 (master
 
 - **LRN-05 Automated diagnosis**: **2** (grade A). Failed executions keep the failing node, input and error; the AI assistant can explain a node error on request.
   - Higher reading 3: On-request AI debugging with node context approaches level 3.
+  - AI-qualified reading: **2** (grade A). The AI assistant explains node errors with context on request.
+    - Higher reading 3: Close to level 3.
 - **LRN-06 Ranked, evidence-backed proposals for change**: **2** (grade A). The breaking-changes detection report recommends fixes before upgrades (packages/cli/src/modules/breaking-changes/detection-report.ts): evidence-backed recommendations for one area.
+  - AI-qualified reading: **0** (grade A). Breaking-change recommendations are rule-based.
 
 ### Learn from experience
 
 - **LRN-07 The product turns its own operating experience into candidate changes**: **1** (grade A). The AI workflow builder and Instance AI change workflows when asked; nothing learns from runs without being asked.
   - Higher reading 2: Insights capture experience that the AI can read on request.
+  - AI-qualified reading: **0** (grade A). No AI involvement in this behaviour.
 - **LRN-08 Learned changes are validated before they take effect**: **2** (grade A), facets: implemented, tested. Evaluations can compare a workflow version against a dataset before publishing (packages/cli/src/evaluation.ee), but they are run by people and are not tied to the publish decision.
   - Higher reading 3: If evaluations plus the review publish guard count as a pass or block decision.
+  - AI-qualified reading: **2** (grade A). AI-built workflow versions can be evaluated against datasets before publishing, run by people (packages/cli/src/evaluation.ee).
 
 ### Measure
 
@@ -177,9 +193,14 @@ Read at github.com/n8n-io/n8n @ c17c48043eb1080e5ae9795ea3a384960f8748f1 (master
 
 - **GOV-09 Agent-safe actions**: **2** (grade A). Scoped API keys and MCP scopes, approval cards for AI actions, policy checks and audit events; no idempotency keys or dry-run for API mutations.
   - Higher reading 3: Manual test executions with pinned data act as a dry-run for workflows.
+  - AI-qualified reading: **2** (grade A). Scoped keys and approval cards for AI actions; no idempotency or dry-run.
+    - Higher reading 3: Approval cards preview actions.
 - **GOV-10 Bounded self-change**: **2** (grade A). Admin type-availability policies restrict which node types any change may use, enforced at save and publish (packages/cli/src/modules/type-availability-policies); no per-period or blast-radius limits.
+  - AI-qualified reading: **2** (grade A). Type-availability policies restrict AI-built workflows.
 - **GOV-11 Learning-input integrity**: **2** (grade A). Instance AI wraps resolved node parameters and external responses as untrusted data (packages/cli/src/modules/instance-ai/extract-resolved-node-parameters.ts:378-382); changes do not record their source inputs.
   - Higher reading 3: Untrusted data is separated systematically in Instance AI.
+  - AI-qualified reading: **2** (grade A). Instance AI wraps external data as untrusted (extract-resolved-node-parameters.ts:378-382).
+    - Higher reading 3: Systematic in Instance AI.
 
 ## Expand (EXP)
 
@@ -196,7 +217,32 @@ Read at github.com/n8n-io/n8n @ c17c48043eb1080e5ae9795ea3a384960f8748f1 (master
 
 - **EXP-04 Unmet-demand sensing**: **0** (grade A). No record of unmet intents was found.
 - **EXP-05 Evidence-backed opportunity proposals**: **0** (grade A). No adjacent-capability proposals.
+  - AI-qualified reading: **0** (grade A). No AI involvement in this behaviour.
 
 ### Launch
 
 - **EXP-06 Cohort launch with keep-or-kill**: **1** (grade A). New capabilities ship to all users of an instance.
+
+## AI Readiness Checks (AIR)
+
+### Context
+
+- **AIR-03 AI-ready data and context access**: **3** (grade A). The builder gets node types and workflow context; Instance AI resolves workflows, executions and node parameters live (packages/cli/src/modules/instance-ai/instance-context.service.ts).
+- **AIR-04 Permission-preserving retrieval and tool access**: **3** (grade A), facets: implemented, tested. Instance AI looks up workflows within the user's scopes (instance-ai.adapter.service.ts) with folder-scope tests (__tests__/instance-ai-folder-scope.test.ts, instance-ai-folder-scoped-listing.integration.test.ts).
+
+### Quality
+
+- **AIR-05 Offline AI evaluation**: **3** (grade A). Evaluation harness with evaluators, datasets and LangSmith runs for the workflow builder and Instance AI (packages/@n8n/ai-workflow-builder.ee/evaluations).
+- **AIR-06 Regression gating before release**: **2** (grade A), facets: implemented, tested. Instance AI evals run automatically on pull requests touching AI paths (.github/workflows/ci-instance-ai-evals.yml:18-21) and builder evals on minor releases (test-evals-ai-release.yml); no blocking threshold was found.
+  - Higher reading 3: Results are posted on every relevant pull request.
+
+### Governance
+
+- **AIR-07 AI action tracing and auditability**: **2** (grade A), facets: implemented, tested. Instance AI tracing service (packages/cli/src/modules/instance-ai/tracing) and audit events for approved actions; model and prompt version are not recorded with each change.
+  - Higher reading 3: Approval cards and tracing together approach level 3.
+
+### Operations
+
+- **AIR-01 Model and provider portability and resilience**: **3** (grade A). AI agent nodes support a fallback model (packages/@n8n/nodes-langchain/nodes/agents/Agent/agents/utils.ts, ToolsAgent/common.ts), and operators choose models per node.
+- **AIR-02 AI usage and per-customer cost controls**: **3** (grade A). Instance AI credits are tracked and enforced per instance with a credit display (packages/cli/src/modules/instance-ai/instance-ai-credit.service.ts, instance-ai-credit-display.ts).
+- **AIR-08 Production quality, drift and feedback monitoring**: **2** (grade A). Evaluation metrics per test run and failure rates per workflow are recorded (packages/cli/src/evaluation.ee, modules/insights); no drift alerts.

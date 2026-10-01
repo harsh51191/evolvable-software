@@ -13,6 +13,9 @@ Read at github.com/NousResearch/hermes-agent @ bddd22be7c2e5f7630c3d90507e6e7280
 - **evolution_auto_apply**: true. background_review is on by default and skill and memory write approvals default to off (hermes_cli/config_defaults.py:814, 1320).
 - **definition_change_path**: true. Skills, memory, prompts and configuration are its definitions.
 - **code_release_path**: true. The first-party GEPA optimiser proposes improved skills as pull requests to this repository, shipped in releases (hermes-agent-self-evolution).
+- **ai_features**: true. The product is an LLM agent.
+- **ai_data_access**: true. Reads the user's files, sessions, memory and skills (session search, memory providers).
+- **ai_actions**: true. Runs commands, edits files and sends messages on the user's behalf (tools/).
 
 ## Elastic (ARC)
 
@@ -36,6 +39,7 @@ Read at github.com/NousResearch/hermes-agent @ bddd22be7c2e5f7630c3d90507e6e7280
 ### Resilience
 
 - **ARC-08 Failure isolation and graceful degradation**: **2** (grade A). Fallback providers and credential pools take over when a primary model fails (agent/agent_init.py, tests/agent/test_restore_primary_pool_reselect.py); tool and MCP failures are contained to the turn. Plugins and gateway platforms have no breakers, so a 3 is not defensible under the inventory rule.
+  - AI-qualified reading: **3** (grade A), facets: implemented, tested. Fallback providers and credential pools contain provider failure, with tests.
 - **ARC-09 Backup, restore and recovery**: **3** (grade A), facets: implemented, tested. hermes backup and import cover the home directory: the sessions database (snapshotted with sqlite3.backup), skills, memory, configuration and secrets such as .env, auth.json and the vault (hermes_cli/backup.py:117-161), with pre-update backups and round-trip tests (tests/hermes_cli/test_backup*.py). No recovery objectives are stated (level 4).
   - Inventory: data 3, definitions 3, files 3, secrets 3
 
@@ -45,6 +49,8 @@ Read at github.com/NousResearch/hermes-agent @ bddd22be7c2e5f7630c3d90507e6e7280
 
 - **DEL-01 Request intake into a structured change specification**: **1** (grade A). Requests are chat turns; the agent can create a skill when asked, without a specification step.
   - Higher reading 2: Skill creation on request records name and description.
+  - AI-qualified reading: **1** (grade A). Requests arrive as chat turns.
+    - Higher reading 2: Skill creation records name and description.
 
 ### Build
 
@@ -52,6 +58,8 @@ Read at github.com/NousResearch/hermes-agent @ bddd22be7c2e5f7630c3d90507e6e7280
 - **DEL-03 Module boundaries enforced by tooling**: **2** (grade A). Import guards in CI (.github/workflows/lazy-deps-guard.yml, case-collision-check.yml); no architectural boundary lint.
 - **DEL-04 AI implementation lane**: **2** (grade A). The background review is an autonomous authoring lane that applies skill and memory changes every turn (agent/background_review.py); GEPA improvements reach every user through upstream pull requests. Scored at the lower reading under rule 11 because: The cross-user path depends on an offline companion tool.
   - Higher reading 3: The September v0.3 pass scored 3 on the evidence above.
+  - AI-qualified reading: **2** (grade A). Background review is a model lane that applies skill and memory changes.
+    - Higher reading 3: Autonomous by default.
 
 ### Verify
 
@@ -113,8 +121,12 @@ Read at github.com/NousResearch/hermes-agent @ bddd22be7c2e5f7630c3d90507e6e7280
 
 - **MAL-19 Machine-readable capability surface for agents**: **2** (grade A). MCP server exposing conversation, messaging, event and approval tools (mcp_serve.py) and an ACP adapter for editors (acp_adapter/); typed tool registry (model_tools.py). Scored at the lower reading under rule 11 because: The MCP surface covers messaging, not the full capability set.
   - Higher reading 3: The September v0.3 pass scored 3 on the evidence above.
+  - AI-qualified reading: **2** (grade A). MCP server and ACP adapter (mcp_serve.py, acp_adapter).
+    - Higher reading 3: Typed tool registry.
 - **MAL-20 Conversational operability for users and natural-language authoring for operators**: **3** (grade A). Users complete tasks conversationally across CLI, desktop and messaging platforms with tool actions; users author skills, memory and cron jobs in natural language, with staged approvals as preview when enabled; evaluation probes (evals/) and GEPA evaluation datasets.
   - Higher reading 4: Almost every capability is reachable conversationally.
+  - AI-qualified reading: **3** (grade A). Model-backed conversation across platforms; skills and memory authored in natural language.
+    - Higher reading 4: Broad coverage.
 
 ## Learn (LRN)
 
@@ -131,14 +143,20 @@ Read at github.com/NousResearch/hermes-agent @ bddd22be7c2e5f7630c3d90507e6e7280
 ### Diagnose and propose
 
 - **LRN-05 Automated diagnosis**: **2** (grade A). hermes doctor diagnoses setup problems and cron error diagnostics attach context to failing jobs (hermes_cli/main.py:2567).
+  - AI-qualified reading: **1** (grade A). The agent explains errors when asked; hermes doctor is rule-based.
 - **LRN-06 Ranked, evidence-backed proposals for change**: **2** (grade A). After each turn a background fork proposes skill and memory updates grounded in the conversation (agent/background_review.py); GEPA ranks skill variants on a Pareto front with evaluation evidence (self-evolution repo). Covers skills only.
   - Higher reading 3: Ranked, evidence-backed proposals with expected impact exist for the agent's main behaviour surface.
+  - AI-qualified reading: **2** (grade A). A background fork proposes skill and memory updates from the conversation.
+    - Higher reading 3: GEPA ranks variants.
 
 ### Learn from experience
 
 - **LRN-07 The product turns its own operating experience into candidate changes**: **3** (grade A). background_review is enabled by default (hermes_cli/config_defaults.py:814): after turns, a forked agent decides whether to save or update skills and memory (agent/background_review.py).
   - Higher reading 4: The curator's consolidation learns which skills stick, but only when enabled.
+  - AI-qualified reading: **3** (grade A). Model reflection after turns writes skills and memory by default.
+    - Higher reading 4: Learns from GEPA results.
 - **LRN-08 Learned changes are validated before they take effect**: **2** (grade A), **3** with opt-in settings, facets: implemented, tested. Skill writes pass security scans, AST audits and a linter (tools/skills_guard.py, skills_ast_audit.py, skill_linter.py). The first-party GEPA optimiser evaluates variants against the baseline skill before proposing, when it is run (hermes-agent-self-evolution README).
+  - AI-qualified reading: **2** (grade A), **3** with opt-in settings, facets: implemented, tested. AI-written skills pass scans, AST audits and a linter.
 
 ### Measure
 
@@ -167,9 +185,14 @@ Read at github.com/NousResearch/hermes-agent @ bddd22be7c2e5f7630c3d90507e6e7280
 
 - **GOV-09 Agent-safe actions**: **2** (grade A). Dangerous-command approvals with LLM risk classification and floors, tirith scanning, sandbox backends, subagent auto-deny and session audit; commands otherwise run with the user's ambient authority; no idempotency keys.
   - Higher reading 3: Per-action risk classification and approval previews are level 3 and 4 features.
+  - AI-qualified reading: **2** (grade A). Dangerous commands need approval with LLM risk classification; the agent acts with the user's authority.
+    - Higher reading 3: Approval floors.
 - **GOV-10 Bounded self-change**: **2** (grade A). Protected instruction files always need a person, and skill writes pass scans and an AST audit (tools/skills_guard.py); there is no declared scope or rate limit for background changes.
+  - AI-qualified reading: **2** (grade A). Protected files and write scans; no declared scope or rate limit.
 - **GOV-11 Learning-input integrity**: **2** (grade A). The skill ledger records the actor of every mutation (tools/skill_ledger.py:54-68) and the skills guard scans writes for injection and exfiltration patterns (tools/skills_guard.py:42-140); session content can still drive an automatically applied skill change.
   - Higher reading 3: Provenance and injection scanning are both present.
+  - AI-qualified reading: **2** (grade A). Ledger actor and injection scans on skill writes.
+    - Higher reading 3: Both present.
 
 ## Expand (EXP)
 
@@ -185,7 +208,31 @@ Read at github.com/NousResearch/hermes-agent @ bddd22be7c2e5f7630c3d90507e6e7280
 
 - **EXP-04 Unmet-demand sensing**: **1** (grade A). Unserved requests stay in session history; nothing records them as unmet demand.
 - **EXP-05 Evidence-backed opportunity proposals**: **1** (grade A). Background review creates skills for tasks it has just done; it does not propose capabilities nobody has used yet.
+  - AI-qualified reading: **1** (grade A). Creates skills for tasks it has done; no unprompted proposals.
 
 ### Launch
 
 - **EXP-06 Cohort launch with keep-or-kill**: **1** (grade A). New skills apply to the whole installation at once.
+
+## AI Readiness Checks (AIR)
+
+### Context
+
+- **AIR-03 AI-ready data and context access**: **3** (grade A). Session search over full-text indexes, memory and skills injected into context, with memory provider plugins (hermes_state_fts.py, plugins).
+- **AIR-04 Permission-preserving retrieval and tool access**: **3** (grade A), facets: implemented, tested. A single-user agent acting with the user's own permissions; the gateway accepts only paired users, profiles isolate homes, and dangerous commands need approval (tools/approval_smart.py), with security tests (tests/security).
+
+### Quality
+
+- **AIR-05 Offline AI evaluation**: **2** (grade A). Regression probes named after failures found in use (evals/) and GEPA skill evaluation in the companion repository, run on request.
+- **AIR-06 Regression gating before release**: **1** (grade A). Evaluations are not part of CI.
+
+### Governance
+
+- **AIR-07 AI action tracing and auditability**: **3** (grade A), facets: implemented, tested. Sessions record every message, tool call and model in the state database, with trajectories and trace upload (agent/trajectory.py, trace_upload.py, hermes_state_*.py), queryable through hermes sessions and insights.
+
+### Operations
+
+- **AIR-01 Model and provider portability and resilience**: **3** (grade A). Fallback providers and credential pools take over when a primary model fails, with tests (agent/agent_init.py, tests/agent/test_restore_primary_pool_reselect.py).
+- **AIR-02 AI usage and per-customer cost controls**: **2** (grade A). Usage and pricing per turn and per account are tracked (agent/usage_pricing.py, turn_usage.py, billing_usage.py) and iterations are budgeted (agent/iteration_budget.py); no spend limit per user.
+  - Higher reading 3: Iteration budgets bound usage per task.
+- **AIR-08 Production quality, drift and feedback monitoring**: **1** (grade A). Skill usage counts feed the curator; no quality or feedback monitoring of the agent's answers.

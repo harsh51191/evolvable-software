@@ -186,7 +186,13 @@
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Typed HTTP API, SDK and ACP support (packages/opencode/src/acp); OpenCode does not expose itself as an MCP server."
+      "evidence": "Typed HTTP API, SDK and ACP support (packages/opencode/src/acp); OpenCode does not expose itself as an MCP server.",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "HTTP API, SDK and ACP; no MCP server for agents."
+      }
     },
     "MAL-20": {
       "status": "assessed",
@@ -194,13 +200,27 @@
       "grade": "A",
       "evidence": "Users complete coding tasks conversationally with tool actions; agent definitions can be generated from a natural-language description (packages/opencode/src/agent/generate.txt). Scored at the lower reading under rule 11 because: Natural-language authoring covers agents only.",
       "alt_score": 3,
-      "alt_note": "The September v0.3 pass scored 3 on the evidence above."
+      "alt_note": "The September v0.3 pass scored 3 on the evidence above.",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Model-backed coding conversation; agents generated from descriptions.",
+        "alt_score": 3,
+        "alt_note": "Broad coverage."
+      }
     },
     "GOV-09": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Ask prompts preview tool actions under permission rules, and snapshots allow revert; commands run with the user's ambient authority and there are no idempotency keys."
+      "evidence": "Ask prompts preview tool actions under permission rules, and snapshots allow revert; commands run with the user's ambient authority and there are no idempotency keys.",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Permission rules preview actions with ask prompts; commands run with the user's ambient authority."
+      }
     },
     "MAL-16": {
       "status": "assessed",
@@ -264,7 +284,13 @@
       "status": "assessed",
       "score": 0,
       "grade": "A",
-      "evidence": "No proposals for changing OpenCode itself."
+      "evidence": "No proposals for changing OpenCode itself.",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "No AI involvement in this behaviour."
+      }
     },
     "DEL-04": {
       "status": "assessed",
@@ -272,7 +298,15 @@
       "grade": "A",
       "evidence": "The team runs OpenCode's general GitHub agent on this repository for reviews and triage (.github/workflows/review.yml, triage.yml, opencode.yml). Under rubric rule 12 that is a team's use of a coding agent, not a first-party evolution system for OpenCode.",
       "alt_score": 2,
-      "alt_note": "If the GitHub agent is read as part of the product's own evolution system, it is an AI lane for narrow tasks."
+      "alt_note": "If the GitHub agent is read as part of the product's own evolution system, it is an AI lane for narrow tasks.",
+      "ai": {
+        "status": "assessed",
+        "score": 1,
+        "grade": "A",
+        "evidence": "The team's GitHub agent is not a first-party evolution system (rule 12).",
+        "alt_score": 2,
+        "alt_note": "Narrow AI lane."
+      }
     },
     "LRN-09": {
       "status": "assessed",
@@ -306,13 +340,23 @@
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "People write agents, commands and AGENTS.md by hand; nothing learns from sessions."
+      "evidence": "People write agents, commands and AGENTS.md by hand; nothing learns from sessions.",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "No AI involvement in this behaviour."
+      }
     },
     "LRN-08": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "Changes to OpenCode's definitions are reviewed by people only."
+      "evidence": "Changes to OpenCode's definitions are reviewed by people only.",
+      "ai": {
+        "status": "not_applicable",
+        "rationale": "agent_mutations is false."
+      }
     },
     "ARC-02": {
       "status": "assessed",
@@ -326,7 +370,13 @@
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Provider calls are retried with back-off (packages/opencode/src/session/retry.ts); MCP servers and LSPs run as separate processes."
+      "evidence": "Provider calls are retried with back-off (packages/opencode/src/session/retry.ts); MCP servers and LSPs run as separate processes.",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Provider calls retried with back-off (packages/opencode/src/session/retry.ts)."
+      }
     },
     "ARC-09": {
       "status": "assessed",
@@ -338,7 +388,13 @@
       "status": "assessed",
       "score": 0,
       "grade": "A",
-      "evidence": "No request or feature-request object for changing the product was found; requests live outside it."
+      "evidence": "No request or feature-request object for changing the product was found; requests live outside it.",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "AI works on users' code, not on OpenCode's own changes."
+      }
     },
     "DEL-09": {
       "status": "assessed",
@@ -362,17 +418,31 @@
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "Engineers read logs."
+      "evidence": "Engineers read logs.",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "No AI involvement in this behaviour."
+      }
     },
     "GOV-10": {
       "status": "not_applicable",
       "rationale": "No self-change path.",
-      "if_applicable": 1
+      "if_applicable": 1,
+      "ai": {
+        "status": "not_applicable",
+        "rationale": "GOV-10 is not applicable."
+      }
     },
     "GOV-11": {
       "status": "not_applicable",
       "rationale": "No self-change path.",
-      "if_applicable": 1
+      "if_applicable": 1,
+      "ai": {
+        "status": "not_applicable",
+        "rationale": "GOV-11 is not applicable."
+      }
     },
     "EXP-04": {
       "status": "assessed",
@@ -384,7 +454,13 @@
       "status": "assessed",
       "score": 0,
       "grade": "A",
-      "evidence": "No adjacent-capability proposals."
+      "evidence": "No adjacent-capability proposals.",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "No AI involvement in this behaviour."
+      }
     },
     "EXP-06": {
       "status": "assessed",
@@ -407,10 +483,68 @@
     "DEL-11": {
       "status": "not_applicable",
       "rationale": "Scope fact code_release_path is false: The GitHub agent the team runs on this repository is the product's general coding agent, not a first-party evolution system for OpenCode (rubric rule 12)."
+    },
+    "AIR-01": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Many providers through models.dev, with model choice per agent in configuration; retries with back-off (packages/opencode/src/session/retry.ts), no declared fallback."
+    },
+    "AIR-02": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Tokens and cost per session are recorded and shown by opencode stats (packages/opencode/src/cli/cmd/stats.ts); no spend limit."
+    },
+    "AIR-03": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Read, grep, glob and LSP tools give live, attributed workspace context, plus AGENTS.md instructions."
+    },
+    "AIR-04": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "A local agent acting with the user's permissions; permission rules allow, ask or deny each tool and pattern, enforced in code (packages/opencode/src/permission/evaluate.ts), with tests.",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      }
+    },
+    "AIR-05": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "No evaluation harness in the repository."
+    },
+    "AIR-06": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "No evaluation gates in CI."
+    },
+    "AIR-07": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Sessions store every message, tool call, model and cost, and snapshots record file changes for revert (packages/opencode/src/session, snapshot).",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      }
+    },
+    "AIR-08": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No feedback or quality monitoring."
     }
   },
   "limits": "Repository evidence only, dev branch at the tip named above. Enterprise and console behaviour was not traced in depth. Single rater.",
-  "framework_version": "0.4.0",
+  "framework_version": "0.5.0",
   "reading": "**SAL 0.** OpenCode's own agents, commands and configuration are files versioned only by the user's git (GOV-05 1), so no loop has a rollback path at L1. The team's use of OpenCode's GitHub agent on its own repository is not a first-party evolution system under rule 12 (DEL-04 1). **Next level:** versioned, validated configuration with rollback, and a learning path for agents and commands.",
   "framework": "EVOLVE",
   "scope_facts": {
@@ -449,6 +583,18 @@
     "code_release_path": {
       "value": false,
       "evidence": "The GitHub agent the team runs on this repository is the product's general coding agent, not a first-party evolution system for OpenCode (rubric rule 12)."
+    },
+    "ai_features": {
+      "value": true,
+      "evidence": "The product is an LLM coding agent."
+    },
+    "ai_data_access": {
+      "value": true,
+      "evidence": "Reads the workspace through read, grep, glob and LSP tools."
+    },
+    "ai_actions": {
+      "value": true,
+      "evidence": "Edits files and runs shell commands (packages/opencode/src/tool)."
     }
   }
 }

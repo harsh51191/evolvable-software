@@ -204,7 +204,13 @@
       "grade": "A",
       "evidence": "LibreChat consumes MCP but does not expose itself as an MCP server (api/server/routes/mcp.js manages client connections); agents are reachable through an OpenAI-compatible API. Scored at the lower reading under rule 11 because: If an OpenAI-compatible chat API is not an introspectable capability surface.",
       "alt_score": 2,
-      "alt_note": "The September v0.3 pass scored 2 on the evidence above."
+      "alt_note": "The September v0.3 pass scored 2 on the evidence above.",
+      "ai": {
+        "status": "assessed",
+        "score": 1,
+        "grade": "A",
+        "evidence": "Consumes MCP; exposes no MCP server for agents."
+      }
     },
     "MAL-20": {
       "status": "assessed",
@@ -212,7 +218,13 @@
       "grade": "A",
       "evidence": "Members complete tasks conversationally with retrieval, web search, code and tool actions; there is no natural-language authoring of LibreChat's own definitions.",
       "alt_score": 3,
-      "alt_note": "The member half of level 3 is fully met."
+      "alt_note": "The member half of level 3 is fully met.",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Grounded chat with retrieval and tools for members."
+      }
     },
     "GOV-09": {
       "status": "assessed",
@@ -220,7 +232,13 @@
       "grade": "A",
       "evidence": "Agent API keys with expiry (packages/data-schemas/src/types/agentApiKey.ts), on-behalf-of token exchange for MCP (api/server/services/OboTokenService.js), tool-call approvals before execution, rate limits, audit logs and idempotent trigger deliveries. Scored at the lower reading under rule 11 because: Idempotency covers trigger deliveries, not API mutations.",
       "alt_score": 3,
-      "alt_note": "The September v0.3 pass scored 3 on the evidence above."
+      "alt_note": "The September v0.3 pass scored 3 on the evidence above.",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Agent API keys, on-behalf-of token exchange for MCP and tool-call approvals (api/server/services/OboTokenService.js)."
+      }
     },
     "MAL-16": {
       "status": "assessed",
@@ -279,13 +297,25 @@
       "status": "assessed",
       "score": 0,
       "grade": "A",
-      "evidence": "No recommendation or proposal features."
+      "evidence": "No recommendation or proposal features.",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "No AI involvement in this behaviour."
+      }
     },
     "DEL-04": {
       "status": "assessed",
       "score": 0,
       "grade": "A",
-      "evidence": "No AI authoring lane for LibreChat's own definitions."
+      "evidence": "No AI authoring lane for LibreChat's own definitions.",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "No AI involvement in this behaviour."
+      }
     },
     "LRN-09": {
       "status": "assessed",
@@ -320,13 +350,24 @@
       "score": 1,
       "grade": "A",
       "evidence": "By default nothing learns from use. With the memory block enabled (commented out in librechat.example.yaml:1351-1360), a memory agent stores user facts from recent chat automatically.",
-      "available_score": 3
+      "available_score": 3,
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "Off by default.",
+        "available_score": 3
+      }
     },
     "LRN-08": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "No checks on learned memories beyond configured key and token limits (librechat.example.yaml:1354-1358)."
+      "evidence": "No checks on learned memories beyond configured key and token limits (librechat.example.yaml:1354-1358).",
+      "ai": {
+        "status": "not_applicable",
+        "rationale": "agent_mutations is false."
+      }
     },
     "ARC-02": {
       "status": "assessed",
@@ -358,7 +399,13 @@
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Provider calls have timeouts and errors are contained per conversation; MCP servers run as separate connections."
+      "evidence": "Provider calls have timeouts and errors are contained per conversation; MCP servers run as separate connections.",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Timeouts on provider calls (packages/api/src/endpoints/openai/config.ts); errors contained per conversation."
+      }
     },
     "ARC-09": {
       "status": "assessed",
@@ -372,7 +419,13 @@
       "status": "assessed",
       "score": 0,
       "grade": "A",
-      "evidence": "No request or feature-request object for changing the product was found; requests live outside it."
+      "evidence": "No request or feature-request object for changing the product was found; requests live outside it.",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "No AI involvement in this behaviour."
+      }
     },
     "DEL-09": {
       "status": "assessed",
@@ -396,17 +449,31 @@
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "Engineers read logs."
+      "evidence": "Engineers read logs.",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "No AI involvement in this behaviour."
+      }
     },
     "GOV-10": {
       "status": "not_applicable",
       "rationale": "No self-change path by default; the memory agent is opt-in.",
-      "if_applicable": 1
+      "if_applicable": 1,
+      "ai": {
+        "status": "not_applicable",
+        "rationale": "GOV-10 is not applicable."
+      }
     },
     "GOV-11": {
       "status": "not_applicable",
       "rationale": "No self-change path by default.",
-      "if_applicable": 1
+      "if_applicable": 1,
+      "ai": {
+        "status": "not_applicable",
+        "rationale": "GOV-11 is not applicable."
+      }
     },
     "EXP-04": {
       "status": "assessed",
@@ -418,7 +485,13 @@
       "status": "assessed",
       "score": 0,
       "grade": "A",
-      "evidence": "No adjacent-capability proposals."
+      "evidence": "No adjacent-capability proposals.",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "No AI involvement in this behaviour."
+      }
     },
     "EXP-06": {
       "status": "assessed",
@@ -429,10 +502,66 @@
     "DEL-11": {
       "status": "not_applicable",
       "rationale": "Scope fact code_release_path is false: No first-party evolution system ships code changes."
+    },
+    "AIR-01": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Admins configure many providers and model specs (librechat.yaml, packages/api/src/endpoints); no declared resilience strategy."
+    },
+    "AIR-02": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Token transactions recorded per user; balances that limit spending are opt-in (librechat.example.yaml:363-378).",
+      "available_score": 3
+    },
+    "AIR-03": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "File search over uploaded files through the RAG API (api/app/clients/tools/util/fileSearch.js); other product data is not indexed."
+    },
+    "AIR-04": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Retrieval covers files attached to the conversation or agent; agents shared through ACLs carry their builder's files to other users.",
+      "alt_score": 3,
+      "alt_note": "Per-user file ownership checks may meet level 3.",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      }
+    },
+    "AIR-05": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No evaluation harness."
+    },
+    "AIR-06": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Configuration changes are tested manually in chat."
+    },
+    "AIR-07": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Messages store model, tokens and tool calls; Langfuse fan-out tracing is optional (packages/api/src/langfuse, traces/handlers.ts)."
+    },
+    "AIR-08": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Users rate messages with tags, and admin insights summarise usage (packages/data-schemas/src/schema/message.ts:103, packages/api/src/insights); no drift alerts."
     }
   },
   "limits": "Repository evidence only, main at the tip named above. The hosted code interpreter, RAG API and third-party MCP servers are out of scope. Whether the accessibility and Lighthouse checks run on every pull request depends on path filters and inputs that were read, not exercised. Single rater.",
-  "framework_version": "0.4.0",
+  "framework_version": "0.5.0",
   "reading": "**SAL 0.** Configuration is file-based and partly unversioned (Open 1.7), and there is no AI lane for LibreChat's own definitions (DEL-04 0), so no loop has a build path at L1. Users rate messages with tags (LRN-03 2), which is a useful start. **Next level:** governed, versioned configuration in the product, and backup (ARC-09 0).",
   "framework": "EVOLVE",
   "scope_facts": {
@@ -471,6 +600,18 @@
     "code_release_path": {
       "value": false,
       "evidence": "No first-party evolution system ships code changes."
+    },
+    "ai_features": {
+      "value": true,
+      "evidence": "Chat with many model providers and agents (packages/api/src/endpoints, agents)."
+    },
+    "ai_data_access": {
+      "value": true,
+      "evidence": "File search over uploaded files (api/app/clients/tools/util/fileSearch.js)."
+    },
+    "ai_actions": {
+      "value": true,
+      "evidence": "Agents call tools and MCP servers that act on external systems (packages/api/src/mcp)."
     }
   }
 }

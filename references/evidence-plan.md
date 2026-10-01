@@ -50,6 +50,13 @@ Dispatch one read-only explorer per capability (six in parallel), or one per are
 - Discover: failed-search and zero-result logs, unsupported requests to an assistant, feature-request objects, workaround signals (custom fields, exports, external tools); clustering into themes; adjacent-capability proposals with evidence and sizing.
 - Launch: per-tenant or per-cohort enablement of new capabilities or bundles; early-access programmes; success metrics, review dates, removal paths and recorded keep-or-kill decisions.
 
+## AI Readiness (AIR), when the product has AI features
+- Operations: model and provider configuration, fallback or failover (including same-provider and self-hosted), controlled degradation, timeouts and breakers around model calls; token and cost recording per user or tenant, budgets and quotas; feedback, accuracy and drift monitoring.
+- Context: what data the model can reach (retrieval, tools, memory) and whether it is current and attributed; whether every retrieval and tool call runs with the requesting user's permissions, with tests.
+- Quality: evaluation sets, judges and harnesses in the repository; whether evaluations run on pull requests or releases and whether a regression blocks the change.
+- Governance: per-call logs of model, prompt, input, output, tool calls and the user on whose behalf the AI acted; approval of AI actions.
+- For each of the 13 reused criteria, record a separate `ai` reading scored only on AI-backed behaviour. Rule-based diagnosis or heuristic tuning scores 0 in the AI reading, however good it is.
+
 ## After the reports
 
 Re-read every score of 3 or higher, and every critical-control criterion, against one primary source yourself before publishing. Explorer summaries are evidence pointers, not evidence.

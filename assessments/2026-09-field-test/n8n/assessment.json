@@ -227,7 +227,13 @@
       "grade": "A",
       "evidence": "Instance MCP server with scoped API keys, per-workflow tool availability and MCP evaluations (packages/cli/src/modules/mcp: mcp-scopes.ts, mcp-tool-availability.ts, evaluations).",
       "alt_score": 4,
-      "alt_note": "Each exposed workflow becomes a tool whose schema comes from its trigger definition."
+      "alt_note": "Each exposed workflow becomes a tool whose schema comes from its trigger definition.",
+      "ai": {
+        "status": "assessed",
+        "score": 3,
+        "grade": "A",
+        "evidence": "Instance MCP server with scoped keys (packages/cli/src/modules/mcp)."
+      }
     },
     "MAL-20": {
       "status": "assessed",
@@ -235,7 +241,13 @@
       "grade": "A",
       "evidence": "Instance AI gives a natural-language interface to workflows, executions, credentials and nodes, with plans and approval cards before execution (packages/@n8n/instance-ai/docs/architecture.md, tools.md:18-82); chat hub for members (packages/cli/src/modules/chat-hub); Instance AI evaluations run in CI (.github/workflows/ci-instance-ai-evals.yml).",
       "alt_score": 4,
-      "alt_note": "Instance AI aims to make workflows reachable without the UI and is evaluated in CI."
+      "alt_note": "Instance AI aims to make workflows reachable without the UI and is evaluated in CI.",
+      "ai": {
+        "status": "assessed",
+        "score": 3,
+        "grade": "A",
+        "evidence": "Instance AI grounded in workflows and executions, with plans and approvals."
+      }
     },
     "GOV-09": {
       "status": "assessed",
@@ -243,7 +255,15 @@
       "grade": "A",
       "evidence": "Scoped API keys and MCP scopes, approval cards for AI actions, policy checks and audit events; no idempotency keys or dry-run for API mutations.",
       "alt_score": 3,
-      "alt_note": "Manual test executions with pinned data act as a dry-run for workflows."
+      "alt_note": "Manual test executions with pinned data act as a dry-run for workflows.",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Scoped keys and approval cards for AI actions; no idempotency or dry-run.",
+        "alt_score": 3,
+        "alt_note": "Approval cards preview actions."
+      }
     },
     "MAL-16": {
       "status": "assessed",
@@ -315,7 +335,13 @@
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "The breaking-changes detection report recommends fixes before upgrades (packages/cli/src/modules/breaking-changes/detection-report.ts): evidence-backed recommendations for one area."
+      "evidence": "The breaking-changes detection report recommends fixes before upgrades (packages/cli/src/modules/breaking-changes/detection-report.ts): evidence-backed recommendations for one area.",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "Breaking-change recommendations are rule-based."
+      }
     },
     "DEL-04": {
       "status": "assessed",
@@ -323,7 +349,15 @@
       "grade": "A",
       "evidence": "AI workflow builder and Instance AI turn requests into workflow changes behind approvals, per instance.",
       "alt_score": 3,
-      "alt_note": "The lane is broad and governed, not narrow and engineer-run."
+      "alt_note": "The lane is broad and governed, not narrow and engineer-run.",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "The builder and Instance AI change workflows behind approvals.",
+        "alt_score": 3,
+        "alt_note": "Wide coverage."
+      }
     },
     "LRN-09": {
       "status": "assessed",
@@ -361,7 +395,13 @@
       "grade": "A",
       "evidence": "The AI workflow builder and Instance AI change workflows when asked; nothing learns from runs without being asked.",
       "alt_score": 2,
-      "alt_note": "Insights capture experience that the AI can read on request."
+      "alt_note": "Insights capture experience that the AI can read on request.",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "No AI involvement in this behaviour."
+      }
     },
     "LRN-08": {
       "status": "assessed",
@@ -374,6 +414,12 @@
         "implemented": true,
         "tested": true,
         "operated": false
+      },
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "AI-built workflow versions can be evaluated against datasets before publishing, run by people (packages/cli/src/evaluation.ee)."
       }
     },
     "ARC-02": {
@@ -416,7 +462,20 @@
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Code nodes run in separate task-runner processes (packages/@n8n/task-runner, task-runner-python); nodes have retry-on-fail and timeouts; community nodes run in-process."
+      "evidence": "Code nodes run in separate task-runner processes (packages/@n8n/task-runner, task-runner-python); nodes have retry-on-fail and timeouts; community nodes run in-process.",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Retry-on-fail, timeouts and fallback models on agent nodes.",
+        "alt_score": 3,
+        "alt_note": "Fallback models contain provider failure.",
+        "facets": {
+          "implemented": true,
+          "tested": false,
+          "operated": false
+        }
+      }
     },
     "ARC-09": {
       "status": "assessed",
@@ -430,7 +489,15 @@
       "grade": "A",
       "evidence": "The AI workflow builder plans before building: it asks typed clarifying questions and produces a plan with a trigger, steps, suggested nodes and specifications that the user approves (packages/@n8n/ai-workflow-builder.ee/src/types/planning.ts, agents/planner.agent.ts). The plan has no acceptance criteria or risk class.",
       "alt_score": 3,
-      "alt_note": "A confirmed, structured plan with clarifying questions approaches levels 3 and 4."
+      "alt_note": "A confirmed, structured plan with clarifying questions approaches levels 3 and 4.",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "The planner asks clarifying questions and drafts a plan (ai-workflow-builder.ee/src/types/planning.ts).",
+        "alt_score": 3,
+        "alt_note": "Close to a specification."
+      }
     },
     "DEL-09": {
       "status": "assessed",
@@ -458,13 +525,27 @@
       "grade": "A",
       "evidence": "Failed executions keep the failing node, input and error; the AI assistant can explain a node error on request.",
       "alt_score": 3,
-      "alt_note": "On-request AI debugging with node context approaches level 3."
+      "alt_note": "On-request AI debugging with node context approaches level 3.",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "The AI assistant explains node errors with context on request.",
+        "alt_score": 3,
+        "alt_note": "Close to level 3."
+      }
     },
     "GOV-10": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Admin type-availability policies restrict which node types any change may use, enforced at save and publish (packages/cli/src/modules/type-availability-policies); no per-period or blast-radius limits."
+      "evidence": "Admin type-availability policies restrict which node types any change may use, enforced at save and publish (packages/cli/src/modules/type-availability-policies); no per-period or blast-radius limits.",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Type-availability policies restrict AI-built workflows."
+      }
     },
     "GOV-11": {
       "status": "assessed",
@@ -472,7 +553,15 @@
       "grade": "A",
       "evidence": "Instance AI wraps resolved node parameters and external responses as untrusted data (packages/cli/src/modules/instance-ai/extract-resolved-node-parameters.ts:378-382); changes do not record their source inputs.",
       "alt_score": 3,
-      "alt_note": "Untrusted data is separated systematically in Instance AI."
+      "alt_note": "Untrusted data is separated systematically in Instance AI.",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Instance AI wraps external data as untrusted (extract-resolved-node-parameters.ts:378-382).",
+        "alt_score": 3,
+        "alt_note": "Systematic in Instance AI."
+      }
     },
     "EXP-04": {
       "status": "assessed",
@@ -484,7 +573,13 @@
       "status": "assessed",
       "score": 0,
       "grade": "A",
-      "evidence": "No adjacent-capability proposals."
+      "evidence": "No adjacent-capability proposals.",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "No AI involvement in this behaviour."
+      }
     },
     "EXP-06": {
       "status": "assessed",
@@ -495,10 +590,77 @@
     "DEL-11": {
       "status": "not_applicable",
       "rationale": "Scope fact code_release_path is false: The AI lanes change workflows, not n8n code."
+    },
+    "AIR-01": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "AI agent nodes support a fallback model (packages/@n8n/nodes-langchain/nodes/agents/Agent/agents/utils.ts, ToolsAgent/common.ts), and operators choose models per node."
+    },
+    "AIR-02": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Instance AI credits are tracked and enforced per instance with a credit display (packages/cli/src/modules/instance-ai/instance-ai-credit.service.ts, instance-ai-credit-display.ts)."
+    },
+    "AIR-03": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "The builder gets node types and workflow context; Instance AI resolves workflows, executions and node parameters live (packages/cli/src/modules/instance-ai/instance-context.service.ts)."
+    },
+    "AIR-04": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Instance AI looks up workflows within the user's scopes (instance-ai.adapter.service.ts) with folder-scope tests (__tests__/instance-ai-folder-scope.test.ts, instance-ai-folder-scoped-listing.integration.test.ts).",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      }
+    },
+    "AIR-05": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Evaluation harness with evaluators, datasets and LangSmith runs for the workflow builder and Instance AI (packages/@n8n/ai-workflow-builder.ee/evaluations)."
+    },
+    "AIR-06": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Instance AI evals run automatically on pull requests touching AI paths (.github/workflows/ci-instance-ai-evals.yml:18-21) and builder evals on minor releases (test-evals-ai-release.yml); no blocking threshold was found.",
+      "alt_score": 3,
+      "alt_note": "Results are posted on every relevant pull request.",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      }
+    },
+    "AIR-07": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Instance AI tracing service (packages/cli/src/modules/instance-ai/tracing) and audit events for approved actions; model and prompt version are not recorded with each change.",
+      "alt_score": 3,
+      "alt_note": "Approval cards and tracing together approach level 3.",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      }
+    },
+    "AIR-08": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Evaluation metrics per test run and failure rates per workflow are recorded (packages/cli/src/evaluation.ee, modules/insights); no drift alerts."
     }
   },
   "limits": "Repository evidence only, master at the tip named above. Enterprise modules (*.ee) are included; they need a licence to run. n8n Cloud operations, the template gallery and community-node certification processes are outside the repository. Single rater.",
-  "framework_version": "0.4.0",
+  "framework_version": "0.5.0",
   "reading": "**SAL 2**, joint highest in the sample. The AI workflow builder asks clarifying questions and produces a plan for approval before it builds (DEL-01 2, DEL-04 2), and Insights reports failure rates per workflow (LRN-03 2), so both core loops reach L2. **Blocks L3:** controls, not workflow: migrations have no enforced online strategy (ARC-02 2), entity export has no restore test or recovery objectives (ARC-09 2), definition rollback covers workflows only (GOV-05 2), and AI changes have no declared blast-radius limit (GOV-10 2).",
   "framework": "EVOLVE",
   "scope_facts": {
@@ -537,6 +699,18 @@
     "code_release_path": {
       "value": false,
       "evidence": "The AI lanes change workflows, not n8n code."
+    },
+    "ai_features": {
+      "value": true,
+      "evidence": "AI workflow builder, Instance AI and AI agent nodes (packages/@n8n/ai-workflow-builder.ee, packages/cli/src/modules/instance-ai)."
+    },
+    "ai_data_access": {
+      "value": true,
+      "evidence": "Instance AI reads workflows, executions and node parameters (packages/cli/src/modules/instance-ai)."
+    },
+    "ai_actions": {
+      "value": true,
+      "evidence": "Instance AI and the builder create and change workflows behind approvals."
     }
   }
 }
