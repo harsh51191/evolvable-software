@@ -15,13 +15,15 @@ Repository evidence only, dev branch at the tip named above. Enterprise and cons
 ---
 Framework EVOLVE 0.4.0. Date 2026-09-30. Source github.com/anomalyco/opencode @ 2fa3363c924c5c3e367b84a87ae478296a0ed59b (dev). Archetype **agent-runtime**.
 
-Scope facts true: persistent_data, schema_changes. False: multi_tenant, hosted_service, agent_mutations, automatic_apply, code_release_path.
+Scope facts true: persistent_data, schema_changes, machine_actions, definition_change_path. False: multi_tenant, hosted_service, agent_mutations, evolution_auto_apply, code_release_path.
 
 Coverage: 51 assessed, 0 not evidenced, 15 not applicable. Grades: 51 A, 0 B, 0 C.
 
 ## Software Autonomy Level
 
 **SAL 0 (Manual) · Request → Release L0 · Issue → Fix L0 · Opportunity → Expansion L0**
+
+Progress toward the next level: Request → Release 1 of 2 conditions for L1; Issue → Fix 1 of 3 conditions for L1; Opportunity → Expansion 1 of 2 conditions for L1.
 
 - With opt-in settings: SAL 0 (Manual) · Request → Release L0 · Issue → Fix L0 · Opportunity → Expansion L0.
 - With every alternate reading: SAL 0 (Manual) · Request → Release L1 · Issue → Fix L0 · Opportunity → Expansion L1.
@@ -42,13 +44,18 @@ Coverage: 51 assessed, 0 not evidenced, 15 not applicable. Grades: 51 A, 0 B, 0 
 | Tested backup and restore | ARC-09 ≥ 3 | 1 | fail |
 | Tenant isolation | ARC-05 ≥ 3 | n/a | n/a |
 | Security as infrastructure | GOV-04 ≥ 3 | 2 | fail |
-| Bounded self-change | not applicable (agent_mutations and automatic_apply false) | n/a | n/a |
+| Bounded self-change | not applicable (agent_mutations and evolution_auto_apply false) | n/a | n/a |
 
 ### What blocks the next level
 
 - **Request → Release to L1**: spine Roll back needs rollback ≥ 2 (has GOV-05 1)
 - **Issue → Fix to L1**: spine Roll back needs rollback ≥ 2 (has GOV-05 1); stages Detect needs LRN-03 ≥ 2 (has 1)
 - **Opportunity → Expansion to L1**: spine Roll back needs rollback ≥ 2 (has GOV-05 1)
+
+### Sensitivity
+
+- **Robust:** no single criterion falling one level lowers the headline.
+- No single criterion rising one level lifts the headline.
 
 ## EVOLVE profile
 

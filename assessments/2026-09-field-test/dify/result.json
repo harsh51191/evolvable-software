@@ -10,8 +10,10 @@
     "schema_changes": true,
     "multi_tenant": true,
     "hosted_service": true,
+    "machine_actions": true,
     "agent_mutations": false,
-    "automatic_apply": false,
+    "evolution_auto_apply": false,
+    "definition_change_path": true,
     "code_release_path": false
   },
   "coverage": {
@@ -37,6 +39,8 @@
           "architecture": 1,
           "governance": 2
         },
+        "next_met": 2,
+        "next_total": 4,
         "blockers": [
           {
             "part": "stages",
@@ -63,6 +67,8 @@
           "architecture": 1,
           "governance": 2
         },
+        "next_met": 2,
+        "next_total": 5,
         "blockers": [
           {
             "part": "stages",
@@ -96,6 +102,8 @@
           "architecture": 1,
           "governance": 2
         },
+        "next_met": 2,
+        "next_total": 5,
         "blockers": [
           {
             "part": "stages",
@@ -160,11 +168,31 @@
       },
       {
         "control": "Bounded self-change",
-        "needs": "not applicable (agent_mutations and automatic_apply false)",
+        "needs": "not applicable (agent_mutations and evolution_auto_apply false)",
         "observed": "n/a",
         "status": "n/a"
       }
     ]
+  },
+  "sensitivity": {
+    "raise_headline": [],
+    "lower_headline": [
+      "LRN-03",
+      "GOV-05"
+    ],
+    "raise_loop": {},
+    "lower_loop": {
+      "fix": [
+        "LRN-03",
+        "GOV-05"
+      ],
+      "request": [
+        "GOV-05"
+      ],
+      "expansion": [
+        "GOV-05"
+      ]
+    }
   },
   "capabilities": {
     "ARC": 1.5,

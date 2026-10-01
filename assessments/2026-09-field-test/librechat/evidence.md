@@ -8,8 +8,10 @@ Read at github.com/danny-avila/LibreChat @ 14f7b2865692d27364c934ecb991249637101
 - **schema_changes**: true. Data migration scripts change stored documents and indexes (config/migrate-*.js).
 - **multi_tenant**: true. A tenant isolation plugin scopes models by tenant (packages/data-schemas/src/models/plugins/tenantIsolation.coverage.spec.ts).
 - **hosted_service**: true. Node API serving many users, with optional Redis (api/cache).
+- **machine_actions**: true. The API changes agents, prompts and conversations for authenticated clients, and MCP tools act on users' behalf.
 - **agent_mutations**: false. By default no AI changes LibreChat definitions; the memory agent is commented out in librechat.example.yaml:1351-1360.
-- **automatic_apply**: false. Definition changes are direct human actions by default.
+- **evolution_auto_apply**: false. Definition changes are direct human actions by default.
+- **definition_change_path**: true. librechat.yaml, agents and prompts are definitions.
 - **code_release_path**: false. No first-party evolution system ships code changes.
 
 ## Elastic (ARC)
@@ -151,8 +153,7 @@ Read at github.com/danny-avila/LibreChat @ 14f7b2865692d27364c934ecb991249637101
 
 ### Change control
 
-- **GOV-05 Definitions and layouts versioned with rollback**: **2** (grade A), facets: implemented. Agents keep a versions history (packages/data-schemas/src/schema/agent.ts:125) and prompt groups keep versions with a chosen production version (promptGroup.ts:25); configuration is unversioned in the product.
-  - Higher reading 3: Agents and prompts are the main customisation surfaces.
+- **GOV-05 Definitions and layouts versioned with rollback**: **2** (grade A), facets: implemented. Agents keep a versions history (packages/data-schemas/src/schema/agent.ts:125) and prompt groups keep versions with a chosen production version (promptGroup.ts:25); configuration is unversioned in the product. The higher reading of 3 was dropped under the inventory rule (a 3 needs every default surface at 3): Configuration is unversioned in the product.
 - **GOV-06 Proposal, review, apply as a first-class object with preview**: **2** (grade A). Prompt groups stage versions and promote one to production; agents are edited and saved directly; no review step.
 - **GOV-07 Policy-based apply with recorded approvals and a movable human boundary**: **1** (grade A). Every definition change is a direct human action; the approval lifecycle (packages/api/src/stream/ApprovalLifecycle.ts) gates agent tool calls, not changes.
 - **GOV-08 Upgrade safety**: **2** (grade A). librechat.yaml carries a schema version checked at load, and UPGRADING.md documents migrations; compatibility is mostly manual.

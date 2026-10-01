@@ -6,7 +6,7 @@ Scope: the openclaw monorepo (gateway, agents, channels, skills and Skill Worksh
 
 ## Reading
 
-**SAL 2**, joint highest. /learn turns a request into a pending skill proposal (DEL-01 2), and the experience review drafts and applies skills from observed runs (LRN-07 3), so both core loops reach L2. **Blocks L3:** skills have backup, restore and rollback, but configuration has only rotating backups (GOV-05 2, inventory); there is no staged exposure for skill changes (DEL-09 1); the default auto-apply has no declared blast-radius limit (GOV-10 2).
+**SAL 2**, joint highest. /learn turns a request into a pending skill proposal (DEL-01 2), and the experience review drafts and applies skills from observed runs (LRN-07 3), so both core loops reach L2. Backup and restore are verified and tested across state, configuration, credentials and skills (ARC-09 3). **Blocks L3:** configuration has only rotating backups, not operator rollback (GOV-05 2, inventory); skill changes have no staged exposure (DEL-09 1); the default auto-apply has no declared blast-radius limit (GOV-10 2).
 
 ## Limits
 
@@ -15,13 +15,15 @@ Repository evidence only, main at the tip named above. ClawHub (registry and sca
 ---
 Framework EVOLVE 0.4.0. Date 2026-09-30. Source github.com/openclaw/openclaw @ df2a29cac9ad37c31a0f5a0d977ba3e4fd833cb0 (main). Archetype **agent-runtime**.
 
-Scope facts true: persistent_data, schema_changes, agent_mutations, automatic_apply. False: multi_tenant, hosted_service, code_release_path.
+Scope facts true: persistent_data, schema_changes, machine_actions, agent_mutations, evolution_auto_apply, definition_change_path. False: multi_tenant, hosted_service, code_release_path.
 
 Coverage: 53 assessed, 0 not evidenced, 13 not applicable. Grades: 53 A, 0 B, 0 C.
 
 ## Software Autonomy Level
 
 **SAL 2 (Assisted) · Request → Release L2 · Issue → Fix L2 · Opportunity → Expansion L1**
+
+Progress toward the next level: Request → Release 14 of 21 conditions for L3; Issue → Fix 15 of 23 conditions for L3; Opportunity → Expansion 3 of 5 conditions for L2.
 
 - With opt-in settings: SAL 2 (Assisted) · Request → Release L2 · Issue → Fix L2 · Opportunity → Expansion L1.
 - With every alternate reading: SAL 2 (Assisted) · Request → Release L2 · Issue → Fix L2 · Opportunity → Expansion L1.
@@ -39,22 +41,27 @@ Coverage: 53 assessed, 0 not evidenced, 13 not applicable. Grades: 53 A, 0 B, 0 
 | Definition rollback | GOV-05 ≥ 3 | 2 | fail |
 | Release rollback | DEL-11 ≥ 3 | n/a | n/a |
 | Safe migrations | ARC-02 ≥ 3 | 2 | fail |
-| Tested backup and restore | ARC-09 ≥ 3 | 2 | fail |
+| Tested backup and restore | ARC-09 ≥ 3 | 3 | pass |
 | Tenant isolation | ARC-05 ≥ 3 | n/a | n/a |
 | Security as infrastructure | GOV-04 ≥ 3 | 3 | pass |
 | Bounded self-change | GOV-10 ≥ 3 and LRN-08 ≥ 2 | 2; 2 | fail |
 
 ### What blocks the next level
 
-- **Request → Release to L3**: spine Build needs product build path ≥ 3 (has DEL-04 2); spine Verify needs DEL-05 ≥ 3 (has 2); spine Stage needs DEL-09 ≥ 2 (has 1); spine Roll back needs GOV-05 ≥ 3 (has 2); stages Intake needs DEL-01 ≥ 3 (has 2); architecture Foundation needs ARC-02 ≥ 3 (has 2); architecture Foundation needs ARC-09 ≥ 3 (has 2); governance Ceiling needs GOV-10 ≥ 3 and LRN-08 ≥ 2 (has 2; 2)
-- **Issue → Fix to L3**: spine Verify needs DEL-05 ≥ 3 (has 2); spine Stage needs DEL-09 ≥ 2 (has 1); spine Roll back needs GOV-05 ≥ 3 (has 2); stages Detect needs LRN-03 ≥ 3 (has 2); stages Diagnose needs LRN-05 ≥ 3 (has 2); stages Propose needs LRN-06 ≥ 3 (has 2); architecture Foundation needs ARC-02 ≥ 3 (has 2); architecture Foundation needs ARC-09 ≥ 3 (has 2); governance Ceiling needs GOV-10 ≥ 3 and LRN-08 ≥ 2 (has 2; 2)
+- **Request → Release to L3**: spine Build needs product build path ≥ 3 (has DEL-04 2); spine Verify needs DEL-05 ≥ 3 (has 2); spine Stage needs DEL-09 ≥ 2 (has 1); spine Roll back needs GOV-05 ≥ 3 (has 2); stages Intake needs DEL-01 ≥ 3 (has 2); architecture Foundation needs ARC-02 ≥ 3 (has 2); governance Ceiling needs GOV-10 ≥ 3 and LRN-08 ≥ 2 (has 2; 2)
+- **Issue → Fix to L3**: spine Verify needs DEL-05 ≥ 3 (has 2); spine Stage needs DEL-09 ≥ 2 (has 1); spine Roll back needs GOV-05 ≥ 3 (has 2); stages Detect needs LRN-03 ≥ 3 (has 2); stages Diagnose needs LRN-05 ≥ 3 (has 2); stages Propose needs LRN-06 ≥ 3 (has 2); architecture Foundation needs ARC-02 ≥ 3 (has 2); governance Ceiling needs GOV-10 ≥ 3 and LRN-08 ≥ 2 (has 2; 2)
 - **Opportunity → Expansion to L2**: stages Sense needs EXP-04 ≥ 2 (has 1); stages Propose needs EXP-05 ≥ 2 (has 1)
+
+### Sensitivity
+
+- **Fragile:** the headline drops if any of these falls one level: DEL-01, DEL-04, DEL-05, LRN-03, LRN-05, LRN-06, GOV-05.
+- No single criterion rising one level lifts the headline.
 
 ## EVOLVE profile
 
 | Capability | Default | Range with alternate readings | With opt-in settings | Assessed only | If every criterion counted |
 |---|---:|---|---:|---:|---:|
-| Elastic (ARC) | 2.0 | 2.0–2.3 | 2.0 | 2.0 | 1.9 |
+| Elastic (ARC) | 2.3 | 2.3 | 2.3 | 2.3 | 2.0 |
 | Velocity (DEL) | 2.2 | 2.2–2.6 | 2.2 | 2.2 | 2.2 |
 | Open (MAL) | 2.4 | 2.4–2.9 | 2.4 | 2.4 | 2.0 |
 | Learn (LRN) | 2.1 | 2.1–2.8 | 2.1 | 2.1 | 2.1 |
@@ -66,7 +73,7 @@ Coverage: 53 assessed, 0 not evidenced, 13 not applicable. Grades: 53 A, 0 B, 0 
 | Area | Default |
 |---|---:|
 | ARC Data | 2.0 |
-| ARC Resilience | 2.0 |
+| ARC Resilience | 2.5 |
 | DEL Intake | 2.0 |
 | DEL Build | 2.7 |
 | DEL Verify | 2.5 |
@@ -99,8 +106,8 @@ Coverage: 53 assessed, 0 not evidenced, 13 not applicable. Grades: 53 A, 0 B, 0 
 | ARC-05 Tenant isolation and noisy-neighbour controls | not_applicable | excluded |  |  | - |  | Scope fact multi_tenant is false: A personal assistant per installation; shared gateways carry several people but are not isolated tenants (VISION.md). |
 | ARC-06 Ceilings measured, not discovered in incidents | not_applicable | excluded |  |  | - |  | Scope fact hosted_service is false: A personal gateway daemon, not a multi-user service. |
 | ARC-07 Service objectives defined and monitored | not_applicable | excluded |  |  | - |  | Scope fact hosted_service is false: A personal gateway daemon, not a multi-user service. |
-| ARC-08 Failure isolation and graceful degradation | assessed | 2 | 3 |  | A | I | Agents can declare model fallbacks (src/agents/agent-scope-config.ts); plugins run in-process. |
-| ARC-09 Backup, restore and recovery | assessed | 2 | 3 |  | A | IT | Backup, scheduled backup, restore, health checks and a resource inventory, with restore tests and privacy rules for secrets (src/commands/backup-restore.ts, backup-schedule.ts, backup-health.ts, backup-resource-inventory.ts, backup-restore.test.ts). No recovery objectives are stated. |
+| ARC-08 Failure isolation and graceful degradation | assessed | 2 |  |  | A |  | Agents can declare model fallbacks (src/agents/agent-scope-config.ts); plugins run in-process, so a 3 is not defensible under the inventory rule. |
+| ARC-09 Backup, restore and recovery | assessed | 3 |  |  | A | IT | Inventory: data 3, definitions 3, files 3, secrets 3. Backup covers state, configuration, credentials, workspaces, agents and managed skills (src/commands/backup-shared.ts:76), with verification, scheduling and a restore test that round-trips into a fresh target with a matching inventory (src/commands/backup-restore.test.ts:176). Private captures are excluded by design. No recovery objectives are stated (level 4). |
 | DEL-01 Request intake into a structured change specification | assessed | 2 | 3 |  | A |  | The /learn command turns a request into requirements and sources and stages a pending skill proposal for review, revising existing Workshop skills before creating new ones (src/skills/workshop/learn-prompt.ts). No acceptance criteria or risk class. |
 | DEL-02 Layers deploy independently | assessed | 3 |  |  | A |  | Gateway, Control UI and macOS, iOS and Android companion apps are separate deployables with their own release workflows (apps/, .github/workflows/android-release.yml, ios-release-e2e.yml). |
 | DEL-03 Module boundaries enforced by tooling | assessed | 3 |  |  | A |  | Separate TypeScript projects for core, extensions, UI and scripts (tsconfig.core.json, tsconfig.extensions.projects.json) and a plugin activation boundary test (src/plugin-activation-boundary.test.ts). |

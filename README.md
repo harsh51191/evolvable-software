@@ -50,7 +50,7 @@ This is a **public beta**. It is designed to produce a falsifiable assessment, n
   - bounded self-change.
 
   A failed applicable control caps every loop at L2.
-- Seven scope facts that decide which criteria and controls apply, so a local tool is not failed on tenant isolation.
+- Nine scope facts that decide which criteria and controls apply, so a local tool is not failed on tenant isolation and a product that only changes through code is not failed on definition rollback.
 - Evidence grades, evidence facets (implemented, tested, operated) and a depth cap: architecture and control criteria need tested evidence for a 3 and operated evidence for a 4.
 - Scoring of the default configuration, with shipped opt-in settings and higher alternate readings reported separately.
 - Enforced archetype exclusions and an interpretation guide for agent runtimes and developer platforms.

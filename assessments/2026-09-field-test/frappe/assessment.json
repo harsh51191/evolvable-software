@@ -394,13 +394,12 @@
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "bench backup covers the database, public and private files and site config, with optional encryption (frappe/commands/site.py:899-1030, frappe/utils/backups.py); restore from full and partial backups is tested end to end (frappe/commands/test_commands.py:280-330). No recovery objectives are stated.",
-      "alt_score": 3,
-      "alt_note": "Everything but stated RPO and RTO meets level 3.",
-      "facets": {
-        "implemented": true,
-        "tested": true,
-        "operated": false
+      "evidence": "bench backup covers the database, public and private files and site config, with optional encryption (frappe/commands/site.py:899-1030, frappe/utils/backups.py), and restore from full and partial backups is tested end to end (frappe/commands/test_commands.py:280-330). The site config holding the encryption key is backed up but its restore is not tested, so secrets stay at 2.",
+      "inventory": {
+        "data": 3,
+        "definitions": 3,
+        "files": 3,
+        "secrets": 2
       }
     },
     "DEL-01": {
@@ -459,16 +458,16 @@
     },
     "GOV-10": {
       "status": "not_applicable",
-      "rationale": "Scope fact agent_mutations and automatic_apply is false: No first-party AI or agent changes Frappe definitions in this repository."
+      "rationale": "Scope fact agent_mutations and evolution_auto_apply is false: No first-party AI or agent changes Frappe definitions in this repository."
     },
     "GOV-11": {
       "status": "not_applicable",
-      "rationale": "Scope fact agent_mutations and automatic_apply is false: No first-party AI or agent changes Frappe definitions in this repository."
+      "rationale": "Scope fact agent_mutations and evolution_auto_apply is false: No first-party AI or agent changes Frappe definitions in this repository."
     }
   },
   "limits": "Repository evidence only, develop branch at the tip named above. No running site was inspected, so validation and preview behaviour is read from code, not exercised. Frappe Cloud features (marketplace, staging sites, backups) and apps built on the framework are out of scope. Whether CI checks block merges depends on branch protection, which is not visible in the repository. Single rater; the eight alternate readings mark where a second rater could reasonably differ.",
   "framework_version": "0.4.0",
-  "reading": "**SAL 1.** Operators reshape Frappe without code (Open 2.3), so every loop reaches L1, but nothing in the product drafts or builds a change (DEL-04 0) and requests have no intake (DEL-01 0), so no loop reaches L2. **Architecture:** backups and restores are tested end to end, but no recovery objectives are stated (ARC-09 2) and migrations are forward-only (ARC-02 1). **Next level:** an AI lane that drafts DocType, workflow or report changes as proposals, and structured request intake.",
+  "reading": "**SAL 1.** Operators reshape Frappe without code (Open 2.3), so every loop reaches L1, but nothing in the product drafts or builds a change (DEL-04 0) and requests have no intake (DEL-01 0), so no loop reaches L2. **Architecture:** backup and restore of data and files are tested end to end, but restoring the site secrets is not (ARC-09 2), and migrations are forward-only (ARC-02 1). **Next level:** an AI lane that drafts DocType, workflow or report changes as proposals, and structured request intake.",
   "framework": "EVOLVE",
   "scope_facts": {
     "persistent_data": {
@@ -487,13 +486,21 @@
       "value": true,
       "evidence": "Gunicorn web workers, RQ workers, a scheduler and a socket.io server run as long-lived services."
     },
+    "machine_actions": {
+      "value": true,
+      "evidence": "The REST API and RPC methods change documents and DocTypes with per-user API keys (frappe/api)."
+    },
     "agent_mutations": {
       "value": false,
       "evidence": "No first-party AI or agent changes Frappe definitions in this repository."
     },
-    "automatic_apply": {
+    "evolution_auto_apply": {
       "value": false,
       "evidence": "Every definition change is made by a person with the right role; nothing applies changes automatically."
+    },
+    "definition_change_path": {
+      "value": true,
+      "evidence": "DocTypes, workflows, print formats and settings are definitions."
     },
     "code_release_path": {
       "value": false,

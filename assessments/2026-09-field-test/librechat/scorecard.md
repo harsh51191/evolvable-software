@@ -15,13 +15,15 @@ Repository evidence only, main at the tip named above. The hosted code interpret
 ---
 Framework EVOLVE 0.4.0. Date 2026-09-30. Source github.com/danny-avila/LibreChat @ 14f7b2865692d27364c934ecb9912496371018bb (main). Archetype **focused-application**.
 
-Scope facts true: persistent_data, schema_changes, multi_tenant, hosted_service. False: agent_mutations, automatic_apply, code_release_path.
+Scope facts true: persistent_data, schema_changes, multi_tenant, hosted_service, machine_actions, definition_change_path. False: agent_mutations, evolution_auto_apply, code_release_path.
 
 Coverage: 55 assessed, 0 not evidenced, 11 not applicable. Grades: 55 A, 0 B, 0 C.
 
 ## Software Autonomy Level
 
 **SAL 0 (Manual) · Request → Release L0 · Issue → Fix L0 · Opportunity → Expansion L0**
+
+Progress toward the next level: Request → Release 1 of 2 conditions for L1; Issue → Fix 2 of 3 conditions for L1; Opportunity → Expansion 1 of 2 conditions for L1.
 
 - With opt-in settings: SAL 0 (Manual) · Request → Release L0 · Issue → Fix L0 · Opportunity → Expansion L0.
 - With every alternate reading: SAL 1 (Configurable) · Request → Release L1 · Issue → Fix L1 · Opportunity → Expansion L0.
@@ -42,13 +44,18 @@ Coverage: 55 assessed, 0 not evidenced, 11 not applicable. Grades: 55 A, 0 B, 0 
 | Tested backup and restore | ARC-09 ≥ 3 | 0 | fail |
 | Tenant isolation | ARC-05 ≥ 3 | 2 | fail |
 | Security as infrastructure | GOV-04 ≥ 3 | 2 | fail |
-| Bounded self-change | not applicable (agent_mutations and automatic_apply false) | n/a | n/a |
+| Bounded self-change | not applicable (agent_mutations and evolution_auto_apply false) | n/a | n/a |
 
 ### What blocks the next level
 
 - **Request → Release to L1**: spine Build needs people build path ≥ 2 or product build path ≥ 2 (has MAL 1.7; DEL-04 0)
 - **Issue → Fix to L1**: spine Build needs people build path ≥ 2 or product build path ≥ 2 (has MAL 1.7; DEL-04 0, LRN-07 1)
 - **Opportunity → Expansion to L1**: spine Build needs people build path ≥ 2 or product build path ≥ 2 (has EXP-02 n/a; DEL-04 0, EXP-03 n/a)
+
+### Sensitivity
+
+- **Robust:** no single criterion falling one level lowers the headline.
+- No single criterion rising one level lifts the headline.
 
 ## EVOLVE profile
 
@@ -147,7 +154,7 @@ Coverage: 55 assessed, 0 not evidenced, 11 not applicable. Grades: 55 A, 0 B, 0 
 | GOV-02 Audit generic over entities, definition changes and approvals | assessed | 2 | 3 |  | A |  | Admin audit route and audit-log schema (api/server/routes/admin/audit.js, packages/data-schemas/src/types/auditLog.ts); coverage of configuration and definition changes was not verified. |
 | GOV-03 Privacy classification, export, erasure and retention generic over entities | assessed | 2 |  |  | A |  | Users export conversations and delete their accounts, and an admin deletion script removes user data (config/delete-user.js); not driven by field tags. |
 | GOV-04 Security as infrastructure | assessed | 2 |  |  | A |  | ACL-based permissions for agents, prompts and MCP servers (packages/data-schemas/src/types/accessRole.ts, aclEntry.ts) and system grants; no security scanning in CI. |
-| GOV-05 Definitions and layouts versioned with rollback | assessed | 2 | 3 |  | A | I | Agents keep a versions history (packages/data-schemas/src/schema/agent.ts:125) and prompt groups keep versions with a chosen production version (promptGroup.ts:25); configuration is unversioned in the product. |
+| GOV-05 Definitions and layouts versioned with rollback | assessed | 2 |  |  | A | I | Agents keep a versions history (packages/data-schemas/src/schema/agent.ts:125) and prompt groups keep versions with a chosen production version (promptGroup.ts:25); configuration is unversioned in the product. The higher reading of 3 was dropped under the inventory rule (a 3 needs every default surface at 3): Configuration is unversioned in the product. |
 | GOV-06 Proposal, review, apply as a first-class object with preview | assessed | 2 |  |  | A |  | Prompt groups stage versions and promote one to production; agents are edited and saved directly; no review step. |
 | GOV-07 Policy-based apply with recorded approvals and a movable human boundary | assessed | 1 |  |  | A |  | Every definition change is a direct human action; the approval lifecycle (packages/api/src/stream/ApprovalLifecycle.ts) gates agent tool calls, not changes. |
 | GOV-08 Upgrade safety | assessed | 2 |  |  | A |  | librechat.yaml carries a schema version checked at load, and UPGRADING.md documents migrations; compatibility is mostly manual. |

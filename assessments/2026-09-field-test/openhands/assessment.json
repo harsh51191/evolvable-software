@@ -451,13 +451,21 @@
       "value": true,
       "evidence": "The Automation Service and Agent Server run as long-lived services for OpenHands Cloud."
     },
+    "machine_actions": {
+      "value": true,
+      "evidence": "The Agent Server and Automation Service APIs create and run automations with per-user API keys (automation repository: openhands/automation/auth.py)."
+    },
     "agent_mutations": {
       "value": false,
       "evidence": "Agents change users' repositories, not OpenHands' own definitions."
     },
-    "automatic_apply": {
+    "evolution_auto_apply": {
       "value": false,
       "evidence": "Nothing changes OpenHands' own definitions automatically."
+    },
+    "definition_change_path": {
+      "value": true,
+      "evidence": "Automations, skills and settings are definitions."
     },
     "code_release_path": {
       "value": false,

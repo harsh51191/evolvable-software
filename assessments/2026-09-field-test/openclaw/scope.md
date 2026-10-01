@@ -31,6 +31,8 @@ Declared for the default configuration. They decide which criteria and critical 
 | `schema_changes` | true | The workshop store has a versioned SQLite schema (src/skills/workshop/store-sqlite-schema.ts) and doctor migrates configuration. |
 | `multi_tenant` | false | A personal assistant per installation; shared gateways carry several people but are not isolated tenants (VISION.md). |
 | `hosted_service` | false | A personal gateway daemon, not a multi-user service. |
+| `machine_actions` | true | Agent tools and the gateway API change skills, configuration and channels. |
 | `agent_mutations` | true | The experience review drafts and applies skill proposals (src/skills/workshop/experience-review.ts). |
-| `automatic_apply` | true | autonomous.mode auto and approvalPolicy auto are the defaults (src/skills/workshop/config.ts:15-20). |
+| `evolution_auto_apply` | true | autonomous.mode auto and approvalPolicy auto are the defaults (src/skills/workshop/config.ts:15-20). |
+| `definition_change_path` | true | Skills, memory and configuration are its definitions. |
 | `code_release_path` | false | The self-improvement path changes skills, not OpenClaw code. |

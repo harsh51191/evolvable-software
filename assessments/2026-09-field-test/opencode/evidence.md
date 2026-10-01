@@ -8,8 +8,10 @@ Read at github.com/anomalyco/opencode @ 2fa3363c924c5c3e367b84a87ae478296a0ed59b
 - **schema_changes**: true. Drizzle migrations for the session database (packages/opencode/migration).
 - **multi_tenant**: false. A local single-user tool.
 - **hosted_service**: false. A local CLI and TUI with an optional local server; the console and cloud functions are separate products outside this scope.
+- **machine_actions**: true. The local server API and ACP let clients drive sessions and change files (packages/opencode/src/server, acp).
 - **agent_mutations**: false. No product feature lets the agent change OpenCode's own agents, commands or configuration.
-- **automatic_apply**: false. Nothing changes OpenCode's definitions automatically.
+- **evolution_auto_apply**: false. Nothing changes OpenCode's definitions automatically.
+- **definition_change_path**: true. Agents, commands, themes and configuration files are its definitions.
 - **code_release_path**: false. The GitHub agent the team runs on this repository is the product's general coding agent, not a first-party evolution system for OpenCode (rubric rule 12).
 
 ## Elastic (ARC)

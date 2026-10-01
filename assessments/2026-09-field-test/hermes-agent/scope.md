@@ -33,6 +33,8 @@ Declared for the default configuration. They decide which criteria and critical 
 | `schema_changes` | true | The state database is versioned and migrated on start (hermes_state_schema.py, SCHEMA_VERSION). |
 | `multi_tenant` | false | One user per installation; profiles are separate homes, not tenants. |
 | `hosted_service` | false | A local single-user agent; the gateway relays messaging platforms for the same user. |
+| `machine_actions` | true | The agent's tools change its own skills, memory and configuration, and the MCP and ACP servers expose it to other clients (mcp_serve.py, acp_adapter). |
 | `agent_mutations` | true | The background review writes skills and memory (agent/background_review.py). |
-| `automatic_apply` | true | background_review is on by default and skill and memory write approvals default to off (hermes_cli/config_defaults.py:814, 1320). |
+| `evolution_auto_apply` | true | background_review is on by default and skill and memory write approvals default to off (hermes_cli/config_defaults.py:814, 1320). |
+| `definition_change_path` | true | Skills, memory, prompts and configuration are its definitions. |
 | `code_release_path` | true | The first-party GEPA optimiser proposes improved skills as pull requests to this repository, shipped in releases (hermes-agent-self-evolution). |

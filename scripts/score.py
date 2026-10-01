@@ -237,8 +237,8 @@ def _validate_assessed(cid, entry, model, errors):
         return
     inventory = entry.get("inventory")
     if inventory is None:
-        if score >= 3:
-            errors.append(f"{cid}: inventory criterion scored 3 or more needs an inventory")
+        if max(readings) >= 3:
+            errors.append(f"{cid}: inventory criterion read at 3 or more needs an inventory")
         return
     if not isinstance(inventory, dict) or not inventory:
         errors.append(f"{cid}: inventory must be a non-empty object of surface levels")
@@ -253,8 +253,10 @@ def _validate_assessed(cid, entry, model, errors):
             errors.append(f"{cid}: inventory level for {surface!r} must be 0..4 or \"n/a\"")
         else:
             levels.append(level)
-    if levels and score >= 3 and score > min(levels):
-        errors.append(f"{cid}: score {score} exceeds the lowest inventory level {min(levels)}")
+    for name, reading in zip(("score", "alt_score", "available_score"),
+                             [score] + [entry.get(k) for k in ("alt_score", "available_score")]):
+        if _is_int_score(reading) and levels and reading >= 3 and reading > min(levels):
+            errors.append(f"{cid}: {name} {reading} exceeds the lowest inventory level {min(levels)}")
 
 
 def validate(data, criteria, order, model):
@@ -278,6 +280,9 @@ def validate(data, criteria, order, model):
     for unknown in sorted(set(raw_facts) - set(model["scope_facts"])):
         errors.append(f"scope fact {unknown}: not in the model")
     facts = fact_values(data)
+    paths = model.get("change_path_facts", [])
+    if paths and all(isinstance(facts.get(f), bool) for f in paths) and not any(facts[f] for f in paths):
+        errors.append("scope facts: at least one change path (" + " or ".join(paths) + ") must be true")
     scores = data.get("scores")
     if not isinstance(scores, dict):
         return errors + ["'scores' must be an object keyed by criterion id"]
@@ -332,6 +337,23 @@ def validate(data, criteria, order, model):
 
 # ---------------------------------------------------------------- scoring
 
+def inventory_floor(entry):
+    """The weakest applicable surface level, or None when there is no inventory."""
+    levels = [v for v in (entry.get("inventory") or {}).values() if _is_int_score(v)]
+    return min(levels) if levels else None
+
+
+def _inventory_cap(cid, value, entry, model, flags):
+    if cid not in model["inventories"] or value < 3:
+        return value
+    floor = inventory_floor(entry)
+    allowed = 2 if floor is None else max(2, floor)
+    if value > allowed:
+        flags.append(f"{cid}: inventory caps {value} -> {allowed}")
+        return allowed
+    return value
+
+
 def _depth_cap(cid, value, entry, model, flags):
     if cid not in model["depth_capped"] or value < 3:
         return value
@@ -368,6 +390,7 @@ def effective_scores(data, order, model, variant):
             flags.append(f"{cid}: single-entity caps {value} -> {caps['single_entity_max']}")
             value = caps["single_entity_max"]
         value = _depth_cap(cid, value, entry, model, flags)
+        value = _inventory_cap(cid, value, entry, model, flags)
         if entry.get("incident") is True and value > 0:
             new = max(0, value - caps["incident_penalty"])
             flags.append(f"{cid}: incident deduction {value} -> {new}")
@@ -478,19 +501,23 @@ def loop_levels(data, values, capabilities, model):
     loops = {}
     for loop in model["loops"]:
         part_level = {p: top for p in PARTS}
-        failures = {}
+        failures, counts = {}, {}
         for level in range(1, top + 1):
             for cond in model["conditions"].get(str(level), []):
                 if cond.get("loop") not in (None, loop):
                     continue
                 ok, needs, observed = ev.test(cond, loop)
+                met, total = counts.get(level, (0, 0))
+                counts[level] = (met + ok, total + 1)
                 if not ok:
                     failures.setdefault(level, []).append(
                         {"part": cond["part"], "stage": cond["stage"], "needs": needs, "observed": observed,
                          "control": cond.get("control")})
                     part_level[cond["part"]] = min(part_level[cond["part"]], level - 1)
         level = min(part_level.values())
+        met, total = counts.get(level + 1, (0, 0)) if level < top else (0, 0)
         loops[loop] = {"level": level, "name": model["levels"][level], "parts": part_level,
+                       "next_met": met, "next_total": total,
                        "blockers": failures.get(level + 1, []) if level < top else []}
     controls, seen = [], set()
     for cond in model["conditions"].get("3", []):
@@ -505,6 +532,32 @@ def loop_levels(data, values, capabilities, model):
     return {"headline": headline, "headline_name": model["levels"][headline], "loops": loops, "controls": controls}
 
 
+def sensitivity(data, values, criteria, model):
+    """Criteria whose one-level change would move the headline or a loop level.
+
+    Raw criterion values are moved up or down by one; caps are not re-applied, so this
+    shows how close the reading sits to a boundary, not what evidence would be needed.
+    """
+    base = loop_levels(data, values, aggregate(values, criteria, model)["capabilities"], model)
+    raise_headline, lower_headline, raise_loop, lower_loop = [], [], {}, {}
+    for cid, value in values.items():
+        if value is None or data["scores"][cid]["status"] != "assessed":
+            continue
+        for step in (1, -1):
+            new = value + step
+            if not 0 <= new <= 4:
+                continue
+            trial = dict(values, **{cid: new})
+            out = loop_levels(data, trial, aggregate(trial, criteria, model)["capabilities"], model)
+            if out["headline"] != base["headline"]:
+                (raise_headline if step > 0 else lower_headline).append(cid)
+            for loop in model["loops"]:
+                if out["loops"][loop]["level"] != base["loops"][loop]["level"]:
+                    (raise_loop if step > 0 else lower_loop).setdefault(loop, []).append(cid)
+    return {"raise_headline": raise_headline, "lower_headline": lower_headline,
+            "raise_loop": raise_loop, "lower_loop": lower_loop}
+
+
 def score_assessment(data, criteria, order, model):
     result = {"variants": {}, "flags": []}
     for variant in VARIANTS:
@@ -516,6 +569,7 @@ def score_assessment(data, criteria, order, model):
         result["variants"][variant] = entry
         if variant == "default":
             result["flags"] = flags
+            result["sensitivity"] = sensitivity(data, values, criteria, model)
     coverage = {s: 0 for s in STATUSES}
     grades = {"A": 0, "B": 0, "C": 0}
     for cid in order:
@@ -551,8 +605,15 @@ def fmt(value):
     return "–" if value is None else f"{r1(value):.1f}"
 
 
-def headline_text(sal, model):
-    loops = " · ".join(f"{model['loops'][l]} L{sal['loops'][l]['level']}" for l in model["loops"])
+def progress(info):
+    if not info.get("next_total"):
+        return ""
+    return f" ({info['next_met']}/{info['next_total']} toward L{info['level'] + 1})"
+
+
+def headline_text(sal, model, with_progress=False):
+    loops = " · ".join(f"{model['loops'][l]} L{sal['loops'][l]['level']}"
+                       + (progress(sal["loops"][l]) if with_progress else "") for l in model["loops"])
     return f"SAL {sal['headline']} ({sal['headline_name']}) · {loops}"
 
 
@@ -588,6 +649,10 @@ def render_markdown(data, criteria, order, model, result):
              f"{cov['not_applicable']} not applicable. Grades: {grades['A']} A, {grades['B']} B, {grades['C']} C.", "",
              "## Software Autonomy Level", "",
              f"**{headline_text(sal, model)}**", "",
+             f"Progress toward the next level: " + "; ".join(
+                 f"{name} {sal['loops'][l]['next_met']} of {sal['loops'][l]['next_total']} conditions for "
+                 f"L{sal['loops'][l]['level'] + 1}" for l, name in model["loops"].items()
+                 if sal["loops"][l]["next_total"]) + ".", "",
              f"- With opt-in settings: {headline_text(avail, model)}.",
              f"- With every alternate reading: {headline_text(high, model)}.", "",
              "| Loop | Stages | Spine | Architecture | Governance | Level | With opt-in settings |",
@@ -608,6 +673,18 @@ def render_markdown(data, criteria, order, model, result):
         items = "; ".join(f"{b['part']} {b['stage']} needs {b['needs']} (has {b['observed']})"
                           for b in info["blockers"])
         lines.append(f"- **{name} to L{info['level'] + 1}**: {cell(items)}")
+    sens = result["sensitivity"]
+    lines += ["", "### Sensitivity", ""]
+    if sens["lower_headline"]:
+        lines.append("- **Fragile:** the headline drops if any of these falls one level: "
+                     + ", ".join(sens["lower_headline"]) + ".")
+    else:
+        lines.append("- **Robust:** no single criterion falling one level lowers the headline.")
+    if sens["raise_headline"]:
+        lines.append("- **One step away:** raising any of these one level lifts the headline: "
+                     + ", ".join(sens["raise_headline"]) + ".")
+    else:
+        lines.append("- No single criterion rising one level lifts the headline.")
     lines += ["", "## EVOLVE profile", "",
               "| Capability | Default | Range with alternate readings | With opt-in settings | Assessed only | If every criterion counted |",
               "|---|---:|---|---:|---:|---:|"]
@@ -723,6 +800,7 @@ def main(argv=None):
                "scope_facts": {f: data["scope_facts"][f]["value"] for f in model["scope_facts"]},
                "coverage": result["coverage"], "grades": result["grades"],
                "sal": default["sal"],
+               "sensitivity": result["sensitivity"],
                "capabilities": rounded(default["capabilities"]),
                "ranges": rounded(result["ranges"]),
                "area_means": rounded(default["area_means"]),

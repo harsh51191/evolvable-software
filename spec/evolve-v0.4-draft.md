@@ -164,9 +164,13 @@ Each assessment declares these facts, each with evidence. They decide which crit
 | `schema_changes` | The product, or its evolution path, changes stored data structures (database schema or definition-driven storage) | ARC-02 and the migration control |
 | `multi_tenant` | One deployment serves several isolated tenants, workspaces or organisations | ARC-05 and the isolation control |
 | `hosted_service` | It runs as a long-lived networked service rather than a library, CLI or local single-user tool | ARC-03, ARC-04, ARC-06, ARC-07 |
-| `agent_mutations` | The product's own agents or AI can change its definitions, skills, memory, configuration or data | GOV-09 and the self-change control |
-| `automatic_apply` | Some change class applies without human approval in the default configuration | the self-change control |
+| `machine_actions` | Agents or automated clients can change the product's data or definitions through an API or tool surface | GOV-09 |
+| `agent_mutations` | The product's own agents or AI can change its definitions, skills, memory, configuration or data | GOV-10, GOV-11 and the self-change control |
+| `evolution_auto_apply` | A change produced by the evolution loop applies without human approval by default (scheduled maintenance does not count) | GOV-10, GOV-11 and the self-change control |
+| `definition_change_path` | Behaviour changes are made through definitions or configuration | GOV-05 and the definition-rollback control |
 | `code_release_path` | The product's evolution system ships code changes, not only definition changes | DEL-11 and the release-rollback control |
+
+At least one change path must be true, and rollback is required on each path that exists. (Revision 2 listed seven facts; section 16 explains the two added and the one renamed.)
 
 ## 6. Anchored levels for the new criteria
 
@@ -400,7 +404,7 @@ A team's ordinary CI, bots or scripts do not qualify. They still count for the v
 
 ## 9. Round 2 boundary clarifications
 
-From the inter-rater study (118 of 132 exact agreement):
+From the Round 2 inter-rater study of the v0.3 Learn and Vet criteria. Its dataset is not yet in this repository, so its agreement figures are not quoted; these four boundaries are the ones the two raters disputed:
 
 - **GOV-05 (F1)** scores the inventory of surfaces operators change by default, including any the product modifies itself. Uncovered surfaces are listed.
 - **LRN-09 (M4)** is post-apply measurement only. Validation before a change takes effect is LRN-08 (P2).
@@ -462,7 +466,7 @@ Why:
 
 - **Working names only.** "EVOLVE" and "Software Autonomy Level" are not locked. A published npm package already calls itself an "Evolve Multi-Agent SDLC framework" and reports architecture health and evolution readiness (`@huutq88/evolve`). "Software autonomy levels" is also used in self-driving laboratory research. Neither proves a trademark conflict, but both rule out claiming the space is empty. A trademark and prior-use search is required before any public launch.
 - **Stable IDs.** Criterion IDs use descriptive prefixes (`ARC`, `DEL`, `MAL`, `LRN`, `GOV`, `EXP`), so they survive a rename of the framework or of the capability display names.
-- **Repository name.** `evolvable-software`, chosen in review. The skill and package already use it; the GitHub repository is renamed by its owner, and GitHub redirects the old URL.
+- **Names in use.** The repository owner chose EVOLVE as the framework name and `evolvable-software` as the repository and skill name (1 October 2026). The skill and package metadata already use `evolvable-software`. The GitHub repository is still `malleablesoftware` until the owner renames it, and GitHub then redirects the old URL. All of these remain working names until the trademark search below.
 
 ## 14. Delivery plan once agreed
 
@@ -488,19 +492,25 @@ Why:
 1. **Final framework name**, after the trademark and prior-use search.
 2. **Strictness at L4.** Every applicable ARC criterion at 3 with tested evidence. Right bar, or too high for products that are otherwise strong?
 
-## 16. Refinements made during implementation
+## 16. Refinements made during implementation and review
 
-Building the scorer and rescoring 11 systems exposed five places where this text needed tightening. The rubric is authoritative; these notes explain the differences.
+Building the scorer, rescoring 11 systems and a review of the implementation led to these changes to the text above. The rubric is authoritative.
 
-1. **GOV-09 (agent-safe actions) always applies.** Section 5 tied it to `agent_mutations`, but external agents act through every product's API and tool surface, so per-actor identity and audit matter everywhere. It stays an L3 condition at level 2.
-2. **GOV-10 and GOV-11 apply only when self-change is possible** (`agent_mutations` or `automatic_apply`). Without a self-change path there is nothing to bound and no learning input to protect; the self-change control was already conditional on the same facts.
-3. **Facets are required where they change the outcome.** Section 8.1 asked for facets on every assessed criterion. The scorer requires them on depth-capped criteria for any reading of 3 or more, and accepts them anywhere. A 4 without operated evidence counts as 3 when tested, rather than 2.
-4. **Inventories cap claims of 3 or more.** Section 8.3 said the score is the level every surface reaches. Anchor 2 of the multi-surface criteria already describes partial coverage ("versioning for some surfaces"), so the rule now reads: a score of 3 or more cannot exceed the weakest surface; below 3 the anchors decide and an inventory is optional.
-5. **Request intake credits AI planners.** An AI lane that asks clarifying questions and produces a structured plan for approval before building (for example n8n's workflow planner) is request intake at level 2 or above, provided it meets rule 12.
+1. **Scope facts: nine, not seven.**
+   - `machine_actions` (new) scopes GOV-09 (agent-safe actions) to products that agents or automated clients can change through an API or tool surface. Revision 2 tied GOV-09 to `agent_mutations` in one place and required it everywhere in another.
+   - `definition_change_path` (new) makes rollback path-aware: GOV-05 is required when behaviour changes through definitions, DEL-11 when the evolution system ships code, and both when both exist. A product that evolves only through code is not failed on definition rollback.
+   - `automatic_apply` is renamed `evolution_auto_apply` and covers only changes produced by the evolution loop. Scheduled maintenance, such as PostHog's automatic column materialisation, does not count.
+2. **GOV-10 and GOV-11 apply only when self-change is possible** (`agent_mutations` or `evolution_auto_apply`).
+3. **Backup is tested recovery.** ARC-09 level 3 is backup and restore of every applicable surface, with restore tested. Stated recovery objectives (RPO and RTO) moved to level 4, because for self-hosted software the deployment operator often sets them. The control is named for what it checks: tested backup and restore.
+4. **Facets are required where they change the outcome:** on depth-capped criteria, for any reading of 3 or more. A 4 without operated evidence counts as 3 when tested.
+5. **Inventories cap every reading.** When any reading (score, alternate or opt-in) is 3 or more, an inventory is required, and no such reading may exceed the weakest surface. The scorer also caps every variant at the weakest surface, so an alternate reading cannot bypass the rule. Below 3, the anchors already describe partial coverage.
+6. **Request intake credits AI planners.** An AI lane that asks clarifying questions and produces a structured plan for approval before building is request intake at level 2 or above, provided it meets rule 12.
+7. **Progress and sensitivity.**
+   - Each loop reports how many of the next level's conditions it already meets, so products at the same level can be told apart without lowering the bar.
+   - The scorer lists the criteria whose one-level change would move the headline, so a fragile reading is visible.
 
-The field test results are in `assessments/2026-09-field-test/README.md`. In short:
+The field-test results are in `assessments/2026-09-field-test/README.md`, and they are provisional:
 
-- No system reaches L3, because every one fails at least one critical control.
-- Definition rollback and tested backup with stated recovery objectives fail in all eleven.
 - n8n and OpenClaw lead at SAL 2.
-
+- No system reached L3 in this repository-based, single-rater assessment.
+- Definition rollback fails in all eleven.

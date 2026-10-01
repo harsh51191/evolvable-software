@@ -6,7 +6,7 @@ Scope: the hermes-agent repository (agent loop, tools, skills, curator, approval
 
 ## Reading
 
-**SAL 1.** Issue → Fix reaches L2: background review turns corrections and failures into skill and memory changes by default (LRN-07 3), and hermes doctor diagnoses setup problems (LRN-05 2). Request → Release stops at L1 because requests are chat turns with no specification step (DEL-01 1). **Blocks L3:** backups and update rollback are thorough and tested, but no recovery objectives are stated (ARC-09 2); configuration and memory lack the rollback skills have (GOV-05 2, inventory); background changes have no declared scope or rate limit (GOV-10 2).
+**SAL 1.** Issue → Fix reaches L2: background review turns corrections and failures into skill and memory changes by default (LRN-07 3), and hermes doctor diagnoses setup problems (LRN-05 2). Request → Release stops at L1 because requests are chat turns with no specification step (DEL-01 1); raising that one criterion would lift the headline. **Controls:** backup and restore cover every surface including secrets and are tested (ARC-09 3), but configuration and memory lack the rollback skills have (GOV-05 2, inventory) and background changes have no declared scope or rate limit (GOV-10 2).
 
 ## Limits
 
@@ -15,13 +15,15 @@ Repository evidence only. The self-evolution repository's last commit is 2026-06
 ---
 Framework EVOLVE 0.4.0. Date 2026-09-30. Source github.com/NousResearch/hermes-agent @ bddd22be7c2e5f7630c3d90507e6e7280ff092e3 (main) + github.com/NousResearch/hermes-agent-self-evolution @ 0a929e3aa20e15cf04dc7c28492a7d41a5139125 (main, last commit 2026-06-17). Archetype **agent-runtime**.
 
-Scope facts true: persistent_data, schema_changes, agent_mutations, automatic_apply, code_release_path. False: multi_tenant, hosted_service.
+Scope facts true: persistent_data, schema_changes, machine_actions, agent_mutations, evolution_auto_apply, definition_change_path, code_release_path. False: multi_tenant, hosted_service.
 
 Coverage: 54 assessed, 0 not evidenced, 12 not applicable. Grades: 54 A, 0 B, 0 C.
 
 ## Software Autonomy Level
 
 **SAL 1 (Configurable) · Request → Release L1 · Issue → Fix L2 · Opportunity → Expansion L1**
+
+Progress toward the next level: Request → Release 3 of 4 conditions for L2; Issue → Fix 14 of 23 conditions for L3; Opportunity → Expansion 3 of 5 conditions for L2.
 
 - With opt-in settings: SAL 1 (Configurable) · Request → Release L1 · Issue → Fix L2 · Opportunity → Expansion L1.
 - With every alternate reading: SAL 2 (Assisted) · Request → Release L2 · Issue → Fix L2 · Opportunity → Expansion L1.
@@ -39,7 +41,7 @@ Coverage: 54 assessed, 0 not evidenced, 12 not applicable. Grades: 54 A, 0 B, 0 
 | Definition rollback | GOV-05 ≥ 3 | 2 | fail |
 | Release rollback | DEL-11 ≥ 3 | 2 | fail |
 | Safe migrations | ARC-02 ≥ 3 | 2 | fail |
-| Tested backup and restore | ARC-09 ≥ 3 | 2 | fail |
+| Tested backup and restore | ARC-09 ≥ 3 | 3 | pass |
 | Tenant isolation | ARC-05 ≥ 3 | n/a | n/a |
 | Security as infrastructure | GOV-04 ≥ 3 | 3 | pass |
 | Bounded self-change | GOV-10 ≥ 3 and LRN-08 ≥ 2 | 2; 2 | fail |
@@ -47,14 +49,19 @@ Coverage: 54 assessed, 0 not evidenced, 12 not applicable. Grades: 54 A, 0 B, 0 
 ### What blocks the next level
 
 - **Request → Release to L2**: stages Intake needs DEL-01 ≥ 2 (has 1)
-- **Issue → Fix to L3**: spine Verify needs DEL-05 ≥ 3 (has 2); spine Verify needs DEL-06 ≥ 3 (has 2); spine Roll back needs GOV-05 ≥ 3 (has 2); spine Roll back needs DEL-11 ≥ 3 (has 2); stages Detect needs LRN-03 ≥ 3 (has 2); stages Diagnose needs LRN-05 ≥ 3 (has 2); stages Propose needs LRN-06 ≥ 3 (has 2); architecture Foundation needs ARC-02 ≥ 3 (has 2); architecture Foundation needs ARC-09 ≥ 3 (has 2); governance Ceiling needs GOV-10 ≥ 3 and LRN-08 ≥ 2 (has 2; 2)
+- **Issue → Fix to L3**: spine Verify needs DEL-05 ≥ 3 (has 2); spine Verify needs DEL-06 ≥ 3 (has 2); spine Roll back needs GOV-05 ≥ 3 (has 2); spine Roll back needs DEL-11 ≥ 3 (has 2); stages Detect needs LRN-03 ≥ 3 (has 2); stages Diagnose needs LRN-05 ≥ 3 (has 2); stages Propose needs LRN-06 ≥ 3 (has 2); architecture Foundation needs ARC-02 ≥ 3 (has 2); governance Ceiling needs GOV-10 ≥ 3 and LRN-08 ≥ 2 (has 2; 2)
 - **Opportunity → Expansion to L2**: stages Sense needs EXP-04 ≥ 2 (has 1); stages Propose needs EXP-05 ≥ 2 (has 1)
+
+### Sensitivity
+
+- **Fragile:** the headline drops if any of these falls one level: DEL-11, LRN-03, GOV-05.
+- **One step away:** raising any of these one level lifts the headline: DEL-01.
 
 ## EVOLVE profile
 
 | Capability | Default | Range with alternate readings | With opt-in settings | Assessed only | If every criterion counted |
 |---|---:|---|---:|---:|---:|
-| Elastic (ARC) | 2.0 | 2.0–3.0 | 2.0 | 2.0 | 1.6 |
+| Elastic (ARC) | 2.3 | 2.3–2.8 | 2.3 | 2.3 | 1.8 |
 | Velocity (DEL) | 1.8 | 1.8–2.3 | 1.8 | 1.8 | 1.8 |
 | Open (MAL) | 2.2 | 2.2–2.5 | 2.2 | 2.2 | 1.9 |
 | Learn (LRN) | 2.2 | 2.2–2.9 | 2.3 | 2.2 | 2.2 |
@@ -66,7 +73,7 @@ Coverage: 54 assessed, 0 not evidenced, 12 not applicable. Grades: 54 A, 0 B, 0 
 | Area | Default |
 |---|---:|
 | ARC Data | 2.0 |
-| ARC Resilience | 2.0 |
+| ARC Resilience | 2.5 |
 | DEL Intake | 1.0 |
 | DEL Build | 2.0 |
 | DEL Verify | 2.0 |
@@ -99,8 +106,8 @@ Coverage: 54 assessed, 0 not evidenced, 12 not applicable. Grades: 54 A, 0 B, 0 
 | ARC-05 Tenant isolation and noisy-neighbour controls | not_applicable | excluded |  |  | - |  | Scope fact multi_tenant is false: One user per installation; profiles are separate homes, not tenants. |
 | ARC-06 Ceilings measured, not discovered in incidents | not_applicable | excluded |  |  | - |  | Scope fact hosted_service is false: A local single-user agent; the gateway relays messaging platforms for the same user. |
 | ARC-07 Service objectives defined and monitored | not_applicable | excluded |  |  | - |  | Scope fact hosted_service is false: A local single-user agent; the gateway relays messaging platforms for the same user. |
-| ARC-08 Failure isolation and graceful degradation | assessed | 2 | 3 |  | A | IT | Fallback providers and credential pools take over when a primary model fails (agent/agent_init.py, tests/agent/test_restore_primary_pool_reselect.py); tool and MCP failures are contained to the turn. |
-| ARC-09 Backup, restore and recovery | assessed | 2 | 3 |  | A | IT | hermes backup and import cover the home directory, sessions database, skills, memory and configuration, with pre-update backups and extensive tests (hermes_cli/backup.py, tests/hermes_cli/test_backup*.py). No recovery objectives are stated. |
+| ARC-08 Failure isolation and graceful degradation | assessed | 2 |  |  | A |  | Fallback providers and credential pools take over when a primary model fails (agent/agent_init.py, tests/agent/test_restore_primary_pool_reselect.py); tool and MCP failures are contained to the turn. Plugins and gateway platforms have no breakers, so a 3 is not defensible under the inventory rule. |
+| ARC-09 Backup, restore and recovery | assessed | 3 |  |  | A | IT | Inventory: data 3, definitions 3, files 3, secrets 3. hermes backup and import cover the home directory: the sessions database (snapshotted with sqlite3.backup), skills, memory, configuration and secrets such as .env, auth.json and the vault (hermes_cli/backup.py:117-161), with pre-update backups and round-trip tests (tests/hermes_cli/test_backup*.py). No recovery objectives are stated (level 4). |
 | DEL-01 Request intake into a structured change specification | assessed | 1 | 2 |  | A |  | Requests are chat turns; the agent can create a skill when asked, without a specification step. |
 | DEL-02 Layers deploy independently | assessed | 2 |  |  | A |  | Python agent, gateway, desktop, web and sandbox images are separate artifacts built from one repository (Dockerfile, .github/workflows/sandbox-image.yml, desktop-bundled-release.yml). |
 | DEL-03 Module boundaries enforced by tooling | assessed | 2 |  |  | A |  | Import guards in CI (.github/workflows/lazy-deps-guard.yml, case-collision-check.yml); no architectural boundary lint. |

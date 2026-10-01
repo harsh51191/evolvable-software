@@ -31,6 +31,8 @@ Declared for the default configuration. They decide which criteria and critical 
 | `schema_changes` | true | TypeORM migrations (packages/@n8n/db/src/migrations) and data tables created at runtime. |
 | `multi_tenant` | false | One instance per customer; projects separate work inside an instance but are not isolated tenants. |
 | `hosted_service` | true | Main, worker and webhook processes run as long-lived services, with multi-main and queue mode (packages/cli/src/scaling). |
+| `machine_actions` | true | The public API and MCP server change workflows and credentials (packages/cli/src/modules/mcp). |
 | `agent_mutations` | true | The AI workflow builder and Instance AI change workflows (packages/cli/src/modules/instance-ai, workflow-builder). |
-| `automatic_apply` | false | AI-built changes pass approvals before they apply. |
+| `evolution_auto_apply` | false | AI-built changes pass approvals before they apply. |
+| `definition_change_path` | true | Workflows, credentials, variables and data tables are definitions. |
 | `code_release_path` | false | The AI lanes change workflows, not n8n code. |

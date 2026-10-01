@@ -27,6 +27,8 @@ Declared for the default configuration. They decide which criteria and critical 
 | `schema_changes` | true | Alembic migrations (api/migrations/versions, 219 files). |
 | `multi_tenant` | true | Workspaces (tenants) share a deployment with per-tenant limits. |
 | `hosted_service` | true | API, Celery worker, web, sandbox and plugin daemon run as long-lived services. |
+| `machine_actions` | true | The console and service APIs change apps, datasets and workflows. |
 | `agent_mutations` | false | AI generators draft prompts, code and workflow steps into the editor; a person saves and publishes (api/core/llm_generator). |
-| `automatic_apply` | false | Every publish is a manual human action. |
+| `evolution_auto_apply` | false | Every publish is a manual human action. |
+| `definition_change_path` | true | Apps, workflows, prompts and datasets are definitions. |
 | `code_release_path` | false | No first-party evolution system ships code changes. |

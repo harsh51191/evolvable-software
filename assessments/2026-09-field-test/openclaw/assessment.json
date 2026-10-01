@@ -344,26 +344,23 @@
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Agents can declare model fallbacks (src/agents/agent-scope-config.ts); plugins run in-process.",
-      "alt_score": 3,
-      "alt_note": "Model failover is configurable per agent.",
-      "facets": {
-        "implemented": true,
-        "tested": false,
-        "operated": false
-      }
+      "evidence": "Agents can declare model fallbacks (src/agents/agent-scope-config.ts); plugins run in-process, so a 3 is not defensible under the inventory rule."
     },
     "ARC-09": {
       "status": "assessed",
-      "score": 2,
+      "score": 3,
       "grade": "A",
-      "evidence": "Backup, scheduled backup, restore, health checks and a resource inventory, with restore tests and privacy rules for secrets (src/commands/backup-restore.ts, backup-schedule.ts, backup-health.ts, backup-resource-inventory.ts, backup-restore.test.ts). No recovery objectives are stated.",
-      "alt_score": 3,
-      "alt_note": "Everything but stated recovery objectives meets level 3.",
+      "evidence": "Backup covers state, configuration, credentials, workspaces, agents and managed skills (src/commands/backup-shared.ts:76), with verification, scheduling and a restore test that round-trips into a fresh target with a matching inventory (src/commands/backup-restore.test.ts:176). Private captures are excluded by design. No recovery objectives are stated (level 4).",
       "facets": {
         "implemented": true,
         "tested": true,
         "operated": false
+      },
+      "inventory": {
+        "data": 3,
+        "definitions": 3,
+        "files": 3,
+        "secrets": 3
       }
     },
     "DEL-01": {
@@ -449,7 +446,7 @@
   },
   "limits": "Repository evidence only, main at the tip named above. ClawHub (registry and scanning) is a separate repository. No evaluator plugin is bundled, so measurement depends on third-party or user plugins. The experience review was read from code and tests, not run. Single rater.",
   "framework_version": "0.4.0",
-  "reading": "**SAL 2**, joint highest. /learn turns a request into a pending skill proposal (DEL-01 2), and the experience review drafts and applies skills from observed runs (LRN-07 3), so both core loops reach L2. **Blocks L3:** skills have backup, restore and rollback, but configuration has only rotating backups (GOV-05 2, inventory); there is no staged exposure for skill changes (DEL-09 1); the default auto-apply has no declared blast-radius limit (GOV-10 2).",
+  "reading": "**SAL 2**, joint highest. /learn turns a request into a pending skill proposal (DEL-01 2), and the experience review drafts and applies skills from observed runs (LRN-07 3), so both core loops reach L2. Backup and restore are verified and tested across state, configuration, credentials and skills (ARC-09 3). **Blocks L3:** configuration has only rotating backups, not operator rollback (GOV-05 2, inventory); skill changes have no staged exposure (DEL-09 1); the default auto-apply has no declared blast-radius limit (GOV-10 2).",
   "framework": "EVOLVE",
   "scope_facts": {
     "persistent_data": {
@@ -468,13 +465,21 @@
       "value": false,
       "evidence": "A personal gateway daemon, not a multi-user service."
     },
+    "machine_actions": {
+      "value": true,
+      "evidence": "Agent tools and the gateway API change skills, configuration and channels."
+    },
     "agent_mutations": {
       "value": true,
       "evidence": "The experience review drafts and applies skill proposals (src/skills/workshop/experience-review.ts)."
     },
-    "automatic_apply": {
+    "evolution_auto_apply": {
       "value": true,
       "evidence": "autonomous.mode auto and approvalPolicy auto are the defaults (src/skills/workshop/config.ts:15-20)."
+    },
+    "definition_change_path": {
+      "value": true,
+      "evidence": "Skills, memory and configuration are its definitions."
     },
     "code_release_path": {
       "value": false,

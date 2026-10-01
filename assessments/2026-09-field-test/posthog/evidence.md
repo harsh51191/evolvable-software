@@ -8,8 +8,10 @@ Read at github.com/PostHog/posthog @ 645e1a78140757ea1bb9ddeb0ff9d3915c60b6f6 (m
 - **schema_changes**: true. Django and ClickHouse migrations, plus property materialisation that adds columns at runtime (ee/clickhouse/materialized_columns/columns.py).
 - **multi_tenant**: true. Organisations and projects share one deployment with access control and quotas.
 - **hosted_service**: true. Django web, Celery and Temporal workers, Node ingestion and Rust capture services.
+- **machine_actions**: true. The API with scoped personal keys and an MCP server change PostHog objects (posthog/scopes.py, services/mcp).
 - **agent_mutations**: true. PostHog AI creates and edits insights, dashboards and other configured objects (ee/hogai).
-- **automatic_apply**: true. Weekly property materialisation applies schema changes without approval (posthog/tasks/scheduled.py:927).
+- **evolution_auto_apply**: false. PostHog AI changes are made on request in a conversation; weekly property materialisation applies without approval (posthog/tasks/scheduled.py:927), but it is scheduled maintenance, not a change from the evolution loop.
+- **definition_change_path**: true. Insights, dashboards, feature flags, actions and approval policies are definitions.
 - **code_release_path**: false. Tasks and Stamphog act on customers' repositories (products/stamphog); no first-party lane ships PostHog code changes.
 
 ## Elastic (ARC)
@@ -35,8 +37,7 @@ Read at github.com/PostHog/posthog @ 645e1a78140757ea1bb9ddeb0ff9d3915c60b6f6 (m
 
 ### Resilience
 
-- **ARC-08 Failure isolation and graceful degradation**: **2** (grade A), facets: implemented, tested. The LLM gateway has a circuit breaker for model providers (services/llm-gateway/src/llm_gateway/circuit_breaker.py) and subscriptions auto-disable after repeated failures (ee/tasks/subscriptions/auto_disable.py); other surfaces lack breakers.
-  - Higher reading 3: AI providers and destinations are isolated.
+- **ARC-08 Failure isolation and graceful degradation**: **2** (grade A). The LLM gateway has a circuit breaker for model providers (services/llm-gateway/src/llm_gateway/circuit_breaker.py) and subscriptions auto-disable after repeated failures (ee/tasks/subscriptions/auto_disable.py); other surfaces lack breakers, so a 3 is not defensible under the inventory rule.
 - **ARC-09 Backup, restore and recovery**: **1** (grade A). No backup command in the repository; self-hosted backup is left to the operator.
 
 ## Velocity (DEL)
@@ -169,8 +170,7 @@ Read at github.com/PostHog/posthog @ 645e1a78140757ea1bb9ddeb0ff9d3915c60b6f6 (m
 
 ### Change control
 
-- **GOV-05 Definitions and layouts versioned with rollback**: **2** (grade A), facets: implemented, tested. The activity log records before-and-after changes for flags, insights, dashboards and more; no general revert across customisation surfaces.
-  - Higher reading 3: History and diffs are broad; rollback coverage was not verified per surface.
+- **GOV-05 Definitions and layouts versioned with rollback**: **2** (grade A), facets: implemented, tested. The activity log records before-and-after changes for flags, insights, dashboards and more; no general revert across customisation surfaces. The higher reading of 3 was dropped under the inventory rule (a 3 needs every default surface at 3): Revert is not available across customisation surfaces.
 - **GOV-06 Proposal, review, apply as a first-class object with preview**: **2** (grade A). Change requests carry the intended change, a validation status and a policy snapshot, and are reviewed and then applied (products/approvals/backend/models.py:15-65); scheduled changes for flags (products/approvals/backend/scheduled_changes.py). No staging-data preview.
   - Higher reading 3: A first-class proposal and review object exists; only preview on staging data is missing.
 - **GOV-07 Policy-based apply with recorded approvals and a movable human boundary**: **3** (grade A). Approval policies per registered action class with conditions evaluated on the change intent, named approvers, bypass roles and recorded Approval decisions (products/approvals/backend/policies.py:37-147, actions/registry.py, models.py:112-140).

@@ -8,8 +8,10 @@ Read at github.com/frappe/frappe @ 82b0384810030c8d347780538821a3b006375d28 (dev
 - **schema_changes**: true. Creating or editing a DocType alters its table at runtime (frappe/database/schema.py:479-485), and bench migrate applies patches (frappe/patches.txt).
 - **multi_tenant**: true. One bench serves several sites, each with its own database (multi-site benches).
 - **hosted_service**: true. Gunicorn web workers, RQ workers, a scheduler and a socket.io server run as long-lived services.
+- **machine_actions**: true. The REST API and RPC methods change documents and DocTypes with per-user API keys (frappe/api).
 - **agent_mutations**: false. No first-party AI or agent changes Frappe definitions in this repository.
-- **automatic_apply**: false. Every definition change is made by a person with the right role; nothing applies changes automatically.
+- **evolution_auto_apply**: false. Every definition change is made by a person with the right role; nothing applies changes automatically.
+- **definition_change_path**: true. DocTypes, workflows, print formats and settings are definitions.
 - **code_release_path**: false. No first-party evolution system ships code changes; releases are made by engineers.
 
 ## Elastic (ARC)
@@ -36,8 +38,8 @@ Read at github.com/frappe/frappe @ 82b0384810030c8d347780538821a3b006375d28 (dev
 ### Resilience
 
 - **ARC-08 Failure isolation and graceful degradation**: **2** (grade A). The automation engine counts failures per rule against a circuit breaker and isolates each row with a savepoint (frappe/automation_engine/runner.py:516-525, drainer.py:74); integrations accept timeouts (frappe/integrations/utils.py:59). Apps run in-process without isolation.
-- **ARC-09 Backup, restore and recovery**: **2** (grade A), facets: implemented, tested. bench backup covers the database, public and private files and site config, with optional encryption (frappe/commands/site.py:899-1030, frappe/utils/backups.py); restore from full and partial backups is tested end to end (frappe/commands/test_commands.py:280-330). No recovery objectives are stated.
-  - Higher reading 3: Everything but stated RPO and RTO meets level 3.
+- **ARC-09 Backup, restore and recovery**: **2** (grade A). bench backup covers the database, public and private files and site config, with optional encryption (frappe/commands/site.py:899-1030, frappe/utils/backups.py), and restore from full and partial backups is tested end to end (frappe/commands/test_commands.py:280-330). The site config holding the encryption key is backed up but its restore is not tested, so secrets stay at 2.
+  - Inventory: data 3, definitions 3, files 3, secrets 2
 
 ## Velocity (DEL)
 
@@ -168,8 +170,8 @@ Read at github.com/frappe/frappe @ 82b0384810030c8d347780538821a3b006375d28 (dev
 ### AI and self-change safety
 
 - **GOV-09 Agent-safe actions**: **2** (grade A). Per-user API key and secret (frappe/core/doctype/user/user.json:600-620), OAuth scopes (frappe/integrations/doctype/oauth_scope), API Request Log, rate limiting (frappe/rate_limiter.py). No idempotency keys or dry-run.
-- **GOV-10 Bounded self-change**: **not applicable**. Scope fact agent_mutations and automatic_apply is false: No first-party AI or agent changes Frappe definitions in this repository.
-- **GOV-11 Learning-input integrity**: **not applicable**. Scope fact agent_mutations and automatic_apply is false: No first-party AI or agent changes Frappe definitions in this repository.
+- **GOV-10 Bounded self-change**: **not applicable**. Scope fact agent_mutations and evolution_auto_apply is false: No first-party AI or agent changes Frappe definitions in this repository.
+- **GOV-11 Learning-input integrity**: **not applicable**. Scope fact agent_mutations and evolution_auto_apply is false: No first-party AI or agent changes Frappe definitions in this repository.
 
 ## Expand (EXP)
 

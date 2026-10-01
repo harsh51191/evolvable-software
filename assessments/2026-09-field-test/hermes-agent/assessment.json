@@ -359,26 +359,23 @@
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Fallback providers and credential pools take over when a primary model fails (agent/agent_init.py, tests/agent/test_restore_primary_pool_reselect.py); tool and MCP failures are contained to the turn.",
-      "alt_score": 3,
-      "alt_note": "Provider failover is tested.",
-      "facets": {
-        "implemented": true,
-        "tested": true,
-        "operated": false
-      }
+      "evidence": "Fallback providers and credential pools take over when a primary model fails (agent/agent_init.py, tests/agent/test_restore_primary_pool_reselect.py); tool and MCP failures are contained to the turn. Plugins and gateway platforms have no breakers, so a 3 is not defensible under the inventory rule."
     },
     "ARC-09": {
       "status": "assessed",
-      "score": 2,
+      "score": 3,
       "grade": "A",
-      "evidence": "hermes backup and import cover the home directory, sessions database, skills, memory and configuration, with pre-update backups and extensive tests (hermes_cli/backup.py, tests/hermes_cli/test_backup*.py). No recovery objectives are stated.",
-      "alt_score": 3,
-      "alt_note": "Everything but stated recovery objectives meets level 3.",
+      "evidence": "hermes backup and import cover the home directory: the sessions database (snapshotted with sqlite3.backup), skills, memory, configuration and secrets such as .env, auth.json and the vault (hermes_cli/backup.py:117-161), with pre-update backups and round-trip tests (tests/hermes_cli/test_backup*.py). No recovery objectives are stated (level 4).",
       "facets": {
         "implemented": true,
         "tested": true,
         "operated": false
+      },
+      "inventory": {
+        "data": 3,
+        "definitions": 3,
+        "files": 3,
+        "secrets": 3
       }
     },
     "DEL-01": {
@@ -473,7 +470,7 @@
   },
   "limits": "Repository evidence only. The self-evolution repository's last commit is 2026-06-17, and only phase 1 (skills) is implemented; phases 2 and 3 were not scored. No live runs were performed, so the effects of background review and the curator are read from code and documentation. Single rater.",
   "framework_version": "0.4.0",
-  "reading": "**SAL 1.** Issue → Fix reaches L2: background review turns corrections and failures into skill and memory changes by default (LRN-07 3), and hermes doctor diagnoses setup problems (LRN-05 2). Request → Release stops at L1 because requests are chat turns with no specification step (DEL-01 1). **Blocks L3:** backups and update rollback are thorough and tested, but no recovery objectives are stated (ARC-09 2); configuration and memory lack the rollback skills have (GOV-05 2, inventory); background changes have no declared scope or rate limit (GOV-10 2).",
+  "reading": "**SAL 1.** Issue → Fix reaches L2: background review turns corrections and failures into skill and memory changes by default (LRN-07 3), and hermes doctor diagnoses setup problems (LRN-05 2). Request → Release stops at L1 because requests are chat turns with no specification step (DEL-01 1); raising that one criterion would lift the headline. **Controls:** backup and restore cover every surface including secrets and are tested (ARC-09 3), but configuration and memory lack the rollback skills have (GOV-05 2, inventory) and background changes have no declared scope or rate limit (GOV-10 2).",
   "framework": "EVOLVE",
   "scope_facts": {
     "persistent_data": {
@@ -492,13 +489,21 @@
       "value": false,
       "evidence": "A local single-user agent; the gateway relays messaging platforms for the same user."
     },
+    "machine_actions": {
+      "value": true,
+      "evidence": "The agent's tools change its own skills, memory and configuration, and the MCP and ACP servers expose it to other clients (mcp_serve.py, acp_adapter)."
+    },
     "agent_mutations": {
       "value": true,
       "evidence": "The background review writes skills and memory (agent/background_review.py)."
     },
-    "automatic_apply": {
+    "evolution_auto_apply": {
       "value": true,
       "evidence": "background_review is on by default and skill and memory write approvals default to off (hermes_cli/config_defaults.py:814, 1320)."
+    },
+    "definition_change_path": {
+      "value": true,
+      "evidence": "Skills, memory, prompts and configuration are its definitions."
     },
     "code_release_path": {
       "value": true,

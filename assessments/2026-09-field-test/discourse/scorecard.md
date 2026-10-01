@@ -6,7 +6,7 @@ Scope: the discourse repository including the plugins bundled in plugins/ (autom
 
 ## Reading
 
-**SAL 1.** Admins configure Discourse without code, and with PostHog it is one of two systems whose migrations pass the safe-migration control: SafeMigrate and deferred column drops enforce expand-and-contract (ARC-02 3). There is no AI lane by default (DEL-04 0), and as a focused application with adjacent-domain criteria excluded, Opportunity → Expansion stays at L0. **Learn:** search logs already record searches without results (EXP-04 2), the raw material for unmet-demand sensing. **Next level:** turn on and productise the workflows AI author, and cluster search misses and topic votes into proposals.
+**SAL 1.** Admins configure Discourse without code, and it passes two critical controls that most systems fail: SafeMigrate and deferred column drops enforce expand-and-contract (ARC-02 3), and backup and restore of the database and uploads are tested (ARC-09 3). There is no AI lane by default (DEL-04 0), and as a focused application with adjacent-domain criteria excluded, Opportunity → Expansion stays at L0. **Learn:** search logs already record searches without results (EXP-04 2), the raw material for unmet-demand sensing. **Next level:** turn on and productise the workflows AI author, and cluster search misses and topic votes into proposals.
 
 ## Limits
 
@@ -15,13 +15,15 @@ Repository evidence only, main branch at the tip named above. discourse-ai, disc
 ---
 Framework EVOLVE 0.4.0. Date 2026-09-30. Source github.com/discourse/discourse @ 2590ea9db1b7c38dcf80298aefd3e7cb3afe1f2b (main). Archetype **focused-application**.
 
-Scope facts true: persistent_data, schema_changes, multi_tenant, hosted_service. False: agent_mutations, automatic_apply, code_release_path.
+Scope facts true: persistent_data, schema_changes, multi_tenant, hosted_service, machine_actions, definition_change_path. False: agent_mutations, evolution_auto_apply, code_release_path.
 
 Coverage: 55 assessed, 0 not evidenced, 11 not applicable. Grades: 55 A, 0 B, 0 C.
 
 ## Software Autonomy Level
 
 **SAL 1 (Configurable) · Request → Release L1 · Issue → Fix L1 · Opportunity → Expansion L0**
+
+Progress toward the next level: Request → Release 2 of 4 conditions for L2; Issue → Fix 4 of 5 conditions for L2; Opportunity → Expansion 1 of 2 conditions for L1.
 
 - With opt-in settings: SAL 1 (Configurable) · Request → Release L1 · Issue → Fix L2 · Opportunity → Expansion L1.
 - With every alternate reading: SAL 1 (Configurable) · Request → Release L1 · Issue → Fix L1 · Opportunity → Expansion L0.
@@ -39,10 +41,10 @@ Coverage: 55 assessed, 0 not evidenced, 11 not applicable. Grades: 55 A, 0 B, 0 
 | Definition rollback | GOV-05 ≥ 3 | 2 | fail |
 | Release rollback | DEL-11 ≥ 3 | n/a | n/a |
 | Safe migrations | ARC-02 ≥ 3 | 3 | pass |
-| Tested backup and restore | ARC-09 ≥ 3 | 2 | fail |
+| Tested backup and restore | ARC-09 ≥ 3 | 3 | pass |
 | Tenant isolation | ARC-05 ≥ 3 | 2 | fail |
 | Security as infrastructure | GOV-04 ≥ 3 | 2 | fail |
-| Bounded self-change | not applicable (agent_mutations and automatic_apply false) | n/a | n/a |
+| Bounded self-change | not applicable (agent_mutations and evolution_auto_apply false) | n/a | n/a |
 
 ### What blocks the next level
 
@@ -50,11 +52,16 @@ Coverage: 55 assessed, 0 not evidenced, 11 not applicable. Grades: 55 A, 0 B, 0 
 - **Issue → Fix to L2**: spine Build needs product build path ≥ 2 (has DEL-04 0, LRN-07 2 with LRN-08 1)
 - **Opportunity → Expansion to L1**: spine Build needs people build path ≥ 2 or product build path ≥ 2 (has EXP-02 n/a; DEL-04 0, EXP-03 n/a)
 
+### Sensitivity
+
+- **Fragile:** the headline drops if any of these falls one level: MAL-02, MAL-06, LRN-03, GOV-05.
+- No single criterion rising one level lifts the headline.
+
 ## EVOLVE profile
 
 | Capability | Default | Range with alternate readings | With opt-in settings | Assessed only | If every criterion counted |
 |---|---:|---|---:|---:|---:|
-| Elastic (ARC) | 2.0 | 2.0–2.3 | 2.0 | 2.0 | 2.0 |
+| Elastic (ARC) | 2.1 | 2.1–2.3 | 2.1 | 2.1 | 2.1 |
 | Velocity (DEL) | 1.4 | 1.4–1.9 | 1.6 | 1.4 | 1.4 |
 | Open (MAL) | 2.1 | 2.1–2.3 | 2.3 | 2.1 | 1.8 |
 | Learn (LRN) | 1.4 | 1.4–1.5 | 1.5 | 1.4 | 1.4 |
@@ -72,7 +79,7 @@ Caps and deductions applied:
 | ARC Data | 2.5 |
 | ARC Scale | 2.0 |
 | ARC Capacity | 1.5 |
-| ARC Resilience | 2.0 |
+| ARC Resilience | 2.5 |
 | DEL Intake | 1.0 |
 | DEL Build | 0.7 |
 | DEL Verify | 2.0 |
@@ -106,7 +113,7 @@ Caps and deductions applied:
 | ARC-06 Ceilings measured, not discovered in incidents | assessed | 2 |  |  | A |  | Benchmark script (script/bench.rb); no documented per-surface limits or CI budgets. |
 | ARC-07 Service objectives defined and monitored | assessed | 1 |  |  | A |  | No published objectives in this repository; the prometheus exporter is a separate plugin not bundled here. |
 | ARC-08 Failure isolation and graceful degradation | assessed | 2 |  |  | A |  | Outbound requests go through FinalDestination with timeouts, and safe mode disables plugins and themes for a session (config/routes.rb:2036). Plugins run in-process. |
-| ARC-09 Backup, restore and recovery | assessed | 2 | 3 |  | A | IT | Built-in backup and restore of the database and uploads to local or S3 stores, with scheduled backups and restore specs, including multisite (lib/backup_restore, spec/lib/backup_restore). Secrets live outside the backup and no recovery time objective is stated. |
+| ARC-09 Backup, restore and recovery | assessed | 3 |  |  | A | IT | Inventory: data 3, definitions 3, files 3, secrets n/a. Built-in backup and restore of the database (data, site settings, themes) and uploads to local or S3 stores, with restore specs for both, including multisite (lib/backup_restore, spec/lib/backup_restore/database_restorer_spec.rb, uploads_restorer_spec.rb). Secrets live in the deployment environment, outside the product. No recovery objectives are stated (level 4). |
 | DEL-01 Request intake into a structured change specification | assessed | 1 | 2 |  | A |  | Communities collect requests as topics; the bundled topic-voting plugin ranks them (plugins/discourse-topic-voting). They are not linked to the settings or screens involved. |
 | DEL-02 Layers deploy independently | assessed | 1 |  |  | A |  | Rails and Ember monolith deployed as one application; container tooling lives in a separate repository. |
 | DEL-03 Module boundaries enforced by tooling | assessed | 1 |  |  | A |  | Plugin API is a contract, but internal module boundaries are convention; no architectural lint. |

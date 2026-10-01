@@ -121,9 +121,7 @@
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "The activity log records before-and-after changes for flags, insights, dashboards and more; no general revert across customisation surfaces.",
-      "alt_score": 3,
-      "alt_note": "History and diffs are broad; rollback coverage was not verified per surface.",
+      "evidence": "The activity log records before-and-after changes for flags, insights, dashboards and more; no general revert across customisation surfaces. The higher reading of 3 was dropped under the inventory rule (a 3 needs every default surface at 3): Revert is not available across customisation surfaces.",
       "facets": {
         "implemented": true,
         "tested": true,
@@ -416,14 +414,7 @@
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "The LLM gateway has a circuit breaker for model providers (services/llm-gateway/src/llm_gateway/circuit_breaker.py) and subscriptions auto-disable after repeated failures (ee/tasks/subscriptions/auto_disable.py); other surfaces lack breakers.",
-      "alt_score": 3,
-      "alt_note": "AI providers and destinations are isolated.",
-      "facets": {
-        "implemented": true,
-        "tested": true,
-        "operated": false
-      }
+      "evidence": "The LLM gateway has a circuit breaker for model providers (services/llm-gateway/src/llm_gateway/circuit_breaker.py) and subscriptions auto-disable after repeated failures (ee/tasks/subscriptions/auto_disable.py); other surfaces lack breakers, so a 3 is not defensible under the inventory rule."
     },
     "ARC-09": {
       "status": "assessed",
@@ -527,13 +518,21 @@
       "value": true,
       "evidence": "Django web, Celery and Temporal workers, Node ingestion and Rust capture services."
     },
+    "machine_actions": {
+      "value": true,
+      "evidence": "The API with scoped personal keys and an MCP server change PostHog objects (posthog/scopes.py, services/mcp)."
+    },
     "agent_mutations": {
       "value": true,
       "evidence": "PostHog AI creates and edits insights, dashboards and other configured objects (ee/hogai)."
     },
-    "automatic_apply": {
+    "evolution_auto_apply": {
+      "value": false,
+      "evidence": "PostHog AI changes are made on request in a conversation; weekly property materialisation applies without approval (posthog/tasks/scheduled.py:927), but it is scheduled maintenance, not a change from the evolution loop."
+    },
+    "definition_change_path": {
       "value": true,
-      "evidence": "Weekly property materialisation applies schema changes without approval (posthog/tasks/scheduled.py:927)."
+      "evidence": "Insights, dashboards, feature flags, actions and approval policies are definitions."
     },
     "code_release_path": {
       "value": false,

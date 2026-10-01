@@ -10,8 +10,10 @@
     "schema_changes": true,
     "multi_tenant": false,
     "hosted_service": false,
+    "machine_actions": true,
     "agent_mutations": true,
-    "automatic_apply": true,
+    "evolution_auto_apply": true,
+    "definition_change_path": true,
     "code_release_path": true
   },
   "coverage": {
@@ -37,6 +39,8 @@
           "architecture": 2,
           "governance": 2
         },
+        "next_met": 3,
+        "next_total": 4,
         "blockers": [
           {
             "part": "stages",
@@ -56,6 +60,8 @@
           "architecture": 2,
           "governance": 2
         },
+        "next_met": 14,
+        "next_total": 23,
         "blockers": [
           {
             "part": "spine",
@@ -114,13 +120,6 @@
             "control": "Safe migrations"
           },
           {
-            "part": "architecture",
-            "stage": "Foundation",
-            "needs": "ARC-09 ≥ 3",
-            "observed": "2",
-            "control": "Tested backup and restore"
-          },
-          {
             "part": "governance",
             "stage": "Ceiling",
             "needs": "GOV-10 ≥ 3 and LRN-08 ≥ 2",
@@ -138,6 +137,8 @@
           "architecture": 2,
           "governance": 2
         },
+        "next_met": 3,
+        "next_total": 5,
         "blockers": [
           {
             "part": "stages",
@@ -178,8 +179,8 @@
       {
         "control": "Tested backup and restore",
         "needs": "ARC-09 ≥ 3",
-        "observed": "2",
-        "status": "fail"
+        "observed": "3",
+        "status": "pass"
       },
       {
         "control": "Tenant isolation",
@@ -201,8 +202,41 @@
       }
     ]
   },
+  "sensitivity": {
+    "raise_headline": [
+      "DEL-01"
+    ],
+    "lower_headline": [
+      "DEL-11",
+      "LRN-03",
+      "GOV-05"
+    ],
+    "raise_loop": {
+      "request": [
+        "DEL-01"
+      ]
+    },
+    "lower_loop": {
+      "fix": [
+        "DEL-05",
+        "DEL-11",
+        "LRN-03",
+        "LRN-05",
+        "LRN-06",
+        "GOV-05"
+      ],
+      "request": [
+        "DEL-11",
+        "GOV-05"
+      ],
+      "expansion": [
+        "DEL-11",
+        "GOV-05"
+      ]
+    }
+  },
   "capabilities": {
-    "ARC": 2,
+    "ARC": 2.3,
     "DEL": 1.8,
     "MAL": 2.2,
     "LRN": 2.2,
@@ -211,8 +245,8 @@
   },
   "ranges": {
     "ARC": [
-      2,
-      3
+      2.3,
+      2.8
     ],
     "DEL": [
       1.8,
@@ -237,7 +271,7 @@
   },
   "area_means": {
     "ARC Data": 2,
-    "ARC Resilience": 2,
+    "ARC Resilience": 2.5,
     "DEL Intake": 1,
     "DEL Build": 2,
     "DEL Verify": 2,
@@ -269,7 +303,7 @@
     "ARC-06": null,
     "ARC-07": null,
     "ARC-08": 2,
-    "ARC-09": 2,
+    "ARC-09": 3,
     "DEL-01": 1,
     "DEL-02": 2,
     "DEL-03": 2,
@@ -331,7 +365,7 @@
   "variants": {
     "high": {
       "capabilities": {
-        "ARC": 3,
+        "ARC": 2.8,
         "DEL": 2.3,
         "MAL": 2.5,
         "LRN": 2.9,
@@ -347,7 +381,7 @@
             "parts": {
               "stages": 2,
               "spine": 2,
-              "architecture": 4,
+              "architecture": 3,
               "governance": 2
             }
           },
@@ -356,7 +390,7 @@
             "parts": {
               "stages": 2,
               "spine": 2,
-              "architecture": 4,
+              "architecture": 3,
               "governance": 2
             }
           },
@@ -365,7 +399,7 @@
             "parts": {
               "stages": 1,
               "spine": 2,
-              "architecture": 4,
+              "architecture": 3,
               "governance": 2
             }
           }
@@ -374,7 +408,7 @@
     },
     "available": {
       "capabilities": {
-        "ARC": 2,
+        "ARC": 2.3,
         "DEL": 1.8,
         "MAL": 2.2,
         "LRN": 2.3,
@@ -417,7 +451,7 @@
     },
     "assessed_only": {
       "capabilities": {
-        "ARC": 2,
+        "ARC": 2.3,
         "DEL": 1.8,
         "MAL": 2.2,
         "LRN": 2.2,
@@ -427,7 +461,7 @@
     },
     "all_applicable": {
       "capabilities": {
-        "ARC": 1.6,
+        "ARC": 1.8,
         "DEL": 1.8,
         "MAL": 1.9,
         "LRN": 2.2,

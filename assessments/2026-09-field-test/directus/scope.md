@@ -31,6 +31,8 @@ Declared for the default configuration. They decide which criteria and critical 
 | `schema_changes` | true | The data model editor, schema apply and the AI collection and field tools alter tables at runtime (api/src/services/fields.ts, api/src/ai/tools/collections). |
 | `multi_tenant` | false | One project per deployment; isolation inside a project is by roles and policies, not tenants. |
 | `hosted_service` | true | The API is a long-lived Node service with optional Redis-backed synchronisation (api/src/synchronization.ts). |
+| `machine_actions` | true | REST and GraphQL APIs and an MCP server change items and schema (api/src/ai/mcp). |
 | `agent_mutations` | true | The AI assistant changes collections, fields, flows and items through tools (api/src/ai/tools). |
-| `automatic_apply` | false | Mutating AI tool calls require approval unless a user sets a tool to always-allow (api/src/ai/tools/registry.ts:198-214). |
+| `evolution_auto_apply` | false | Mutating AI tool calls require approval unless a user sets a tool to always-allow (api/src/ai/tools/registry.ts:198-214). |
+| `definition_change_path` | true | Collections, fields, flows, roles and settings are definitions. |
 | `code_release_path` | false | The AI lane changes definitions, not Directus code. |

@@ -8,8 +8,10 @@ Read at github.com/directus/directus @ 2878b4ef8ea9c1d09201debe89b3a5dc1d0bf93a 
 - **schema_changes**: true. The data model editor, schema apply and the AI collection and field tools alter tables at runtime (api/src/services/fields.ts, api/src/ai/tools/collections).
 - **multi_tenant**: false. One project per deployment; isolation inside a project is by roles and policies, not tenants.
 - **hosted_service**: true. The API is a long-lived Node service with optional Redis-backed synchronisation (api/src/synchronization.ts).
+- **machine_actions**: true. REST and GraphQL APIs and an MCP server change items and schema (api/src/ai/mcp).
 - **agent_mutations**: true. The AI assistant changes collections, fields, flows and items through tools (api/src/ai/tools).
-- **automatic_apply**: false. Mutating AI tool calls require approval unless a user sets a tool to always-allow (api/src/ai/tools/registry.ts:198-214).
+- **evolution_auto_apply**: false. Mutating AI tool calls require approval unless a user sets a tool to always-allow (api/src/ai/tools/registry.ts:198-214).
+- **definition_change_path**: true. Collections, fields, flows, roles and settings are definitions.
 - **code_release_path**: false. The AI lane changes definitions, not Directus code.
 
 ## Elastic (ARC)
@@ -128,8 +130,7 @@ Read at github.com/directus/directus @ 2878b4ef8ea9c1d09201debe89b3a5dc1d0bf93a 
 - **LRN-01 Telemetry accessible to the platform in near real time**: **2** (grade A). Activity rows are written per request and are queryable by in-product Insights dashboards; vendor telemetry counters (api/src/telemetry); AI telemetry to Braintrust or Langfuse (api/src/ai/telemetry). Scored at the lower reading under rule 11 because: Activity is an audit stream, not per-feature usage instrumentation.
   - Higher reading 3: The September v0.3 pass scored 3 on the evidence above.
 - **LRN-02 Structured learning signals**: **1** (grade A). Item comments are free text; no typed feedback or rating objects linked to definitions.
-- **LRN-03 User-issue detection**: **1** (grade A). Admins can read system logs in the app (app/src/modules/settings/routes/system-logs); failed actions are not recorded per product area.
-  - Higher reading 2: Logs are queryable by admins.
+- **LRN-03 User-issue detection**: **2** (grade A). Every flow run records each operation step with its resolve or reject status as activity and revisions (api/src/flows.ts:414-454), viewable per flow; admins can read system logs (app/src/modules/settings/routes/system-logs). Failed actions outside flows are not recorded per product area.
 - **LRN-04 Cross-source mining inside the product**: **1** (grade A). Insights dashboards can query any collection including activity; no joined usage, support and delivery models or mining.
   - Higher reading 2: In-product dashboards over system collections are a partial join.
 
@@ -162,8 +163,7 @@ Read at github.com/directus/directus @ 2878b4ef8ea9c1d09201debe89b3a5dc1d0bf93a 
 
 ### Change control
 
-- **GOV-05 Definitions and layouts versioned with rollback**: **2** (grade A), facets: implemented, tested. Revisions can be reverted for items and system records (api/src/services/revisions.ts:13-18); data-model changes have no rollback in the UI.
-  - Higher reading 3: Revert works on system collections too, so most customisation surfaces are covered through the API.
+- **GOV-05 Definitions and layouts versioned with rollback**: **2** (grade A), facets: implemented, tested. Revisions can be reverted for items and system records (api/src/services/revisions.ts:13-18); data-model changes have no rollback in the UI. The higher reading of 3 was dropped under the inventory rule (a 3 needs every default surface at 3): Data-model changes have no rollback.
 - **GOV-06 Proposal, review, apply as a first-class object with preview**: **2** (grade A). Content Versioning stages item changes for compare and promote (api/src/services/versions.ts:436-521); definitions and configuration move between projects through schema snapshot, diff and apply (api/src/controllers/schema.ts) and CLI sync pull, diff and push (packages/cli/src/commands/sync), which is an engineer flow.
   - Higher reading 3: Versions with compare-and-promote already form a proposal, review and apply flow, but for content only.
 - **GOV-07 Policy-based apply with recorded approvals and a movable human boundary**: **2** (grade A). Mutating AI tool calls require approval unless the user set that tool to always-allow (api/src/ai/tools/registry.ts:198-214, app/src/ai/stores/use-ai.ts:179-185); deletes can be disabled wholesale (allowDeletes). Approvals are not recorded as audit objects.

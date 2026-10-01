@@ -10,8 +10,10 @@
     "schema_changes": true,
     "multi_tenant": true,
     "hosted_service": true,
+    "machine_actions": true,
     "agent_mutations": true,
-    "automatic_apply": true,
+    "evolution_auto_apply": false,
+    "definition_change_path": true,
     "code_release_path": false
   },
   "coverage": {
@@ -37,6 +39,8 @@
           "architecture": 2,
           "governance": 2
         },
+        "next_met": 12,
+        "next_total": 21,
         "blockers": [
           {
             "part": "spine",
@@ -112,6 +116,8 @@
           "architecture": 2,
           "governance": 2
         },
+        "next_met": 4,
+        "next_total": 5,
         "blockers": [
           {
             "part": "stages",
@@ -131,6 +137,8 @@
           "architecture": 2,
           "governance": 2
         },
+        "next_met": 3,
+        "next_total": 5,
         "blockers": [
           {
             "part": "stages",
@@ -194,6 +202,37 @@
       }
     ]
   },
+  "sensitivity": {
+    "raise_headline": [
+      "LRN-05"
+    ],
+    "lower_headline": [
+      "LRN-03",
+      "GOV-05"
+    ],
+    "raise_loop": {
+      "fix": [
+        "LRN-05"
+      ]
+    },
+    "lower_loop": {
+      "request": [
+        "ARC-09",
+        "DEL-01",
+        "DEL-04",
+        "DEL-05",
+        "GOV-05"
+      ],
+      "expansion": [
+        "DEL-04",
+        "GOV-05"
+      ],
+      "fix": [
+        "LRN-03",
+        "GOV-05"
+      ]
+    }
+  },
   "capabilities": {
     "ARC": 2.2,
     "DEL": 2.2,
@@ -205,7 +244,7 @@
   "ranges": {
     "ARC": [
       2.2,
-      2.4
+      2.3
     ],
     "DEL": [
       2.2,
@@ -221,7 +260,7 @@
     ],
     "GOV": [
       2.1,
-      2.7
+      2.6
     ],
     "EXP": [
       1.3,
@@ -326,11 +365,11 @@
   "variants": {
     "high": {
       "capabilities": {
-        "ARC": 2.4,
+        "ARC": 2.3,
         "DEL": 2.8,
         "MAL": 3.1,
         "LRN": 2.7,
-        "GOV": 2.7,
+        "GOV": 2.6,
         "EXP": 1.8
       },
       "sal": {
@@ -341,7 +380,7 @@
             "level": 2,
             "parts": {
               "stages": 2,
-              "spine": 3,
+              "spine": 2,
               "architecture": 2,
               "governance": 2
             }
@@ -350,7 +389,7 @@
             "level": 2,
             "parts": {
               "stages": 2,
-              "spine": 3,
+              "spine": 2,
               "architecture": 2,
               "governance": 2
             }
@@ -359,7 +398,7 @@
             "level": 1,
             "parts": {
               "stages": 1,
-              "spine": 3,
+              "spine": 2,
               "architecture": 2,
               "governance": 2
             }

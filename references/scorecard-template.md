@@ -10,8 +10,10 @@ Assessment date. Evaluator. Declared archetype. Scope. Repositories and immutabl
 | schema_changes | | |
 | multi_tenant | | |
 | hosted_service | | |
+| machine_actions | | |
 | agent_mutations | | |
-| automatic_apply | | |
+| evolution_auto_apply | | |
+| definition_change_path | | |
 | code_release_path | | |
 
 ## Software Autonomy Level

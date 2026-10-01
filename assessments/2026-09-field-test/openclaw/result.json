@@ -10,8 +10,10 @@
     "schema_changes": true,
     "multi_tenant": false,
     "hosted_service": false,
+    "machine_actions": true,
     "agent_mutations": true,
-    "automatic_apply": true,
+    "evolution_auto_apply": true,
+    "definition_change_path": true,
     "code_release_path": false
   },
   "coverage": {
@@ -37,6 +39,8 @@
           "architecture": 2,
           "governance": 2
         },
+        "next_met": 14,
+        "next_total": 21,
         "blockers": [
           {
             "part": "spine",
@@ -81,13 +85,6 @@
             "control": "Safe migrations"
           },
           {
-            "part": "architecture",
-            "stage": "Foundation",
-            "needs": "ARC-09 ≥ 3",
-            "observed": "2",
-            "control": "Tested backup and restore"
-          },
-          {
             "part": "governance",
             "stage": "Ceiling",
             "needs": "GOV-10 ≥ 3 and LRN-08 ≥ 2",
@@ -105,6 +102,8 @@
           "architecture": 2,
           "governance": 2
         },
+        "next_met": 15,
+        "next_total": 23,
         "blockers": [
           {
             "part": "spine",
@@ -156,13 +155,6 @@
             "control": "Safe migrations"
           },
           {
-            "part": "architecture",
-            "stage": "Foundation",
-            "needs": "ARC-09 ≥ 3",
-            "observed": "2",
-            "control": "Tested backup and restore"
-          },
-          {
             "part": "governance",
             "stage": "Ceiling",
             "needs": "GOV-10 ≥ 3 and LRN-08 ≥ 2",
@@ -180,6 +172,8 @@
           "architecture": 2,
           "governance": 2
         },
+        "next_met": 3,
+        "next_total": 5,
         "blockers": [
           {
             "part": "stages",
@@ -220,8 +214,8 @@
       {
         "control": "Tested backup and restore",
         "needs": "ARC-09 ≥ 3",
-        "observed": "2",
-        "status": "fail"
+        "observed": "3",
+        "status": "pass"
       },
       {
         "control": "Tenant isolation",
@@ -243,8 +237,39 @@
       }
     ]
   },
+  "sensitivity": {
+    "raise_headline": [],
+    "lower_headline": [
+      "DEL-01",
+      "DEL-04",
+      "DEL-05",
+      "LRN-03",
+      "LRN-05",
+      "LRN-06",
+      "GOV-05"
+    ],
+    "raise_loop": {},
+    "lower_loop": {
+      "request": [
+        "DEL-01",
+        "DEL-04",
+        "DEL-05",
+        "GOV-05"
+      ],
+      "fix": [
+        "DEL-05",
+        "LRN-03",
+        "LRN-05",
+        "LRN-06",
+        "GOV-05"
+      ],
+      "expansion": [
+        "GOV-05"
+      ]
+    }
+  },
   "capabilities": {
-    "ARC": 2,
+    "ARC": 2.3,
     "DEL": 2.2,
     "MAL": 2.4,
     "LRN": 2.1,
@@ -253,7 +278,7 @@
   },
   "ranges": {
     "ARC": [
-      2,
+      2.3,
       2.3
     ],
     "DEL": [
@@ -279,7 +304,7 @@
   },
   "area_means": {
     "ARC Data": 2,
-    "ARC Resilience": 2,
+    "ARC Resilience": 2.5,
     "DEL Intake": 2,
     "DEL Build": 2.7,
     "DEL Verify": 2.5,
@@ -311,7 +336,7 @@
     "ARC-06": null,
     "ARC-07": null,
     "ARC-08": 2,
-    "ARC-09": 2,
+    "ARC-09": 3,
     "DEL-01": 2,
     "DEL-02": 3,
     "DEL-03": 3,
@@ -416,7 +441,7 @@
     },
     "available": {
       "capabilities": {
-        "ARC": 2,
+        "ARC": 2.3,
         "DEL": 2.2,
         "MAL": 2.4,
         "LRN": 2.1,
@@ -459,7 +484,7 @@
     },
     "assessed_only": {
       "capabilities": {
-        "ARC": 2,
+        "ARC": 2.3,
         "DEL": 2.2,
         "MAL": 2.4,
         "LRN": 2.1,
@@ -469,7 +494,7 @@
     },
     "all_applicable": {
       "capabilities": {
-        "ARC": 1.9,
+        "ARC": 2.0,
         "DEL": 2.2,
         "MAL": 2.0,
         "LRN": 2.1,

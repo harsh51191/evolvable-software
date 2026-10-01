@@ -15,13 +15,15 @@ Repository evidence only, master at the tip named above. Enterprise modules (*.e
 ---
 Framework EVOLVE 0.4.0. Date 2026-09-30. Source github.com/n8n-io/n8n @ c17c48043eb1080e5ae9795ea3a384960f8748f1 (master). Archetype **configurable-application-platform**.
 
-Scope facts true: persistent_data, schema_changes, hosted_service, agent_mutations. False: multi_tenant, automatic_apply, code_release_path.
+Scope facts true: persistent_data, schema_changes, hosted_service, machine_actions, agent_mutations, definition_change_path. False: multi_tenant, evolution_auto_apply, code_release_path.
 
 Coverage: 64 assessed, 0 not evidenced, 2 not applicable. Grades: 64 A, 0 B, 0 C.
 
 ## Software Autonomy Level
 
 **SAL 2 (Assisted) · Request → Release L2 · Issue → Fix L2 · Opportunity → Expansion L1**
+
+Progress toward the next level: Request → Release 14 of 21 conditions for L3; Issue → Fix 14 of 23 conditions for L3; Opportunity → Expansion 3 of 5 conditions for L2.
 
 - With opt-in settings: SAL 2 (Assisted) · Request → Release L2 · Issue → Fix L2 · Opportunity → Expansion L1.
 - With every alternate reading: SAL 2 (Assisted) · Request → Release L2 · Issue → Fix L2 · Opportunity → Expansion L1.
@@ -50,6 +52,11 @@ Coverage: 64 assessed, 0 not evidenced, 2 not applicable. Grades: 64 A, 0 B, 0 C
 - **Issue → Fix to L3**: spine Build needs product build path ≥ 3 (has DEL-04 2, LRN-07 1); spine Verify needs DEL-06 ≥ 3 (has 2); spine Roll back needs GOV-05 ≥ 3 (has 2); stages Detect needs LRN-03 ≥ 3 (has 2); stages Diagnose needs LRN-05 ≥ 3 (has 2); stages Propose needs LRN-06 ≥ 3 (has 2); architecture Foundation needs ARC-02 ≥ 3 (has 2); architecture Foundation needs ARC-09 ≥ 3 (has 2); governance Ceiling needs GOV-10 ≥ 3 and LRN-08 ≥ 2 (has 2; 2)
 - **Opportunity → Expansion to L2**: stages Sense needs EXP-04 ≥ 2 (has 0); stages Propose needs EXP-05 ≥ 2 (has 0)
 
+### Sensitivity
+
+- **Fragile:** the headline drops if any of these falls one level: DEL-01, DEL-04, LRN-03, LRN-05, LRN-06, GOV-05.
+- No single criterion rising one level lifts the headline.
+
 ## EVOLVE profile
 
 | Capability | Default | Range with alternate readings | With opt-in settings | Assessed only | If every criterion counted |
@@ -58,7 +65,7 @@ Coverage: 64 assessed, 0 not evidenced, 2 not applicable. Grades: 64 A, 0 B, 0 C
 | Velocity (DEL) | 2.1 | 2.1–2.7 | 2.1 | 2.1 | 2.1 |
 | Open (MAL) | 2.3 | 2.3–3.0 | 2.3 | 2.3 | 2.3 |
 | Learn (LRN) | 1.9 | 1.9–2.6 | 1.9 | 1.9 | 1.9 |
-| Vet (GOV) | 2.3 | 2.3–2.9 | 2.3 | 2.3 | 2.3 |
+| Vet (GOV) | 2.3 | 2.3–2.8 | 2.3 | 2.3 | 2.3 |
 | Expand (EXP) | 1.1 | 1.1–1.4 | 1.1 | 1.1 | 1.1 |
 
 ## Area means
@@ -148,7 +155,7 @@ Coverage: 64 assessed, 0 not evidenced, 2 not applicable. Grades: 64 A, 0 B, 0 C
 | GOV-02 Audit generic over entities, definition changes and approvals | assessed | 2 | 3 |  | A |  | Audit events for users, workflows and credentials on the event bus, exported through log streaming; policy decisions are audited (packages/cli/src/modules/policy-infrastructure/policy-decision-audit.ts); workflow review activity is recorded (workflow-review-activity.service.ts); execution pruning sets retention. Scored at the lower reading under rule 11 because: Coverage across every entity and an in-product audit viewer were not verified. |
 | GOV-03 Privacy classification, export, erasure and retention generic over entities | assessed | 2 |  |  | A |  | Redaction policies for execution data (packages/cli/src/modules/redaction) and execution pruning; no data-subject export or tag-driven erasure. |
 | GOV-04 Security as infrastructure | assessed | 3 |  |  | A | IT | Scope-based permissions (packages/@n8n/permissions), admin type-availability policies enforced at save, publish, start and import (packages/cli/src/modules/type-availability-policies/README.md), community package scanning (packages/@n8n/scan-community-package), and security jobs on pull requests (.github/workflows/ci-pull-requests.yml:499, sec-ci-reusable.yml, security-trivy-scan-callable.yml). |
-| GOV-05 Definitions and layouts versioned with rollback | assessed | 2 | 3 |  | A | IT | Workflow history with versions and restore (packages/cli/src/workflows/workflow-history); other surfaces (credentials, variables, data tables, settings) roll back only through source control. |
+| GOV-05 Definitions and layouts versioned with rollback | assessed | 2 |  |  | A | IT | Workflow history with versions and restore (packages/cli/src/workflows/workflow-history); other surfaces (credentials, variables, data tables, settings) roll back only through source control. The higher reading of 3 was dropped under the inventory rule (a 3 needs every default surface at 3): Credentials, variables, data tables and settings roll back only through source control. |
 | GOV-06 Proposal, review, apply as a first-class object with preview | assessed | 3 |  |  | A |  | Workflow review requests with an inbox, decision policy and a publish guard that blocks publishing until approved (packages/cli/src/modules/workflow-reviews.ee, workflow-review-publish-guard.service.ts:11-29); git-backed environments let changes be staged on another instance first (packages/cli/src/modules/source-control.ee). |
 | GOV-07 Policy-based apply with recorded approvals and a movable human boundary | assessed | 3 |  |  | A |  | Shared policy infrastructure runs registered @PolicyCheck classes at fixed points with cleared or blocked outcomes and audited decisions (packages/cli/src/modules/policy-infrastructure/README.md); review decision policy (workflow-review-decision-policy.ts). |
 | GOV-08 Upgrade safety | assessed | 3 | 4 |  | A |  | Nodes are versioned so existing workflows keep their typeVersion; a breaking-changes module scans workflows and configuration against the target version with a rule registry and migration services (packages/cli/src/modules/breaking-changes/README.md); node engine compatibility checks (packages/@n8n/node-engine-compatibility). Scored at the lower reading under rule 11 because: If migrations are applied rather than proposed, or breaking changes lack a policy exception. |

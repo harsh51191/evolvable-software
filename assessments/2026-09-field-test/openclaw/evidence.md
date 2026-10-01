@@ -8,8 +8,10 @@ Read at github.com/openclaw/openclaw @ df2a29cac9ad37c31a0f5a0d977ba3e4fd833cb0 
 - **schema_changes**: true. The workshop store has a versioned SQLite schema (src/skills/workshop/store-sqlite-schema.ts) and doctor migrates configuration.
 - **multi_tenant**: false. A personal assistant per installation; shared gateways carry several people but are not isolated tenants (VISION.md).
 - **hosted_service**: false. A personal gateway daemon, not a multi-user service.
+- **machine_actions**: true. Agent tools and the gateway API change skills, configuration and channels.
 - **agent_mutations**: true. The experience review drafts and applies skill proposals (src/skills/workshop/experience-review.ts).
-- **automatic_apply**: true. autonomous.mode auto and approvalPolicy auto are the defaults (src/skills/workshop/config.ts:15-20).
+- **evolution_auto_apply**: true. autonomous.mode auto and approvalPolicy auto are the defaults (src/skills/workshop/config.ts:15-20).
+- **definition_change_path**: true. Skills, memory and configuration are its definitions.
 - **code_release_path**: false. The self-improvement path changes skills, not OpenClaw code.
 
 ## Elastic (ARC)
@@ -32,10 +34,9 @@ Read at github.com/openclaw/openclaw @ df2a29cac9ad37c31a0f5a0d977ba3e4fd833cb0 
 
 ### Resilience
 
-- **ARC-08 Failure isolation and graceful degradation**: **2** (grade A), facets: implemented. Agents can declare model fallbacks (src/agents/agent-scope-config.ts); plugins run in-process.
-  - Higher reading 3: Model failover is configurable per agent.
-- **ARC-09 Backup, restore and recovery**: **2** (grade A), facets: implemented, tested. Backup, scheduled backup, restore, health checks and a resource inventory, with restore tests and privacy rules for secrets (src/commands/backup-restore.ts, backup-schedule.ts, backup-health.ts, backup-resource-inventory.ts, backup-restore.test.ts). No recovery objectives are stated.
-  - Higher reading 3: Everything but stated recovery objectives meets level 3.
+- **ARC-08 Failure isolation and graceful degradation**: **2** (grade A). Agents can declare model fallbacks (src/agents/agent-scope-config.ts); plugins run in-process, so a 3 is not defensible under the inventory rule.
+- **ARC-09 Backup, restore and recovery**: **3** (grade A), facets: implemented, tested. Backup covers state, configuration, credentials, workspaces, agents and managed skills (src/commands/backup-shared.ts:76), with verification, scheduling and a restore test that round-trips into a fresh target with a matching inventory (src/commands/backup-restore.test.ts:176). Private captures are excluded by design. No recovery objectives are stated (level 4).
+  - Inventory: data 3, definitions 3, files 3, secrets 3
 
 ## Velocity (DEL)
 

@@ -382,15 +382,19 @@
     },
     "ARC-09": {
       "status": "assessed",
-      "score": 2,
+      "score": 3,
       "grade": "A",
-      "evidence": "Built-in backup and restore of the database and uploads to local or S3 stores, with scheduled backups and restore specs, including multisite (lib/backup_restore, spec/lib/backup_restore). Secrets live outside the backup and no recovery time objective is stated.",
-      "alt_score": 3,
-      "alt_note": "Automatic backup frequency is a recovery point setting.",
+      "evidence": "Built-in backup and restore of the database (data, site settings, themes) and uploads to local or S3 stores, with restore specs for both, including multisite (lib/backup_restore, spec/lib/backup_restore/database_restorer_spec.rb, uploads_restorer_spec.rb). Secrets live in the deployment environment, outside the product. No recovery objectives are stated (level 4).",
       "facets": {
         "implemented": true,
         "tested": true,
         "operated": false
+      },
+      "inventory": {
+        "data": 3,
+        "definitions": 3,
+        "files": 3,
+        "secrets": "n/a"
       }
     },
     "DEL-01": {
@@ -462,7 +466,7 @@
   },
   "limits": "Repository evidence only, main branch at the tip named above. discourse-ai, discourse-workflows and parts of the MCP surface ship disabled by default as betas; they were scored as shipped, and the alternates show the effect of discounting them. Hosted Discourse operations (incidents, ephemeral environments, telemetry pipelines) are invisible here. Single rater.",
   "framework_version": "0.4.0",
-  "reading": "**SAL 1.** Admins configure Discourse without code, and with PostHog it is one of two systems whose migrations pass the safe-migration control: SafeMigrate and deferred column drops enforce expand-and-contract (ARC-02 3). There is no AI lane by default (DEL-04 0), and as a focused application with adjacent-domain criteria excluded, Opportunity → Expansion stays at L0. **Learn:** search logs already record searches without results (EXP-04 2), the raw material for unmet-demand sensing. **Next level:** turn on and productise the workflows AI author, and cluster search misses and topic votes into proposals.",
+  "reading": "**SAL 1.** Admins configure Discourse without code, and it passes two critical controls that most systems fail: SafeMigrate and deferred column drops enforce expand-and-contract (ARC-02 3), and backup and restore of the database and uploads are tested (ARC-09 3). There is no AI lane by default (DEL-04 0), and as a focused application with adjacent-domain criteria excluded, Opportunity → Expansion stays at L0. **Learn:** search logs already record searches without results (EXP-04 2), the raw material for unmet-demand sensing. **Next level:** turn on and productise the workflows AI author, and cluster search misses and topic votes into proposals.",
   "framework": "EVOLVE",
   "scope_facts": {
     "persistent_data": {
@@ -481,13 +485,21 @@
       "value": true,
       "evidence": "Puma web processes and Sidekiq workers run as long-lived services."
     },
+    "machine_actions": {
+      "value": true,
+      "evidence": "The admin API with scoped API keys changes content and settings (app/models/api_key_scope.rb)."
+    },
     "agent_mutations": {
       "value": false,
       "evidence": "By default no AI changes Discourse definitions: discourse-ai and the workflows AI author are off by default."
     },
-    "automatic_apply": {
+    "evolution_auto_apply": {
       "value": false,
       "evidence": "Admins apply changes directly; nothing applies definition changes automatically by default."
+    },
+    "definition_change_path": {
+      "value": true,
+      "evidence": "Site settings, themes, categories and automations are definitions."
     },
     "code_release_path": {
       "value": false,

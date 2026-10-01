@@ -8,8 +8,10 @@ Read at github.com/OpenHands/OpenHands @ 21cc5c6170fe093c0fcd23ffc61949f4933e17b
 - **schema_changes**: true. Alembic migrations in the Automation Service (migrations/versions, 29 files).
 - **multi_tenant**: true. The Automation Service serves organisations with org-scoped data (migrations/versions/023_org_scoped_git_sync.py).
 - **hosted_service**: true. The Automation Service and Agent Server run as long-lived services for OpenHands Cloud.
+- **machine_actions**: true. The Agent Server and Automation Service APIs create and run automations with per-user API keys (automation repository: openhands/automation/auth.py).
 - **agent_mutations**: false. Agents change users' repositories, not OpenHands' own definitions.
-- **automatic_apply**: false. Nothing changes OpenHands' own definitions automatically.
+- **evolution_auto_apply**: false. Nothing changes OpenHands' own definitions automatically.
+- **definition_change_path**: true. Automations, skills and settings are definitions.
 - **code_release_path**: false. Automations act on users' repositories; no first-party lane ships OpenHands code changes.
 
 ## Elastic (ARC)

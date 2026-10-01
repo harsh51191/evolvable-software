@@ -31,6 +31,8 @@ Declared for the default configuration. They decide which criteria and critical 
 | `schema_changes` | true | Rails migrations (db/migrate, 1,765 files) change the schema on every upgrade. |
 | `multi_tenant` | true | Multisite hosting serves several forums from one deployment, each with its own database. |
 | `hosted_service` | true | Puma web processes and Sidekiq workers run as long-lived services. |
+| `machine_actions` | true | The admin API with scoped API keys changes content and settings (app/models/api_key_scope.rb). |
 | `agent_mutations` | false | By default no AI changes Discourse definitions: discourse-ai and the workflows AI author are off by default. |
-| `automatic_apply` | false | Admins apply changes directly; nothing applies definition changes automatically by default. |
+| `evolution_auto_apply` | false | Admins apply changes directly; nothing applies definition changes automatically by default. |
+| `definition_change_path` | true | Site settings, themes, categories and automations are definitions. |
 | `code_release_path` | false | No first-party evolution system ships code changes. |

@@ -10,8 +10,10 @@
     "schema_changes": true,
     "multi_tenant": false,
     "hosted_service": true,
+    "machine_actions": true,
     "agent_mutations": true,
-    "automatic_apply": false,
+    "evolution_auto_apply": false,
+    "definition_change_path": true,
     "code_release_path": false
   },
   "coverage": {
@@ -25,8 +27,8 @@
     "C": 0
   },
   "sal": {
-    "headline": 0,
-    "headline_name": "Manual",
+    "headline": 1,
+    "headline_name": "Configurable",
     "loops": {
       "request": {
         "level": 1,
@@ -37,6 +39,8 @@
           "architecture": 1,
           "governance": 2
         },
+        "next_met": 1,
+        "next_total": 4,
         "blockers": [
           {
             "part": "spine",
@@ -62,20 +66,43 @@
         ]
       },
       "fix": {
-        "level": 0,
-        "name": "Manual",
+        "level": 1,
+        "name": "Configurable",
         "parts": {
-          "stages": 0,
+          "stages": 1,
           "spine": 1,
           "architecture": 1,
           "governance": 2
         },
+        "next_met": 1,
+        "next_total": 5,
         "blockers": [
           {
+            "part": "spine",
+            "stage": "Build",
+            "needs": "product build path ≥ 2",
+            "observed": "DEL-04 1, LRN-07 1",
+            "control": null
+          },
+          {
             "part": "stages",
-            "stage": "Detect",
-            "needs": "LRN-03 ≥ 2",
+            "stage": "Diagnose",
+            "needs": "LRN-05 ≥ 2",
             "observed": "1",
+            "control": null
+          },
+          {
+            "part": "stages",
+            "stage": "Propose",
+            "needs": "LRN-06 ≥ 2",
+            "observed": "0",
+            "control": null
+          },
+          {
+            "part": "architecture",
+            "stage": "Foundation",
+            "needs": "every applicable ARC ≥ 1",
+            "observed": "ARC-06 0",
             "control": null
           }
         ]
@@ -89,6 +116,8 @@
           "architecture": 1,
           "governance": 2
         },
+        "next_met": 2,
+        "next_total": 5,
         "blockers": [
           {
             "part": "stages",
@@ -159,11 +188,31 @@
       }
     ]
   },
+  "sensitivity": {
+    "raise_headline": [],
+    "lower_headline": [
+      "LRN-03",
+      "GOV-05"
+    ],
+    "raise_loop": {},
+    "lower_loop": {
+      "fix": [
+        "LRN-03",
+        "GOV-05"
+      ],
+      "request": [
+        "GOV-05"
+      ],
+      "expansion": [
+        "GOV-05"
+      ]
+    }
+  },
   "capabilities": {
     "ARC": 1.6,
     "DEL": 1.5,
     "MAL": 2.4,
-    "LRN": 0.7,
+    "LRN": 0.8,
     "GOV": 1.6,
     "EXP": 1.1
   },
@@ -181,7 +230,7 @@
       3.0
     ],
     "LRN": [
-      0.7,
+      0.8,
       0.9
     ],
     "GOV": [
@@ -209,7 +258,7 @@
     "MAL Extensions": 2.7,
     "MAL Integrations": 1,
     "MAL Agent interface": 2.5,
-    "LRN Sense": 1.3,
+    "LRN Sense": 1.5,
     "LRN Diagnose and propose": 0.5,
     "LRN Learn from experience": 1,
     "LRN Measure": 0,
@@ -264,7 +313,7 @@
     "MAL-20": 2,
     "LRN-01": 2,
     "LRN-02": 1,
-    "LRN-03": 1,
+    "LRN-03": 2,
     "LRN-04": 1,
     "LRN-05": 1,
     "LRN-06": 0,
@@ -338,13 +387,13 @@
         "ARC": 1.6,
         "DEL": 1.5,
         "MAL": 2.4,
-        "LRN": 0.7,
+        "LRN": 0.8,
         "GOV": 1.6,
         "EXP": 1.1
       },
       "sal": {
-        "headline": 0,
-        "headline_name": "Manual",
+        "headline": 1,
+        "headline_name": "Configurable",
         "loops": {
           "request": {
             "level": 1,
@@ -356,9 +405,9 @@
             }
           },
           "fix": {
-            "level": 0,
+            "level": 1,
             "parts": {
-              "stages": 0,
+              "stages": 1,
               "spine": 1,
               "architecture": 1,
               "governance": 2
@@ -381,7 +430,7 @@
         "ARC": 1.6,
         "DEL": 1.5,
         "MAL": 2.4,
-        "LRN": 0.7,
+        "LRN": 0.8,
         "GOV": 1.6,
         "EXP": 1.1
       }
@@ -391,7 +440,7 @@
         "ARC": 1.7,
         "DEL": 1.5,
         "MAL": 2.4,
-        "LRN": 0.7,
+        "LRN": 0.8,
         "GOV": 1.6,
         "EXP": 1.1
       }

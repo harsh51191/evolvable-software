@@ -40,7 +40,7 @@ Read `archetypes.md` before scoring. Missing functionality is not non-applicabil
 
 ## Scope facts
 
-Every assessment declares seven facts, each with evidence. They decide which criteria and critical controls apply, so a stateless library is not failed on backups and a single-user tool is not failed on tenant isolation. A fact that is wrongly declared is a validation finding, not a shortcut.
+Every assessment declares nine facts, each with evidence, for the default configuration. They decide which criteria and critical controls apply, so a stateless library is not failed on backups and a single-user tool is not failed on tenant isolation. A fact that is wrongly declared is a validation finding, not a shortcut.
 
 | Fact | True when |
 |---|---|
@@ -48,9 +48,13 @@ Every assessment declares seven facts, each with evidence. They decide which cri
 | `schema_changes` | The product, or its evolution path, changes stored data structures (database schema or definition-driven storage) |
 | `multi_tenant` | One deployment serves several isolated tenants, workspaces or organisations |
 | `hosted_service` | It runs as a long-lived networked service rather than a library, CLI or local single-user tool |
+| `machine_actions` | Agents or automated clients can change the product's data or definitions through an API or tool surface |
 | `agent_mutations` | The product's own agents or AI can change its definitions, skills, memory, configuration or data |
-| `automatic_apply` | Some change class applies without human approval in the default configuration |
+| `evolution_auto_apply` | A change produced by the evolution loop (an AI lane, a learning loop or self-modification) applies without human approval by default. Scheduled maintenance such as index or column tuning does not count |
+| `definition_change_path` | Changes to the product's behaviour are made through definitions or configuration, by people or by the product |
 | `code_release_path` | The product's evolution system ships code changes, not only definition changes |
+
+At least one change path (`definition_change_path` or `code_release_path`) must be true. Rollback is required on each path that exists: GOV-05 for definition changes, DEL-11 for code changes, both when both exist.
 
 ## Scoring rules
 
@@ -67,7 +71,7 @@ Every assessment declares seven facts, each with evidence. They decide which cri
 11. **Alternates are upward only.** `alt_score` is always `score + 1`: the higher reading that is also defensible. The default reading is therefore the low end of every range.
 12. **Repository tooling counts only as a first-party evolution system.** For DEL-01, DEL-04, DEL-09 to DEL-11, LRN-03, LRN-05 to LRN-07 and EXP-04 to EXP-06, tooling counts only when it is executable, supported (documented and maintained as part of the product or an official first-party companion), bounded (subject to GOV-10 limits) and built to evolve this product from its requests, issues or opportunities. A team's ordinary CI, bots or scripts do not qualify; they still count for DEL-05 to DEL-08.
 13. **Evidence facets and the depth cap.** For depth-capped criteria (every ARC criterion and every critical-control criterion), any score, alternate or opt-in reading of 3 or more records `facets`: `implemented`, `tested` (automated tests in scope exercise it) and `operated` (records show it working in production). `tested` and `operated` each require `implemented`, and are recorded separately so operated evidence never implies tested. A 3 needs `tested`, otherwise it counts as 2. A 4 needs `tested` and `operated`, otherwise it counts as 3 if tested and 2 if not.
-14. **Coverage inventories.** ARC-08, ARC-09 and GOV-05 span several surfaces. When one scores 3 or more, record `inventory`, a level per applicable surface; the score cannot exceed the lowest of them, so one strong surface cannot hide a weak one. Below 3 the anchors already describe partial coverage, and an inventory is optional.
+14. **Coverage inventories.** ARC-08, ARC-09 and GOV-05 span several surfaces. When any reading (score, alternate or opt-in) is 3 or more, record `inventory`, a level per applicable surface; no reading of 3 or more can exceed the lowest of them, so one strong surface cannot hide a weak one. Below 3 the anchors already describe partial coverage, and an inventory is optional.
 
 ## Software Autonomy Levels
 
@@ -82,7 +86,7 @@ Every assessment declares seven facts, each with evidence. They decide which cri
 
 A loop's level is the highest level whose conditions, and every lower level's conditions, all hold. The conditions fall into four parts: the loop's own **stages**, the shared **release spine** (Build, Verify, Stage, Release, Observe, Roll back), the **architecture** foundation and the **governance** ceiling, so the level is the lowest of the four. **Headline SAL** is the lower of Request → Release and Issue → Fix; Opportunity → Expansion is reported beside it. Critical controls are L3 conditions, so failing an applicable one caps every loop at L2.
 
-In the conditions below, `path` is the loop's build path: the criteria through which people (`people`) or the product (`product`) build a change. `rollback` is the lower of GOV-05 and, when `code_release_path` is true, DEL-11. `every` applies a threshold to every applicable criterion of a capability. `operated` requires the operated facet.
+In the conditions below, `path` is the loop's build path: the criteria through which people (`people`) or the product (`product`) build a change. `rollback` is the lower of GOV-05 when `definition_change_path` is true and DEL-11 when `code_release_path` is true. `every` applies a threshold to every applicable criterion of a capability. `operated` requires the operated facet.
 
 ## Scoring model
 
@@ -103,8 +107,14 @@ In the conditions below, `path` is the loop's build path: the criteria through w
     "schema_changes",
     "multi_tenant",
     "hosted_service",
+    "machine_actions",
     "agent_mutations",
-    "automatic_apply",
+    "evolution_auto_apply",
+    "definition_change_path",
+    "code_release_path"
+  ],
+  "change_path_facts": [
+    "definition_change_path",
     "code_release_path"
   ],
   "applies_when": {
@@ -117,8 +127,10 @@ In the conditions below, `path` is the loop's build path: the criteria through w
     "ARC-07": "hosted_service",
     "ARC-09": "persistent_data",
     "DEL-11": "code_release_path",
-    "GOV-10": ["agent_mutations", "automatic_apply"],
-    "GOV-11": ["agent_mutations", "automatic_apply"]
+    "GOV-05": "definition_change_path",
+    "GOV-09": "machine_actions",
+    "GOV-10": ["agent_mutations", "evolution_auto_apply"],
+    "GOV-11": ["agent_mutations", "evolution_auto_apply"]
   },
   "depth_capped": [
     "ARC-01",
@@ -219,7 +231,8 @@ In the conditions below, `path` is the loop's build path: the criteria through w
   },
   "rollback": [
     {
-      "c": "GOV-05"
+      "c": "GOV-05",
+      "when": "definition_change_path"
     },
     {
       "c": "DEL-11",
@@ -303,7 +316,7 @@ In the conditions below, `path` is the loop's build path: the criteria through w
       {"part": "governance", "stage": "Ceiling", "c": "GOV-06", "min": 2},
       {"part": "governance", "stage": "Ceiling", "c": "GOV-08", "min": 2},
       {"part": "governance", "stage": "Ceiling", "c": "GOV-09", "min": 2},
-      {"part": "governance", "stage": "Ceiling", "control": "Bounded self-change", "when": ["agent_mutations", "automatic_apply"], "all": [{"c": "GOV-10", "min": 3}, {"c": "LRN-08", "min": 2}]}
+      {"part": "governance", "stage": "Ceiling", "control": "Bounded self-change", "when": ["agent_mutations", "evolution_auto_apply"], "all": [{"c": "GOV-10", "min": 3}, {"c": "LRN-08", "min": 2}]}
     ],
     "4": [
       {"part": "spine", "stage": "Build", "path": "product", "min": 3},
@@ -456,11 +469,12 @@ Can the product take the load and survive the change?
 **Why it matters.** A self-changing product will eventually make a change that rollback cannot undo. Restore is the last line of defence, and an untested restore is not one.
 **Inventory.** Data; definitions and configuration; uploaded files; secrets and keys. Record a level for each applicable item; the score is the level every applicable item reaches.
 **Evidence.** Backup and restore commands or features. Restore tests. Stated recovery point and time objectives. Drill records.
+**Boundary.** Level 3 is tested recovery. Stated recovery objectives belong to level 4, because for self-hosted software the deployment operator often sets them.
 - **0** No supported backup.
 - **1** Documentation tells operators to back up the database themselves.
 - **2** A built-in or documented backup command; restore manual and untested.
-- **3** Backup and restore supported for every inventory item, restore exercised by automated tests, recovery objectives (RPO, RTO) stated.
-- **4** Point-in-time and per-tenant restore, with recorded restore drills.
+- **3** Backup and restore supported for every inventory item, with restore exercised by automated tests.
+- **4** Recovery objectives (RPO, RTO) stated, point-in-time or per-tenant restore, and recorded restore drills.
 
 # Capability DEL: Velocity (delivery)
 
@@ -1003,6 +1017,7 @@ Is every change safe, accountable and reversible, including the changes the prod
 **Definition.** Every mutation is scoped to a real identity rather than ambient authority, idempotent, previewable, audited and rate-limited.
 **Why it matters.** An agent with ambient authority is an incident waiting for a prompt injection.
 **Evidence.** Identity model for API callers. Token scoping. Idempotency keys. Dry-run. Rate limits. Audit rows. Kill switch.
+**Boundary.** Covers every machine actor that can change the product through an API or tool surface: the product's own agents and external agents or automated clients. It applies when `machine_actions` is true.
 - **0** Ambient authority.
 - **1** Shared API keys.
 - **2** Per-actor tokens and audit; no dry-run.

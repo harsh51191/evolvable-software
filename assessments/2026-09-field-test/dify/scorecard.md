@@ -15,13 +15,15 @@ Repository evidence only, main at the tip named above. dify-sandbox and plugin-d
 ---
 Framework EVOLVE 0.4.0. Date 2026-09-30. Source github.com/langgenius/dify @ ea38e484b81b4104736d2484aaa1d0d7ea99627e (main). Archetype **configurable-application-platform**.
 
-Scope facts true: persistent_data, schema_changes, multi_tenant, hosted_service. False: agent_mutations, automatic_apply, code_release_path.
+Scope facts true: persistent_data, schema_changes, multi_tenant, hosted_service, machine_actions, definition_change_path. False: agent_mutations, evolution_auto_apply, code_release_path.
 
 Coverage: 63 assessed, 0 not evidenced, 3 not applicable. Grades: 63 A, 0 B, 0 C.
 
 ## Software Autonomy Level
 
 **SAL 1 (Configurable) · Request → Release L1 · Issue → Fix L1 · Opportunity → Expansion L1**
+
+Progress toward the next level: Request → Release 2 of 4 conditions for L2; Issue → Fix 2 of 5 conditions for L2; Opportunity → Expansion 2 of 5 conditions for L2.
 
 - With opt-in settings: SAL 1 (Configurable) · Request → Release L1 · Issue → Fix L1 · Opportunity → Expansion L1.
 - With every alternate reading: SAL 1 (Configurable) · Request → Release L1 · Issue → Fix L1 · Opportunity → Expansion L1.
@@ -42,13 +44,18 @@ Coverage: 63 assessed, 0 not evidenced, 3 not applicable. Grades: 63 A, 0 B, 0 C
 | Tested backup and restore | ARC-09 ≥ 3 | 1 | fail |
 | Tenant isolation | ARC-05 ≥ 3 | 2 | fail |
 | Security as infrastructure | GOV-04 ≥ 3 | 2 | fail |
-| Bounded self-change | not applicable (agent_mutations and automatic_apply false) | n/a | n/a |
+| Bounded self-change | not applicable (agent_mutations and evolution_auto_apply false) | n/a | n/a |
 
 ### What blocks the next level
 
 - **Request → Release to L2**: stages Intake needs DEL-01 ≥ 2 (has 0); architecture Foundation needs every applicable ARC ≥ 1 (has ARC-06 0)
 - **Issue → Fix to L2**: stages Diagnose needs LRN-05 ≥ 2 (has 1); stages Propose needs LRN-06 ≥ 2 (has 1); architecture Foundation needs every applicable ARC ≥ 1 (has ARC-06 0)
 - **Opportunity → Expansion to L2**: stages Sense needs EXP-04 ≥ 2 (has 0); stages Propose needs EXP-05 ≥ 2 (has 0); architecture Foundation needs every applicable ARC ≥ 1 (has ARC-06 0)
+
+### Sensitivity
+
+- **Fragile:** the headline drops if any of these falls one level: LRN-03, GOV-05.
+- No single criterion rising one level lifts the headline.
 
 ## EVOLVE profile
 
@@ -102,7 +109,7 @@ Coverage: 63 assessed, 0 not evidenced, 3 not applicable. Grades: 63 A, 0 B, 0 C
 | ARC-05 Tenant isolation and noisy-neighbour controls | assessed | 2 | 3 |  | A | I | Multi-tenant workspaces with per-app and per-tenant rate limits (api/libs/helper.py) and plan quotas; no noisy-neighbour detection. |
 | ARC-06 Ceilings measured, not discovered in incidents | assessed | 0 | 1 |  | A |  | No load or performance suite and no documented limits found (searched for k6, locust, benchmark and load test). |
 | ARC-07 Service objectives defined and monitored | assessed | 1 |  |  | A |  | Optional OpenTelemetry and Sentry; no metrics or objectives for core paths. |
-| ARC-08 Failure isolation and graceful degradation | assessed | 2 | 3 |  | A | I | Model load balancing with cooldown across credentials (api/core/model_manager.py:68-130); plugins run in a separate daemon and code in a sandbox service. |
+| ARC-08 Failure isolation and graceful degradation | assessed | 2 |  |  | A |  | Model load balancing with cooldown across credentials (api/core/model_manager.py:68-130); plugins run in a separate daemon and code in a sandbox service. Connectors and internal services have no breakers, so a 3 is not defensible under the inventory rule. |
 | ARC-09 Backup, restore and recovery | assessed | 1 |  |  | A |  | No backup command; Docker volume backup is left to operators. |
 | DEL-01 Request intake into a structured change specification | assessed | 0 |  |  | A |  | No request or feature-request object for changing the product was found; requests live outside it. |
 | DEL-02 Layers deploy independently | assessed | 3 |  |  | A |  | API, worker, web, sandbox, plugin daemon, SSRF proxy and agent runtime are separate containers with separate deploy workflows (9 Dockerfiles; .github/workflows/deploy-agent.yml, deploy-knowledge.yml). |
@@ -148,7 +155,7 @@ Coverage: 63 assessed, 0 not evidenced, 3 not applicable. Grades: 63 A, 0 B, 0 C
 | GOV-02 Audit generic over entities, definition changes and approvals | assessed | 1 | 2 |  | A |  | Per-feature logs only: authentication audit entities (api/services/entities/auth_audit_entities.py), app and workflow run logs; no generic audit store. |
 | GOV-03 Privacy classification, export, erasure and retention generic over entities | assessed | 2 |  |  | A |  | Account deletion service and scheduled message cleanup with retention settings (api/services/account_deletion_service.py, api/schedule/clean_messages.py); no data-subject export. |
 | GOV-04 Security as infrastructure | assessed | 2 |  |  | A |  | RBAC resource and agent-access services (api/services/rbac_resource_service.py), SSRF proxy and plugin signature enforcement (FORCE_VERIFYING_SIGNATURE, docker/.env.example:236); no security scanning in CI. |
-| GOV-05 Definitions and layouts versioned with rollback | assessed | 2 | 3 |  | A | I | Workflows keep numbered published versions (workflow_version_number_service); apps export versioned DSL; other surfaces are unversioned. |
+| GOV-05 Definitions and layouts versioned with rollback | assessed | 2 |  |  | A | I | Workflows keep numbered published versions (workflow_version_number_service); apps export versioned DSL; other surfaces are unversioned. The higher reading of 3 was dropped under the inventory rule (a 3 needs every default surface at 3): Surfaces other than workflows and app DSL are unversioned. |
 | GOV-06 Proposal, review, apply as a first-class object with preview | assessed | 2 |  |  | A |  | Draft and publish with debug preview for apps and workflows; no review step or proposal object. |
 | GOV-07 Policy-based apply with recorded approvals and a movable human boundary | assessed | 1 |  |  | A |  | Every publish is a manual human action; the agent runtime's ask-human layer (dify-agent/src/dify_agent/layers/ask_human/layer.py) gates agent actions, not changes. |
 | GOV-08 Upgrade safety | assessed | 2 | 3 |  | A |  | Imported DSL is checked against the current DSL version and flagged when older or newer (api/services/dsl_version.py, app_dsl_service.py); plugins declare manifests and versions against a stable plugin SDK contract. Scored at the lower reading under rule 11 because: If version warnings on import do not count as automated compatibility checks. |

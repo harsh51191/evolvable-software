@@ -8,8 +8,10 @@ Read at github.com/NousResearch/hermes-agent @ bddd22be7c2e5f7630c3d90507e6e7280
 - **schema_changes**: true. The state database is versioned and migrated on start (hermes_state_schema.py, SCHEMA_VERSION).
 - **multi_tenant**: false. One user per installation; profiles are separate homes, not tenants.
 - **hosted_service**: false. A local single-user agent; the gateway relays messaging platforms for the same user.
+- **machine_actions**: true. The agent's tools change its own skills, memory and configuration, and the MCP and ACP servers expose it to other clients (mcp_serve.py, acp_adapter).
 - **agent_mutations**: true. The background review writes skills and memory (agent/background_review.py).
-- **automatic_apply**: true. background_review is on by default and skill and memory write approvals default to off (hermes_cli/config_defaults.py:814, 1320).
+- **evolution_auto_apply**: true. background_review is on by default and skill and memory write approvals default to off (hermes_cli/config_defaults.py:814, 1320).
+- **definition_change_path**: true. Skills, memory, prompts and configuration are its definitions.
 - **code_release_path**: true. The first-party GEPA optimiser proposes improved skills as pull requests to this repository, shipped in releases (hermes-agent-self-evolution).
 
 ## Elastic (ARC)
@@ -33,10 +35,9 @@ Read at github.com/NousResearch/hermes-agent @ bddd22be7c2e5f7630c3d90507e6e7280
 
 ### Resilience
 
-- **ARC-08 Failure isolation and graceful degradation**: **2** (grade A), facets: implemented, tested. Fallback providers and credential pools take over when a primary model fails (agent/agent_init.py, tests/agent/test_restore_primary_pool_reselect.py); tool and MCP failures are contained to the turn.
-  - Higher reading 3: Provider failover is tested.
-- **ARC-09 Backup, restore and recovery**: **2** (grade A), facets: implemented, tested. hermes backup and import cover the home directory, sessions database, skills, memory and configuration, with pre-update backups and extensive tests (hermes_cli/backup.py, tests/hermes_cli/test_backup*.py). No recovery objectives are stated.
-  - Higher reading 3: Everything but stated recovery objectives meets level 3.
+- **ARC-08 Failure isolation and graceful degradation**: **2** (grade A). Fallback providers and credential pools take over when a primary model fails (agent/agent_init.py, tests/agent/test_restore_primary_pool_reselect.py); tool and MCP failures are contained to the turn. Plugins and gateway platforms have no breakers, so a 3 is not defensible under the inventory rule.
+- **ARC-09 Backup, restore and recovery**: **3** (grade A), facets: implemented, tested. hermes backup and import cover the home directory: the sessions database (snapshotted with sqlite3.backup), skills, memory, configuration and secrets such as .env, auth.json and the vault (hermes_cli/backup.py:117-161), with pre-update backups and round-trip tests (tests/hermes_cli/test_backup*.py). No recovery objectives are stated (level 4).
+  - Inventory: data 3, definitions 3, files 3, secrets 3
 
 ## Velocity (DEL)
 

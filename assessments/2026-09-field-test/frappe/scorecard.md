@@ -6,7 +6,7 @@ Scope: the frappe repository only (framework, Desk UI, website module, automatio
 
 ## Reading
 
-**SAL 1.** Operators reshape Frappe without code (Open 2.3), so every loop reaches L1, but nothing in the product drafts or builds a change (DEL-04 0) and requests have no intake (DEL-01 0), so no loop reaches L2. **Architecture:** backups and restores are tested end to end, but no recovery objectives are stated (ARC-09 2) and migrations are forward-only (ARC-02 1). **Next level:** an AI lane that drafts DocType, workflow or report changes as proposals, and structured request intake.
+**SAL 1.** Operators reshape Frappe without code (Open 2.3), so every loop reaches L1, but nothing in the product drafts or builds a change (DEL-04 0) and requests have no intake (DEL-01 0), so no loop reaches L2. **Architecture:** backup and restore of data and files are tested end to end, but restoring the site secrets is not (ARC-09 2), and migrations are forward-only (ARC-02 1). **Next level:** an AI lane that drafts DocType, workflow or report changes as proposals, and structured request intake.
 
 ## Limits
 
@@ -15,13 +15,15 @@ Repository evidence only, develop branch at the tip named above. No running site
 ---
 Framework EVOLVE 0.4.0. Date 2026-09-30. Source github.com/frappe/frappe @ 82b0384810030c8d347780538821a3b006375d28 (develop). Archetype **configurable-application-platform**.
 
-Scope facts true: persistent_data, schema_changes, multi_tenant, hosted_service. False: agent_mutations, automatic_apply, code_release_path.
+Scope facts true: persistent_data, schema_changes, multi_tenant, hosted_service, machine_actions, definition_change_path. False: agent_mutations, evolution_auto_apply, code_release_path.
 
 Coverage: 63 assessed, 0 not evidenced, 3 not applicable. Grades: 62 A, 1 B, 0 C.
 
 ## Software Autonomy Level
 
 **SAL 1 (Configurable) · Request → Release L1 · Issue → Fix L1 · Opportunity → Expansion L1**
+
+Progress toward the next level: Request → Release 2 of 4 conditions for L2; Issue → Fix 4 of 5 conditions for L2; Opportunity → Expansion 3 of 5 conditions for L2.
 
 - With opt-in settings: SAL 1 (Configurable) · Request → Release L1 · Issue → Fix L1 · Opportunity → Expansion L1.
 - With every alternate reading: SAL 1 (Configurable) · Request → Release L1 · Issue → Fix L1 · Opportunity → Expansion L1.
@@ -42,7 +44,7 @@ Coverage: 63 assessed, 0 not evidenced, 3 not applicable. Grades: 62 A, 1 B, 0 C
 | Tested backup and restore | ARC-09 ≥ 3 | 2 | fail |
 | Tenant isolation | ARC-05 ≥ 3 | 2 | fail |
 | Security as infrastructure | GOV-04 ≥ 3 | 2 | fail |
-| Bounded self-change | not applicable (agent_mutations and automatic_apply false) | n/a | n/a |
+| Bounded self-change | not applicable (agent_mutations and evolution_auto_apply false) | n/a | n/a |
 
 ### What blocks the next level
 
@@ -50,11 +52,16 @@ Coverage: 63 assessed, 0 not evidenced, 3 not applicable. Grades: 62 A, 1 B, 0 C
 - **Issue → Fix to L2**: spine Build needs product build path ≥ 2 (has DEL-04 0, LRN-07 2 with LRN-08 1)
 - **Opportunity → Expansion to L2**: stages Sense needs EXP-04 ≥ 2 (has 0); stages Propose needs EXP-05 ≥ 2 (has 0)
 
+### Sensitivity
+
+- **Fragile:** the headline drops if any of these falls one level: LRN-03, GOV-05.
+- No single criterion rising one level lifts the headline.
+
 ## EVOLVE profile
 
 | Capability | Default | Range with alternate readings | With opt-in settings | Assessed only | If every criterion counted |
 |---|---:|---|---:|---:|---:|
-| Elastic (ARC) | 1.9 | 1.9–2.3 | 1.9 | 1.9 | 1.9 |
+| Elastic (ARC) | 1.9 | 1.9–2.2 | 1.9 | 1.9 | 1.9 |
 | Velocity (DEL) | 1.0 | 1.0–1.3 | 1.0 | 1.0 | 1.0 |
 | Open (MAL) | 2.3 | 2.3–2.6 | 2.3 | 2.3 | 2.3 |
 | Learn (LRN) | 1.3 | 1.3–1.7 | 1.3 | 1.3 | 1.3 |
@@ -103,7 +110,7 @@ Coverage: 63 assessed, 0 not evidenced, 3 not applicable. Grades: 62 A, 1 B, 0 C
 | ARC-06 Ceilings measured, not discovered in incidents | assessed | 2 |  |  | A |  | frappe/tests/test_perf.py and frappe/tests/microbenchmarks exist; no documented per-surface limits or CI budgets. |
 | ARC-07 Service objectives defined and monitored | assessed | 1 | 2 |  | A |  | No published objectives. frappe/monitor.py records request and job timings when monitoring is enabled. |
 | ARC-08 Failure isolation and graceful degradation | assessed | 2 |  |  | A |  | The automation engine counts failures per rule against a circuit breaker and isolates each row with a savepoint (frappe/automation_engine/runner.py:516-525, drainer.py:74); integrations accept timeouts (frappe/integrations/utils.py:59). Apps run in-process without isolation. |
-| ARC-09 Backup, restore and recovery | assessed | 2 | 3 |  | A | IT | bench backup covers the database, public and private files and site config, with optional encryption (frappe/commands/site.py:899-1030, frappe/utils/backups.py); restore from full and partial backups is tested end to end (frappe/commands/test_commands.py:280-330). No recovery objectives are stated. |
+| ARC-09 Backup, restore and recovery | assessed | 2 |  |  | A |  | Inventory: data 3, definitions 3, files 3, secrets 2. bench backup covers the database, public and private files and site config, with optional encryption (frappe/commands/site.py:899-1030, frappe/utils/backups.py), and restore from full and partial backups is tested end to end (frappe/commands/test_commands.py:280-330). The site config holding the encryption key is backed up but its restore is not tested, so secrets stay at 2. |
 | DEL-01 Request intake into a structured change specification | assessed | 0 |  |  | A |  | No request or feature-request object for changing the product was found; requests live outside it. |
 | DEL-02 Layers deploy independently | assessed | 1 |  |  | A |  | One Python and JavaScript codebase deployed as a bench (web, workers, scheduler and realtime share the artifact); container images live in a separate repository. |
 | DEL-03 Module boundaries enforced by tooling | assessed | 1 |  |  | A |  | Module boundaries are convention; no architectural lint or dependency-graph enforcement found. |
@@ -153,8 +160,8 @@ Coverage: 63 assessed, 0 not evidenced, 3 not applicable. Grades: 62 A, 1 B, 0 C
 | GOV-07 Policy-based apply with recorded approvals and a movable human boundary | assessed | 1 |  |  | A |  | Every definition change is made directly by a person holding the right role; no policy object and no auto-apply classes. |
 | GOV-08 Upgrade safety | assessed | 2 | 3 |  | A |  | Customisations live in separate layers (Custom Field, Property Setter, Client Script, Server Script) that survive bench migrate while standard DocTypes resync; frappe/patches.txt carries migrations. No automated compatibility check of customisations against the next release. |
 | GOV-09 Agent-safe actions | assessed | 2 |  |  | A |  | Per-user API key and secret (frappe/core/doctype/user/user.json:600-620), OAuth scopes (frappe/integrations/doctype/oauth_scope), API Request Log, rate limiting (frappe/rate_limiter.py). No idempotency keys or dry-run. |
-| GOV-10 Bounded self-change | not_applicable | excluded |  |  | - |  | Scope fact agent_mutations and automatic_apply is false: No first-party AI or agent changes Frappe definitions in this repository. |
-| GOV-11 Learning-input integrity | not_applicable | excluded |  |  | - |  | Scope fact agent_mutations and automatic_apply is false: No first-party AI or agent changes Frappe definitions in this repository. |
+| GOV-10 Bounded self-change | not_applicable | excluded |  |  | - |  | Scope fact agent_mutations and evolution_auto_apply is false: No first-party AI or agent changes Frappe definitions in this repository. |
+| GOV-11 Learning-input integrity | not_applicable | excluded |  |  | - |  | Scope fact agent_mutations and evolution_auto_apply is false: No first-party AI or agent changes Frappe definitions in this repository. |
 | EXP-01 Kernel concepts are domain-neutral | assessed | 3 | 4 |  | A |  | Kernel is User, Role, DocPerm, DocType, File, Communication, Workflow, Notification and Email Account; domains live in separate apps (README.md:22-32 names ERPNext); kernel objects are themselves DocTypes customisable through the same definitions (DocType is a DocType). Scored at the lower reading under rule 11 because: If 'configurable definitions' requires more than kernel objects being customisable DocTypes. |
 | EXP-02 A new domain is expressible without kernel change | assessed | 3 | 4 |  | B |  | README.md:22-32 states ERPNext was built on the framework; several domains ship as separate apps on an unchanged kernel. Those apps contain code as well as definitions; a domain can also be built from custom DocTypes, workflows and server scripts alone. |
 | EXP-03 A domain ships as an installable bundle | assessed | 3 |  |  | A |  | Package, Package Release and Package Import DocTypes export and install versioned bundles of DocTypes, scripts and other customisations (frappe/core/doctype/package, package_release, package_import). |

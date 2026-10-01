@@ -58,8 +58,8 @@ Requires: none
 Size: M
 
 ### ARC-09
-To 3: Supported backup and restore for data, definitions, files and secrets; automated restore tests; stated RPO and RTO.
-To 4: Point-in-time and per-tenant restore with recorded drills.
+To 3: Supported backup and restore for data, definitions, files and secrets, with automated restore tests.
+To 4: Stated RPO and RTO, point-in-time or per-tenant restore, and recorded restore drills.
 Requires: none
 Size: M
 

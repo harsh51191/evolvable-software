@@ -120,9 +120,7 @@
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Workflows keep numbered published versions (workflow_version_number_service); apps export versioned DSL; other surfaces are unversioned.",
-      "alt_score": 3,
-      "alt_note": "Apps and workflows are the main customisation surfaces.",
+      "evidence": "Workflows keep numbered published versions (workflow_version_number_service); apps export versioned DSL; other surfaces are unversioned. The higher reading of 3 was dropped under the inventory rule (a 3 needs every default surface at 3): Surfaces other than workflows and app DSL are unversioned.",
       "facets": {
         "implemented": true,
         "tested": false,
@@ -380,14 +378,7 @@
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Model load balancing with cooldown across credentials (api/core/model_manager.py:68-130); plugins run in a separate daemon and code in a sandbox service.",
-      "alt_score": 3,
-      "alt_note": "Model providers and plugins are isolated.",
-      "facets": {
-        "implemented": true,
-        "tested": false,
-        "operated": false
-      }
+      "evidence": "Model load balancing with cooldown across credentials (api/core/model_manager.py:68-130); plugins run in a separate daemon and code in a sandbox service. Connectors and internal services have no breakers, so a 3 is not defensible under the inventory rule."
     },
     "ARC-09": {
       "status": "assessed",
@@ -481,13 +472,21 @@
       "value": true,
       "evidence": "API, Celery worker, web, sandbox and plugin daemon run as long-lived services."
     },
+    "machine_actions": {
+      "value": true,
+      "evidence": "The console and service APIs change apps, datasets and workflows."
+    },
     "agent_mutations": {
       "value": false,
       "evidence": "AI generators draft prompts, code and workflow steps into the editor; a person saves and publishes (api/core/llm_generator)."
     },
-    "automatic_apply": {
+    "evolution_auto_apply": {
       "value": false,
       "evidence": "Every publish is a manual human action."
+    },
+    "definition_change_path": {
+      "value": true,
+      "evidence": "Apps, workflows, prompts and datasets are definitions."
     },
     "code_release_path": {
       "value": false,

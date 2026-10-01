@@ -6,7 +6,7 @@ Scope: the directus monorepo (API, Data Studio app, SDK, CLI, extensions SDK and
 
 ## Reading
 
-**SAL 0.** Request → Release reaches L1 through the data-model editor, but Issue → Fix stops at L0: failed actions are not recorded per product area (LRN-03 1). The AI assistant drafts schema and flow changes behind approvals, but it is scored at its lower reading (DEL-04 1), and Learn is the weakest capability (0.7). **Architecture:** no load suite (ARC-06 0) and no backup command (ARC-09 1). **Next level:** record user-facing failures per collection and flow, and turn requests into structured specifications.
+**SAL 1.** Every loop reaches L1 through the data-model editor and flow logs, which record each operation's success or failure (LRN-03 2). The AI assistant drafts schema and flow changes behind approvals but is scored at its lower reading (DEL-04 1), and Learn is the weakest capability (0.8). **Architecture:** no load suite (ARC-06 0) and no backup command (ARC-09 1) hold the architecture foundation at L1. **Next level:** structured request intake and a stronger AI lane, plus capacity and backup evidence.
 
 ## Limits
 
@@ -15,21 +15,23 @@ Repository evidence only, main branch at the tip named above. No running instanc
 ---
 Framework EVOLVE 0.4.0. Date 2026-09-30. Source github.com/directus/directus @ 2878b4ef8ea9c1d09201debe89b3a5dc1d0bf93a (main). Archetype **configurable-application-platform**.
 
-Scope facts true: persistent_data, schema_changes, hosted_service, agent_mutations. False: multi_tenant, automatic_apply, code_release_path.
+Scope facts true: persistent_data, schema_changes, hosted_service, machine_actions, agent_mutations, definition_change_path. False: multi_tenant, evolution_auto_apply, code_release_path.
 
 Coverage: 64 assessed, 0 not evidenced, 2 not applicable. Grades: 64 A, 0 B, 0 C.
 
 ## Software Autonomy Level
 
-**SAL 0 (Manual) · Request → Release L1 · Issue → Fix L0 · Opportunity → Expansion L1**
+**SAL 1 (Configurable) · Request → Release L1 · Issue → Fix L1 · Opportunity → Expansion L1**
 
-- With opt-in settings: SAL 0 (Manual) · Request → Release L1 · Issue → Fix L0 · Opportunity → Expansion L1.
+Progress toward the next level: Request → Release 1 of 4 conditions for L2; Issue → Fix 1 of 5 conditions for L2; Opportunity → Expansion 2 of 5 conditions for L2.
+
+- With opt-in settings: SAL 1 (Configurable) · Request → Release L1 · Issue → Fix L1 · Opportunity → Expansion L1.
 - With every alternate reading: SAL 1 (Configurable) · Request → Release L1 · Issue → Fix L1 · Opportunity → Expansion L1.
 
 | Loop | Stages | Spine | Architecture | Governance | Level | With opt-in settings |
 |---|---:|---:|---:|---:|---:|---:|
 | Request → Release | L1 | L1 | L1 | L2 | **L1** | L1 |
-| Issue → Fix | L0 | L1 | L1 | L2 | **L0** | L0 |
+| Issue → Fix | L1 | L1 | L1 | L2 | **L1** | L1 |
 | Opportunity → Expansion | L1 | L2 | L1 | L2 | **L1** | L1 |
 
 ### Critical controls
@@ -47,8 +49,13 @@ Coverage: 64 assessed, 0 not evidenced, 2 not applicable. Grades: 64 A, 0 B, 0 C
 ### What blocks the next level
 
 - **Request → Release to L2**: spine Build needs product build path ≥ 2 (has DEL-04 1); stages Intake needs DEL-01 ≥ 2 (has 1); architecture Foundation needs every applicable ARC ≥ 1 (has ARC-06 0)
-- **Issue → Fix to L1**: stages Detect needs LRN-03 ≥ 2 (has 1)
+- **Issue → Fix to L2**: spine Build needs product build path ≥ 2 (has DEL-04 1, LRN-07 1); stages Diagnose needs LRN-05 ≥ 2 (has 1); stages Propose needs LRN-06 ≥ 2 (has 0); architecture Foundation needs every applicable ARC ≥ 1 (has ARC-06 0)
 - **Opportunity → Expansion to L2**: stages Sense needs EXP-04 ≥ 2 (has 0); stages Propose needs EXP-05 ≥ 2 (has 0); architecture Foundation needs every applicable ARC ≥ 1 (has ARC-06 0)
+
+### Sensitivity
+
+- **Fragile:** the headline drops if any of these falls one level: LRN-03, GOV-05.
+- No single criterion rising one level lifts the headline.
 
 ## EVOLVE profile
 
@@ -57,7 +64,7 @@ Coverage: 64 assessed, 0 not evidenced, 2 not applicable. Grades: 64 A, 0 B, 0 C
 | Elastic (ARC) | 1.6 | 1.6–1.8 | 1.6 | 1.6 | 1.7 |
 | Velocity (DEL) | 1.5 | 1.5–2.0 | 1.5 | 1.5 | 1.5 |
 | Open (MAL) | 2.4 | 2.4–3.0 | 2.4 | 2.4 | 2.4 |
-| Learn (LRN) | 0.7 | 0.7–0.9 | 0.7 | 0.7 | 0.7 |
+| Learn (LRN) | 0.8 | 0.8–0.9 | 0.8 | 0.8 | 0.8 |
 | Vet (GOV) | 1.6 | 1.6–2.3 | 1.6 | 1.6 | 1.6 |
 | Expand (EXP) | 1.1 | 1.1–1.8 | 1.1 | 1.1 | 1.1 |
 
@@ -80,7 +87,7 @@ Coverage: 64 assessed, 0 not evidenced, 2 not applicable. Grades: 64 A, 0 B, 0 C
 | MAL Extensions | 2.7 |
 | MAL Integrations | 1.0 |
 | MAL Agent interface | 2.5 |
-| LRN Sense | 1.3 |
+| LRN Sense | 1.5 |
 | LRN Diagnose and propose | 0.5 |
 | LRN Learn from experience | 1.0 |
 | LRN Measure | 0.0 |
@@ -137,7 +144,7 @@ Coverage: 64 assessed, 0 not evidenced, 2 not applicable. Grades: 64 A, 0 B, 0 C
 | MAL-20 Conversational operability for users and natural-language authoring for operators | assessed | 2 | 3 |  | A |  | In-app AI assistant with grounded tools over items, files, schema, relations and flows, running under the user's permissions (api/src/ai/chat, app/src/ai); admins author collections, fields, relations and flows in natural language with an approval card showing the proposed call. LLM tracing to Braintrust or Langfuse (api/src/ai/telemetry); no groundedness evaluation. Scored at the lower reading under rule 11 because: If an approval card is not a preview of the resulting change. |
 | LRN-01 Telemetry accessible to the platform in near real time | assessed | 2 | 3 |  | A |  | Activity rows are written per request and are queryable by in-product Insights dashboards; vendor telemetry counters (api/src/telemetry); AI telemetry to Braintrust or Langfuse (api/src/ai/telemetry). Scored at the lower reading under rule 11 because: Activity is an audit stream, not per-feature usage instrumentation. |
 | LRN-02 Structured learning signals | assessed | 1 |  |  | A |  | Item comments are free text; no typed feedback or rating objects linked to definitions. |
-| LRN-03 User-issue detection | assessed | 1 | 2 |  | A |  | Admins can read system logs in the app (app/src/modules/settings/routes/system-logs); failed actions are not recorded per product area. |
+| LRN-03 User-issue detection | assessed | 2 |  |  | A |  | Every flow run records each operation step with its resolve or reject status as activity and revisions (api/src/flows.ts:414-454), viewable per flow; admins can read system logs (app/src/modules/settings/routes/system-logs). Failed actions outside flows are not recorded per product area. |
 | LRN-04 Cross-source mining inside the product | assessed | 1 | 2 |  | A |  | Insights dashboards can query any collection including activity; no joined usage, support and delivery models or mining. |
 | LRN-05 Automated diagnosis | assessed | 1 |  |  | A |  | Engineers read logs; no grouping or attached context. |
 | LRN-06 Ranked, evidence-backed proposals for change | assessed | 0 |  |  | A |  | No recommendation or proposal features; the assistant acts only on request. |
@@ -148,7 +155,7 @@ Coverage: 64 assessed, 0 not evidenced, 2 not applicable. Grades: 64 A, 0 B, 0 C
 | GOV-02 Audit generic over entities, definition changes and approvals | assessed | 2 | 3 |  | A |  | Activity and revisions record every item mutation including system collections (schema, permissions, settings, flows), with an admin Activity module and retention (ACTIVITY_RETENTION and REVISIONS_RETENTION, packages/env/src/constants/defaults.ts:167-172). There is no approval object, so approvals are not covered. |
 | GOV-03 Privacy classification, export, erasure and retention generic over entities | assessed | 0 | 1 |  | A |  | No data-subject export or erasure features and no privacy tags (searched for gdpr, erasure, anonymisation and personal data); admins can export collections and delete items by hand. Scored at the lower reading under rule 11 because: If manual export and deletion do not count as a mechanism. |
 | GOV-04 Security as infrastructure | assessed | 2 | 3 |  | A | IT | Policies with collection, field and item-level rules apply to every collection including new ones; field validation is generic. CodeQL runs on a schedule, not on pull requests (.github/workflows/codeql-analysis.yml:5), so scanning does not gate change. |
-| GOV-05 Definitions and layouts versioned with rollback | assessed | 2 | 3 |  | A | IT | Revisions can be reverted for items and system records (api/src/services/revisions.ts:13-18); data-model changes have no rollback in the UI. |
+| GOV-05 Definitions and layouts versioned with rollback | assessed | 2 |  |  | A | IT | Revisions can be reverted for items and system records (api/src/services/revisions.ts:13-18); data-model changes have no rollback in the UI. The higher reading of 3 was dropped under the inventory rule (a 3 needs every default surface at 3): Data-model changes have no rollback. |
 | GOV-06 Proposal, review, apply as a first-class object with preview | assessed | 2 | 3 |  | A |  | Content Versioning stages item changes for compare and promote (api/src/services/versions.ts:436-521); definitions and configuration move between projects through schema snapshot, diff and apply (api/src/controllers/schema.ts) and CLI sync pull, diff and push (packages/cli/src/commands/sync), which is an engineer flow. |
 | GOV-07 Policy-based apply with recorded approvals and a movable human boundary | assessed | 2 | 3 |  | A |  | Mutating AI tool calls require approval unless the user set that tool to always-allow (api/src/ai/tools/registry.ts:198-214, app/src/ai/stores/use-ai.ts:179-185); deletes can be disabled wholesale (allowDeletes). Approvals are not recorded as audit objects. |
 | GOV-08 Upgrade safety | assessed | 2 |  |  | A |  | Extension SDK and types are versioned packages (packages/extensions-sdk, packages/extensions); system migrations run automatically; schema snapshots apply through diff. No automated compatibility check of extensions against a new release was found. |

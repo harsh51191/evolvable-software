@@ -177,7 +177,7 @@ class ValidationTests(unittest.TestCase):
         del data["scores"]["ARC-08"]["inventory"]
         errs = errors(data)
         self.assertIn("ARC-09: score 3 exceeds the lowest inventory level 2", errs)
-        self.assertIn("ARC-08: inventory criterion scored 3 or more needs an inventory", errs)
+        self.assertIn("ARC-08: inventory criterion read at 3 or more needs an inventory", errs)
 
     def test_string_booleans_and_placeholders_are_rejected(self):
         data = assessment(MAL_01={"status": "todo"},
@@ -277,7 +277,7 @@ class LevelTests(unittest.TestCase):
         self.assertEqual(status["Release rollback"], "n/a")
 
     def test_bounded_self_change_only_when_self_change_is_possible(self):
-        data = assessment(3, facts={"agent_mutations": False, "automatic_apply": False})
+        data = assessment(3, facts={"agent_mutations": False, "evolution_auto_apply": False})
         self.assertEqual(errors(data), [])
         self.assertEqual(data["scores"]["GOV-10"]["status"], "not_applicable")
         self.assertEqual(controls(data)["Bounded self-change"], "n/a")
@@ -315,6 +315,58 @@ class LevelTests(unittest.TestCase):
         self.assertEqual(res["variants"]["available"]["sal"]["headline"], 3)
         self.assertLess(res["ranges"]["DEL"][0], res["ranges"]["DEL"][1])
 
+
+
+class ReviewRoundTests(unittest.TestCase):
+    """Regression tests for the second review of the v0.4 implementation."""
+
+    def test_alternate_reading_cannot_bypass_inventory(self):
+        data = assessment(3)
+        data["scores"]["ARC-09"] = {"status": "assessed", "score": 2, "grade": "A", "evidence": "x",
+                                    "alt_score": 3, "alt_note": "higher", "facets": dict(ALL_FACETS)}
+        self.assertIn("ARC-09: inventory criterion read at 3 or more needs an inventory", errors(data))
+        data["scores"]["ARC-09"]["inventory"] = {"data": 3, "files": 2}
+        self.assertIn("ARC-09: alt_score 3 exceeds the lowest inventory level 2", errors(data))
+
+    def test_scoring_caps_any_reading_at_the_weakest_surface(self):
+        data = assessment(3)
+        data["scores"]["ARC-09"].update(score=2, alt_score=3, alt_note="higher", inventory={"data": 3, "files": 2})
+        res = result(data)
+        self.assertEqual(res["variants"]["high"]["effective"]["ARC-09"], 2)
+
+    def test_rollback_follows_the_change_paths(self):
+        data = assessment(3, facts={"definition_change_path": False})
+        self.assertEqual(errors(data), [])
+        status = controls(data)
+        self.assertEqual(status["Definition rollback"], "n/a")
+        self.assertEqual(status["Release rollback"], "pass")
+        data["scores"]["DEL-11"]["score"] = 2
+        self.assertEqual(controls(data)["Release rollback"], "fail")
+        self.assertEqual(sal(data)["headline"], 2)
+
+    def test_a_change_path_must_exist(self):
+        data = assessment(3, facts={"definition_change_path": False, "code_release_path": False})
+        self.assertTrue(any("at least one change path" in e for e in errors(data)))
+
+    def test_agent_safe_actions_need_a_machine_surface(self):
+        data = assessment(3, facts={"machine_actions": False})
+        self.assertEqual(errors(data), [])
+        self.assertEqual(data["scores"]["GOV-09"]["status"], "not_applicable")
+
+    def test_progress_counts_next_level_conditions(self):
+        data = assessment(2)
+        info = sal(data)["loops"]["request"]
+        self.assertEqual(info["level"], 2)
+        self.assertGreater(info["next_total"], info["next_met"])
+        self.assertEqual(info["next_total"] - info["next_met"], len(info["blockers"]))
+
+    def test_sensitivity_flags_single_criterion_boundaries(self):
+        data = assessment(3)
+        data["scores"]["ARC-06"] = {"status": "assessed", "score": 1, "grade": "A", "evidence": "x"}
+        sens = result(data)["sensitivity"]
+        self.assertIn("ARC-06", sens["raise_headline"])
+        self.assertIn("ARC-06", sens["lower_headline"])
+        self.assertNotIn("GOV-04", sens["lower_headline"])
 
 class ScoringTests(unittest.TestCase):
     def test_rounding_is_half_up_and_applied_once(self):

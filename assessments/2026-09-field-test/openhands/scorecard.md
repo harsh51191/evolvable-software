@@ -15,13 +15,15 @@ Repository evidence only. The Automation Service was added for v0.4 after the in
 ---
 Framework EVOLVE 0.4.0. Date 2026-09-30. Source github.com/OpenHands/OpenHands @ 21cc5c6170fe093c0fcd23ffc61949f4933e17b9 (main) + github.com/OpenHands/software-agent-sdk @ 5ffdd2933c51423e302f5ee5e5b66df0ad9cc28a (main) + github.com/OpenHands/automation @ ec4c5cc0cb05f3fb01816b36ff6271f6680b6675 (main, 2026-09-30). Archetype **agent-runtime**.
 
-Scope facts true: persistent_data, schema_changes, multi_tenant, hosted_service. False: agent_mutations, automatic_apply, code_release_path.
+Scope facts true: persistent_data, schema_changes, multi_tenant, hosted_service, machine_actions, definition_change_path. False: agent_mutations, evolution_auto_apply, code_release_path.
 
 Coverage: 56 assessed, 0 not evidenced, 10 not applicable. Grades: 56 A, 0 B, 0 C.
 
 ## Software Autonomy Level
 
 **SAL 1 (Configurable) · Request → Release L1 · Issue → Fix L1 · Opportunity → Expansion L1**
+
+Progress toward the next level: Request → Release 1 of 4 conditions for L2; Issue → Fix 2 of 5 conditions for L2; Opportunity → Expansion 2 of 5 conditions for L2.
 
 - With opt-in settings: SAL 1 (Configurable) · Request → Release L1 · Issue → Fix L1 · Opportunity → Expansion L1.
 - With every alternate reading: SAL 1 (Configurable) · Request → Release L1 · Issue → Fix L1 · Opportunity → Expansion L1.
@@ -42,13 +44,18 @@ Coverage: 56 assessed, 0 not evidenced, 10 not applicable. Grades: 56 A, 0 B, 0 
 | Tested backup and restore | ARC-09 ≥ 3 | 0 | fail |
 | Tenant isolation | ARC-05 ≥ 3 | 2 | fail |
 | Security as infrastructure | GOV-04 ≥ 3 | 1 | fail |
-| Bounded self-change | not applicable (agent_mutations and automatic_apply false) | n/a | n/a |
+| Bounded self-change | not applicable (agent_mutations and evolution_auto_apply false) | n/a | n/a |
 
 ### What blocks the next level
 
 - **Request → Release to L2**: spine Build needs product build path ≥ 2 (has DEL-04 1); stages Intake needs DEL-01 ≥ 2 (has 0); architecture Foundation needs every applicable ARC ≥ 1 (has ARC-06 0, ARC-09 0)
 - **Issue → Fix to L2**: spine Build needs product build path ≥ 2 (has DEL-04 1, LRN-07 1); stages Propose needs LRN-06 ≥ 2 (has 0); architecture Foundation needs every applicable ARC ≥ 1 (has ARC-06 0, ARC-09 0)
 - **Opportunity → Expansion to L2**: stages Sense needs EXP-04 ≥ 2 (has 0); stages Propose needs EXP-05 ≥ 2 (has 0); architecture Foundation needs every applicable ARC ≥ 1 (has ARC-06 0, ARC-09 0)
+
+### Sensitivity
+
+- **Fragile:** the headline drops if any of these falls one level: MAL-06, MAL-07, MAL-09, MAL-19, MAL-20, LRN-03, GOV-05.
+- No single criterion rising one level lifts the headline.
 
 ## EVOLVE profile
 

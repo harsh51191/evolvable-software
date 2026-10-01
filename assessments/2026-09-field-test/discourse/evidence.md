@@ -8,8 +8,10 @@ Read at github.com/discourse/discourse @ 2590ea9db1b7c38dcf80298aefd3e7cb3afe1f2
 - **schema_changes**: true. Rails migrations (db/migrate, 1,765 files) change the schema on every upgrade.
 - **multi_tenant**: true. Multisite hosting serves several forums from one deployment, each with its own database.
 - **hosted_service**: true. Puma web processes and Sidekiq workers run as long-lived services.
+- **machine_actions**: true. The admin API with scoped API keys changes content and settings (app/models/api_key_scope.rb).
 - **agent_mutations**: false. By default no AI changes Discourse definitions: discourse-ai and the workflows AI author are off by default.
-- **automatic_apply**: false. Admins apply changes directly; nothing applies definition changes automatically by default.
+- **evolution_auto_apply**: false. Admins apply changes directly; nothing applies definition changes automatically by default.
+- **definition_change_path**: true. Site settings, themes, categories and automations are definitions.
 - **code_release_path**: false. No first-party evolution system ships code changes.
 
 ## Elastic (ARC)
@@ -36,8 +38,8 @@ Read at github.com/discourse/discourse @ 2590ea9db1b7c38dcf80298aefd3e7cb3afe1f2
 ### Resilience
 
 - **ARC-08 Failure isolation and graceful degradation**: **2** (grade A). Outbound requests go through FinalDestination with timeouts, and safe mode disables plugins and themes for a session (config/routes.rb:2036). Plugins run in-process.
-- **ARC-09 Backup, restore and recovery**: **2** (grade A), facets: implemented, tested. Built-in backup and restore of the database and uploads to local or S3 stores, with scheduled backups and restore specs, including multisite (lib/backup_restore, spec/lib/backup_restore). Secrets live outside the backup and no recovery time objective is stated.
-  - Higher reading 3: Automatic backup frequency is a recovery point setting.
+- **ARC-09 Backup, restore and recovery**: **3** (grade A), facets: implemented, tested. Built-in backup and restore of the database (data, site settings, themes) and uploads to local or S3 stores, with restore specs for both, including multisite (lib/backup_restore, spec/lib/backup_restore/database_restorer_spec.rb, uploads_restorer_spec.rb). Secrets live in the deployment environment, outside the product. No recovery objectives are stated (level 4).
+  - Inventory: data 3, definitions 3, files 3, secrets n/a
 
 ## Velocity (DEL)
 

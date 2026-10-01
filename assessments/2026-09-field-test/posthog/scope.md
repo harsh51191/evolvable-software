@@ -35,6 +35,8 @@ Declared for the default configuration. They decide which criteria and critical 
 | `schema_changes` | true | Django and ClickHouse migrations, plus property materialisation that adds columns at runtime (ee/clickhouse/materialized_columns/columns.py). |
 | `multi_tenant` | true | Organisations and projects share one deployment with access control and quotas. |
 | `hosted_service` | true | Django web, Celery and Temporal workers, Node ingestion and Rust capture services. |
+| `machine_actions` | true | The API with scoped personal keys and an MCP server change PostHog objects (posthog/scopes.py, services/mcp). |
 | `agent_mutations` | true | PostHog AI creates and edits insights, dashboards and other configured objects (ee/hogai). |
-| `automatic_apply` | true | Weekly property materialisation applies schema changes without approval (posthog/tasks/scheduled.py:927). |
+| `evolution_auto_apply` | false | PostHog AI changes are made on request in a conversation; weekly property materialisation applies without approval (posthog/tasks/scheduled.py:927), but it is scheduled maintenance, not a change from the evolution loop. |
+| `definition_change_path` | true | Insights, dashboards, feature flags, actions and approval policies are definitions. |
 | `code_release_path` | false | Tasks and Stamphog act on customers' repositories (products/stamphog); no first-party lane ships PostHog code changes. |

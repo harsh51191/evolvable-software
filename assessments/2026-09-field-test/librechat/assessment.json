@@ -110,9 +110,7 @@
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Agents keep a versions history (packages/data-schemas/src/schema/agent.ts:125) and prompt groups keep versions with a chosen production version (promptGroup.ts:25); configuration is unversioned in the product.",
-      "alt_score": 3,
-      "alt_note": "Agents and prompts are the main customisation surfaces.",
+      "evidence": "Agents keep a versions history (packages/data-schemas/src/schema/agent.ts:125) and prompt groups keep versions with a chosen production version (promptGroup.ts:25); configuration is unversioned in the product. The higher reading of 3 was dropped under the inventory rule (a 3 needs every default surface at 3): Configuration is unversioned in the product.",
       "facets": {
         "implemented": true,
         "tested": false,
@@ -454,13 +452,21 @@
       "value": true,
       "evidence": "Node API serving many users, with optional Redis (api/cache)."
     },
+    "machine_actions": {
+      "value": true,
+      "evidence": "The API changes agents, prompts and conversations for authenticated clients, and MCP tools act on users' behalf."
+    },
     "agent_mutations": {
       "value": false,
       "evidence": "By default no AI changes LibreChat definitions; the memory agent is commented out in librechat.example.yaml:1351-1360."
     },
-    "automatic_apply": {
+    "evolution_auto_apply": {
       "value": false,
       "evidence": "Definition changes are direct human actions by default."
+    },
+    "definition_change_path": {
+      "value": true,
+      "evidence": "librechat.yaml, agents and prompts are definitions."
     },
     "code_release_path": {
       "value": false,

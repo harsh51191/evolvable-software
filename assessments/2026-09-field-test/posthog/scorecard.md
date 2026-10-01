@@ -15,13 +15,15 @@ Repository evidence only, master at the tip named above. The repository is very 
 ---
 Framework EVOLVE 0.4.0. Date 2026-09-30. Source github.com/PostHog/posthog @ 645e1a78140757ea1bb9ddeb0ff9d3915c60b6f6 (master). Archetype **focused-application**.
 
-Scope facts true: persistent_data, schema_changes, multi_tenant, hosted_service, agent_mutations, automatic_apply. False: code_release_path.
+Scope facts true: persistent_data, schema_changes, multi_tenant, hosted_service, machine_actions, agent_mutations, definition_change_path. False: evolution_auto_apply, code_release_path.
 
 Coverage: 57 assessed, 0 not evidenced, 9 not applicable. Grades: 57 A, 0 B, 0 C.
 
 ## Software Autonomy Level
 
 **SAL 1 (Configurable) · Request → Release L2 · Issue → Fix L1 · Opportunity → Expansion L1**
+
+Progress toward the next level: Request → Release 12 of 21 conditions for L3; Issue → Fix 4 of 5 conditions for L2; Opportunity → Expansion 3 of 5 conditions for L2.
 
 - With opt-in settings: SAL 1 (Configurable) · Request → Release L2 · Issue → Fix L1 · Opportunity → Expansion L1.
 - With every alternate reading: SAL 2 (Assisted) · Request → Release L2 · Issue → Fix L2 · Opportunity → Expansion L1.
@@ -50,15 +52,20 @@ Coverage: 57 assessed, 0 not evidenced, 9 not applicable. Grades: 57 A, 0 B, 0 C
 - **Issue → Fix to L2**: stages Diagnose needs LRN-05 ≥ 2 (has 1)
 - **Opportunity → Expansion to L2**: stages Sense needs EXP-04 ≥ 2 (has 1); stages Propose needs EXP-05 ≥ 2 (has 0)
 
+### Sensitivity
+
+- **Fragile:** the headline drops if any of these falls one level: LRN-03, GOV-05.
+- **One step away:** raising any of these one level lifts the headline: LRN-05.
+
 ## EVOLVE profile
 
 | Capability | Default | Range with alternate readings | With opt-in settings | Assessed only | If every criterion counted |
 |---|---:|---|---:|---:|---:|
-| Elastic (ARC) | 2.2 | 2.2–2.4 | 2.2 | 2.2 | 2.2 |
+| Elastic (ARC) | 2.2 | 2.2–2.3 | 2.2 | 2.2 | 2.2 |
 | Velocity (DEL) | 2.2 | 2.2–2.8 | 2.2 | 2.2 | 2.2 |
 | Open (MAL) | 2.5 | 2.5–3.1 | 2.5 | 2.5 | 2.3 |
 | Learn (LRN) | 1.8 | 1.8–2.7 | 1.8 | 1.8 | 1.8 |
-| Vet (GOV) | 2.1 | 2.1–2.7 | 2.1 | 2.1 | 2.1 |
+| Vet (GOV) | 2.1 | 2.1–2.6 | 2.1 | 2.1 | 2.1 |
 | Expand (EXP) | 1.3 | 1.3–1.8 | 1.3 | 1.3 | 1.5 |
 
 ## Area means
@@ -101,7 +108,7 @@ Coverage: 57 assessed, 0 not evidenced, 9 not applicable. Grades: 57 A, 0 B, 0 C
 | ARC-05 Tenant isolation and noisy-neighbour controls | assessed | 2 | 3 |  | A | IT | Multi-tenant organisations and projects with quota limiting and per-team throttles; no noisy-neighbour detection evidenced. |
 | ARC-06 Ceilings measured, not discovered in incidents | assessed | 2 |  |  | A |  | Performance suites exist (services/mcp/vitest.perf.config.mts and service benchmarks); no documented per-surface limits. |
 | ARC-07 Service objectives defined and monitored | assessed | 2 |  |  | A |  | Prometheus metrics across services (for example services/llm-gateway/src/llm_gateway/metrics/prometheus.py); no published objectives in the repository. |
-| ARC-08 Failure isolation and graceful degradation | assessed | 2 | 3 |  | A | IT | The LLM gateway has a circuit breaker for model providers (services/llm-gateway/src/llm_gateway/circuit_breaker.py) and subscriptions auto-disable after repeated failures (ee/tasks/subscriptions/auto_disable.py); other surfaces lack breakers. |
+| ARC-08 Failure isolation and graceful degradation | assessed | 2 |  |  | A |  | The LLM gateway has a circuit breaker for model providers (services/llm-gateway/src/llm_gateway/circuit_breaker.py) and subscriptions auto-disable after repeated failures (ee/tasks/subscriptions/auto_disable.py); other surfaces lack breakers, so a 3 is not defensible under the inventory rule. |
 | ARC-09 Backup, restore and recovery | assessed | 1 |  |  | A |  | No backup command in the repository; self-hosted backup is left to the operator. |
 | DEL-01 Request intake into a structured change specification | assessed | 2 |  |  | A |  | PostHog AI takes requests in conversations stored with the page and objects in context, and has a plan mode that sets out steps before acting (ee/hogai/chat_agent/prompts/plan.py); plans carry no acceptance criteria or risk class. |
 | DEL-02 Layers deploy independently | assessed | 3 |  |  | A |  | Independently deployable services with their own images: Django web, Node CDP and ingestion, Rust capture and flag services, and an MCP worker on Cloudflare (25 Dockerfiles; rust/, nodejs/, services/mcp/wrangler.jsonc). |
@@ -147,7 +154,7 @@ Coverage: 57 assessed, 0 not evidenced, 9 not applicable. Grades: 57 A, 0 B, 0 C
 | GOV-02 Audit generic over entities, definition changes and approvals | assessed | 2 | 3 |  | A |  | Activity logging on most models with an activity page (posthog/models/activity_logging), retention by entitlement (retention.py:71), and recorded approval decisions on change requests (products/approvals/backend/models.py:112-140). Scored at the lower reading under rule 11 because: Activity logging covers most, not all, models. |
 | GOV-03 Privacy classification, export, erasure and retention generic over entities | assessed | 2 | 3 |  | A |  | Data deletion requests and async deletion remove a person's data across products (posthog/api/data_deletion_request.py, posthog/models/async_deletion); not driven by field-level privacy tags. |
 | GOV-04 Security as infrastructure | assessed | 3 |  |  | A | IT | Resource-level access control and scoped API keys (products/access_control, posthog/scopes.py); semgrep and image scanning in CI on changed paths (.github/workflows/ci-security.yaml:60-174). |
-| GOV-05 Definitions and layouts versioned with rollback | assessed | 2 | 3 |  | A | IT | The activity log records before-and-after changes for flags, insights, dashboards and more; no general revert across customisation surfaces. |
+| GOV-05 Definitions and layouts versioned with rollback | assessed | 2 |  |  | A | IT | The activity log records before-and-after changes for flags, insights, dashboards and more; no general revert across customisation surfaces. The higher reading of 3 was dropped under the inventory rule (a 3 needs every default surface at 3): Revert is not available across customisation surfaces. |
 | GOV-06 Proposal, review, apply as a first-class object with preview | assessed | 2 | 3 |  | A |  | Change requests carry the intended change, a validation status and a policy snapshot, and are reviewed and then applied (products/approvals/backend/models.py:15-65); scheduled changes for flags (products/approvals/backend/scheduled_changes.py). No staging-data preview. |
 | GOV-07 Policy-based apply with recorded approvals and a movable human boundary | assessed | 3 |  |  | A |  | Approval policies per registered action class with conditions evaluated on the change intent, named approvers, bypass roles and recorded Approval decisions (products/approvals/backend/policies.py:37-147, actions/registry.py, models.py:112-140). |
 | GOV-08 Upgrade safety | assessed | 2 |  |  | A |  | Customer definitions (insights, flags, functions) are data carried forward by Django migrations; no automated compatibility check or versioned extension contract was found. |

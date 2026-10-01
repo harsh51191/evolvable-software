@@ -77,7 +77,7 @@ python3 <skill-dir>/scripts/init_scores.py --product "<software name>" --archety
 
 ### 3. Declare the scope facts
 
-Set each of the seven facts in `references/rubric.md` (persistent data, schema changes, multi-tenant, hosted service, agent mutations, automatic apply, code release path) to true or false with evidence, for the default configuration. They decide which criteria and critical controls apply. A wrongly declared fact is a finding, not a shortcut.
+Set each of the nine facts in `references/rubric.md` (persistent data, schema changes, multi-tenant, hosted service, machine actions, agent mutations, evolution auto-apply, definition change path, code release path) to true or false with evidence, for the default configuration. They decide which criteria and critical controls apply, including which rollback each change path needs. A wrongly declared fact is a finding, not a shortcut.
 
 ### 4. Gather evidence
 

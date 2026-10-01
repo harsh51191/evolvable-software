@@ -51,12 +51,14 @@ The framework is renamed from Malleability and Self-Evolution Readiness (MSR) to
 
 ### How it is applied
 
-- **Scope facts.** Seven facts, declared with evidence, decide which criteria and controls apply: persistent data, schema changes, multi-tenant, hosted service, agent mutations, automatic apply, and code release path.
+- **Scope facts.** Nine facts, declared with evidence, decide which criteria and controls apply: persistent data, schema changes, multi-tenant, hosted service, machine actions, agent mutations, evolution auto-apply, definition change path, and code release path.
+- **Rollback follows the change paths.** Definition rollback is required where behaviour changes through definitions, release rollback where the evolution system ships code, both where both exist.
+- **Backup is tested recovery.** ARC-09 level 3 needs tested restore of every surface. Stated recovery objectives are level 4.
 - **Evidence facets and a depth cap.** Implemented, tested and operated are recorded separately. Architecture and control criteria need tested evidence for a 3 and operated evidence for a 4.
-- **Coverage inventories.** Failure isolation, backup and definition rollback list their surfaces, and a 3 or more cannot exceed the weakest one.
+- **Coverage inventories.** Failure isolation, backup and definition rollback list their surfaces. No reading of 3 or more, including alternate and opt-in readings, can exceed the weakest surface.
 - **Alternates are upward only.** `alt_score` must be `score + 1`, which enforces the rubric's "take the lower reading" rule. The 49 downward alternates in the field test were flipped.
 - **Repository tooling counts only as a first-party evolution system** for intake, implementation, release, detection, diagnosis, learning and expansion criteria.
-- **Round 2 boundary clarifications.** The inter-rater study reached 118 of 132 in exact agreement. Its four disputed boundaries are now explicit:
+- **Round 2 boundary clarifications.** A second rater rescored the v0.3 Learn and Vet criteria; that dataset is not yet in this repository. The four boundaries the raters disputed are now explicit:
   - definition rollback covers all default surfaces;
   - impact measurement is post-apply only;
   - the policy criterion covers self-changes, while per-action permissions belong to agent-safe actions;
@@ -66,8 +68,9 @@ The framework is renamed from Malleability and Self-Evolution Readiness (MSR) to
 
 All 11 systems were migrated and scored on the new criteria. The OpenHands Automation Service was added to OpenHands' scope.
 
-- n8n and OpenClaw reach SAL 2; no system reaches L3.
-- Definition rollback and tested backup with stated recovery objectives fail in all eleven.
+- Results are provisional: one rater, repository evidence only, not maintainer-reviewed.
+- n8n and OpenClaw reach SAL 2. No system reached L3 in this assessment.
+- Definition rollback fails in all eleven.
 
 ### Scorer and tooling
 
@@ -77,8 +80,9 @@ All 11 systems were migrated and scored on the new criteria. The OpenHands Autom
   - facets and inventories;
   - upward-only alternates.
 - It reports SAL for the default, opt-in and alternate readings.
+- It reports progress toward the next level for each loop, and the criteria whose one-level change would move the headline.
 - The prescriber lists the next-level blockers before the criterion plan.
-- 43 tests.
+- 50 tests.
 
 ## Public Beta 3 (v0.3.0), 2026-09-30
 

@@ -27,6 +27,8 @@ Declared for the default configuration. They decide which criteria and critical 
 | `schema_changes` | true | Data migration scripts change stored documents and indexes (config/migrate-*.js). |
 | `multi_tenant` | true | A tenant isolation plugin scopes models by tenant (packages/data-schemas/src/models/plugins/tenantIsolation.coverage.spec.ts). |
 | `hosted_service` | true | Node API serving many users, with optional Redis (api/cache). |
+| `machine_actions` | true | The API changes agents, prompts and conversations for authenticated clients, and MCP tools act on users' behalf. |
 | `agent_mutations` | false | By default no AI changes LibreChat definitions; the memory agent is commented out in librechat.example.yaml:1351-1360. |
-| `automatic_apply` | false | Definition changes are direct human actions by default. |
+| `evolution_auto_apply` | false | Definition changes are direct human actions by default. |
+| `definition_change_path` | true | librechat.yaml, agents and prompts are definitions. |
 | `code_release_path` | false | No first-party evolution system ships code changes. |

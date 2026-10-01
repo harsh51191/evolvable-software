@@ -1,6 +1,6 @@
 # Evidence plan: what to look for, per capability
 
-First settle scope: list every first-party repository that implements the product's core behaviour, and check the architecture docs for capabilities delegated elsewhere. Then declare the seven scope facts with evidence (`rubric.md`), because they decide which criteria apply.
+First settle scope: list every first-party repository that implements the product's core behaviour, and check the architecture docs for capabilities delegated elsewhere. Then declare the nine scope facts with evidence (`rubric.md`), because they decide which criteria apply.
 
 Dispatch one read-only explorer per capability (six in parallel), or one per area for a deep pass. Give each explorer the repository path, the branch or tip, the criteria text from `rubric.md` for its capability, and these instructions:
 

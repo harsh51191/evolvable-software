@@ -13,7 +13,9 @@ EVOLVE describes a broad class of software. It should not force every product in
    | ARC-03 scale, ARC-04 async work, ARC-06 capacity, ARC-07 objectives | `hosted_service` |
    | ARC-05 tenant isolation | `multi_tenant` |
    | DEL-11 release rollback | `code_release_path` |
-   | GOV-10 bounded self-change, GOV-11 learning-input integrity | `agent_mutations` or `automatic_apply` |
+   | GOV-05 definition rollback | `definition_change_path` |
+   | GOV-09 agent-safe actions | `machine_actions` |
+   | GOV-10 bounded self-change, GOV-11 learning-input integrity | `agent_mutations` or `evolution_auto_apply` |
 
 2. **Archetype exclusions.** The scorer enforces this table. Excluding any other criterion is a validation error. Every exclusion needs a rationale, and should record `if_applicable`, the score it would have received, so reports can show what the exclusion changed.
 

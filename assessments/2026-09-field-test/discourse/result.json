@@ -10,8 +10,10 @@
     "schema_changes": true,
     "multi_tenant": true,
     "hosted_service": true,
+    "machine_actions": true,
     "agent_mutations": false,
-    "automatic_apply": false,
+    "evolution_auto_apply": false,
+    "definition_change_path": true,
     "code_release_path": false
   },
   "coverage": {
@@ -37,6 +39,8 @@
           "architecture": 2,
           "governance": 2
         },
+        "next_met": 2,
+        "next_total": 4,
         "blockers": [
           {
             "part": "spine",
@@ -63,6 +67,8 @@
           "architecture": 2,
           "governance": 2
         },
+        "next_met": 4,
+        "next_total": 5,
         "blockers": [
           {
             "part": "spine",
@@ -82,6 +88,8 @@
           "architecture": 2,
           "governance": 2
         },
+        "next_met": 1,
+        "next_total": 2,
         "blockers": [
           {
             "part": "spine",
@@ -115,8 +123,8 @@
       {
         "control": "Tested backup and restore",
         "needs": "ARC-09 ≥ 3",
-        "observed": "2",
-        "status": "fail"
+        "observed": "3",
+        "status": "pass"
       },
       {
         "control": "Tenant isolation",
@@ -132,14 +140,41 @@
       },
       {
         "control": "Bounded self-change",
-        "needs": "not applicable (agent_mutations and automatic_apply false)",
+        "needs": "not applicable (agent_mutations and evolution_auto_apply false)",
         "observed": "n/a",
         "status": "n/a"
       }
     ]
   },
+  "sensitivity": {
+    "raise_headline": [],
+    "lower_headline": [
+      "MAL-02",
+      "MAL-06",
+      "LRN-03",
+      "GOV-05"
+    ],
+    "raise_loop": {
+      "fix": [
+        "LRN-08"
+      ]
+    },
+    "lower_loop": {
+      "request": [
+        "MAL-02",
+        "MAL-06",
+        "GOV-05"
+      ],
+      "fix": [
+        "MAL-02",
+        "MAL-06",
+        "LRN-03",
+        "GOV-05"
+      ]
+    }
+  },
   "capabilities": {
-    "ARC": 2.0,
+    "ARC": 2.1,
     "DEL": 1.4,
     "MAL": 2.1,
     "LRN": 1.4,
@@ -148,7 +183,7 @@
   },
   "ranges": {
     "ARC": [
-      2.0,
+      2.1,
       2.3
     ],
     "DEL": [
@@ -176,7 +211,7 @@
     "ARC Data": 2.5,
     "ARC Scale": 2,
     "ARC Capacity": 1.5,
-    "ARC Resilience": 2,
+    "ARC Resilience": 2.5,
     "DEL Intake": 1,
     "DEL Build": 0.7,
     "DEL Verify": 2,
@@ -210,7 +245,7 @@
     "ARC-06": 2,
     "ARC-07": 1,
     "ARC-08": 2,
-    "ARC-09": 2,
+    "ARC-09": 3,
     "DEL-01": 1,
     "DEL-02": 1,
     "DEL-03": 1,
@@ -315,7 +350,7 @@
     },
     "available": {
       "capabilities": {
-        "ARC": 2.0,
+        "ARC": 2.1,
         "DEL": 1.6,
         "MAL": 2.3,
         "LRN": 1.5,
@@ -358,7 +393,7 @@
     },
     "assessed_only": {
       "capabilities": {
-        "ARC": 2.0,
+        "ARC": 2.1,
         "DEL": 1.4,
         "MAL": 2.1,
         "LRN": 1.4,
@@ -368,7 +403,7 @@
     },
     "all_applicable": {
       "capabilities": {
-        "ARC": 2.0,
+        "ARC": 2.1,
         "DEL": 1.4,
         "MAL": 1.8,
         "LRN": 1.4,

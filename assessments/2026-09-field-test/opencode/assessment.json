@@ -430,13 +430,21 @@
       "value": false,
       "evidence": "A local CLI and TUI with an optional local server; the console and cloud functions are separate products outside this scope."
     },
+    "machine_actions": {
+      "value": true,
+      "evidence": "The local server API and ACP let clients drive sessions and change files (packages/opencode/src/server, acp)."
+    },
     "agent_mutations": {
       "value": false,
       "evidence": "No product feature lets the agent change OpenCode's own agents, commands or configuration."
     },
-    "automatic_apply": {
+    "evolution_auto_apply": {
       "value": false,
       "evidence": "Nothing changes OpenCode's definitions automatically."
+    },
+    "definition_change_path": {
+      "value": true,
+      "evidence": "Agents, commands, themes and configuration files are its definitions."
     },
     "code_release_path": {
       "value": false,

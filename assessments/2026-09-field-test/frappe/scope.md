@@ -31,6 +31,8 @@ Declared for the default configuration. They decide which criteria and critical 
 | `schema_changes` | true | Creating or editing a DocType alters its table at runtime (frappe/database/schema.py:479-485), and bench migrate applies patches (frappe/patches.txt). |
 | `multi_tenant` | true | One bench serves several sites, each with its own database (multi-site benches). |
 | `hosted_service` | true | Gunicorn web workers, RQ workers, a scheduler and a socket.io server run as long-lived services. |
+| `machine_actions` | true | The REST API and RPC methods change documents and DocTypes with per-user API keys (frappe/api). |
 | `agent_mutations` | false | No first-party AI or agent changes Frappe definitions in this repository. |
-| `automatic_apply` | false | Every definition change is made by a person with the right role; nothing applies changes automatically. |
+| `evolution_auto_apply` | false | Every definition change is made by a person with the right role; nothing applies changes automatically. |
+| `definition_change_path` | true | DocTypes, workflows, print formats and settings are definitions. |
 | `code_release_path` | false | No first-party evolution system ships code changes; releases are made by engineers. |

@@ -8,8 +8,10 @@ Read at github.com/langgenius/dify @ ea38e484b81b4104736d2484aaa1d0d7ea99627e (m
 - **schema_changes**: true. Alembic migrations (api/migrations/versions, 219 files).
 - **multi_tenant**: true. Workspaces (tenants) share a deployment with per-tenant limits.
 - **hosted_service**: true. API, Celery worker, web, sandbox and plugin daemon run as long-lived services.
+- **machine_actions**: true. The console and service APIs change apps, datasets and workflows.
 - **agent_mutations**: false. AI generators draft prompts, code and workflow steps into the editor; a person saves and publishes (api/core/llm_generator).
-- **automatic_apply**: false. Every publish is a manual human action.
+- **evolution_auto_apply**: false. Every publish is a manual human action.
+- **definition_change_path**: true. Apps, workflows, prompts and datasets are definitions.
 - **code_release_path**: false. No first-party evolution system ships code changes.
 
 ## Elastic (ARC)
@@ -34,8 +36,7 @@ Read at github.com/langgenius/dify @ ea38e484b81b4104736d2484aaa1d0d7ea99627e (m
 
 ### Resilience
 
-- **ARC-08 Failure isolation and graceful degradation**: **2** (grade A), facets: implemented. Model load balancing with cooldown across credentials (api/core/model_manager.py:68-130); plugins run in a separate daemon and code in a sandbox service.
-  - Higher reading 3: Model providers and plugins are isolated.
+- **ARC-08 Failure isolation and graceful degradation**: **2** (grade A). Model load balancing with cooldown across credentials (api/core/model_manager.py:68-130); plugins run in a separate daemon and code in a sandbox service. Connectors and internal services have no breakers, so a 3 is not defensible under the inventory rule.
 - **ARC-09 Backup, restore and recovery**: **1** (grade A). No backup command; Docker volume backup is left to operators.
 
 ## Velocity (DEL)
@@ -158,8 +159,7 @@ Read at github.com/langgenius/dify @ ea38e484b81b4104736d2484aaa1d0d7ea99627e (m
 
 ### Change control
 
-- **GOV-05 Definitions and layouts versioned with rollback**: **2** (grade A), facets: implemented. Workflows keep numbered published versions (workflow_version_number_service); apps export versioned DSL; other surfaces are unversioned.
-  - Higher reading 3: Apps and workflows are the main customisation surfaces.
+- **GOV-05 Definitions and layouts versioned with rollback**: **2** (grade A), facets: implemented. Workflows keep numbered published versions (workflow_version_number_service); apps export versioned DSL; other surfaces are unversioned. The higher reading of 3 was dropped under the inventory rule (a 3 needs every default surface at 3): Surfaces other than workflows and app DSL are unversioned.
 - **GOV-06 Proposal, review, apply as a first-class object with preview**: **2** (grade A). Draft and publish with debug preview for apps and workflows; no review step or proposal object.
 - **GOV-07 Policy-based apply with recorded approvals and a movable human boundary**: **1** (grade A). Every publish is a manual human action; the agent runtime's ask-human layer (dify-agent/src/dify_agent/layers/ask_human/layer.py) gates agent actions, not changes.
 - **GOV-08 Upgrade safety**: **2** (grade A). Imported DSL is checked against the current DSL version and flagged when older or newer (api/services/dsl_version.py, app_dsl_service.py); plugins declare manifests and versions against a stable plugin SDK contract. Scored at the lower reading under rule 11 because: If version warnings on import do not count as automated compatibility checks.

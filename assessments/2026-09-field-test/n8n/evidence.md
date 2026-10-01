@@ -8,8 +8,10 @@ Read at github.com/n8n-io/n8n @ c17c48043eb1080e5ae9795ea3a384960f8748f1 (master
 - **schema_changes**: true. TypeORM migrations (packages/@n8n/db/src/migrations) and data tables created at runtime.
 - **multi_tenant**: false. One instance per customer; projects separate work inside an instance but are not isolated tenants.
 - **hosted_service**: true. Main, worker and webhook processes run as long-lived services, with multi-main and queue mode (packages/cli/src/scaling).
+- **machine_actions**: true. The public API and MCP server change workflows and credentials (packages/cli/src/modules/mcp).
 - **agent_mutations**: true. The AI workflow builder and Instance AI change workflows (packages/cli/src/modules/instance-ai, workflow-builder).
-- **automatic_apply**: false. AI-built changes pass approvals before they apply.
+- **evolution_auto_apply**: false. AI-built changes pass approvals before they apply.
+- **definition_change_path**: true. Workflows, credentials, variables and data tables are definitions.
 - **code_release_path**: false. The AI lanes change workflows, not n8n code.
 
 ## Elastic (ARC)
@@ -165,8 +167,7 @@ Read at github.com/n8n-io/n8n @ c17c48043eb1080e5ae9795ea3a384960f8748f1 (master
 
 ### Change control
 
-- **GOV-05 Definitions and layouts versioned with rollback**: **2** (grade A), facets: implemented, tested. Workflow history with versions and restore (packages/cli/src/workflows/workflow-history); other surfaces (credentials, variables, data tables, settings) roll back only through source control.
-  - Higher reading 3: Workflows are the main customisation surface and have full history and restore.
+- **GOV-05 Definitions and layouts versioned with rollback**: **2** (grade A), facets: implemented, tested. Workflow history with versions and restore (packages/cli/src/workflows/workflow-history); other surfaces (credentials, variables, data tables, settings) roll back only through source control. The higher reading of 3 was dropped under the inventory rule (a 3 needs every default surface at 3): Credentials, variables, data tables and settings roll back only through source control.
 - **GOV-06 Proposal, review, apply as a first-class object with preview**: **3** (grade A). Workflow review requests with an inbox, decision policy and a publish guard that blocks publishing until approved (packages/cli/src/modules/workflow-reviews.ee, workflow-review-publish-guard.service.ts:11-29); git-backed environments let changes be staged on another instance first (packages/cli/src/modules/source-control.ee).
 - **GOV-07 Policy-based apply with recorded approvals and a movable human boundary**: **3** (grade A). Shared policy infrastructure runs registered @PolicyCheck classes at fixed points with cleared or blocked outcomes and audited decisions (packages/cli/src/modules/policy-infrastructure/README.md); review decision policy (workflow-review-decision-policy.ts).
 - **GOV-08 Upgrade safety**: **3** (grade A). Nodes are versioned so existing workflows keep their typeVersion; a breaking-changes module scans workflows and configuration against the target version with a rule registry and migration services (packages/cli/src/modules/breaking-changes/README.md); node engine compatibility checks (packages/@n8n/node-engine-compatibility). Scored at the lower reading under rule 11 because: If migrations are applied rather than proposed, or breaking changes lack a policy exception.

@@ -132,9 +132,7 @@
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Revisions can be reverted for items and system records (api/src/services/revisions.ts:13-18); data-model changes have no rollback in the UI.",
-      "alt_score": 3,
-      "alt_note": "Revert works on system collections too, so most customisation surfaces are covered through the API.",
+      "evidence": "Revisions can be reverted for items and system records (api/src/services/revisions.ts:13-18); data-model changes have no rollback in the UI. The higher reading of 3 was dropped under the inventory rule (a 3 needs every default surface at 3): Data-model changes have no rollback.",
       "facets": {
         "implemented": true,
         "tested": true,
@@ -436,11 +434,9 @@
     },
     "LRN-03": {
       "status": "assessed",
-      "score": 1,
+      "score": 2,
       "grade": "A",
-      "evidence": "Admins can read system logs in the app (app/src/modules/settings/routes/system-logs); failed actions are not recorded per product area.",
-      "alt_score": 2,
-      "alt_note": "Logs are queryable by admins."
+      "evidence": "Every flow run records each operation step with its resolve or reject status as activity and revisions (api/src/flows.ts:414-454), viewable per flow; admins can read system logs (app/src/modules/settings/routes/system-logs). Failed actions outside flows are not recorded per product area."
     },
     "LRN-05": {
       "status": "assessed",
@@ -487,7 +483,7 @@
   },
   "limits": "Repository evidence only, main branch at the tip named above. No running instance was inspected, so approval and preview behaviour is read from code. Directus Cloud, the hosted marketplace catalogue and published templates are out of scope. The repository is under a source-available licence, so some features may be licence-gated (api/src/license); entitlement checks were not traced per feature. Single rater; 18 alternate readings mark likely disagreements.",
   "framework_version": "0.4.0",
-  "reading": "**SAL 0.** Request → Release reaches L1 through the data-model editor, but Issue → Fix stops at L0: failed actions are not recorded per product area (LRN-03 1). The AI assistant drafts schema and flow changes behind approvals, but it is scored at its lower reading (DEL-04 1), and Learn is the weakest capability (0.7). **Architecture:** no load suite (ARC-06 0) and no backup command (ARC-09 1). **Next level:** record user-facing failures per collection and flow, and turn requests into structured specifications.",
+  "reading": "**SAL 1.** Every loop reaches L1 through the data-model editor and flow logs, which record each operation's success or failure (LRN-03 2). The AI assistant drafts schema and flow changes behind approvals but is scored at its lower reading (DEL-04 1), and Learn is the weakest capability (0.8). **Architecture:** no load suite (ARC-06 0) and no backup command (ARC-09 1) hold the architecture foundation at L1. **Next level:** structured request intake and a stronger AI lane, plus capacity and backup evidence.",
   "framework": "EVOLVE",
   "scope_facts": {
     "persistent_data": {
@@ -506,13 +502,21 @@
       "value": true,
       "evidence": "The API is a long-lived Node service with optional Redis-backed synchronisation (api/src/synchronization.ts)."
     },
+    "machine_actions": {
+      "value": true,
+      "evidence": "REST and GraphQL APIs and an MCP server change items and schema (api/src/ai/mcp)."
+    },
     "agent_mutations": {
       "value": true,
       "evidence": "The AI assistant changes collections, fields, flows and items through tools (api/src/ai/tools)."
     },
-    "automatic_apply": {
+    "evolution_auto_apply": {
       "value": false,
       "evidence": "Mutating AI tool calls require approval unless a user sets a tool to always-allow (api/src/ai/tools/registry.ts:198-214)."
+    },
+    "definition_change_path": {
+      "value": true,
+      "evidence": "Collections, fields, flows, roles and settings are definitions."
     },
     "code_release_path": {
       "value": false,
