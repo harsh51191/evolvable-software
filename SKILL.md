@@ -6,8 +6,9 @@ description: >-
   loops (request to release, issue to fix, opportunity to expansion) with the
   conditions that block the next level, seven critical controls, and a
   six-capability profile (Elastic architecture, Velocity delivery, Open
-  malleability, Learn, Vet governance, Expand), plus a prerequisite-ordered
-  remediation plan. Works for platforms, focused applications, developer
+  malleability, Learn, Vet governance, Expand), AI Readiness for products
+  with AI features (Context, Quality, Governance, Operations, with three
+  production gates), and a prerequisite-ordered remediation plan. Works for platforms, focused applications, developer
   platforms and agent runtimes. Use for self-evolution readiness, software
   autonomy levels, AI-built change readiness, governed change, architecture
   readiness for autonomous change, or repeatable reassessment. Do not use as
