@@ -210,4 +210,3 @@ What the product's AI does. Descriptive levels per area, with no headline: it ne
 | AIR-08 Production quality, drift and feedback monitoring | assessed | 2 |  |  | A |  | Users rate messages with tags, and admin insights summarise usage (packages/data-schemas/src/schema/message.ts:103, packages/api/src/insights); no drift alerts. |
 
 Facets: I implemented, T tested, O operated.
-

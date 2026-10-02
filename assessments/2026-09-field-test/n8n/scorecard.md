@@ -211,4 +211,3 @@ What the product's AI does. Descriptive levels per area, with no headline: it ne
 | AIR-08 Production quality, drift and feedback monitoring | assessed | 2 |  |  | A |  | Evaluation metrics per test run and failure rates per workflow are recorded (packages/cli/src/evaluation.ee, modules/insights); no drift alerts. |
 
 Facets: I implemented, T tested, O operated.
-

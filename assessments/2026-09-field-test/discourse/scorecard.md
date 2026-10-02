@@ -216,4 +216,3 @@ What the product's AI does. Descriptive levels per area, with no headline: it ne
 | AIR-08 Production quality, drift and feedback monitoring | assessed | 2 |  |  | A |  | Accuracy of AI triage against moderator decisions and spam logs are recorded per model and feature (app/models/model_accuracy.rb, ai_spam_log.rb); no drift alerts. |
 
 Facets: I implemented, T tested, O operated.
-

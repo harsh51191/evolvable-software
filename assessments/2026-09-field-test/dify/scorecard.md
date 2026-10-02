@@ -211,4 +211,3 @@ What the product's AI does. Descriptive levels per area, with no headline: it ne
 | AIR-08 Production quality, drift and feedback monitoring | assessed | 2 |  |  | A |  | End-user likes and dislikes and app statistics (satisfaction, tokens) per app (api/models/model.py:1299-1302); no drift alerts. |
 
 Facets: I implemented, T tested, O operated.
-

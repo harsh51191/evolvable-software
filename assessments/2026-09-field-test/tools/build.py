@@ -38,7 +38,7 @@ def build(system, criteria, order, model):
             data.get("scope_line", ""), "", "## Reading", "", data.get("reading", "_Not written._"), "",
             "## Limits", "", data.get("limits", ""), "", "---", ""]
     with open(os.path.join(folder, "scorecard.md"), "w") as h:
-        h.write("\n".join(head) + md.split("\n", 2)[2] + "\n")
+        h.write(("\n".join(head) + md.split("\n", 2)[2]).rstrip("\n") + "\n")
     ev = [f"# {data['product']} evidence", "",
           f"Read at {data['source']} on {data['date']}. Grade A is code at the tip, B is in-repository documentation.", "",
           "## Scope facts", ""]

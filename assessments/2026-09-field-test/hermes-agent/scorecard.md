@@ -208,4 +208,3 @@ What the product's AI does. Descriptive levels per area, with no headline: it ne
 | AIR-08 Production quality, drift and feedback monitoring | assessed | 1 |  |  | A |  | Skill usage counts feed the curator; no quality or feedback monitoring of the agent's answers. |
 
 Facets: I implemented, T tested, O operated.
-

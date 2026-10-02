@@ -210,4 +210,3 @@ What the product's AI does. Descriptive levels per area, with no headline: it ne
 | AIR-08 Production quality, drift and feedback monitoring | assessed | 1 |  |  | A |  | Critics score task output during a run; no production quality monitoring. |
 
 Facets: I implemented, T tested, O operated.
-

@@ -198,4 +198,3 @@ What the product's AI does. Descriptive levels per area, with no headline: it ne
 | AIR-08 Production quality, drift and feedback monitoring | not_applicable | excluded |  |  | - |  | ai_features is false: No model-backed features in the framework (searched frappe/ for openai, anthropic, llm). |
 
 Facets: I implemented, T tested, O operated.
-
