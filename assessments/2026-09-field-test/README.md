@@ -42,15 +42,15 @@ Each system folder has `scope.md`, `evidence.md` (every score with file paths), 
 | OpenHands | **L2** Deployed with material control gaps | 3 | 2 | 2 | 2 | evals |
 | PostHog | **L2** Deployed with material control gaps | 3 | 2 | 2 | 2 | evals |
 | Dify | **L1** Experimental | 2 | 1 | 2 | 2 | access, evals |
-| Discourse (opt-in) | **L1** Experimental | 3 | 1 | 3 | 2 | evals |
+| Discourse | no AI by default; **L1** Experimental with opt-in | 3 | 1 | 3 | 2 | evals |
 | Hermes Agent | **L1** Experimental | 3 | 1 | 2 | 2 | evals |
 | OpenClaw | **L1** Experimental | 3 | 1 | 2 | 2 | evals |
 | OpenCode | **L1** Experimental | 3 | 1 | 2 | 1 | evals |
-| Directus | **L0** No production AI foundation | 3 | 0 | 1 | 1 | evals, traces |
-| LibreChat | **L0** No production AI foundation | 2 | 0 | 2 | 2 | access, evals, traces |
+| Directus | **L0** Foundational gap | 3 | 0 | 1 | 1 | evals, traces |
+| LibreChat | **L0** Foundational gap | 2 | 0 | 2 | 2 | access, evals, traces |
 | Frappe | no AI features | – | – | – | – | – |
 
-Discourse ships its AI plugin switched off, so its default reading is "no AI features" and the row shows the opt-in reading. `comparison.md` adds the alternate readings and the unscored AI Capability Footprint.
+Discourse ships its AI plugin switched off, so its default reading is "no AI features" and the row shows the opt-in reading. `comparison.md` adds the alternate readings and the descriptive AI Capability Footprint.
 
 What the results say:
 

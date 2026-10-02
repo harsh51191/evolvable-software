@@ -102,7 +102,7 @@ A second reading, separate from SAL: **how safely can the product run AI in prod
   - Operations: AIR-01, AIR-02, AIR-08 and the AI-qualified reading of ARC-08.
 - **Dimension level:** the floor of the mean of its applicable contributors. A dimension with none is not applicable.
 - **Headline:** the lowest applicable dimension, named:
-  - L0 No production AI foundation;
+  - L0 Foundational gap;
   - L1 Experimental;
   - L2 Deployed with material control gaps;
   - L3 Production-governed;
@@ -110,7 +110,7 @@ A second reading, separate from SAL: **how safely can the product run AI in prod
 - **Gates:** AIR-04 ≥ 3 (when `ai_data_access`), AIR-06 ≥ 3 (when `ai_features`) and AIR-07 ≥ 3 (when `ai_actions`). Failing any caps the headline at L2, labelled "not production-governed".
 - **Default and opt-in:** the headline uses the default configuration and default facts. The opt-in reading uses `available_score` and `available_value`.
 - **AI-qualified readings.** Thirteen existing criteria carry an `ai` entry that scores only their AI-backed behaviour, against the **AI-qualified reading** anchors under each criterion. The entry has a status (`assessed`, `not_evidenced` or `not_applicable`) and may carry grade, evidence, `alt_score`, `available_score` and facets. It is required whenever `ai_features` is true in either reading, and never changes the criterion's own score. `not_applicable` is allowed only when the parent criterion is not applicable, for GOV-09 when `ai_actions` is false, and for LRN-08 when `agent_mutations` is false.
-- **AI Capability Footprint (unscored):** Operate (MAL-19, MAL-20), Build (DEL-01, DEL-04), Diagnose and improve (LRN-05 to LRN-08), Expand (EXP-05). It shows what the product's AI does. It never affects AI Readiness or SAL.
+- **AI Capability Footprint (descriptive, non-headline):** Operate (MAL-19, MAL-20), Build (DEL-01, DEL-04), Diagnose and improve (LRN-05 to LRN-08), Expand (EXP-05). It shows what the product's AI does. Each area gets a descriptive level (the floor of the mean of its readings), but there is no footprint headline and it never affects AI Readiness or SAL.
 
 ## Scoring model
 
@@ -314,7 +314,7 @@ A second reading, separate from SAL: **how safely can the product run AI in prod
   "ai_view": {
     "section": "AIR",
     "levels": [
-      "No production AI foundation",
+      "Foundational gap",
       "Experimental",
       "Deployed with material control gaps",
       "Production-governed",
@@ -611,7 +611,7 @@ Can the product take the load and survive the change?
 **Why it matters.** Evolution adds dependencies. Each one must be able to fail without taking the core product down.
 **Inventory.** Connectors and integrations; plugins and extensions; AI and model providers; tenant workloads; internal services. Record a level for each applicable surface; the score is the level every applicable surface reaches.
 **Evidence.** Timeouts, retries, circuit breakers and bulkheads per surface. Fallbacks and their tests. Fault-injection suites.
-**AI-qualified reading.** Scores only AI-backed behaviour, for the AI Readiness View and Footprint: 0 a model-provider failure breaks the product · 1 errors caught locally · 2 timeouts and retries on model calls · 3 timeouts and circuit breakers or bulkheads around model calls, with tested fallback behaviour; failure contained to the AI feature · 4 degradation modes declared and exercised by fault injection. Must equal the `ai_providers` inventory level when one is recorded.
+**AI-qualified reading.** Scores only AI-backed behaviour, for the AI Readiness View and Footprint: 0 a model-provider failure breaks the product · 1 errors caught locally · 2 timeouts and retries on model calls · 3 timeouts and circuit breakers or bulkheads around model calls, with tested fallback behaviour; failure contained to the AI feature · 4 degradation modes declared and exercised by fault injection. Must equal the `ai_providers` inventory level when one is recorded; its `alt_score` and `available_score` may not exceed that level.
 - **0** One failing dependency fails the whole product.
 - **1** Errors caught locally; no timeouts or isolation policy.
 - **2** Timeouts and retries on outbound calls; some surfaces degrade gracefully.

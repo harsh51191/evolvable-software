@@ -72,10 +72,10 @@ Progress toward the next level: Request → Release 1 of 4 conditions for L2; Is
 
 How safely can the product run AI in production? Separate from SAL, which it never changes.
 
-**AI Readiness L0 (No production AI foundation) · Context 3 · Quality 0 · Governance 1 · Operations 1 · not production-governed**
+**AI Readiness L0 (Foundational gap) · Context 3 · Quality 0 · Governance 1 · Operations 1 · not production-governed**
 
-- With opt-in settings: AI Readiness L0 (No production AI foundation) · Context 3 · Quality 0 · Governance 1 · Operations 1 · not production-governed.
-- With every alternate reading: AI Readiness L0 (No production AI foundation) · Context 3 · Quality 0 · Governance 1 · Operations 1 · not production-governed.
+- With opt-in settings: AI Readiness L0 (Foundational gap) · Context 3 · Quality 0 · Governance 1 · Operations 1 · not production-governed.
+- With every alternate reading: AI Readiness L0 (Foundational gap) · Context 3 · Quality 0 · Governance 1 · Operations 1 · not production-governed.
 
 | Dimension | Level | Contributors |
 |---|---:|---|
@@ -92,7 +92,7 @@ How safely can the product run AI in production? Separate from SAL, which it nev
 
 ### AI Capability Footprint
 
-What the product's AI does. Unscored: it never changes AI Readiness or SAL.
+What the product's AI does. Descriptive levels per area, with no headline: it never changes AI Readiness or SAL.
 
 | Area | Level | Readings |
 |---|---:|---|

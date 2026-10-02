@@ -449,6 +449,9 @@ def _validate_ai_readings(data, scores, model, errors):
             level = (entry.get("inventory") or {}).get(surface) if surface else None
             if _is_int_score(level) and _is_int_score(ai.get("score")) and ai["score"] != level:
                 errors.append(f"{label}: score {ai['score']} must equal the {surface} inventory level {level}")
+            for key in ("alt_score", "available_score"):
+                if _is_int_score(level) and _is_int_score(ai.get(key)) and ai[key] > level:
+                    errors.append(f"{label}: {key} {ai[key]} may not exceed the {surface} inventory level {level}")
         elif status == "not_evidenced":
             if _text(ai, "searched").lower() in PLACEHOLDERS:
                 errors.append(f"{label}: not_evidenced needs the searched scope")
@@ -547,7 +550,14 @@ def effective_ai_readings(data, model, variant):
             values[cid] = 0
             not_evidenced.append(cid)
             continue
-        values[cid] = _assessed_value(cid, ai, model, variant, flags, use_inventory=False, label=f"{cid} (AI)")
+        label = f"{cid} (AI)"
+        value = _assessed_value(cid, ai, model, variant, flags, use_inventory=False, label=label)
+        surface = model["ai_view"]["reading_inventory_surface"].get(cid)
+        ceiling = (data["scores"][cid].get("inventory") or {}).get(surface) if surface else None
+        if _is_int_score(ceiling) and value > ceiling:
+            flags.append(f"{label}: {surface} inventory caps {value} -> {ceiling}")
+            value = ceiling
+        values[cid] = value
     return values, not_evidenced, flags
 
 
@@ -866,7 +876,7 @@ def render_ai(result, model):
             lines += ["", "Not evidenced (computed as 0): " + ", ".join(shown["not_evidenced"]) + "."]
     fp = shown["footprint"]
     lines += ["", "### AI Capability Footprint", "",
-              "What the product's AI does. Unscored: it never changes AI Readiness or SAL.", "",
+              "What the product's AI does. Descriptive levels per area, with no headline: it never changes AI Readiness or SAL.", "",
               "| Area | Level | Readings |", "|---|---:|---|"]
     for area, info in fp.items():
         readings = ", ".join(f"{k} {'n/a' if v is None else v}" for k, v in info["readings"].items())

@@ -456,6 +456,24 @@ class AIReadinessTests(unittest.TestCase):
         set_ai(data, "ARC-08", 2)
         self.assertIn("ARC-08 (AI): score 2 must equal the ai_providers inventory level 3", errors(data))
 
+    def test_arc08_alternate_and_opt_in_readings_cannot_exceed_the_ai_provider_surface(self):
+        data = assessment(3)
+        data["scores"]["ARC-08"]["inventory"]["ai_providers"] = 2
+        set_ai(data, "ARC-08", 2, alt_score=3, alt_note="breaker", available_score=3)
+        errs = errors(data)
+        self.assertIn("ARC-08 (AI): alt_score 3 may not exceed the ai_providers inventory level 2", errs)
+        self.assertIn("ARC-08 (AI): available_score 3 may not exceed the ai_providers inventory level 2", errs)
+
+    def test_arc08_inventory_caps_every_variant_when_scoring(self):
+        data = assessment(3)
+        data["scores"]["ARC-08"]["inventory"]["ai_providers"] = 2
+        set_ai(data, "ARC-08", 2, alt_score=3, alt_note="breaker", available_score=3)
+        for variant in ("default", "high", "available"):
+            values, _, flags = score.effective_ai_readings(data, MODEL, variant)
+            self.assertEqual(values["ARC-08"], 2, variant)
+        self.assertIn("ARC-08 (AI): ai_providers inventory caps 3 -> 2",
+                      score.effective_ai_readings(data, MODEL, "high")[2])
+
     def test_ai_reading_alternates_are_upward_and_opt_in_not_lower(self):
         data = assessment(2)
         set_ai(data, "DEL-04", 2, alt_score=1, alt_note="lower", available_score=1)

@@ -125,7 +125,7 @@ Use `references/scorecard-template.md`. Report:
 - critical controls and which fail;
 - what blocks the next level of each loop;
 - the profile with ranges, the opt-in reading and the scope facts;
-- AI Readiness (level, dimensions, gates) and the unscored AI Capability Footprint, kept separate from SAL;
+- AI Readiness (level, dimensions, gates) and the descriptive, non-headline AI Capability Footprint, kept separate from SAL;
 - coverage, uncertainty, exclusions and every cap or deduction;
 - repository and operational evidence limits;
 - the remediation sequence when requested.

@@ -79,7 +79,7 @@ Headline: **AI Readiness Ln (name)** · Context n · Quality n · Governance n �
 | Regression evaluation before release | AIR-06 ≥ 3 | | |
 | Traceability of consequential AI actions | AIR-07 ≥ 3 | | |
 
-### AI Capability Footprint (unscored)
+### AI Capability Footprint (descriptive, non-headline)
 
 | Area | Readings |
 |---|---|

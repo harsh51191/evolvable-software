@@ -13,9 +13,9 @@ Read at github.com/discourse/discourse @ 2590ea9db1b7c38dcf80298aefd3e7cb3afe1f2
 - **evolution_auto_apply**: false. Admins apply changes directly; nothing applies definition changes automatically by default.
 - **definition_change_path**: true. Site settings, themes, categories and automations are definitions.
 - **code_release_path**: false. No first-party evolution system ships code changes.
-- **ai_features**: false. discourse-ai ships bundled but discourse_ai_enabled defaults to false (plugins/discourse-ai/config/settings.yml:2-3).
-- **ai_data_access**: false. Off by default; when enabled, agents search and read topics and RAG documents.
-- **ai_actions**: false. Off by default; when enabled, agent tools edit posts, change categories and site settings (plugins/discourse-ai/lib/agents/tools).
+- **ai_features**: false by default, true with opt-in settings. discourse-ai ships bundled but discourse_ai_enabled defaults to false (plugins/discourse-ai/config/settings.yml:2-3).
+- **ai_data_access**: false by default, true with opt-in settings. Off by default; when enabled, agents search and read topics and RAG documents.
+- **ai_actions**: false by default, true with opt-in settings. Off by default; when enabled, agent tools edit posts, change categories and site settings (plugins/discourse-ai/lib/agents/tools).
 
 ## Elastic (ARC)
 

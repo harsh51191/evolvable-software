@@ -4,7 +4,7 @@
 
 **Changes from revision 1:**
 
-1. The draft headline mixed two things: whether the product's AI is safe to run in production, and how widely AI is used. The first is now the **AI Readiness** headline. The second is a separate, unscored **AI Capability Footprint** (section 6).
+1. The draft headline mixed two things: whether the product's AI is safe to run in production, and how widely AI is used. The first is now the **AI Readiness** headline. The second is a separate, descriptive **AI Capability Footprint** with no headline (section 6).
 2. The Intelligence dimension is gone. Readiness is now **Context, Quality, Governance and Operations**.
 3. AIR-03 applies only when AI reads product data. A prompt-only feature is not marked down for lacking retrieval.
 4. Every reused criterion has explicit 0–4 anchors for its AI-qualified reading (section 5).
@@ -18,7 +18,7 @@
 |---|---|
 | **Software Autonomy Level (SAL)** | How ready is the product to evolve itself safely? |
 | **AI Readiness** | How safely can the product run AI in production? |
-| **AI Capability Footprint** (unscored) | What kinds of meaningful work can its AI actually do? |
+| **AI Capability Footprint** (descriptive, non-headline) | What kinds of meaningful work can its AI actually do? |
 
 **SAL does not change.** The eight new checks and the AI-qualified readings feed only the AI view. They never enter a loop condition, a critical control or an EVOLVE capability score. A test proves that SAL and the profile are identical with and without them.
 
@@ -40,7 +40,7 @@ Gates: permissions ✓  regression gate ✗  traceability ✓   -> not productio
 
 | Level | Name | Meaning |
 |---|---|---|
-| L0 | No production AI foundation | AI ships without the basics in at least one dimension. |
+| L0 | Foundational gap | At least one dimension lacks the basics, even if others are strong. |
 | L1 | Experimental | Some foundations exist; most are partial or manual. |
 | L2 | Deployed with material control gaps | AI runs with real mechanisms, but at least one dimension or gate falls short of production governance. |
 | L3 | Production-governed | Every dimension at 3 and every applicable gate passes. |
@@ -166,7 +166,7 @@ Thirteen existing criteria describe behaviour that may or may not involve AI. A 
   - for LRN-08 when `agent_mutations` is false.
 
   Nowhere else, so a missing AI behaviour scores 0 rather than disappearing.
-- **ARC-08:** when its inventory records the `ai_providers` surface, the reading must equal that level.
+- **ARC-08:** when its inventory records the `ai_providers` surface, the reading must equal that level, and its alternate and opt-in readings may not exceed it. The scorer also caps every variant at that level.
 - **The general criterion score is never changed**, so SAL and the profile are unaffected.
 
 | Criterion | Used in | AI-qualified anchors (0 · 1 · 2 · 3 · 4) |
@@ -192,7 +192,7 @@ Thirteen existing criteria describe behaviour that may or may not involve AI. A 
 - **GOV-11 and AIR-04:** GOV-11 is about poisoned inputs; AIR-04 is about over-privileged access.
 - **LRN-09 is left out.** Production AI quality is AIR-08.
 
-## 6. AI Capability Footprint (unscored)
+## 6. AI Capability Footprint (descriptive, non-headline)
 
 The footprint shows what the product's AI does, without judging readiness. A focused product with excellent AI governance is not marked down for lacking AI that builds changes or proposes products.
 
@@ -226,7 +226,7 @@ AI Capability Footprint: Operate 3 · Build 2 · Diagnose and improve 1 · Expan
 - A missing AI-qualified reading is rejected when `ai_features` is true.
 - `not_applicable` outside the allowed cases is rejected.
 - `not_evidenced` computes as 0 and is reported separately.
-- An ARC-08 reading that contradicts the `ai_providers` inventory level is rejected.
+- An ARC-08 reading that contradicts the `ai_providers` inventory level is rejected, and so is an alternate or opt-in reading above it.
 - An AI-qualified alternate must be one level up, and an opt-in reading cannot be lower than the score.
 
 **Scope facts**
@@ -249,3 +249,5 @@ AI Capability Footprint: Operate 3 · Build 2 · Diagnose and improve 1 · Expan
 2. The headline uses the default configuration; the opt-in reading is shown separately.
 3. No breadth check inside readiness. Breadth is the separate footprint.
 4. A failed gate caps the headline at L2, labelled "not production-governed".
+5. L0 is named "Foundational gap", not "No production AI foundation": one missing dimension sets it, even when others are strong (Directus has Context 3 and Quality 0).
+6. The footprint is described as descriptive and non-headline, not unscored: each area has a descriptive level, but nothing aggregates it.

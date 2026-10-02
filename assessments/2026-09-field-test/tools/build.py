@@ -44,7 +44,10 @@ def build(system, criteria, order, model):
           "## Scope facts", ""]
     for fact in model["scope_facts"]:
         entry = data["scope_facts"][fact]
-        ev.append(f"- **{fact}**: {'true' if entry['value'] else 'false'}. {entry['evidence']}")
+        value = "true" if entry["value"] else "false"
+        if "available_value" in entry and entry["available_value"] != entry["value"]:
+            value += f" by default, {'true' if entry['available_value'] else 'false'} with opt-in settings"
+        ev.append(f"- **{fact}**: {value}. {entry['evidence']}")
     cap, area = None, None
     for cid in order:
         if criteria[cid]["cap"] != cap:
@@ -84,6 +87,13 @@ def describe(e):
         head_txt = "**not applicable**"
         body = e["rationale"] + (f" If counted: {e['if_applicable']}." if "if_applicable" in e else "")
     return f"{head_txt}. {body}"
+
+
+def fact_cell(entry):
+    yn = lambda v: "yes" if v else "no"
+    if "available_value" in entry and entry["available_value"] != entry["value"]:
+        return f"{yn(entry['value'])} → {yn(entry['available_value'])}"
+    return yn(entry["value"])
 
 
 def ai_level(result):
@@ -158,7 +168,7 @@ def main():
     L += ["", "## AI Readiness (provisional, single rater)", "",
           "How safely each product runs AI in production. Separate from SAL, which it never changes. "
           "The headline is the weakest dimension, capped at L2 when a gate fails. "
-          "Where AI is off by default, the row shows the opt-in reading, marked (opt-in). The last column uses the default configuration.", "",
+          "Where AI is off by default, the row says so and shows the opt-in reading. The last column uses the default configuration.", "",
           "| System | AI Readiness | " + " | ".join(dims) + " | Gates (access / evals / traces) | With every alternate reading |",
           "|---|---|" + "---:|" * len(dims) + "---|---:|"]
     for s in ai_rank:
@@ -168,14 +178,15 @@ def main():
         if shown["status"] != "assessed":
             L.append(f"| {d['product']} | no AI features | " + " | ".join("–" for _ in dims) + " | – | – |")
             continue
-        head = f"**L{shown['level']}** {shown['name']}{note}"
+        head = (f"**L{shown['level']}** {shown['name']}" if not note
+                else f"no AI by default; **L{shown['level']}** {shown['name']} with opt-in")
         cells = ["n/a" if shown["dimensions"][n]["level"] is None else str(shown["dimensions"][n]["level"]) for n in dims]
         gates = " / ".join("n/a" if g["status"] == "not_applicable" else g["status"] for g in shown["gates"])
         hi = v["high"] if v["high"]["status"] == "assessed" else None
         L.append(f"| {d['product']} | {head} | " + " | ".join(cells) + f" | {gates} | {'L' + str(hi['level']) if hi else '–'} |")
     areas = list(model["ai_view"]["footprint"])
-    L += ["", "## AI Capability Footprint (unscored)", "",
-          "What each product's AI does, by area, with opt-in settings. It never changes AI Readiness or SAL.", "",
+    L += ["", "## AI Capability Footprint (descriptive, non-headline)", "",
+          "What each product's AI does, by area, with opt-in settings. Each level is descriptive: there is no footprint headline, and it never changes AI Readiness or SAL.", "",
           "| System | " + " | ".join(areas) + " |", "|---|" + "---:|" * len(areas)]
     for s in ai_rank:
         d, r = rows[s]
@@ -184,11 +195,12 @@ def main():
             L.append(f"| {d['product']} | " + " | ".join("–" for _ in areas) + " |")
             continue
         L.append(f"| {d['product']} | " + " | ".join("–" if fp[a]["level"] is None else str(fp[a]["level"]) for a in areas) + " |")
-    L += ["", "## Scope facts", "", "| System | " + " | ".join(model["scope_facts"]) + " |",
+    L += ["", "## Scope facts", "", "Default value; where a shipped opt-in setting changes a fact, the cell reads default → with opt-in.", "",
+          "| System | " + " | ".join(model["scope_facts"]) + " |",
           "|---|" + "---|" * len(model["scope_facts"])]
     for s in ranked:
         d, r = rows[s]
-        L.append(f"| {d['product']} | " + " | ".join("yes" if r["scope_facts"][f] else "no" for f in model["scope_facts"]) + " |")
+        L.append(f"| {d['product']} | " + " | ".join(fact_cell(d["scope_facts"][f]) for f in model["scope_facts"]) + " |")
     L += ["", "## Same systems under v0.3", "",
           "v0.3 reported four non-overlapping indexes and a closed-loop flag. EVOLVE reports loop levels and a six-capability profile, "
           "so the columns are not directly comparable.", "",

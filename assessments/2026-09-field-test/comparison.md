@@ -92,7 +92,7 @@ A failed applicable control caps every loop at L2.
 
 ## AI Readiness (provisional, single rater)
 
-How safely each product runs AI in production. Separate from SAL, which it never changes. The headline is the weakest dimension, capped at L2 when a gate fails. Where AI is off by default, the row shows the opt-in reading, marked (opt-in). The last column uses the default configuration.
+How safely each product runs AI in production. Separate from SAL, which it never changes. The headline is the weakest dimension, capped at L2 when a gate fails. Where AI is off by default, the row says so and shows the opt-in reading. The last column uses the default configuration.
 
 | System | AI Readiness | Context | Quality | Governance | Operations | Gates (access / evals / traces) | With every alternate reading |
 |---|---|---:|---:|---:|---:|---|---:|
@@ -100,17 +100,17 @@ How safely each product runs AI in production. Separate from SAL, which it never
 | OpenHands (Agent Canvas + software-agent-sdk) | **L2** Deployed with material control gaps | 3 | 2 | 2 | 2 | pass / fail / pass | L2 |
 | PostHog | **L2** Deployed with material control gaps | 3 | 2 | 2 | 2 | pass / fail / pass | L2 |
 | Dify | **L1** Experimental | 2 | 1 | 2 | 2 | fail / fail / pass | L1 |
-| Discourse | **L1** Experimental (opt-in) | 3 | 1 | 3 | 2 | pass / fail / pass | – |
+| Discourse | no AI by default; **L1** Experimental with opt-in | 3 | 1 | 3 | 2 | pass / fail / pass | – |
 | Hermes Agent | **L1** Experimental | 3 | 1 | 2 | 2 | pass / fail / pass | L1 |
 | OpenClaw | **L1** Experimental | 3 | 1 | 2 | 2 | pass / fail / pass | L1 |
 | OpenCode | **L1** Experimental | 3 | 1 | 2 | 1 | pass / fail / pass | L1 |
-| Directus | **L0** No production AI foundation | 3 | 0 | 1 | 1 | pass / fail / fail | L0 |
-| LibreChat | **L0** No production AI foundation | 2 | 0 | 2 | 2 | fail / fail / fail | L0 |
+| Directus | **L0** Foundational gap | 3 | 0 | 1 | 1 | pass / fail / fail | L0 |
+| LibreChat | **L0** Foundational gap | 2 | 0 | 2 | 2 | fail / fail / fail | L0 |
 | Frappe Framework | no AI features | – | – | – | – | – | – |
 
-## AI Capability Footprint (unscored)
+## AI Capability Footprint (descriptive, non-headline)
 
-What each product's AI does, by area, with opt-in settings. It never changes AI Readiness or SAL.
+What each product's AI does, by area, with opt-in settings. Each level is descriptive: there is no footprint headline, and it never changes AI Readiness or SAL.
 
 | System | Operate | Build | Diagnose and improve | Expand |
 |---|---:|---:|---:|---:|
@@ -128,6 +128,8 @@ What each product's AI does, by area, with opt-in settings. It never changes AI 
 
 ## Scope facts
 
+Default value; where a shipped opt-in setting changes a fact, the cell reads default → with opt-in.
+
 | System | persistent_data | schema_changes | multi_tenant | hosted_service | machine_actions | agent_mutations | evolution_auto_apply | definition_change_path | code_release_path | ai_features | ai_data_access | ai_actions |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | n8n | yes | yes | no | yes | yes | yes | no | yes | no | yes | yes | yes |
@@ -138,7 +140,7 @@ What each product's AI does, by area, with opt-in settings. It never changes AI 
 | Directus | yes | yes | no | yes | yes | yes | no | yes | no | yes | yes | yes |
 | Frappe Framework | yes | yes | yes | yes | yes | no | no | yes | no | no | no | no |
 | OpenHands (Agent Canvas + software-agent-sdk) | yes | yes | yes | yes | yes | no | no | yes | no | yes | yes | yes |
-| Discourse | yes | yes | yes | yes | yes | no | no | yes | no | no | no | no |
+| Discourse | yes | yes | yes | yes | yes | no | no | yes | no | no → yes | no → yes | no → yes |
 | LibreChat | yes | yes | yes | yes | yes | no | no | yes | no | yes | yes | yes |
 | OpenCode | yes | yes | no | no | yes | no | no | yes | no | yes | yes | yes |
 

@@ -43,7 +43,7 @@ Beside SAL, EVOLVE reports **AI Readiness** for products with AI features: how s
 | Governance | AI action traceability (AIR-07), plus the AI-specific readings of agent authority, scope limits and untrusted-input handling |
 | Operations | provider resilience (AIR-01), cost controls (AIR-02), quality monitoring (AIR-08), plus the AI-provider part of failure isolation |
 
-Each dimension is the floor of its mean; the headline is the weakest dimension, from **L0 No production AI foundation** to **L4 Adaptive and operationally proven**. Three gates (permission-preserving access, regression evaluation, traceability) cap it at L2, labelled *not production-governed*. An unscored **AI Capability Footprint** describes what the AI does (operate, build, diagnose and improve, expand) without rewarding it.
+Each dimension is the floor of its mean; the headline is the weakest dimension, from **L0 Foundational gap** to **L4 Adaptive and operationally proven**. Three gates (permission-preserving access, regression evaluation, traceability) cap it at L2, labelled *not production-governed*. A descriptive **AI Capability Footprint** shows what the AI does (operate, build, diagnose and improve, expand) with a level per area but no headline; it never changes AI Readiness or SAL.
 
 This is a **public beta**. It is designed to produce a falsifiable assessment, not a universal software leaderboard. `spec/evolve-v0.4-draft.md` explains the design and every decision behind it; `spec/ai-readiness-v0.5-draft.md` covers AI Readiness.
 

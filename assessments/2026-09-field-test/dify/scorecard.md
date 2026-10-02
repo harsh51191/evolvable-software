@@ -92,7 +92,7 @@ How safely can the product run AI in production? Separate from SAL, which it nev
 
 ### AI Capability Footprint
 
-What the product's AI does. Unscored: it never changes AI Readiness or SAL.
+What the product's AI does. Descriptive levels per area, with no headline: it never changes AI Readiness or SAL.
 
 | Area | Level | Readings |
 |---|---:|---|

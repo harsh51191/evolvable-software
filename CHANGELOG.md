@@ -7,11 +7,11 @@ On the `claude/ai-readiness-v0.5` branch, not merged. `spec/ai-readiness-v0.5-dr
 ### Added
 
 - **AI Readiness**, a separate reading for products with AI features: how safely the product runs AI in production. SAL is unchanged and never uses it.
-  - Four dimensions: Context, Quality, Governance, Operations. Each is the floor of the mean of its contributors; the headline is the weakest applicable dimension, from L0 No production AI foundation to L4 Adaptive and operationally proven.
+  - Four dimensions: Context, Quality, Governance, Operations. Each is the floor of the mean of its contributors; the headline is the weakest applicable dimension, from L0 Foundational gap to L4 Adaptive and operationally proven.
   - Three gates: permission-preserving access (AIR-04), regression evaluation before release (AIR-06) and traceability of consequential AI actions (AIR-07), each needing 3 with tested evidence. A failed gate caps the headline at L2, labelled *not production-governed*.
 - **Eight AIR checks**: provider resilience, cost controls, grounding, permission-preserving access, evaluation sets, regression evaluation, traceability and quality monitoring, with anchors and remediation.
 - **AI-qualified readings** (`ai`) of 13 existing criteria, scored only on AI-backed behaviour. Governance and Operations use GOV-09 to GOV-11, LRN-08 (only when the AI changes the product itself) and ARC-08's AI-provider surface; the rest describe the footprint.
-- **AI Capability Footprint**, unscored: what the AI does across Operate, Build, Diagnose and improve, and Expand.
+- **AI Capability Footprint**, descriptive and non-headline (a level per area, never aggregated): what the AI does across Operate, Build, Diagnose and improve, and Expand.
 - **Three AI scope facts** (`ai_features`, `ai_data_access`, `ai_actions`) with an optional `available_value` for shipped opt-in settings. The headline uses the default configuration; the opt-in reading is shown separately.
 
 ### Field test

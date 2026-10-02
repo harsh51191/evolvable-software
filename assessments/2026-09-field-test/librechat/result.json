@@ -152,7 +152,7 @@
     "default": {
       "status": "assessed",
       "level": 0,
-      "name": "No production AI foundation",
+      "name": "Foundational gap",
       "uncapped": 0,
       "label": "not production-governed",
       "dimensions": {
@@ -243,7 +243,7 @@
     "high": {
       "status": "assessed",
       "level": 0,
-      "name": "No production AI foundation",
+      "name": "Foundational gap",
       "uncapped": 0,
       "label": "not production-governed",
       "dimensions": {
@@ -334,7 +334,7 @@
     "available": {
       "status": "assessed",
       "level": 0,
-      "name": "No production AI foundation",
+      "name": "Foundational gap",
       "uncapped": 0,
       "label": "not production-governed",
       "dimensions": {

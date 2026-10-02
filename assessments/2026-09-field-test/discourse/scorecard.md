@@ -98,7 +98,7 @@ No AI features by default; the tables below show the opt-in reading.
 
 ### AI Capability Footprint
 
-What the product's AI does. Unscored: it never changes AI Readiness or SAL.
+What the product's AI does. Descriptive levels per area, with no headline: it never changes AI Readiness or SAL.
 
 | Area | Level | Readings |
 |---|---:|---|
