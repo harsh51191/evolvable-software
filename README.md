@@ -102,14 +102,14 @@ The framework itself contains no private repository evidence, client examples or
 For Claude Code:
 
 ```bash
-git clone https://github.com/harsh51191/malleablesoftware.git \
+git clone https://github.com/harsh51191/evolvable-software.git \
   ~/.claude/skills/evolvable-software
 ```
 
 For Codex:
 
 ```bash
-git clone https://github.com/harsh51191/malleablesoftware.git \
+git clone https://github.com/harsh51191/evolvable-software.git \
   ~/.codex/skills/evolvable-software
 ```
 

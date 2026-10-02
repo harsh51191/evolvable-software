@@ -469,7 +469,7 @@ Why:
 
 - **Working names only.** "EVOLVE" and "Software Autonomy Level" are not locked. A published npm package already calls itself an "Evolve Multi-Agent SDLC framework" and reports architecture health and evolution readiness (`@huutq88/evolve`). "Software autonomy levels" is also used in self-driving laboratory research. Neither proves a trademark conflict, but both rule out claiming the space is empty. A trademark and prior-use search is required before any public launch.
 - **Stable IDs.** Criterion IDs use descriptive prefixes (`ARC`, `DEL`, `MAL`, `LRN`, `GOV`, `EXP`), so they survive a rename of the framework or of the capability display names.
-- **Names in use (working, not settled).** EVOLVE is the working framework name. The skill and package metadata use `evolvable-software`, which the repository owner said they preferred for the repository; `evolve-readiness` was also proposed. The GitHub repository stays `malleablesoftware` until the owner confirms a name and renames it. All names remain provisional until the trademark search below.
+- **Names in use (working, not settled).** EVOLVE is the working framework name. The skill and package metadata use `evolvable-software`, which the repository owner said they preferred for the repository; `evolve-readiness` was also proposed. The owner later renamed the GitHub repository from `malleablesoftware` to `evolvable-software`. All names remain provisional until the trademark search below.
 
 ## 14. Delivery plan once agreed
 
