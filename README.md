@@ -47,6 +47,32 @@ Each dimension is the floor of its mean; the headline is the weakest dimension, 
 
 This is a **public beta**. It is designed to produce a falsifiable assessment, not a universal software leaderboard. `spec/evolve-v0.4-draft.md` explains the design and every decision behind it; `spec/ai-readiness-v0.5-draft.md` covers AI Readiness.
 
+## Field-test results
+
+EVOLVE was run on 11 open-source products from their public source code. Full tables, evidence and per-product scorecards are in [`assessments/2026-09-field-test/`](assessments/2026-09-field-test/README.md).
+
+> **Provisional, single rater.** These readings come from one rater and have not been reviewed by the projects' maintainers or by a second rater. Read them as findings to check, not rankings.
+
+| Product | Archetype | SAL | AI Readiness |
+|---|---|---:|---|
+| n8n | configurable platform | **2** | L2 Deployed with material control gaps |
+| OpenClaw | agent runtime | **2** | L1 Experimental |
+| PostHog | focused application | **1** | L2 Deployed with material control gaps |
+| OpenHands | agent runtime | **1** | L2 Deployed with material control gaps |
+| Hermes Agent | agent runtime | **1** | L1 Experimental |
+| Dify | configurable platform | **1** | L1 Experimental |
+| Discourse | focused application | **1** | no AI by default; L1 Experimental with opt-in |
+| Directus | configurable platform | **1** | L0 Foundational gap |
+| Frappe | configurable platform | **1** | no AI features |
+| OpenCode | agent runtime | **0** | L1 Experimental |
+| LibreChat | focused application | **0** | L0 Foundational gap |
+
+What stands out:
+
+- **No product reaches SAL 3.** Definition rollback fails in all eleven: each rolls back some surfaces (workflows, skills) but not all (credentials, memory, configuration).
+- **No product blocks a release on an AI regression.** Every product with AI fails the regression-evaluation gate, so none can pass AI Readiness L2 yet.
+- **Expansion is the least developed loop.** No product clusters unmet demand into themes or proposes an adjacent capability on its own.
+
 ## What is included
 
 - 66 anchored criteria in six capabilities, each with a 0–4 ladder, plus eight AI Readiness checks (AIR) and AI-qualified readings of 13 existing criteria.
