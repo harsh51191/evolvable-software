@@ -1,6 +1,6 @@
-# OpenHands (Agent Canvas + software-agent-sdk): EVOLVE v0.5 scorecard
+# OpenHands (Agent Canvas + software-agent-sdk): EVOLVE v0.6 scorecard
 
-Evaluator: Claude, single rater. Framework: EVOLVE 0.5.1 in this repository.
+Evaluator: Claude, single rater. Framework: EVOLVE 0.6.0 in this repository.
 
 Scope: the Agent Canvas (OpenHands repository), the software-agent-sdk that runs agents, and the Automation Service (OpenHands/automation) that schedules and dispatches automations. OpenHands Cloud operations are out of scope.
 
@@ -13,7 +13,7 @@ Scope: the Agent Canvas (OpenHands repository), the software-agent-sdk that runs
 Repository evidence only. The Automation Service was added for v0.4 after the inter-rater study found it missing; it is beta. No live runs. Single rater.
 
 ---
-Framework EVOLVE 0.5.1. Date 2026-09-30. Source github.com/OpenHands/OpenHands @ 21cc5c6170fe093c0fcd23ffc61949f4933e17b9 (main) + github.com/OpenHands/software-agent-sdk @ 5ffdd2933c51423e302f5ee5e5b66df0ad9cc28a (main) + github.com/OpenHands/automation @ ec4c5cc0cb05f3fb01816b36ff6271f6680b6675 (main, 2026-09-30). Archetype **agent-runtime**.
+Framework EVOLVE 0.6.0. Date 2026-09-30. Source github.com/OpenHands/OpenHands @ 21cc5c6170fe093c0fcd23ffc61949f4933e17b9 (main) + github.com/OpenHands/software-agent-sdk @ 5ffdd2933c51423e302f5ee5e5b66df0ad9cc28a (main) + github.com/OpenHands/automation @ ec4c5cc0cb05f3fb01816b36ff6271f6680b6675 (main, 2026-09-30). Archetype **agent-runtime**.
 
 Scope facts true: persistent_data, schema_changes, multi_tenant, hosted_service, machine_actions, definition_change_path, ai_features, ai_data_access, ai_actions. False: agent_mutations, evolution_auto_apply, code_release_path.
 
@@ -21,18 +21,18 @@ Coverage: 64 assessed, 0 not evidenced, 10 not applicable. Grades: 64 A, 0 B, 0 
 
 ## Software Autonomy Level
 
-**SAL 1 (Configurable) · Request → Release L1 · Issue → Fix L1 · Opportunity → Expansion L1**
+**SAL 1 (Configurable) · AI-driven 0 · Request → Release L1 (AI L0) · Issue → Fix L1 (AI L0) · Opportunity → Expansion L1 (AI L0)**
 
 Progress toward the next level: Request → Release 1 of 4 conditions for L2; Issue → Fix 2 of 5 conditions for L2; Opportunity → Expansion 2 of 5 conditions for L2.
 
-- With opt-in settings: SAL 1 (Configurable) · Request → Release L1 · Issue → Fix L1 · Opportunity → Expansion L1.
-- With every alternate reading: SAL 1 (Configurable) · Request → Release L1 · Issue → Fix L1 · Opportunity → Expansion L1.
+- With opt-in settings: SAL 1 (Configurable) · AI-driven 0 · Request → Release L1 (AI L0) · Issue → Fix L1 (AI L0) · Opportunity → Expansion L1 (AI L0).
+- With every alternate reading: SAL 1 (Configurable) · AI-driven 0 · Request → Release L1 (AI L0) · Issue → Fix L1 (AI L0) · Opportunity → Expansion L1 (AI L0).
 
-| Loop | Stages | Spine | Architecture | Governance | Level | With opt-in settings |
-|---|---:|---:|---:|---:|---:|---:|
-| Request → Release | L1 | L1 | L1 | L2 | **L1** | L1 |
-| Issue → Fix | L1 | L1 | L1 | L2 | **L1** | L1 |
-| Opportunity → Expansion | L1 | L2 | L1 | L2 | **L1** | L1 |
+| Loop | Stages | Spine | Architecture | Governance | Level | AI-driven | With opt-in settings |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Request → Release | L1 | L1 | L1 | L2 | **L1** | L0 | L1 |
+| Issue → Fix | L1 | L1 | L1 | L2 | **L1** | L0 | L1 |
+| Opportunity → Expansion | L1 | L2 | L1 | L2 | **L1** | L0 | L1 |
 
 ### Critical controls
 
@@ -52,6 +52,16 @@ Progress toward the next level: Request → Release 1 of 4 conditions for L2; Is
 - **Issue → Fix to L2**: spine Build needs product build path ≥ 2 (has DEL-04 1, LRN-07 1); stages Propose needs LRN-06 ≥ 2 (has 0); architecture Foundation needs every applicable ARC ≥ 1 (has ARC-06 0, ARC-09 0)
 - **Opportunity → Expansion to L2**: stages Sense needs EXP-04 ≥ 2 (has 0); stages Propose needs EXP-05 ≥ 2 (has 0); architecture Foundation needs every applicable ARC ≥ 1 (has ARC-06 0, ARC-09 0)
 
+### What AI drives
+
+Each loop re-scored with its AI-performable stages read only on what AI does there. AI first drives a stage at L2, and never above the loop's own level.
+
+| Loop | Level | AI-driven | AI stage readings | What AI needs for its next level |
+|---|---:|---:|---|---|
+| Request → Release | L1 | L0 | DEL-01 0, DEL-04 1 | product build path ≥ 2 (has DEL-04 1); DEL-01 ≥ 2 (has 0) |
+| Issue → Fix | L1 | L0 | LRN-05 0, LRN-06 0, LRN-07 0, LRN-08 n/a | product build path ≥ 2 (has DEL-04 1, LRN-07 0); LRN-05 ≥ 2 (has 0); LRN-06 ≥ 2 (has 0) |
+| Opportunity → Expansion | L1 | L0 | EXP-05 0 | EXP-05 ≥ 2 (has 0) |
+
 ### Sensitivity
 
 - **Fragile:** the headline drops if any of these falls one level: MAL-06, MAL-07, MAL-09, MAL-19, MAL-20, LRN-03, GOV-05.
@@ -67,6 +77,35 @@ Progress toward the next level: Request → Release 1 of 4 conditions for L2; Is
 | Learn (LRN) | 1.1 | 1.1–1.4 | 1.1 | 1.1 | 1.1 |
 | Vet (GOV) | 1.7 | 1.7–1.8 | 2.0 | 1.7 | 1.4 |
 | Expand (EXP) | 1.0 | 1.0–1.1 | 1.0 | 1.0 | 1.0 |
+
+## Area means
+
+| Area | Default |
+|---|---:|
+| ARC Data | 2.0 |
+| ARC Scale | 2.0 |
+| ARC Capacity | 0.5 |
+| ARC Resilience | 1.0 |
+| DEL Intake | 0.0 |
+| DEL Build | 2.0 |
+| DEL Verify | 2.0 |
+| DEL Release | 2.0 |
+| MAL APIs | 2.0 |
+| MAL Interface | 2.0 |
+| MAL Behaviour | 2.3 |
+| MAL Extensions | 1.7 |
+| MAL Integrations | 2.3 |
+| MAL Agent interface | 2.0 |
+| LRN Sense | 1.5 |
+| LRN Diagnose and propose | 1.0 |
+| LRN Learn from experience | 1.0 |
+| LRN Measure | 1.0 |
+| GOV Compliance and security | 1.0 |
+| GOV Change control | 2.0 |
+| GOV AI and self-change safety | 2.0 |
+| EXP Expressible | 2.0 |
+| EXP Discover | 0.0 |
+| EXP Launch | 1.0 |
 
 ## AI Readiness
 
@@ -100,35 +139,6 @@ What the product's AI does. Descriptive levels per area, with no headline: it ne
 | Build | 0 | DEL-01 0, DEL-04 1 |
 | Diagnose and improve | 0 | LRN-05 0, LRN-06 0, LRN-07 0, LRN-08 n/a |
 | Expand | 0 | EXP-05 0 |
-
-## Area means
-
-| Area | Default |
-|---|---:|
-| ARC Data | 2.0 |
-| ARC Scale | 2.0 |
-| ARC Capacity | 0.5 |
-| ARC Resilience | 1.0 |
-| DEL Intake | 0.0 |
-| DEL Build | 2.0 |
-| DEL Verify | 2.0 |
-| DEL Release | 2.0 |
-| MAL APIs | 2.0 |
-| MAL Interface | 2.0 |
-| MAL Behaviour | 2.3 |
-| MAL Extensions | 1.7 |
-| MAL Integrations | 2.3 |
-| MAL Agent interface | 2.0 |
-| LRN Sense | 1.5 |
-| LRN Diagnose and propose | 1.0 |
-| LRN Learn from experience | 1.0 |
-| LRN Measure | 1.0 |
-| GOV Compliance and security | 1.0 |
-| GOV Change control | 2.0 |
-| GOV AI and self-change safety | 2.0 |
-| EXP Expressible | 2.0 |
-| EXP Discover | 0.0 |
-| EXP Launch | 1.0 |
 
 ## Criteria
 

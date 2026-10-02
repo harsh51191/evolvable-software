@@ -49,6 +49,8 @@ STATUSES = ("assessed", "not_evidenced", "not_applicable")
 PLACEHOLDERS = {"", "not evaluated yet", "todo", "tbd", "n/a", "na", "none", "-"}
 VARIANTS = ("default", "high", "available", "assessed_only", "all_applicable")
 SAL_VARIANTS = ("default", "high", "available")
+AI_DRIVEN_MIN = 2  # the first level at which the product, and so AI, does stage work
+AI_DRIVEN_NONE = "AI drives no stage"
 PARTS = ("stages", "spine", "architecture", "governance")
 FACETS = ("implemented", "tested", "operated")
 ID = r"[A-Z]{3}-\d{2}"
@@ -179,6 +181,11 @@ def load_rubric(path):
         known(view["readings"], "ai_view readings")
         if set(view["readings"]) & checks:
             raise ModelError("AI-qualified readings must be existing criteria, not AI checks")
+        for loop, ids in view.get("driven", {}).items():
+            if loop not in model["loops"]:
+                raise ModelError(f"ai_view driven names unknown loop {loop!r}")
+            if set(ids) - set(view["readings"]):
+                raise ModelError(f"ai_view driven {loop} names readings not listed in ai_view readings")
         for area, ids in view["footprint"].items():
             if set(ids) - set(view["readings"]):
                 raise ModelError(f"footprint area {area} names readings not listed in ai_view readings")
@@ -750,6 +757,32 @@ def loop_levels(data, values, capabilities, model):
     return {"headline": headline, "headline_name": model["levels"][headline], "loops": loops, "controls": controls}
 
 
+def ai_driven(data, values, ai_values, capabilities, model, sal):
+    """How far AI itself carries each loop: the loop rules re-run with each AI-performable stage
+    criterion replaced by its AI-qualified reading. Never above the loop's own level."""
+    driven = model["ai_view"]["driven"]
+    subs = {c for ids in driven.values() for c in ids}
+    swapped = dict(values)
+    for cid in subs:
+        if values.get(cid) is not None:
+            swapped[cid] = ai_values.get(cid) if ai_values.get(cid) is not None else 0
+    run = loop_levels(data, swapped, capabilities, model)
+    loops = {}
+    for loop in model["loops"]:
+        level = min(run["loops"][loop]["level"], sal["loops"][loop]["level"])
+        # L1 is people configuring the product; AI first drives a stage at L2, so below that it drives none.
+        level = level if level >= AI_DRIVEN_MIN else 0
+        # The AI stage conditions the AI-only run must meet for its next level.
+        blockers = [b for b in run["loops"][loop]["blockers"]
+                    if any(c in f"{b['needs']} {b['observed']}" for c in subs)]
+        loops[loop] = {"level": level, "name": model["levels"][level] if level else AI_DRIVEN_NONE,
+                       "stages": {c: ai_values.get(c) for c in driven.get(loop, [])},
+                       "blockers": blockers}
+    headline = min(loops[l]["level"] for l in model["headline"])
+    return {"headline": headline, "headline_name": model["levels"][headline] if headline else AI_DRIVEN_NONE,
+            "loops": loops}
+
+
 def sensitivity(data, values, criteria, model):
     """Criteria whose one-level change would move the headline or a loop level.
 
@@ -787,6 +820,9 @@ def score_assessment(data, criteria, order, model):
             entry["sal"] = loop_levels(data, values, agg["capabilities"], model)
             if "ai_view" in model:
                 ai_values, ai_ne, ai_flags = effective_ai_readings(data, model, variant)
+                if "driven" in model["ai_view"]:
+                    entry["sal"]["ai_driven"] = ai_driven(data, values, ai_values, agg["capabilities"],
+                                                          model, entry["sal"])
                 entry["ai_readiness"] = ai_readiness(data, values, ai_values, ai_ne, model,
                                                      opt_in=(variant == "available"))
                 entry["ai_flags"] = ai_flags
@@ -836,9 +872,12 @@ def progress(info):
 
 
 def headline_text(sal, model, with_progress=False):
+    drv = sal.get("ai_driven")
     loops = " · ".join(f"{model['loops'][l]} L{sal['loops'][l]['level']}"
+                       + (f" (AI L{drv['loops'][l]['level']})" if drv else "")
                        + (progress(sal["loops"][l]) if with_progress else "") for l in model["loops"])
-    return f"SAL {sal['headline']} ({sal['headline_name']}) · {loops}"
+    ai = f" · AI-driven {drv['headline']}" if drv else ""
+    return f"SAL {sal['headline']} ({sal['headline_name']}){ai} · {loops}"
 
 
 def ai_headline_text(view_result, model):
@@ -850,6 +889,22 @@ def ai_headline_text(view_result, model):
     if view_result["label"]:
         text += f" · {view_result['label']}"
     return text
+
+
+def render_ai_driven(sal, model):
+    drv = sal.get("ai_driven")
+    if not drv:
+        return []
+    lines = ["", "### What AI drives", "",
+             "Each loop re-scored with its AI-performable stages read only on what AI does there. "
+             "AI first drives a stage at L2, and never above the loop's own level.", "",
+             "| Loop | Level | AI-driven | AI stage readings | What AI needs for its next level |", "|---|---:|---:|---|---|"]
+    for loop, name in model["loops"].items():
+        info = drv["loops"][loop]
+        stages = ", ".join(f"{c} {'n/a' if v is None else v}" for c, v in info["stages"].items()) or "–"
+        needs = "; ".join(f"{b['needs']} (has {b['observed']})" for b in info["blockers"]) or "–"
+        lines.append(f"| {name} | L{sal['loops'][loop]['level']} | L{info['level']} | {stages} | {cell(needs)} |")
+    return lines
 
 
 def render_ai(result, model):
@@ -922,12 +977,14 @@ def render_markdown(data, criteria, order, model, result):
                  if sal["loops"][l]["next_total"]) + ".", "",
              f"- With opt-in settings: {headline_text(avail, model)}.",
              f"- With every alternate reading: {headline_text(high, model)}.", "",
-             "| Loop | Stages | Spine | Architecture | Governance | Level | With opt-in settings |",
-             "|---|---:|---:|---:|---:|---:|---:|"]
+             "| Loop | Stages | Spine | Architecture | Governance | Level | AI-driven | With opt-in settings |",
+             "|---|---:|---:|---:|---:|---:|---:|---:|"]
+    drv = sal.get("ai_driven")
     for loop, name in model["loops"].items():
         info = sal["loops"][loop]
         parts = " | ".join(f"L{info['parts'][p]}" for p in PARTS)
-        lines.append(f"| {name} | {parts} | **L{info['level']}** | L{avail['loops'][loop]['level']} |")
+        ai_cell = f"L{drv['loops'][loop]['level']}" if drv else "–"
+        lines.append(f"| {name} | {parts} | **L{info['level']}** | {ai_cell} | L{avail['loops'][loop]['level']} |")
     lines += ["", "### Critical controls", "", "| Control | Needs | Observed | Status |", "|---|---|---|---|"]
     for ctl in sal["controls"]:
         lines.append(f"| {ctl['control']} | {cell(ctl['needs'])} | {cell(ctl['observed'])} | {ctl['status']} |")
@@ -940,6 +997,7 @@ def render_markdown(data, criteria, order, model, result):
         items = "; ".join(f"{b['part']} {b['stage']} needs {b['needs']} (has {b['observed']})"
                           for b in info["blockers"])
         lines.append(f"- **{name} to L{info['level'] + 1}**: {cell(items)}")
+    lines += render_ai_driven(sal, model)
     sens = result["sensitivity"]
     lines += ["", "### Sensitivity", ""]
     if sens["lower_headline"]:
@@ -964,10 +1022,10 @@ def render_markdown(data, criteria, order, model, result):
                      f"{fmt(result['variants']['all_applicable']['capabilities'][cap])} |")
     if result["flags"]:
         lines += ["", "Caps and deductions applied:", ""] + [f"- {f}" for f in result["flags"]]
-    lines += render_ai(result, model)
     lines += ["", "## Area means", "", "| Area | Default |", "|---|---:|"]
     for area, value in d["area_means"].items():
         lines.append(f"| {cell(area)} | {fmt(value)} |")
+    lines += render_ai(result, model)
     lines += ["", "## Criteria", "",
               "| Criterion | Status | Score | Alternate | Opt-in | Grade | Facets | Evidence, search scope or rationale |",
               "|---|---|---:|---:|---:|---|---|---|"]
@@ -1063,8 +1121,12 @@ def main(argv=None):
         return 0
 
     def sal_summary(sal):
-        return {"headline": sal["headline"], "headline_name": sal["headline_name"],
-                "loops": {l: {"level": v["level"], "parts": v["parts"]} for l, v in sal["loops"].items()}}
+        out = {"headline": sal["headline"], "headline_name": sal["headline_name"],
+               "loops": {l: {"level": v["level"], "parts": v["parts"]} for l, v in sal["loops"].items()}}
+        if "ai_driven" in sal:
+            out["ai_driven"] = {"headline": sal["ai_driven"]["headline"],
+                                "loops": {l: v["level"] for l, v in sal["ai_driven"]["loops"].items()}}
+        return out
 
     payload = {"product": data.get("product"), "date": data.get("date"), "source": data.get("source"),
                "archetype": data.get("archetype"), "framework": model["framework"],

@@ -1,6 +1,6 @@
-# OpenCode: EVOLVE v0.5 scorecard
+# OpenCode: EVOLVE v0.6 scorecard
 
-Evaluator: Claude, single rater. Framework: EVOLVE 0.5.1 in this repository.
+Evaluator: Claude, single rater. Framework: EVOLVE 0.6.0 in this repository.
 
 Scope: the opencode monorepo (agent core, server and HTTP API, SDK and codegen, TUI, desktop, web, plugin SDK, console and enterprise packages, CI). opencode.ai hosted services and models.dev are out of scope.
 
@@ -13,7 +13,7 @@ Scope: the opencode monorepo (agent core, server and HTTP API, SDK and codegen, 
 Repository evidence only, dev branch at the tip named above. Enterprise and console behaviour was not traced in depth. Single rater.
 
 ---
-Framework EVOLVE 0.5.1. Date 2026-09-30. Source github.com/anomalyco/opencode @ 2fa3363c924c5c3e367b84a87ae478296a0ed59b (dev). Archetype **agent-runtime**.
+Framework EVOLVE 0.6.0. Date 2026-09-30. Source github.com/anomalyco/opencode @ 2fa3363c924c5c3e367b84a87ae478296a0ed59b (dev). Archetype **agent-runtime**.
 
 Scope facts true: persistent_data, schema_changes, machine_actions, definition_change_path, ai_features, ai_data_access, ai_actions. False: multi_tenant, hosted_service, agent_mutations, evolution_auto_apply, code_release_path.
 
@@ -21,18 +21,18 @@ Coverage: 59 assessed, 0 not evidenced, 15 not applicable. Grades: 59 A, 0 B, 0 
 
 ## Software Autonomy Level
 
-**SAL 0 (Manual) · Request → Release L0 · Issue → Fix L0 · Opportunity → Expansion L0**
+**SAL 0 (Manual) · AI-driven 0 · Request → Release L0 (AI L0) · Issue → Fix L0 (AI L0) · Opportunity → Expansion L0 (AI L0)**
 
 Progress toward the next level: Request → Release 1 of 2 conditions for L1; Issue → Fix 1 of 3 conditions for L1; Opportunity → Expansion 1 of 2 conditions for L1.
 
-- With opt-in settings: SAL 0 (Manual) · Request → Release L0 · Issue → Fix L0 · Opportunity → Expansion L0.
-- With every alternate reading: SAL 0 (Manual) · Request → Release L1 · Issue → Fix L0 · Opportunity → Expansion L1.
+- With opt-in settings: SAL 0 (Manual) · AI-driven 0 · Request → Release L0 (AI L0) · Issue → Fix L0 (AI L0) · Opportunity → Expansion L0 (AI L0).
+- With every alternate reading: SAL 0 (Manual) · AI-driven 0 · Request → Release L1 (AI L0) · Issue → Fix L0 (AI L0) · Opportunity → Expansion L1 (AI L0).
 
-| Loop | Stages | Spine | Architecture | Governance | Level | With opt-in settings |
-|---|---:|---:|---:|---:|---:|---:|
-| Request → Release | L1 | L0 | L2 | L2 | **L0** | L0 |
-| Issue → Fix | L0 | L0 | L2 | L2 | **L0** | L0 |
-| Opportunity → Expansion | L1 | L0 | L2 | L2 | **L0** | L0 |
+| Loop | Stages | Spine | Architecture | Governance | Level | AI-driven | With opt-in settings |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Request → Release | L1 | L0 | L2 | L2 | **L0** | L0 | L0 |
+| Issue → Fix | L0 | L0 | L2 | L2 | **L0** | L0 | L0 |
+| Opportunity → Expansion | L1 | L0 | L2 | L2 | **L0** | L0 | L0 |
 
 ### Critical controls
 
@@ -52,6 +52,16 @@ Progress toward the next level: Request → Release 1 of 2 conditions for L1; Is
 - **Issue → Fix to L1**: spine Roll back needs rollback ≥ 2 (has GOV-05 1); stages Detect needs LRN-03 ≥ 2 (has 1)
 - **Opportunity → Expansion to L1**: spine Roll back needs rollback ≥ 2 (has GOV-05 1)
 
+### What AI drives
+
+Each loop re-scored with its AI-performable stages read only on what AI does there. AI first drives a stage at L2, and never above the loop's own level.
+
+| Loop | Level | AI-driven | AI stage readings | What AI needs for its next level |
+|---|---:|---:|---|---|
+| Request → Release | L0 | L0 | DEL-01 0, DEL-04 1 | – |
+| Issue → Fix | L0 | L0 | LRN-05 0, LRN-06 0, LRN-07 0, LRN-08 n/a | – |
+| Opportunity → Expansion | L0 | L0 | EXP-05 0 | – |
+
 ### Sensitivity
 
 - **Robust:** no single criterion falling one level lowers the headline.
@@ -67,6 +77,33 @@ Progress toward the next level: Request → Release 1 of 2 conditions for L1; Is
 | Learn (LRN) | 0.6 | 0.6–0.7 | 0.6 | 0.6 | 0.6 |
 | Vet (GOV) | 1.7 | 1.7–1.9 | 1.7 | 1.7 | 1.4 |
 | Expand (EXP) | 1.1 | 1.1–1.2 | 1.1 | 1.1 | 1.1 |
+
+## Area means
+
+| Area | Default |
+|---|---:|
+| ARC Data | 1.0 |
+| ARC Resilience | 1.5 |
+| DEL Intake | 0.0 |
+| DEL Build | 2.0 |
+| DEL Verify | 2.0 |
+| DEL Release | 1.0 |
+| MAL APIs | 3.0 |
+| MAL Interface | 1.5 |
+| MAL Behaviour | 2.0 |
+| MAL Extensions | 2.0 |
+| MAL Integrations | 2.7 |
+| MAL Agent interface | 2.0 |
+| LRN Sense | 1.0 |
+| LRN Diagnose and propose | 0.5 |
+| LRN Learn from experience | 1.0 |
+| LRN Measure | 0.0 |
+| GOV Compliance and security | 1.5 |
+| GOV Change control | 1.5 |
+| GOV AI and self-change safety | 2.0 |
+| EXP Expressible | 2.3 |
+| EXP Discover | 0.0 |
+| EXP Launch | 1.0 |
 
 ## AI Readiness
 
@@ -100,33 +137,6 @@ What the product's AI does. Descriptive levels per area, with no headline: it ne
 | Build | 0 | DEL-01 0, DEL-04 1 |
 | Diagnose and improve | 0 | LRN-05 0, LRN-06 0, LRN-07 0, LRN-08 n/a |
 | Expand | 0 | EXP-05 0 |
-
-## Area means
-
-| Area | Default |
-|---|---:|
-| ARC Data | 1.0 |
-| ARC Resilience | 1.5 |
-| DEL Intake | 0.0 |
-| DEL Build | 2.0 |
-| DEL Verify | 2.0 |
-| DEL Release | 1.0 |
-| MAL APIs | 3.0 |
-| MAL Interface | 1.5 |
-| MAL Behaviour | 2.0 |
-| MAL Extensions | 2.0 |
-| MAL Integrations | 2.7 |
-| MAL Agent interface | 2.0 |
-| LRN Sense | 1.0 |
-| LRN Diagnose and propose | 0.5 |
-| LRN Learn from experience | 1.0 |
-| LRN Measure | 0.0 |
-| GOV Compliance and security | 1.5 |
-| GOV Change control | 1.5 |
-| GOV AI and self-change safety | 2.0 |
-| EXP Expressible | 2.3 |
-| EXP Discover | 0.0 |
-| EXP Launch | 1.0 |
 
 ## Criteria
 

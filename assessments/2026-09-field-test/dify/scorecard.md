@@ -1,6 +1,6 @@
-# Dify: EVOLVE v0.5 scorecard
+# Dify: EVOLVE v0.6 scorecard
 
-Evaluator: Claude, single rater. Framework: EVOLVE 0.5.1 in this repository.
+Evaluator: Claude, single rater. Framework: EVOLVE 0.6.0 in this repository.
 
 Scope: the dify monorepo (api, web, dify-agent runtime, packages, CLI, docker configuration, CI). The separately released dify-sandbox and plugin-daemon services are assessed through their configuration here. Dify Cloud and the plugin marketplace catalogue are out of scope.
 
@@ -13,7 +13,7 @@ Scope: the dify monorepo (api, web, dify-agent runtime, packages, CLI, docker co
 Repository evidence only, main at the tip named above. dify-sandbox and plugin-daemon are separate repositories; their behaviour was taken from configuration here and not read in source. Dify Cloud and enterprise editions are out of scope. Single rater.
 
 ---
-Framework EVOLVE 0.5.1. Date 2026-09-30. Source github.com/langgenius/dify @ ea38e484b81b4104736d2484aaa1d0d7ea99627e (main). Archetype **configurable-application-platform**.
+Framework EVOLVE 0.6.0. Date 2026-09-30. Source github.com/langgenius/dify @ ea38e484b81b4104736d2484aaa1d0d7ea99627e (main). Archetype **configurable-application-platform**.
 
 Scope facts true: persistent_data, schema_changes, multi_tenant, hosted_service, machine_actions, definition_change_path, ai_features, ai_data_access, ai_actions. False: agent_mutations, evolution_auto_apply, code_release_path.
 
@@ -21,18 +21,18 @@ Coverage: 71 assessed, 0 not evidenced, 3 not applicable. Grades: 71 A, 0 B, 0 C
 
 ## Software Autonomy Level
 
-**SAL 1 (Configurable) · Request → Release L1 · Issue → Fix L1 · Opportunity → Expansion L1**
+**SAL 1 (Configurable) · AI-driven 0 · Request → Release L1 (AI L0) · Issue → Fix L1 (AI L0) · Opportunity → Expansion L1 (AI L0)**
 
 Progress toward the next level: Request → Release 2 of 4 conditions for L2; Issue → Fix 2 of 5 conditions for L2; Opportunity → Expansion 2 of 5 conditions for L2.
 
-- With opt-in settings: SAL 1 (Configurable) · Request → Release L1 · Issue → Fix L1 · Opportunity → Expansion L1.
-- With every alternate reading: SAL 1 (Configurable) · Request → Release L1 · Issue → Fix L1 · Opportunity → Expansion L1.
+- With opt-in settings: SAL 1 (Configurable) · AI-driven 0 · Request → Release L1 (AI L0) · Issue → Fix L1 (AI L0) · Opportunity → Expansion L1 (AI L0).
+- With every alternate reading: SAL 1 (Configurable) · AI-driven 0 · Request → Release L1 (AI L0) · Issue → Fix L1 (AI L0) · Opportunity → Expansion L1 (AI L0).
 
-| Loop | Stages | Spine | Architecture | Governance | Level | With opt-in settings |
-|---|---:|---:|---:|---:|---:|---:|
-| Request → Release | L1 | L2 | L1 | L2 | **L1** | L1 |
-| Issue → Fix | L1 | L2 | L1 | L2 | **L1** | L1 |
-| Opportunity → Expansion | L1 | L2 | L1 | L2 | **L1** | L1 |
+| Loop | Stages | Spine | Architecture | Governance | Level | AI-driven | With opt-in settings |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Request → Release | L1 | L2 | L1 | L2 | **L1** | L0 | L1 |
+| Issue → Fix | L1 | L2 | L1 | L2 | **L1** | L0 | L1 |
+| Opportunity → Expansion | L1 | L2 | L1 | L2 | **L1** | L0 | L1 |
 
 ### Critical controls
 
@@ -52,6 +52,16 @@ Progress toward the next level: Request → Release 2 of 4 conditions for L2; Is
 - **Issue → Fix to L2**: stages Diagnose needs LRN-05 ≥ 2 (has 1); stages Propose needs LRN-06 ≥ 2 (has 1); architecture Foundation needs every applicable ARC ≥ 1 (has ARC-06 0)
 - **Opportunity → Expansion to L2**: stages Sense needs EXP-04 ≥ 2 (has 0); stages Propose needs EXP-05 ≥ 2 (has 0); architecture Foundation needs every applicable ARC ≥ 1 (has ARC-06 0)
 
+### What AI drives
+
+Each loop re-scored with its AI-performable stages read only on what AI does there. AI first drives a stage at L2, and never above the loop's own level.
+
+| Loop | Level | AI-driven | AI stage readings | What AI needs for its next level |
+|---|---:|---:|---|---|
+| Request → Release | L1 | L0 | DEL-01 0, DEL-04 2 | DEL-01 ≥ 2 (has 0) |
+| Issue → Fix | L1 | L0 | LRN-05 0, LRN-06 0, LRN-07 0, LRN-08 n/a | LRN-05 ≥ 2 (has 0); LRN-06 ≥ 2 (has 0) |
+| Opportunity → Expansion | L1 | L0 | EXP-05 0 | EXP-05 ≥ 2 (has 0) |
+
 ### Sensitivity
 
 - **Fragile:** the headline drops if any of these falls one level: LRN-03, GOV-05.
@@ -67,6 +77,36 @@ Progress toward the next level: Request → Release 2 of 4 conditions for L2; Is
 | Learn (LRN) | 1.1 | 1.1–1.6 | 1.1 | 1.1 | 1.1 |
 | Vet (GOV) | 1.8 | 1.8–2.0 | 1.8 | 1.8 | 1.6 |
 | Expand (EXP) | 1.7 | 1.7 | 1.7 | 1.7 | 1.7 |
+
+## Area means
+
+| Area | Default |
+|---|---:|
+| ARC Data | 2.0 |
+| ARC Scale | 2.0 |
+| ARC Capacity | 0.5 |
+| ARC Resilience | 1.5 |
+| DEL Intake | 0.0 |
+| DEL Build | 2.3 |
+| DEL Verify | 2.0 |
+| DEL Release | 1.5 |
+| MAL Data model | 1.3 |
+| MAL APIs | 2.3 |
+| MAL Interface | 2.0 |
+| MAL Behaviour | 2.7 |
+| MAL Extensions | 2.3 |
+| MAL Integrations | 2.7 |
+| MAL Agent interface | 2.0 |
+| LRN Sense | 2.0 |
+| LRN Diagnose and propose | 1.0 |
+| LRN Learn from experience | 1.5 |
+| LRN Measure | 0.0 |
+| GOV Compliance and security | 1.8 |
+| GOV Change control | 1.8 |
+| GOV AI and self-change safety | 2.0 |
+| EXP Expressible | 3.0 |
+| EXP Discover | 0.0 |
+| EXP Launch | 2.0 |
 
 ## AI Readiness
 
@@ -100,36 +140,6 @@ What the product's AI does. Descriptive levels per area, with no headline: it ne
 | Build | 1 | DEL-01 0, DEL-04 2 |
 | Diagnose and improve | 0 | LRN-05 0, LRN-06 0, LRN-07 0, LRN-08 n/a |
 | Expand | 0 | EXP-05 0 |
-
-## Area means
-
-| Area | Default |
-|---|---:|
-| ARC Data | 2.0 |
-| ARC Scale | 2.0 |
-| ARC Capacity | 0.5 |
-| ARC Resilience | 1.5 |
-| DEL Intake | 0.0 |
-| DEL Build | 2.3 |
-| DEL Verify | 2.0 |
-| DEL Release | 1.5 |
-| MAL Data model | 1.3 |
-| MAL APIs | 2.3 |
-| MAL Interface | 2.0 |
-| MAL Behaviour | 2.7 |
-| MAL Extensions | 2.3 |
-| MAL Integrations | 2.7 |
-| MAL Agent interface | 2.0 |
-| LRN Sense | 2.0 |
-| LRN Diagnose and propose | 1.0 |
-| LRN Learn from experience | 1.5 |
-| LRN Measure | 0.0 |
-| GOV Compliance and security | 1.8 |
-| GOV Change control | 1.8 |
-| GOV AI and self-change safety | 2.0 |
-| EXP Expressible | 3.0 |
-| EXP Discover | 0.0 |
-| EXP Launch | 2.0 |
 
 ## Criteria
 

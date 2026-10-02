@@ -1,6 +1,6 @@
-# OpenClaw: EVOLVE v0.5 scorecard
+# OpenClaw: EVOLVE v0.6 scorecard
 
-Evaluator: Claude, single rater. Framework: EVOLVE 0.5.1 in this repository.
+Evaluator: Claude, single rater. Framework: EVOLVE 0.6.0 in this repository.
 
 Scope: the openclaw monorepo (gateway, agents, channels, skills and Skill Workshop, plugins and extensions, MCP, Control UI, companion apps, QA and CI). ClawHub (separate repository) and team.openclaw.ai operations are out of scope.
 
@@ -13,7 +13,7 @@ Scope: the openclaw monorepo (gateway, agents, channels, skills and Skill Worksh
 Repository evidence only, main at the tip named above. ClawHub (registry and scanning) is a separate repository. No evaluator plugin is bundled, so measurement depends on third-party or user plugins. The experience review was read from code and tests, not run. Single rater.
 
 ---
-Framework EVOLVE 0.5.1. Date 2026-09-30. Source github.com/openclaw/openclaw @ df2a29cac9ad37c31a0f5a0d977ba3e4fd833cb0 (main). Archetype **agent-runtime**.
+Framework EVOLVE 0.6.0. Date 2026-09-30. Source github.com/openclaw/openclaw @ df2a29cac9ad37c31a0f5a0d977ba3e4fd833cb0 (main). Archetype **agent-runtime**.
 
 Scope facts true: persistent_data, schema_changes, machine_actions, agent_mutations, evolution_auto_apply, definition_change_path, ai_features, ai_data_access, ai_actions. False: multi_tenant, hosted_service, code_release_path.
 
@@ -21,18 +21,18 @@ Coverage: 61 assessed, 0 not evidenced, 13 not applicable. Grades: 61 A, 0 B, 0 
 
 ## Software Autonomy Level
 
-**SAL 2 (Assisted) · Request → Release L2 · Issue → Fix L2 · Opportunity → Expansion L1**
+**SAL 2 (Assisted) · AI-driven 0 · Request → Release L2 (AI L2) · Issue → Fix L2 (AI L0) · Opportunity → Expansion L1 (AI L0)**
 
 Progress toward the next level: Request → Release 12 of 19 conditions for L3; Issue → Fix 13 of 21 conditions for L3; Opportunity → Expansion 3 of 5 conditions for L2.
 
-- With opt-in settings: SAL 2 (Assisted) · Request → Release L2 · Issue → Fix L2 · Opportunity → Expansion L1.
-- With every alternate reading: SAL 2 (Assisted) · Request → Release L2 · Issue → Fix L2 · Opportunity → Expansion L1.
+- With opt-in settings: SAL 2 (Assisted) · AI-driven 0 · Request → Release L2 (AI L2) · Issue → Fix L2 (AI L0) · Opportunity → Expansion L1 (AI L0).
+- With every alternate reading: SAL 2 (Assisted) · AI-driven 0 · Request → Release L2 (AI L2) · Issue → Fix L2 (AI L0) · Opportunity → Expansion L1 (AI L0).
 
-| Loop | Stages | Spine | Architecture | Governance | Level | With opt-in settings |
-|---|---:|---:|---:|---:|---:|---:|
-| Request → Release | L2 | L2 | L2 | L2 | **L2** | L2 |
-| Issue → Fix | L2 | L2 | L2 | L2 | **L2** | L2 |
-| Opportunity → Expansion | L1 | L2 | L2 | L2 | **L1** | L1 |
+| Loop | Stages | Spine | Architecture | Governance | Level | AI-driven | With opt-in settings |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Request → Release | L2 | L2 | L2 | L2 | **L2** | L2 | L2 |
+| Issue → Fix | L2 | L2 | L2 | L2 | **L2** | L0 | L2 |
+| Opportunity → Expansion | L1 | L2 | L2 | L2 | **L1** | L0 | L1 |
 
 ### Critical controls
 
@@ -52,6 +52,16 @@ Progress toward the next level: Request → Release 12 of 19 conditions for L3; 
 - **Issue → Fix to L3**: spine Verify needs DEL-05 ≥ 3 (has 2); spine Stage needs DEL-09 ≥ 2 (has 1); spine Roll back needs GOV-05 ≥ 3 (has 2); stages Detect needs LRN-03 ≥ 3 (has 2); stages Diagnose needs LRN-05 ≥ 3 (has 2); stages Propose needs LRN-06 ≥ 3 (has 2); architecture Foundation needs ARC-02 ≥ 3 (has 2); governance Ceiling needs GOV-10 ≥ 3 and LRN-08 ≥ 2 (has 2; 2)
 - **Opportunity → Expansion to L2**: stages Sense needs EXP-04 ≥ 2 (has 1); stages Propose needs EXP-05 ≥ 2 (has 1)
 
+### What AI drives
+
+Each loop re-scored with its AI-performable stages read only on what AI does there. AI first drives a stage at L2, and never above the loop's own level.
+
+| Loop | Level | AI-driven | AI stage readings | What AI needs for its next level |
+|---|---:|---:|---|---|
+| Request → Release | L2 | L2 | DEL-01 2, DEL-04 2 | product build path ≥ 3 (has DEL-04 2); DEL-01 ≥ 3 (has 2); GOV-10 ≥ 3 and LRN-08 ≥ 2 (has 2; 2) |
+| Issue → Fix | L2 | L0 | LRN-05 1, LRN-06 2, LRN-07 3, LRN-08 2 | LRN-05 ≥ 2 (has 1) |
+| Opportunity → Expansion | L1 | L0 | EXP-05 1 | EXP-05 ≥ 2 (has 1) |
+
 ### Sensitivity
 
 - **Fragile:** the headline drops if any of these falls one level: DEL-01, DEL-04, DEL-05, LRN-03, LRN-05, LRN-06, GOV-05.
@@ -67,6 +77,33 @@ Progress toward the next level: Request → Release 12 of 19 conditions for L3; 
 | Learn (LRN) | 2.1 | 2.1–2.8 | 2.1 | 2.1 | 2.1 |
 | Vet (GOV) | 2.3 | 2.3–2.6 | 2.4 | 2.3 | 2.3 |
 | Expand (EXP) | 1.7 | 1.7–1.8 | 1.7 | 1.7 | 1.7 |
+
+## Area means
+
+| Area | Default |
+|---|---:|
+| ARC Data | 2.0 |
+| ARC Resilience | 2.5 |
+| DEL Intake | 2.0 |
+| DEL Build | 2.7 |
+| DEL Verify | 2.5 |
+| DEL Release | 1.5 |
+| MAL APIs | 2.0 |
+| MAL Interface | 2.0 |
+| MAL Behaviour | 2.0 |
+| MAL Extensions | 2.7 |
+| MAL Integrations | 2.7 |
+| MAL Agent interface | 3.0 |
+| LRN Sense | 2.0 |
+| LRN Diagnose and propose | 2.0 |
+| LRN Learn from experience | 2.5 |
+| LRN Measure | 2.0 |
+| GOV Compliance and security | 2.0 |
+| GOV Change control | 2.5 |
+| GOV AI and self-change safety | 2.3 |
+| EXP Expressible | 3.0 |
+| EXP Discover | 1.0 |
+| EXP Launch | 1.0 |
 
 ## AI Readiness
 
@@ -100,33 +137,6 @@ What the product's AI does. Descriptive levels per area, with no headline: it ne
 | Build | 2 | DEL-01 2, DEL-04 2 |
 | Diagnose and improve | 2 | LRN-05 1, LRN-06 2, LRN-07 3, LRN-08 2 |
 | Expand | 1 | EXP-05 1 |
-
-## Area means
-
-| Area | Default |
-|---|---:|
-| ARC Data | 2.0 |
-| ARC Resilience | 2.5 |
-| DEL Intake | 2.0 |
-| DEL Build | 2.7 |
-| DEL Verify | 2.5 |
-| DEL Release | 1.5 |
-| MAL APIs | 2.0 |
-| MAL Interface | 2.0 |
-| MAL Behaviour | 2.0 |
-| MAL Extensions | 2.7 |
-| MAL Integrations | 2.7 |
-| MAL Agent interface | 3.0 |
-| LRN Sense | 2.0 |
-| LRN Diagnose and propose | 2.0 |
-| LRN Learn from experience | 2.5 |
-| LRN Measure | 2.0 |
-| GOV Compliance and security | 2.0 |
-| GOV Change control | 2.5 |
-| GOV AI and self-change safety | 2.3 |
-| EXP Expressible | 3.0 |
-| EXP Discover | 1.0 |
-| EXP Launch | 1.0 |
 
 ## Criteria
 

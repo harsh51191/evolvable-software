@@ -1,6 +1,6 @@
-# Frappe Framework: EVOLVE v0.5 scorecard
+# Frappe Framework: EVOLVE v0.6 scorecard
 
-Evaluator: Claude, single rater. Framework: EVOLVE 0.5.1 in this repository.
+Evaluator: Claude, single rater. Framework: EVOLVE 0.6.0 in this repository.
 
 Scope: the frappe repository only (framework, Desk UI, website module, automation engine). Apps built on it (ERPNext, HRMS, CRM) and Frappe Cloud are out of scope.
 
@@ -13,7 +13,7 @@ Scope: the frappe repository only (framework, Desk UI, website module, automatio
 Repository evidence only, develop branch at the tip named above. No running site was inspected, so validation and preview behaviour is read from code, not exercised. Frappe Cloud features (marketplace, staging sites, backups) and apps built on the framework are out of scope. Whether CI checks block merges depends on branch protection, which is not visible in the repository. Single rater; the eight alternate readings mark where a second rater could reasonably differ.
 
 ---
-Framework EVOLVE 0.5.1. Date 2026-09-30. Source github.com/frappe/frappe @ 82b0384810030c8d347780538821a3b006375d28 (develop). Archetype **configurable-application-platform**.
+Framework EVOLVE 0.6.0. Date 2026-09-30. Source github.com/frappe/frappe @ 82b0384810030c8d347780538821a3b006375d28 (develop). Archetype **configurable-application-platform**.
 
 Scope facts true: persistent_data, schema_changes, multi_tenant, hosted_service, machine_actions, definition_change_path. False: agent_mutations, evolution_auto_apply, code_release_path, ai_features, ai_data_access, ai_actions.
 
@@ -21,18 +21,18 @@ Coverage: 63 assessed, 0 not evidenced, 11 not applicable. Grades: 62 A, 1 B, 0 
 
 ## Software Autonomy Level
 
-**SAL 1 (Configurable) · Request → Release L1 · Issue → Fix L1 · Opportunity → Expansion L1**
+**SAL 1 (Configurable) · AI-driven 0 · Request → Release L1 (AI L0) · Issue → Fix L1 (AI L0) · Opportunity → Expansion L1 (AI L0)**
 
 Progress toward the next level: Request → Release 2 of 4 conditions for L2; Issue → Fix 4 of 5 conditions for L2; Opportunity → Expansion 3 of 5 conditions for L2.
 
-- With opt-in settings: SAL 1 (Configurable) · Request → Release L1 · Issue → Fix L1 · Opportunity → Expansion L1.
-- With every alternate reading: SAL 1 (Configurable) · Request → Release L1 · Issue → Fix L1 · Opportunity → Expansion L1.
+- With opt-in settings: SAL 1 (Configurable) · AI-driven 0 · Request → Release L1 (AI L0) · Issue → Fix L1 (AI L0) · Opportunity → Expansion L1 (AI L0).
+- With every alternate reading: SAL 1 (Configurable) · AI-driven 0 · Request → Release L1 (AI L0) · Issue → Fix L1 (AI L0) · Opportunity → Expansion L1 (AI L0).
 
-| Loop | Stages | Spine | Architecture | Governance | Level | With opt-in settings |
-|---|---:|---:|---:|---:|---:|---:|
-| Request → Release | L1 | L1 | L2 | L2 | **L1** | L1 |
-| Issue → Fix | L2 | L1 | L2 | L2 | **L1** | L1 |
-| Opportunity → Expansion | L1 | L2 | L2 | L2 | **L1** | L1 |
+| Loop | Stages | Spine | Architecture | Governance | Level | AI-driven | With opt-in settings |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Request → Release | L1 | L1 | L2 | L2 | **L1** | L0 | L1 |
+| Issue → Fix | L2 | L1 | L2 | L2 | **L1** | L0 | L1 |
+| Opportunity → Expansion | L1 | L2 | L2 | L2 | **L1** | L0 | L1 |
 
 ### Critical controls
 
@@ -52,6 +52,16 @@ Progress toward the next level: Request → Release 2 of 4 conditions for L2; Is
 - **Issue → Fix to L2**: spine Build needs product build path ≥ 2 (has DEL-04 0, LRN-07 2 with LRN-08 1)
 - **Opportunity → Expansion to L2**: stages Sense needs EXP-04 ≥ 2 (has 0); stages Propose needs EXP-05 ≥ 2 (has 0)
 
+### What AI drives
+
+Each loop re-scored with its AI-performable stages read only on what AI does there. AI first drives a stage at L2, and never above the loop's own level.
+
+| Loop | Level | AI-driven | AI stage readings | What AI needs for its next level |
+|---|---:|---:|---|---|
+| Request → Release | L1 | L0 | DEL-01 0, DEL-04 0 | product build path ≥ 2 (has DEL-04 0); DEL-01 ≥ 2 (has 0) |
+| Issue → Fix | L1 | L0 | LRN-05 0, LRN-06 0, LRN-07 0, LRN-08 0 | product build path ≥ 2 (has DEL-04 0, LRN-07 0); LRN-05 ≥ 2 (has 0); LRN-06 ≥ 2 (has 0) |
+| Opportunity → Expansion | L1 | L0 | EXP-05 0 | EXP-05 ≥ 2 (has 0) |
+
 ### Sensitivity
 
 - **Fragile:** the headline drops if any of these falls one level: LRN-03, GOV-05.
@@ -67,26 +77,6 @@ Progress toward the next level: Request → Release 2 of 4 conditions for L2; Is
 | Learn (LRN) | 1.3 | 1.3–1.7 | 1.3 | 1.3 | 1.3 |
 | Vet (GOV) | 1.8 | 1.8–2.3 | 1.8 | 1.8 | 1.8 |
 | Expand (EXP) | 1.7 | 1.7–1.9 | 1.7 | 1.7 | 1.7 |
-
-## AI Readiness
-
-How safely can the product run AI in production? Separate from SAL, which it never changes.
-
-**no AI features**
-
-- With opt-in settings: no AI features.
-- With every alternate reading: no AI features.
-
-### AI Capability Footprint
-
-What the product's AI does. Descriptive levels per area, with no headline: it never changes AI Readiness or SAL.
-
-| Area | Level | Readings |
-|---|---:|---|
-| Operate | 0 | MAL-19 0, MAL-20 0 |
-| Build | 0 | DEL-01 0, DEL-04 0 |
-| Diagnose and improve | 0 | LRN-05 0, LRN-06 0, LRN-07 0, LRN-08 0 |
-| Expand | 0 | EXP-05 0 |
 
 ## Area means
 
@@ -117,6 +107,26 @@ What the product's AI does. Descriptive levels per area, with no headline: it ne
 | EXP Expressible | 3.0 |
 | EXP Discover | 0.0 |
 | EXP Launch | 2.0 |
+
+## AI Readiness
+
+How safely can the product run AI in production? Separate from SAL, which it never changes.
+
+**no AI features**
+
+- With opt-in settings: no AI features.
+- With every alternate reading: no AI features.
+
+### AI Capability Footprint
+
+What the product's AI does. Descriptive levels per area, with no headline: it never changes AI Readiness or SAL.
+
+| Area | Level | Readings |
+|---|---:|---|
+| Operate | 0 | MAL-19 0, MAL-20 0 |
+| Build | 0 | DEL-01 0, DEL-04 0 |
+| Diagnose and improve | 0 | LRN-05 0, LRN-06 0, LRN-07 0, LRN-08 0 |
+| Expand | 0 | EXP-05 0 |
 
 ## Criteria
 

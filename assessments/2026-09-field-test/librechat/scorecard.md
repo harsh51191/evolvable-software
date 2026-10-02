@@ -1,6 +1,6 @@
-# LibreChat: EVOLVE v0.5 scorecard
+# LibreChat: EVOLVE v0.6 scorecard
 
-Evaluator: Claude, single rater. Framework: EVOLVE 0.5.1 in this repository.
+Evaluator: Claude, single rater. Framework: EVOLVE 0.6.0 in this repository.
 
 Scope: the LibreChat monorepo (api, client, packages/api, data-provider, data-schemas, e2e, helm, CI). The hosted code interpreter service, RAG API image and third-party MCP servers are out of scope.
 
@@ -13,7 +13,7 @@ Scope: the LibreChat monorepo (api, client, packages/api, data-provider, data-sc
 Repository evidence only, main at the tip named above. The hosted code interpreter, RAG API and third-party MCP servers are out of scope. Whether the accessibility and Lighthouse checks run on every pull request depends on path filters and inputs that were read, not exercised. Single rater.
 
 ---
-Framework EVOLVE 0.5.1. Date 2026-09-30. Source github.com/danny-avila/LibreChat @ 14f7b2865692d27364c934ecb9912496371018bb (main). Archetype **focused-application**.
+Framework EVOLVE 0.6.0. Date 2026-09-30. Source github.com/danny-avila/LibreChat @ 14f7b2865692d27364c934ecb9912496371018bb (main). Archetype **focused-application**.
 
 Scope facts true: persistent_data, schema_changes, multi_tenant, hosted_service, machine_actions, definition_change_path, ai_features, ai_data_access, ai_actions. False: agent_mutations, evolution_auto_apply, code_release_path.
 
@@ -21,18 +21,18 @@ Coverage: 63 assessed, 0 not evidenced, 11 not applicable. Grades: 63 A, 0 B, 0 
 
 ## Software Autonomy Level
 
-**SAL 0 (Manual) · Request → Release L0 · Issue → Fix L0 · Opportunity → Expansion L0**
+**SAL 0 (Manual) · AI-driven 0 · Request → Release L0 (AI L0) · Issue → Fix L0 (AI L0) · Opportunity → Expansion L0 (AI L0)**
 
 Progress toward the next level: Request → Release 1 of 2 conditions for L1; Issue → Fix 2 of 3 conditions for L1; Opportunity → Expansion 1 of 2 conditions for L1.
 
-- With opt-in settings: SAL 0 (Manual) · Request → Release L0 · Issue → Fix L0 · Opportunity → Expansion L0.
-- With every alternate reading: SAL 1 (Configurable) · Request → Release L1 · Issue → Fix L1 · Opportunity → Expansion L0.
+- With opt-in settings: SAL 0 (Manual) · AI-driven 0 · Request → Release L0 (AI L0) · Issue → Fix L0 (AI L0) · Opportunity → Expansion L0 (AI L0).
+- With every alternate reading: SAL 1 (Configurable) · AI-driven 0 · Request → Release L1 (AI L0) · Issue → Fix L1 (AI L0) · Opportunity → Expansion L0 (AI L0).
 
-| Loop | Stages | Spine | Architecture | Governance | Level | With opt-in settings |
-|---|---:|---:|---:|---:|---:|---:|
-| Request → Release | L1 | L0 | L1 | L2 | **L0** | L0 |
-| Issue → Fix | L1 | L0 | L1 | L2 | **L0** | L0 |
-| Opportunity → Expansion | L1 | L0 | L1 | L2 | **L0** | L0 |
+| Loop | Stages | Spine | Architecture | Governance | Level | AI-driven | With opt-in settings |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Request → Release | L1 | L0 | L1 | L2 | **L0** | L0 | L0 |
+| Issue → Fix | L1 | L0 | L1 | L2 | **L0** | L0 | L0 |
+| Opportunity → Expansion | L1 | L0 | L1 | L2 | **L0** | L0 | L0 |
 
 ### Critical controls
 
@@ -52,6 +52,16 @@ Progress toward the next level: Request → Release 1 of 2 conditions for L1; Is
 - **Issue → Fix to L1**: spine Build needs people build path ≥ 2 or product build path ≥ 2 (has MAL 1.7; DEL-04 0, LRN-07 1)
 - **Opportunity → Expansion to L1**: spine Build needs people build path ≥ 2 or product build path ≥ 2 (has EXP-02 n/a; DEL-04 0, EXP-03 n/a)
 
+### What AI drives
+
+Each loop re-scored with its AI-performable stages read only on what AI does there. AI first drives a stage at L2, and never above the loop's own level.
+
+| Loop | Level | AI-driven | AI stage readings | What AI needs for its next level |
+|---|---:|---:|---|---|
+| Request → Release | L0 | L0 | DEL-01 0, DEL-04 0 | people build path ≥ 2 or product build path ≥ 2 (has MAL 1.7; DEL-04 0) |
+| Issue → Fix | L0 | L0 | LRN-05 0, LRN-06 0, LRN-07 0, LRN-08 n/a | people build path ≥ 2 or product build path ≥ 2 (has MAL 1.7; DEL-04 0, LRN-07 0) |
+| Opportunity → Expansion | L0 | L0 | EXP-05 0 | people build path ≥ 2 or product build path ≥ 2 (has EXP-02 n/a; DEL-04 0, EXP-03 n/a) |
+
 ### Sensitivity
 
 - **Robust:** no single criterion falling one level lowers the headline.
@@ -67,6 +77,35 @@ Progress toward the next level: Request → Release 1 of 2 conditions for L1; Is
 | Learn (LRN) | 0.8 | 0.8–0.9 | 1.1 | 0.8 | 0.8 |
 | Vet (GOV) | 1.9 | 1.9–2.4 | 1.9 | 1.9 | 1.7 |
 | Expand (EXP) | 1.0 | 1.0 | 1.0 | 1.0 | 1.2 |
+
+## Area means
+
+| Area | Default |
+|---|---:|
+| ARC Data | 1.5 |
+| ARC Scale | 1.7 |
+| ARC Capacity | 1.5 |
+| ARC Resilience | 1.0 |
+| DEL Intake | 0.0 |
+| DEL Build | 1.3 |
+| DEL Verify | 2.0 |
+| DEL Release | 1.0 |
+| MAL Data model | 1.0 |
+| MAL APIs | 1.0 |
+| MAL Interface | 2.0 |
+| MAL Behaviour | 2.0 |
+| MAL Extensions | 2.0 |
+| MAL Integrations | 2.7 |
+| MAL Agent interface | 1.5 |
+| LRN Sense | 1.8 |
+| LRN Diagnose and propose | 0.5 |
+| LRN Learn from experience | 1.0 |
+| LRN Measure | 0.0 |
+| GOV Compliance and security | 2.0 |
+| GOV Change control | 1.8 |
+| GOV AI and self-change safety | 2.0 |
+| EXP Discover | 0.0 |
+| EXP Launch | 2.0 |
 
 ## AI Readiness
 
@@ -100,35 +139,6 @@ What the product's AI does. Descriptive levels per area, with no headline: it ne
 | Build | 0 | DEL-01 0, DEL-04 0 |
 | Diagnose and improve | 0 | LRN-05 0, LRN-06 0, LRN-07 0, LRN-08 n/a |
 | Expand | 0 | EXP-05 0 |
-
-## Area means
-
-| Area | Default |
-|---|---:|
-| ARC Data | 1.5 |
-| ARC Scale | 1.7 |
-| ARC Capacity | 1.5 |
-| ARC Resilience | 1.0 |
-| DEL Intake | 0.0 |
-| DEL Build | 1.3 |
-| DEL Verify | 2.0 |
-| DEL Release | 1.0 |
-| MAL Data model | 1.0 |
-| MAL APIs | 1.0 |
-| MAL Interface | 2.0 |
-| MAL Behaviour | 2.0 |
-| MAL Extensions | 2.0 |
-| MAL Integrations | 2.7 |
-| MAL Agent interface | 1.5 |
-| LRN Sense | 1.8 |
-| LRN Diagnose and propose | 0.5 |
-| LRN Learn from experience | 1.0 |
-| LRN Measure | 0.0 |
-| GOV Compliance and security | 2.0 |
-| GOV Change control | 1.8 |
-| GOV AI and self-change safety | 2.0 |
-| EXP Discover | 0.0 |
-| EXP Launch | 2.0 |
 
 ## Criteria
 

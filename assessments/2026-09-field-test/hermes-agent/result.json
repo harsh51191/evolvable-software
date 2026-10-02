@@ -4,7 +4,7 @@
   "source": "github.com/NousResearch/hermes-agent @ bddd22be7c2e5f7630c3d90507e6e7280ff092e3 (main) + github.com/NousResearch/hermes-agent-self-evolution @ 0a929e3aa20e15cf04dc7c28492a7d41a5139125 (main, last commit 2026-06-17)",
   "archetype": "agent-runtime",
   "framework": "EVOLVE",
-  "framework_version": "0.5.1",
+  "framework_version": "0.6.0",
   "scope_facts": {
     "persistent_data": true,
     "schema_changes": true,
@@ -203,7 +203,65 @@
         "observed": "2; 2",
         "status": "fail"
       }
-    ]
+    ],
+    "ai_driven": {
+      "headline": 0,
+      "headline_name": "AI drives no stage",
+      "loops": {
+        "request": {
+          "level": 0,
+          "name": "AI drives no stage",
+          "stages": {
+            "DEL-01": 1,
+            "DEL-04": 2
+          },
+          "blockers": [
+            {
+              "part": "stages",
+              "stage": "Intake",
+              "needs": "DEL-01 ≥ 2",
+              "observed": "1",
+              "control": null
+            }
+          ]
+        },
+        "fix": {
+          "level": 0,
+          "name": "AI drives no stage",
+          "stages": {
+            "LRN-05": 1,
+            "LRN-06": 2,
+            "LRN-07": 3,
+            "LRN-08": 2
+          },
+          "blockers": [
+            {
+              "part": "stages",
+              "stage": "Diagnose",
+              "needs": "LRN-05 ≥ 2",
+              "observed": "1",
+              "control": null
+            }
+          ]
+        },
+        "expansion": {
+          "level": 0,
+          "name": "AI drives no stage",
+          "stages": {
+            "EXP-05": 1
+          },
+          "blockers": [
+            {
+              "part": "stages",
+              "stage": "Propose",
+              "needs": "EXP-05 ≥ 2",
+              "observed": "1",
+              "control": null
+            }
+          ]
+        }
+      }
+    }
   },
   "sensitivity": {
     "raise_headline": [
@@ -698,6 +756,14 @@
               "governance": 2
             }
           }
+        },
+        "ai_driven": {
+          "headline": 0,
+          "loops": {
+            "request": 2,
+            "fix": 0,
+            "expansion": 0
+          }
         }
       }
     },
@@ -740,6 +806,14 @@
               "architecture": 2,
               "governance": 2
             }
+          }
+        },
+        "ai_driven": {
+          "headline": 0,
+          "loops": {
+            "request": 0,
+            "fix": 0,
+            "expansion": 0
           }
         }
       }

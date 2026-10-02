@@ -4,7 +4,7 @@
   "source": "github.com/PostHog/posthog @ 645e1a78140757ea1bb9ddeb0ff9d3915c60b6f6 (master)",
   "archetype": "focused-application",
   "framework": "EVOLVE",
-  "framework_version": "0.5.1",
+  "framework_version": "0.6.0",
   "scope_facts": {
     "persistent_data": true,
     "schema_changes": true,
@@ -203,7 +203,86 @@
         "observed": "2; 1",
         "status": "fail"
       }
-    ]
+    ],
+    "ai_driven": {
+      "headline": 0,
+      "headline_name": "AI drives no stage",
+      "loops": {
+        "request": {
+          "level": 2,
+          "name": "Assisted",
+          "stages": {
+            "DEL-01": 2,
+            "DEL-04": 2
+          },
+          "blockers": [
+            {
+              "part": "spine",
+              "stage": "Build",
+              "needs": "product build path ≥ 3",
+              "observed": "DEL-04 2",
+              "control": null
+            },
+            {
+              "part": "stages",
+              "stage": "Intake",
+              "needs": "DEL-01 ≥ 3",
+              "observed": "2",
+              "control": null
+            },
+            {
+              "part": "governance",
+              "stage": "Ceiling",
+              "needs": "GOV-10 ≥ 3 and LRN-08 ≥ 2",
+              "observed": "2; 1",
+              "control": "Bounded self-change"
+            }
+          ]
+        },
+        "fix": {
+          "level": 0,
+          "name": "AI drives no stage",
+          "stages": {
+            "LRN-05": 0,
+            "LRN-06": 0,
+            "LRN-07": 0,
+            "LRN-08": 1
+          },
+          "blockers": [
+            {
+              "part": "stages",
+              "stage": "Diagnose",
+              "needs": "LRN-05 ≥ 2",
+              "observed": "0",
+              "control": null
+            },
+            {
+              "part": "stages",
+              "stage": "Propose",
+              "needs": "LRN-06 ≥ 2",
+              "observed": "0",
+              "control": null
+            }
+          ]
+        },
+        "expansion": {
+          "level": 0,
+          "name": "AI drives no stage",
+          "stages": {
+            "EXP-05": 0
+          },
+          "blockers": [
+            {
+              "part": "stages",
+              "stage": "Propose",
+              "needs": "EXP-05 ≥ 2",
+              "observed": "0",
+              "control": null
+            }
+          ]
+        }
+      }
+    }
   },
   "sensitivity": {
     "raise_headline": [
@@ -698,6 +777,14 @@
               "governance": 2
             }
           }
+        },
+        "ai_driven": {
+          "headline": 0,
+          "loops": {
+            "request": 2,
+            "fix": 0,
+            "expansion": 0
+          }
         }
       }
     },
@@ -740,6 +827,14 @@
               "architecture": 2,
               "governance": 2
             }
+          }
+        },
+        "ai_driven": {
+          "headline": 0,
+          "loops": {
+            "request": 2,
+            "fix": 0,
+            "expansion": 0
           }
         }
       }

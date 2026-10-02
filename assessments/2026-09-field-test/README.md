@@ -1,29 +1,30 @@
-# Field test: 11 open-source systems under EVOLVE v0.5
+# Field test: 11 open-source systems under EVOLVE v0.6
 
-This folder scores 11 open-source products with EVOLVE from this repository: SAL under the v0.4 rules, and AI Readiness under v0.5. The same systems were scored under MSR v0.2 and v0.3 in September 2026; this pass migrates those inputs and adds the 17 new criteria, scope facts, evidence facets and inventories.
+This folder scores 11 open-source products with EVOLVE from this repository: SAL under the v0.4 rules (with v0.5.1's scheduled-work check), AI Readiness under v0.5, and AI-driven loop levels under v0.6. The same systems were scored under MSR v0.2 and v0.3 in September 2026; this pass migrates those inputs and adds the 17 new criteria, scope facts, evidence facets and inventories.
 
 > **Provisional.** These results come from one rater reading public source code. They are not maintainer-reviewed, and the 17 new criteria have not had a second independent assessment. Where repository evidence is missing, a criterion scores 0, which can understate products whose capabilities live elsewhere. Before quoting or comparing these results, give each project's maintainers a chance to correct the evidence.
 
 ## Results (default configuration)
 
-Each loop shows its level and how many of the next level's applicable conditions it already meets. Conditions switched off by a scope fact count in neither number.
+Each loop shows its level, how many of the next level's applicable conditions it already meets, and how far AI itself carries it (AI L0: AI drives no stage; AI first drives a stage at L2). Conditions switched off by a scope fact count in neither number.
 
-| System | Archetype | SAL | Request → Release | Issue → Fix | Opportunity → Expansion | With every alternate reading |
-|---|---|---:|---|---|---|---:|
-| n8n | configurable platform | **2** | L2 (12/19) | L2 (12/21) | L1 (3/5) | 2 |
-| OpenClaw | agent runtime | **2** | L2 (12/19) | L2 (13/21) | L1 (3/5) | 2 |
-| Hermes Agent | agent runtime | **1** | L1 (3/4) | L2 (13/22) | L1 (3/5) | 2 |
-| PostHog | focused application | **1** | L2 (11/20) | L1 (4/5) | L1 (3/5) | 2 |
-| Dify | configurable platform | **1** | L1 (2/4) | L1 (2/5) | L1 (2/5) | 1 |
-| Directus | configurable platform | **1** | L1 (1/4) | L1 (1/5) | L1 (2/5) | 1 |
-| Frappe | configurable platform | **1** | L1 (2/4) | L1 (4/5) | L1 (3/5) | 1 |
-| OpenHands (canvas, SDK, automation) | agent runtime | **1** | L1 (1/4) | L1 (2/5) | L1 (2/5) | 1 |
-| Discourse | focused application | **1** | L1 (2/4) | L1 (4/5) | L0 (1/2) | 1 |
-| LibreChat | focused application | **0** | L0 (1/2) | L0 (2/3) | L0 (1/2) | 1 |
-| OpenCode | agent runtime | **0** | L0 (1/2) | L0 (1/3) | L0 (1/2) | 0 |
+| System | Archetype | SAL | AI-driven | Request → Release | Issue → Fix | Opportunity → Expansion | With every alternate reading |
+|---|---|---:|---:|---|---|---|---:|
+| n8n | configurable platform | **2** | 0 | L2 (12/19), AI L2 | L2 (12/21), AI L0 | L1 (3/5), AI L0 | 2 |
+| OpenClaw | agent runtime | **2** | 0 | L2 (12/19), AI L2 | L2 (13/21), AI L0 | L1 (3/5), AI L0 | 2 |
+| Hermes Agent | agent runtime | **1** | 0 | L1 (3/4), AI L0 | L2 (13/22), AI L0 | L1 (3/5), AI L0 | 2 |
+| PostHog | focused application | **1** | 0 | L2 (11/20), AI L2 | L1 (4/5), AI L0 | L1 (3/5), AI L0 | 2 |
+| Dify | configurable platform | **1** | 0 | L1 (2/4), AI L0 | L1 (2/5), AI L0 | L1 (2/5), AI L0 | 1 |
+| Directus | configurable platform | **1** | 0 | L1 (1/4), AI L0 | L1 (1/5), AI L0 | L1 (2/5), AI L0 | 1 |
+| Frappe | configurable platform | **1** | 0 | L1 (2/4), AI L0 | L1 (4/5), AI L0 | L1 (3/5), AI L0 | 1 |
+| OpenHands (canvas, SDK, automation) | agent runtime | **1** | 0 | L1 (1/4), AI L0 | L1 (2/5), AI L0 | L1 (2/5), AI L0 | 1 |
+| Discourse | focused application | **1** | 0 | L1 (2/4), AI L0 | L1 (4/5), AI L0 | L0 (1/2), AI L0 | 1 |
+| LibreChat | focused application | **0** | 0 | L0 (1/2), AI L0 | L0 (2/3), AI L0 | L0 (1/2), AI L0 | 1 |
+| OpenCode | agent runtime | **0** | 0 | L0 (1/2), AI L0 | L0 (1/3), AI L0 | L0 (1/2), AI L0 | 0 |
 
 Opt-in settings change no headline level. `comparison.md` also covers:
 
+- what AI drives in each loop, stage by stage;
 - the parts that hold each loop back;
 - the sensitivity of each headline;
 - the critical controls;
@@ -95,6 +96,14 @@ What the results say:
 7. **OpenHands scope.** The OpenHands Automation Service (`OpenHands/automation`) was added after an inter-rater review found it missing.
 
 The v0.3 headline numbers are kept in `tools/v03_comparison.json`, and the v0.2 numbers in `tools/v02_comparison.json`.
+
+## What changed in v0.6
+
+Each loop now reports how far AI itself carries it, computed from the AI-qualified readings v0.5 already recorded, so no input changed (`spec/ai-driven-v0.6.md`).
+
+- **AI builds changes, but does not yet fix the product.** In n8n, OpenClaw and PostHog, AI turns a request into a plan and drafts the change, so Request → Release reaches AI L2. In no product does AI drive Issue → Fix. Where the fix loop reaches L2 (n8n, OpenClaw, Hermes), rules or people diagnose and propose.
+- **One reading holds the agent runtimes back.** Hermes and OpenClaw learn from experience and propose skill changes with AI (LRN-06 2, LRN-07 3), but their AI explains errors only when asked (LRN-05 1). AI diagnosis is the single step between them and an AI-driven fix loop.
+- **No product's AI drives the expansion loop.** EXP-05 AI is at most 1.
 
 ## What changed in v0.5.1
 

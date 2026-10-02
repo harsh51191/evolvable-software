@@ -23,13 +23,13 @@ For an AI fact that a shipped opt-in setting turns on, give both values.
 
 ## Software Autonomy Level
 
-Headline: **SAL n (name)** · Request → Release Ln · Issue → Fix Ln · Opportunity → Expansion Ln.
+Headline: **SAL n (name) · AI-driven n** · Request → Release Ln (AI Ln) · Issue → Fix Ln (AI Ln) · Opportunity → Expansion Ln (AI Ln).
 
-| Loop | Stages | Spine | Architecture | Governance | Level | With opt-in settings |
-|---|---:|---:|---:|---:|---:|---:|
-| Request → Release | | | | | | |
-| Issue → Fix | | | | | | |
-| Opportunity → Expansion | | | | | | |
+| Loop | Stages | Spine | Architecture | Governance | Level | AI-driven | With opt-in settings |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Request → Release | | | | | | | |
+| Issue → Fix | | | | | | | |
+| Opportunity → Expansion | | | | | | | |
 
 Also report the headline with every alternate reading. A loop's level is the lowest of its four parts.
 

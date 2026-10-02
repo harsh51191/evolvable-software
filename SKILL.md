@@ -26,7 +26,7 @@ Answer one question from evidence: **how ready is this product to evolve itself 
 - **Issue → Fix:** can it find problems users face, fix them and ship the fix?
 - **Opportunity → Expansion:** can it notice adjacent needs and propose or launch them?
 
-Each loop gets a Software Autonomy Level from L0 (manual) to L5 (self-directing). A loop's level is the lowest of four parts: its own stages, a shared release spine, an architecture foundation and a governance ceiling. The headline SAL is the lower of Request → Release and Issue → Fix; Expansion is reported beside it.
+Each loop gets a Software Autonomy Level from L0 (manual) to L5 (self-directing). A loop's level is the lowest of four parts: its own stages, a shared release spine, an architecture foundation and a governance ceiling. The headline SAL is the lower of Request → Release and Issue → Fix; Expansion is reported beside it. Beside each loop, the scorer reports how far AI itself carries it, from the AI-qualified readings.
 
 The six-capability profile explains the levels:
 
@@ -123,6 +123,7 @@ The plan starts with what blocks the next autonomy level, then orders criterion 
 Use `references/scorecard-template.md`. Report:
 
 - the headline SAL, each loop's level and the part that holds it there;
+- how far AI itself drives each loop (the AI-driven levels) and what AI needs for its next level;
 - critical controls and which fail;
 - what blocks the next level of each loop;
 - the profile with ranges, the opt-in reading and the scope facts;

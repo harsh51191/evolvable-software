@@ -4,7 +4,7 @@
   "source": "github.com/anomalyco/opencode @ 2fa3363c924c5c3e367b84a87ae478296a0ed59b (dev)",
   "archetype": "agent-runtime",
   "framework": "EVOLVE",
-  "framework_version": "0.5.1",
+  "framework_version": "0.6.0",
   "scope_facts": {
     "persistent_data": true,
     "schema_changes": true,
@@ -147,7 +147,41 @@
         "observed": "n/a",
         "status": "n/a"
       }
-    ]
+    ],
+    "ai_driven": {
+      "headline": 0,
+      "headline_name": "AI drives no stage",
+      "loops": {
+        "request": {
+          "level": 0,
+          "name": "AI drives no stage",
+          "stages": {
+            "DEL-01": 0,
+            "DEL-04": 1
+          },
+          "blockers": []
+        },
+        "fix": {
+          "level": 0,
+          "name": "AI drives no stage",
+          "stages": {
+            "LRN-05": 0,
+            "LRN-06": 0,
+            "LRN-07": 0,
+            "LRN-08": null
+          },
+          "blockers": []
+        },
+        "expansion": {
+          "level": 0,
+          "name": "AI drives no stage",
+          "stages": {
+            "EXP-05": 0
+          },
+          "blockers": []
+        }
+      }
+    }
   },
   "sensitivity": {
     "raise_headline": [],
@@ -613,6 +647,14 @@
               "governance": 2
             }
           }
+        },
+        "ai_driven": {
+          "headline": 0,
+          "loops": {
+            "request": 0,
+            "fix": 0,
+            "expansion": 0
+          }
         }
       }
     },
@@ -655,6 +697,14 @@
               "architecture": 2,
               "governance": 2
             }
+          }
+        },
+        "ai_driven": {
+          "headline": 0,
+          "loops": {
+            "request": 0,
+            "fix": 0,
+            "expansion": 0
           }
         }
       }

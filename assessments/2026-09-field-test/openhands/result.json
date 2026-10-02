@@ -4,7 +4,7 @@
   "source": "github.com/OpenHands/OpenHands @ 21cc5c6170fe093c0fcd23ffc61949f4933e17b9 (main) + github.com/OpenHands/software-agent-sdk @ 5ffdd2933c51423e302f5ee5e5b66df0ad9cc28a (main) + github.com/OpenHands/automation @ ec4c5cc0cb05f3fb01816b36ff6271f6680b6675 (main, 2026-09-30)",
   "archetype": "agent-runtime",
   "framework": "EVOLVE",
-  "framework_version": "0.5.1",
+  "framework_version": "0.6.0",
   "scope_facts": {
     "persistent_data": true,
     "schema_changes": true,
@@ -182,7 +182,86 @@
         "observed": "n/a",
         "status": "n/a"
       }
-    ]
+    ],
+    "ai_driven": {
+      "headline": 0,
+      "headline_name": "AI drives no stage",
+      "loops": {
+        "request": {
+          "level": 0,
+          "name": "AI drives no stage",
+          "stages": {
+            "DEL-01": 0,
+            "DEL-04": 1
+          },
+          "blockers": [
+            {
+              "part": "spine",
+              "stage": "Build",
+              "needs": "product build path ≥ 2",
+              "observed": "DEL-04 1",
+              "control": null
+            },
+            {
+              "part": "stages",
+              "stage": "Intake",
+              "needs": "DEL-01 ≥ 2",
+              "observed": "0",
+              "control": null
+            }
+          ]
+        },
+        "fix": {
+          "level": 0,
+          "name": "AI drives no stage",
+          "stages": {
+            "LRN-05": 0,
+            "LRN-06": 0,
+            "LRN-07": 0,
+            "LRN-08": null
+          },
+          "blockers": [
+            {
+              "part": "spine",
+              "stage": "Build",
+              "needs": "product build path ≥ 2",
+              "observed": "DEL-04 1, LRN-07 0",
+              "control": null
+            },
+            {
+              "part": "stages",
+              "stage": "Diagnose",
+              "needs": "LRN-05 ≥ 2",
+              "observed": "0",
+              "control": null
+            },
+            {
+              "part": "stages",
+              "stage": "Propose",
+              "needs": "LRN-06 ≥ 2",
+              "observed": "0",
+              "control": null
+            }
+          ]
+        },
+        "expansion": {
+          "level": 0,
+          "name": "AI drives no stage",
+          "stages": {
+            "EXP-05": 0
+          },
+          "blockers": [
+            {
+              "part": "stages",
+              "stage": "Propose",
+              "needs": "EXP-05 ≥ 2",
+              "observed": "0",
+              "control": null
+            }
+          ]
+        }
+      }
+    }
   },
   "sensitivity": {
     "raise_headline": [],
@@ -672,6 +751,14 @@
               "governance": 2
             }
           }
+        },
+        "ai_driven": {
+          "headline": 0,
+          "loops": {
+            "request": 0,
+            "fix": 0,
+            "expansion": 0
+          }
         }
       }
     },
@@ -714,6 +801,14 @@
               "architecture": 1,
               "governance": 2
             }
+          }
+        },
+        "ai_driven": {
+          "headline": 0,
+          "loops": {
+            "request": 0,
+            "fix": 0,
+            "expansion": 0
           }
         }
       }

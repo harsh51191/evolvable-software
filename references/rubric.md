@@ -91,9 +91,13 @@ A loop's level is the highest level whose conditions, and every lower level's co
 
 In the conditions below, `path` is the loop's build path: the criteria through which people (`people`) or the product (`product`) build a change. `rollback` is the lower of GOV-05 when `definition_change_path` is true and DEL-11 when `code_release_path` is true. `every` applies a threshold to every applicable criterion of a capability. `operated` requires the operated facet.
 
+## AI-driven loop levels
+
+Beside each loop's level, the scorer reports how far AI itself carries the loop. It re-runs the loop rules with each AI-performable stage criterion replaced by its AI-qualified reading (the `driven` block of `ai_view`: DEL-01 and DEL-04 for Request → Release; LRN-05 to LRN-08 for Issue → Fix; EXP-05 for Opportunity → Expansion). Everything else stays as it is. The AI-driven level is at most the loop's own level, and starts at L2, the first level at which the product performs stage work; below that it is 0, "AI drives no stage". A missing or `not_evidenced` AI reading counts as 0. The AI-driven headline is the lower of the Request → Release and Issue → Fix AI levels.
+
 ## AI Readiness View
 
-A second reading, separate from SAL: **how safely can the product run AI in production?** The SAL calculation never uses it, and the AIR checks are not part of any EVOLVE capability.
+A supporting reading, separate from SAL: **how safely can the product run AI in production?** The SAL calculation never uses it, and the AIR checks are not part of any EVOLVE capability.
 
 - **Dimensions:**
   - Context: AIR-03, AIR-04.
@@ -117,7 +121,7 @@ A second reading, separate from SAL: **how safely can the product run AI in prod
 ```json evolve-model
 {
   "framework": "EVOLVE",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "capabilities": {
     "ARC": "Elastic",
     "DEL": "Velocity",
@@ -379,6 +383,11 @@ A second reading, separate from SAL: **how safely can the product run AI in prod
     },
     "reading_inventory_surface": {
       "ARC-08": "ai_providers"
+    },
+    "driven": {
+      "request": ["DEL-01", "DEL-04"],
+      "fix": ["LRN-05", "LRN-06", "LRN-07", "LRN-08"],
+      "expansion": ["EXP-05"]
     },
     "footprint": {
       "Operate": [

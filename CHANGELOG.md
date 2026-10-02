@@ -1,13 +1,19 @@
 # Changelog
 
-## EVOLVE v0.5.1, 2026-10-02
+## EVOLVE v0.6.0, 2026-10-02
+
+### Added
+
+- **AI-driven level per loop, on the headline.** Each loop is re-scored with its AI-performable stages (DEL-01, DEL-04, LRN-05 to LRN-08, EXP-05) read only on their AI-qualified readings, so the report shows how far AI itself carries each loop: **SAL 2 · AI-driven 0 · Request → Release L2 (AI L2) · Issue → Fix L2 (AI L0) · …**. AI first drives a stage at L2 and never above the loop's own level. The scorer lists what AI needs for its next level. `spec/ai-driven-v0.6.md` records the design.
 
 ### Changed
 
+- AI Readiness becomes a supporting view and moves below the profile in the scorecard. It still never changes SAL.
 - **Scheduled work joins the backup-and-restore inventory (ARC-09).** Restoring a job is not enough: it can resume quietly under credentials or permissions that are no longer valid. Level 3 for this surface needs a tested restore, a list of what will run next and as whom, and a check of each job's current permissions and credentials before it runs. Products with no user-defined scheduled work record it as `n/a`. Raised by a practitioner running OpenClaw in production.
 
 ### Field test
 
+- AI drives Request → Release at L2 in n8n, OpenClaw and PostHog, and Issue → Fix nowhere. Every AI-driven headline is 0. SAL results are unchanged.
 - Hermes and OpenClaw score 3 on scheduled work and still pass the restore control. Discourse and Frappe score 2. Discourse now fails the restore control; no autonomy level changes.
 
 ## EVOLVE v0.5.0 (AI Readiness), 2026-10-01

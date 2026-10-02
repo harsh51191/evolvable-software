@@ -21,7 +21,9 @@ Each loop gets a **Software Autonomy Level (SAL)** from L0 to L5, modelled on th
 | L4 | Policy-bounded | Low-risk changes ship without a person, under policy, with staged exposure, measurement and automatic rollback. |
 | L5 | Self-directing | The product initiates, ships and measures change within policy, backed by operational evidence. |
 
-The headline is the lower of the first two loops, with Expansion reported beside it, for example **SAL 2 · Request → Release L2 · Issue → Fix L2 · Expansion L1**. The scorer always names what blocks the next level.
+Beside each loop's level, EVOLVE reports how far **AI itself** carries that loop. Each loop is re-scored with its AI-performable stages (turning requests into specifications, building changes, diagnosing issues, proposing fixes, learning from experience, proposing new capabilities) read only on what AI does there. AI first drives a stage at L2, and never above the loop's own level; **AI L0** means AI drives no stage.
+
+The headline is the lower of the first two loops, with Expansion reported beside it, for example **SAL 2 · AI-driven 0 · Request → Release L2 (AI L2) · Issue → Fix L2 (AI L0) · Expansion L1 (AI L0)**. The first number says how far the product can evolve itself; the second, how much of that AI does. The scorer always names what blocks the next level, for the product and for its AI.
 
 Behind the levels is the **EVOLVE profile**: six capabilities, each scored 0 to 4.
 
@@ -34,7 +36,7 @@ Behind the levels is the **EVOLVE profile**: six capabilities, each scored 0 to 
 | **V** | Vet (`GOV`) | Is every change reviewed, policy-gated, audited and reversible, including the changes it makes to itself? |
 | **E** | Expand (`EXP`) | Does it find and launch adjacent value? |
 
-Beside SAL, EVOLVE reports **AI Readiness** for products with AI features: how safely the product runs AI in production. It is never folded into SAL.
+As a supporting view, EVOLVE reports **AI Readiness** for products with AI features: whether the AI features themselves are safe to run in production. It never changes SAL or the AI-driven levels.
 
 | Dimension | Checks |
 |---|---|
@@ -45,7 +47,7 @@ Beside SAL, EVOLVE reports **AI Readiness** for products with AI features: how s
 
 Each dimension is the floor of its mean; the headline is the weakest dimension, from **L0 Foundational gap** to **L4 Adaptive and operationally proven**. Three gates (permission-preserving access, regression evaluation, traceability) cap it at L2, labelled *not production-governed*. A descriptive **AI Capability Footprint** shows what the AI does (operate, build, diagnose and improve, expand) with a level per area but no headline; it never changes AI Readiness or SAL.
 
-This is a **public beta**. It is designed to produce a falsifiable assessment, not a universal software leaderboard. `spec/evolve-v0.4-draft.md` explains the design and every decision behind it; `spec/ai-readiness-v0.5-draft.md` covers AI Readiness.
+This is a **public beta**. It is designed to produce a falsifiable assessment, not a universal software leaderboard. `spec/evolve-v0.4-draft.md` explains the design and every decision behind it; `spec/ai-readiness-v0.5-draft.md` covers AI Readiness, and `spec/ai-driven-v0.6.md` the AI-driven levels.
 
 ## Field-test results
 
@@ -53,29 +55,33 @@ EVOLVE was run on 11 open-source products from their public source code. Full ta
 
 > **Provisional, single rater.** These readings come from one rater and have not been reviewed by the projects' maintainers or by a second rater. Read them as findings to check, not rankings.
 
-| Product | Archetype | SAL | AI Readiness |
-|---|---|---:|---|
-| n8n | configurable platform | **2** | L2 Deployed with material control gaps |
-| OpenClaw | agent runtime | **2** | L1 Experimental |
-| PostHog | focused application | **1** | L2 Deployed with material control gaps |
-| OpenHands | agent runtime | **1** | L2 Deployed with material control gaps |
-| Hermes Agent | agent runtime | **1** | L1 Experimental |
-| Dify | configurable platform | **1** | L1 Experimental |
-| Discourse | focused application | **1** | no AI by default; L1 Experimental with opt-in |
-| Directus | configurable platform | **1** | L0 Foundational gap |
-| Frappe | configurable platform | **1** | no AI features |
-| OpenCode | agent runtime | **0** | L1 Experimental |
-| LibreChat | focused application | **0** | L0 Foundational gap |
+| Product | Archetype | SAL | Request → Release | Issue → Fix | Expansion | AI Readiness |
+|---|---|---:|---|---|---|---|
+| n8n | configurable platform | **2** | L2 (AI L2) | L2 (AI L0) | L1 (AI L0) | L2 Deployed with material control gaps |
+| OpenClaw | agent runtime | **2** | L2 (AI L2) | L2 (AI L0) | L1 (AI L0) | L1 Experimental |
+| PostHog | focused application | **1** | L2 (AI L2) | L1 (AI L0) | L1 (AI L0) | L2 Deployed with material control gaps |
+| Hermes Agent | agent runtime | **1** | L1 (AI L0) | L2 (AI L0) | L1 (AI L0) | L1 Experimental |
+| OpenHands | agent runtime | **1** | L1 (AI L0) | L1 (AI L0) | L1 (AI L0) | L2 Deployed with material control gaps |
+| Dify | configurable platform | **1** | L1 (AI L0) | L1 (AI L0) | L1 (AI L0) | L1 Experimental |
+| Discourse | focused application | **1** | L1 (AI L0) | L1 (AI L0) | L0 (AI L0) | no AI by default; L1 Experimental with opt-in |
+| Directus | configurable platform | **1** | L1 (AI L0) | L1 (AI L0) | L1 (AI L0) | L0 Foundational gap |
+| Frappe | configurable platform | **1** | L1 (AI L0) | L1 (AI L0) | L1 (AI L0) | no AI features |
+| OpenCode | agent runtime | **0** | L0 (AI L0) | L0 (AI L0) | L0 (AI L0) | L1 Experimental |
+| LibreChat | focused application | **0** | L0 (AI L0) | L0 (AI L0) | L0 (AI L0) | L0 Foundational gap |
+
+No product's AI drives both the request and the fix loop, so every AI-driven headline is 0.
 
 What stands out:
 
+- **AI builds changes, but does not yet fix the product.** In n8n, OpenClaw and PostHog, AI turns requests into plans and drafts the change (Request → Release, AI L2). In no product does AI diagnose issues well enough to drive the fix loop. Hermes and OpenClaw come closest: their AI learns from experience and proposes skill changes, but only explains errors when asked.
 - **No product reaches SAL 3.** Definition rollback fails in all eleven: each rolls back some surfaces (workflows, skills) but not all (credentials, memory, configuration).
-- **No product blocks a release on an AI regression.** Every product with AI fails the regression-evaluation gate, so none can pass AI Readiness L2 yet.
+- **No product blocks a release on an AI regression.** Every product with AI fails the regression-evaluation gate, so none can reach AI Readiness L3 yet.
 - **Expansion is the least developed loop.** No product clusters unmet demand into themes or proposes an adjacent capability on its own.
 
 ## What is included
 
 - 66 anchored criteria in six capabilities, each with a 0–4 ladder, plus eight AI Readiness checks (AIR) and AI-qualified readings of 13 existing criteria.
+- An AI-driven level per loop: how far AI itself carries the loop, with what it needs for its next level.
 - Three loops, each scored by its weakest stage. A loop's level is the lowest of four parts: the loop's own stages, a shared release spine (build, verify, stage, release, observe, roll back), an architecture foundation and a governance ceiling.
 - Seven critical controls:
   - definition rollback;
@@ -192,7 +198,7 @@ CHANGELOG.md                      Version history
 
 ## Name and version
 
-EVOLVE v0.5.1, public beta 5, 2 October 2026. EVOLVE was previously the Malleability and Self-Evolution Readiness (MSR) framework; see `CHANGELOG.md` for what changed and why. "EVOLVE" and "Software Autonomy Level" are working names until a trademark and prior-use search is complete.
+EVOLVE v0.6.0, public beta 6, 2 October 2026. EVOLVE was previously the Malleability and Self-Evolution Readiness (MSR) framework; see `CHANGELOG.md` for what changed and why. "EVOLVE" and "Software Autonomy Level" are working names until a trademark and prior-use search is complete.
 
 ## License
 

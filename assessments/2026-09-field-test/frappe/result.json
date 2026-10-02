@@ -4,7 +4,7 @@
   "source": "github.com/frappe/frappe @ 82b0384810030c8d347780538821a3b006375d28 (develop)",
   "archetype": "configurable-application-platform",
   "framework": "EVOLVE",
-  "framework_version": "0.5.1",
+  "framework_version": "0.6.0",
   "scope_facts": {
     "persistent_data": true,
     "schema_changes": true,
@@ -154,7 +154,86 @@
         "observed": "n/a",
         "status": "n/a"
       }
-    ]
+    ],
+    "ai_driven": {
+      "headline": 0,
+      "headline_name": "AI drives no stage",
+      "loops": {
+        "request": {
+          "level": 0,
+          "name": "AI drives no stage",
+          "stages": {
+            "DEL-01": 0,
+            "DEL-04": 0
+          },
+          "blockers": [
+            {
+              "part": "spine",
+              "stage": "Build",
+              "needs": "product build path ≥ 2",
+              "observed": "DEL-04 0",
+              "control": null
+            },
+            {
+              "part": "stages",
+              "stage": "Intake",
+              "needs": "DEL-01 ≥ 2",
+              "observed": "0",
+              "control": null
+            }
+          ]
+        },
+        "fix": {
+          "level": 0,
+          "name": "AI drives no stage",
+          "stages": {
+            "LRN-05": 0,
+            "LRN-06": 0,
+            "LRN-07": 0,
+            "LRN-08": 0
+          },
+          "blockers": [
+            {
+              "part": "spine",
+              "stage": "Build",
+              "needs": "product build path ≥ 2",
+              "observed": "DEL-04 0, LRN-07 0",
+              "control": null
+            },
+            {
+              "part": "stages",
+              "stage": "Diagnose",
+              "needs": "LRN-05 ≥ 2",
+              "observed": "0",
+              "control": null
+            },
+            {
+              "part": "stages",
+              "stage": "Propose",
+              "needs": "LRN-06 ≥ 2",
+              "observed": "0",
+              "control": null
+            }
+          ]
+        },
+        "expansion": {
+          "level": 0,
+          "name": "AI drives no stage",
+          "stages": {
+            "EXP-05": 0
+          },
+          "blockers": [
+            {
+              "part": "stages",
+              "stage": "Propose",
+              "needs": "EXP-05 ≥ 2",
+              "observed": "0",
+              "control": null
+            }
+          ]
+        }
+      }
+    }
   },
   "sensitivity": {
     "raise_headline": [],
@@ -463,6 +542,14 @@
               "governance": 3
             }
           }
+        },
+        "ai_driven": {
+          "headline": 0,
+          "loops": {
+            "request": 0,
+            "fix": 0,
+            "expansion": 0
+          }
         }
       }
     },
@@ -505,6 +592,14 @@
               "architecture": 2,
               "governance": 2
             }
+          }
+        },
+        "ai_driven": {
+          "headline": 0,
+          "loops": {
+            "request": 0,
+            "fix": 0,
+            "expansion": 0
           }
         }
       }

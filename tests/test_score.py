@@ -429,8 +429,9 @@ class AIReadinessTests(unittest.TestCase):
         for cid in MODEL["ai_view"]["readings"]:
             data["scores"][cid]["ai"] = {"status": "not_evidenced", "searched": "src/"}
         after = result(data)
+        strip = lambda sal: {k: v for k, v in sal.items() if k != "ai_driven"}
         for variant in ("default", "high", "available"):
-            self.assertEqual(base["variants"][variant]["sal"], after["variants"][variant]["sal"])
+            self.assertEqual(strip(base["variants"][variant]["sal"]), strip(after["variants"][variant]["sal"]))
             self.assertEqual(base["variants"][variant]["capabilities"], after["variants"][variant]["capabilities"])
         self.assertNotEqual(ai(data)["level"], 3)
 
@@ -572,6 +573,57 @@ class AIReadinessTests(unittest.TestCase):
         self.assertNotIn("LRN-08 (AI)", ai(data)["dimensions"]["Governance"]["contributors"])
         data = assessment(3)
         self.assertIn("LRN-08 (AI)", ai(data)["dimensions"]["Governance"]["contributors"])
+
+def driven(data, variant="default"):
+    return sal(data, variant)["ai_driven"]
+
+
+class AIDrivenTests(unittest.TestCase):
+    """How far AI itself carries each loop (v0.6)."""
+
+    def test_a_product_with_no_ai_is_driven_by_ai_nowhere(self):
+        data = assessment(3, facts={"ai_features": False, "ai_data_access": False, "ai_actions": False})
+        self.assertEqual(sal(data)["headline"], 3)
+        self.assertEqual(driven(data)["headline"], 0)
+        self.assertEqual(driven(data)["headline_name"], "AI drives no stage")
+        self.assertTrue(all(v["level"] == 0 for v in driven(data)["loops"].values()))
+
+    def test_ai_level_never_exceeds_the_loop_level(self):
+        data = assessment(2)
+        for cid in MODEL["ai_view"]["driven"]["request"]:
+            set_ai(data, cid, 4)
+        self.assertEqual(driven(data)["loops"]["request"]["level"], sal(data)["loops"]["request"]["level"])
+
+    def test_rule_based_diagnosis_does_not_count_as_ai(self):
+        data = assessment(3)
+        self.assertEqual(driven(data)["loops"]["fix"]["level"], 3)
+        set_ai(data, "LRN-05", 0, evidence="rule-based grouping")
+        self.assertEqual(sal(data)["loops"]["fix"]["level"], 3)
+        self.assertEqual(driven(data)["loops"]["fix"]["level"], 0)
+        self.assertTrue(any("LRN-05" in b["needs"] for b in driven(data)["loops"]["fix"]["blockers"]))
+
+    def test_headline_is_the_lower_of_the_request_and_fix_loops(self):
+        data = assessment(3)
+        set_ai(data, "DEL-01", 2)
+        self.assertEqual(driven(data)["loops"]["request"]["level"], 2)
+        self.assertEqual(driven(data)["headline"], 2)
+
+    def test_not_evidenced_ai_reading_counts_as_zero(self):
+        data = assessment(3)
+        data["scores"]["EXP-05"]["ai"] = {"status": "not_evidenced", "searched": "src/"}
+        self.assertEqual(driven(data)["loops"]["expansion"]["level"], 0)
+
+    def test_alternate_ai_readings_move_only_the_high_variant(self):
+        data = assessment(3)
+        set_ai(data, "DEL-01", 2, alt_score=3, alt_note="close to a specification")
+        self.assertEqual(driven(data)["loops"]["request"]["level"], 2)
+        self.assertEqual(driven(data, "high")["loops"]["request"]["level"], 3)
+
+    def test_headline_text_reports_ai_beside_each_loop(self):
+        text = score.headline_text(sal(assessment(3)), MODEL)
+        self.assertIn("AI-driven 3", text)
+        self.assertIn("Issue → Fix L3 (AI L3)", text)
+
 
 class ScoringTests(unittest.TestCase):
     def test_rounding_is_half_up_and_applied_once(self):

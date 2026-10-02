@@ -4,7 +4,7 @@
   "source": "github.com/danny-avila/LibreChat @ 14f7b2865692d27364c934ecb9912496371018bb (main)",
   "archetype": "focused-application",
   "framework": "EVOLVE",
-  "framework_version": "0.5.1",
+  "framework_version": "0.6.0",
   "scope_facts": {
     "persistent_data": true,
     "schema_changes": true,
@@ -140,7 +140,65 @@
         "observed": "n/a",
         "status": "n/a"
       }
-    ]
+    ],
+    "ai_driven": {
+      "headline": 0,
+      "headline_name": "AI drives no stage",
+      "loops": {
+        "request": {
+          "level": 0,
+          "name": "AI drives no stage",
+          "stages": {
+            "DEL-01": 0,
+            "DEL-04": 0
+          },
+          "blockers": [
+            {
+              "part": "spine",
+              "stage": "Build",
+              "needs": "people build path ≥ 2 or product build path ≥ 2",
+              "observed": "MAL 1.7; DEL-04 0",
+              "control": null
+            }
+          ]
+        },
+        "fix": {
+          "level": 0,
+          "name": "AI drives no stage",
+          "stages": {
+            "LRN-05": 0,
+            "LRN-06": 0,
+            "LRN-07": 0,
+            "LRN-08": null
+          },
+          "blockers": [
+            {
+              "part": "spine",
+              "stage": "Build",
+              "needs": "people build path ≥ 2 or product build path ≥ 2",
+              "observed": "MAL 1.7; DEL-04 0, LRN-07 0",
+              "control": null
+            }
+          ]
+        },
+        "expansion": {
+          "level": 0,
+          "name": "AI drives no stage",
+          "stages": {
+            "EXP-05": 0
+          },
+          "blockers": [
+            {
+              "part": "spine",
+              "stage": "Build",
+              "needs": "people build path ≥ 2 or product build path ≥ 2",
+              "observed": "EXP-02 n/a; DEL-04 0, EXP-03 n/a",
+              "control": null
+            }
+          ]
+        }
+      }
+    }
   },
   "sensitivity": {
     "raise_headline": [],
@@ -601,6 +659,14 @@
               "governance": 2
             }
           }
+        },
+        "ai_driven": {
+          "headline": 0,
+          "loops": {
+            "request": 0,
+            "fix": 0,
+            "expansion": 0
+          }
         }
       }
     },
@@ -643,6 +709,14 @@
               "architecture": 1,
               "governance": 2
             }
+          }
+        },
+        "ai_driven": {
+          "headline": 0,
+          "loops": {
+            "request": 0,
+            "fix": 0,
+            "expansion": 0
           }
         }
       }
