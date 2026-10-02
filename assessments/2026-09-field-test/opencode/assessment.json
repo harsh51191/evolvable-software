@@ -544,7 +544,7 @@
     }
   },
   "limits": "Repository evidence only, dev branch at the tip named above. Enterprise and console behaviour was not traced in depth. Single rater.",
-  "framework_version": "0.5.0",
+  "framework_version": "0.5.1",
   "reading": "**SAL 0.** OpenCode's own agents, commands and configuration are files versioned only by the user's git (GOV-05 1), so no loop has a rollback path at L1. The team's use of OpenCode's GitHub agent on its own repository is not a first-party evolution system under rule 12 (DEL-04 1). **Next level:** versioned, validated configuration with rollback, and a learning path for agents and commands.",
   "framework": "EVOLVE",
   "scope_facts": {

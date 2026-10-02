@@ -1,6 +1,6 @@
 # OpenClaw: EVOLVE v0.5 scorecard
 
-Evaluator: Claude, single rater. Framework: EVOLVE 0.5.0 in this repository.
+Evaluator: Claude, single rater. Framework: EVOLVE 0.5.1 in this repository.
 
 Scope: the openclaw monorepo (gateway, agents, channels, skills and Skill Workshop, plugins and extensions, MCP, Control UI, companion apps, QA and CI). ClawHub (separate repository) and team.openclaw.ai operations are out of scope.
 
@@ -13,7 +13,7 @@ Scope: the openclaw monorepo (gateway, agents, channels, skills and Skill Worksh
 Repository evidence only, main at the tip named above. ClawHub (registry and scanning) is a separate repository. No evaluator plugin is bundled, so measurement depends on third-party or user plugins. The experience review was read from code and tests, not run. Single rater.
 
 ---
-Framework EVOLVE 0.5.0. Date 2026-09-30. Source github.com/openclaw/openclaw @ df2a29cac9ad37c31a0f5a0d977ba3e4fd833cb0 (main). Archetype **agent-runtime**.
+Framework EVOLVE 0.5.1. Date 2026-09-30. Source github.com/openclaw/openclaw @ df2a29cac9ad37c31a0f5a0d977ba3e4fd833cb0 (main). Archetype **agent-runtime**.
 
 Scope facts true: persistent_data, schema_changes, machine_actions, agent_mutations, evolution_auto_apply, definition_change_path, ai_features, ai_data_access, ai_actions. False: multi_tenant, hosted_service, code_release_path.
 
@@ -140,7 +140,7 @@ What the product's AI does. Descriptive levels per area, with no headline: it ne
 | ARC-06 Ceilings measured, not discovered in incidents | not_applicable | excluded |  |  | - |  | Scope fact hosted_service is false: A personal gateway daemon, not a multi-user service. |
 | ARC-07 Service objectives defined and monitored | not_applicable | excluded |  |  | - |  | Scope fact hosted_service is false: A personal gateway daemon, not a multi-user service. |
 | ARC-08 Failure isolation and graceful degradation | assessed | 2 |  |  | A |  | AI-qualified reading: 3. Agents can declare model fallbacks (src/agents/agent-scope-config.ts); plugins run in-process, so a 3 is not defensible under the inventory rule. |
-| ARC-09 Backup, restore and recovery | assessed | 3 |  |  | A | IT | Inventory: data 3, definitions 3, files 3, secrets 3. Backup covers state, configuration, credentials, workspaces, agents and managed skills (src/commands/backup-shared.ts:76), with verification, scheduling and a restore test that round-trips into a fresh target with a matching inventory (src/commands/backup-restore.test.ts:176). Private captures are excluded by design. No recovery objectives are stated (level 4). |
+| ARC-09 Backup, restore and recovery | assessed | 3 |  |  | A | IT | Inventory: data 3, definitions 3, files 3, secrets 3, schedules 3. Backup covers state, configuration, credentials, workspaces, agents and managed skills (src/commands/backup-shared.ts:76), with verification, scheduling and a restore test that round-trips into a fresh target with a matching inventory (src/commands/backup-restore.test.ts:176). Private captures are excluded by design. No recovery objectives are stated (level 4). Scheduled work: cron jobs live in the state database the backup covers; openclaw cron list shows each job's next run and agent (src/cli/cron-cli/shared.ts:498-503); jobs keep their owner and grant generation, and scheduled runs require account provenance to match the persisted owner, so jobs whose owner no longer resolves do not run (src/cron/scheduled-tool-policy.test.ts:44, service.unresolved-owner.test.ts, service.grant-generation.test.ts); interrupted recurring jobs are marked failed rather than replayed after a restart (service.restart-catchup.test.ts:168). |
 | DEL-01 Request intake into a structured change specification | assessed | 2 | 3 |  | A |  | AI-qualified reading: 2. The /learn command turns a request into requirements and sources and stages a pending skill proposal for review, revising existing Workshop skills before creating new ones (src/skills/workshop/learn-prompt.ts). No acceptance criteria or risk class. |
 | DEL-02 Layers deploy independently | assessed | 3 |  |  | A |  | Gateway, Control UI and macOS, iOS and Android companion apps are separate deployables with their own release workflows (apps/, .github/workflows/android-release.yml, ios-release-e2e.yml). |
 | DEL-03 Module boundaries enforced by tooling | assessed | 3 |  |  | A |  | Separate TypeScript projects for core, extensions, UI and scripts (tsconfig.core.json, tsconfig.extensions.projects.json) and a plugin activation boundary test (src/plugin-activation-boundary.test.ts). |

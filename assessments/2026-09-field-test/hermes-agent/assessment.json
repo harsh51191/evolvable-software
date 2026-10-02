@@ -436,7 +436,7 @@
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "hermes backup and import cover the home directory: the sessions database (snapshotted with sqlite3.backup), skills, memory, configuration and secrets such as .env, auth.json and the vault (hermes_cli/backup.py:117-161), with pre-update backups and round-trip tests (tests/hermes_cli/test_backup*.py). No recovery objectives are stated (level 4).",
+      "evidence": "hermes backup and import cover the home directory: the sessions database (snapshotted with sqlite3.backup), skills, memory, configuration and secrets such as .env, auth.json and the vault (hermes_cli/backup.py:117-161), with pre-update backups and round-trip tests (tests/hermes_cli/test_backup*.py). No recovery objectives are stated (level 4). Scheduled work: cron/jobs.json is in every backup and jobs lost during an update are restored automatically (hermes_cli/backup.py:1059, 1600-1665); hermes cron list shows each job's next run (hermes_cli/cron.py:125); jobs run under their own profile (cron/jobs.py:64-68); a pre-run check, on by default, blocks and alerts on jobs whose provider key, delivery target or skills no longer resolve (cron/scheduler_preflight.py:80-90, 387), with tests (tests/cron/test_preflight_credential_verdict_names_home.py).",
       "facets": {
         "implemented": true,
         "tested": true,
@@ -446,7 +446,8 @@
         "data": 3,
         "definitions": 3,
         "files": 3,
-        "secrets": 3
+        "secrets": 3,
+        "schedules": 3
       }
     },
     "DEL-01": {
@@ -634,7 +635,7 @@
     }
   },
   "limits": "Repository evidence only. The self-evolution repository's last commit is 2026-06-17, and only phase 1 (skills) is implemented; phases 2 and 3 were not scored. No live runs were performed, so the effects of background review and the curator are read from code and documentation. Single rater.",
-  "framework_version": "0.5.0",
+  "framework_version": "0.5.1",
   "reading": "**SAL 1.** Issue → Fix reaches L2: background review turns corrections and failures into skill and memory changes by default (LRN-07 3), and hermes doctor diagnoses setup problems (LRN-05 2). Request → Release stops at L1 because requests are chat turns with no specification step (DEL-01 1); raising that one criterion would lift the headline. **Controls:** backup and restore cover every surface including secrets and are tested (ARC-09 3), but configuration and memory lack the rollback skills have (GOV-05 2, inventory) and background changes have no declared scope or rate limit (GOV-10 2).",
   "framework": "EVOLVE",
   "scope_facts": {

@@ -4,7 +4,7 @@
   "source": "github.com/directus/directus @ 2878b4ef8ea9c1d09201debe89b3a5dc1d0bf93a (main)",
   "archetype": "configurable-application-platform",
   "framework": "EVOLVE",
-  "framework_version": "0.5.0",
+  "framework_version": "0.5.1",
   "scope_facts": {
     "persistent_data": true,
     "schema_changes": true,

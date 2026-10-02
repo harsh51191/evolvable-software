@@ -58,7 +58,7 @@ Requires: none
 Size: M
 
 ### ARC-09
-To 3: Supported backup and restore for data, definitions, files and secrets, with automated restore tests.
+To 3: Supported backup and restore for data, definitions, files, secrets and scheduled work, with automated restore tests. For scheduled work, list what will run next and as whom, and re-check each job's permissions and credentials before it runs.
 To 4: Stated RPO and RTO, point-in-time or per-tenant restore, and recorded restore drills.
 Requires: none
 Size: M

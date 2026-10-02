@@ -4,7 +4,7 @@
   "source": "github.com/OpenHands/OpenHands @ 21cc5c6170fe093c0fcd23ffc61949f4933e17b9 (main) + github.com/OpenHands/software-agent-sdk @ 5ffdd2933c51423e302f5ee5e5b66df0ad9cc28a (main) + github.com/OpenHands/automation @ ec4c5cc0cb05f3fb01816b36ff6271f6680b6675 (main, 2026-09-30)",
   "archetype": "agent-runtime",
   "framework": "EVOLVE",
-  "framework_version": "0.5.0",
+  "framework_version": "0.5.1",
   "scope_facts": {
     "persistent_data": true,
     "schema_changes": true,

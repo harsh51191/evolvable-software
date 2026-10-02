@@ -1,6 +1,6 @@
 # Discourse: EVOLVE v0.5 scorecard
 
-Evaluator: Claude, single rater. Framework: EVOLVE 0.5.0 in this repository.
+Evaluator: Claude, single rater. Framework: EVOLVE 0.5.1 in this repository.
 
 Scope: the discourse repository including the plugins bundled in plugins/ (automation, discourse-ai, discourse-workflows, data explorer, chat and others) and the core MCP server. Several of these ship disabled by default as betas. Hosted Discourse and the separate theme CLI and Docker repositories are out of scope.
 
@@ -13,7 +13,7 @@ Scope: the discourse repository including the plugins bundled in plugins/ (autom
 Repository evidence only, main branch at the tip named above. discourse-ai, discourse-workflows and parts of the MCP surface ship disabled by default as betas; they were scored as shipped, and the alternates show the effect of discounting them. Hosted Discourse operations (incidents, ephemeral environments, telemetry pipelines) are invisible here. Single rater.
 
 ---
-Framework EVOLVE 0.5.0. Date 2026-09-30. Source github.com/discourse/discourse @ 2590ea9db1b7c38dcf80298aefd3e7cb3afe1f2b (main). Archetype **focused-application**.
+Framework EVOLVE 0.5.1. Date 2026-09-30. Source github.com/discourse/discourse @ 2590ea9db1b7c38dcf80298aefd3e7cb3afe1f2b (main). Archetype **focused-application**.
 
 Scope facts true: persistent_data, schema_changes, multi_tenant, hosted_service, machine_actions, definition_change_path. False: agent_mutations, evolution_auto_apply, code_release_path, ai_features, ai_data_access, ai_actions.
 
@@ -41,7 +41,7 @@ Progress toward the next level: Request → Release 2 of 4 conditions for L2; Is
 | Definition rollback | GOV-05 ≥ 3 | 2 | fail |
 | Release rollback | DEL-11 ≥ 3 | n/a | n/a |
 | Safe migrations | ARC-02 ≥ 3 | 3 | pass |
-| Tested backup and restore | ARC-09 ≥ 3 | 3 | pass |
+| Tested backup and restore | ARC-09 ≥ 3 | 2 | fail |
 | Tenant isolation | ARC-05 ≥ 3 | 2 | fail |
 | Security as infrastructure | GOV-04 ≥ 3 | 2 | fail |
 | Bounded self-change | not applicable (agent_mutations and evolution_auto_apply false) | n/a | n/a |
@@ -61,7 +61,7 @@ Progress toward the next level: Request → Release 2 of 4 conditions for L2; Is
 
 | Capability | Default | Range with alternate readings | With opt-in settings | Assessed only | If every criterion counted |
 |---|---:|---|---:|---:|---:|
-| Elastic (ARC) | 2.1 | 2.1–2.3 | 2.1 | 2.1 | 2.1 |
+| Elastic (ARC) | 2.0 | 2.0–2.2 | 2.0 | 2.0 | 2.0 |
 | Velocity (DEL) | 1.4 | 1.4–1.9 | 1.6 | 1.4 | 1.4 |
 | Open (MAL) | 2.1 | 2.1–2.3 | 2.3 | 2.1 | 1.8 |
 | Learn (LRN) | 1.4 | 1.4–1.5 | 1.5 | 1.4 | 1.4 |
@@ -114,7 +114,7 @@ What the product's AI does. Descriptive levels per area, with no headline: it ne
 | ARC Data | 2.5 |
 | ARC Scale | 2.0 |
 | ARC Capacity | 1.5 |
-| ARC Resilience | 2.5 |
+| ARC Resilience | 2.0 |
 | DEL Intake | 1.0 |
 | DEL Build | 0.7 |
 | DEL Verify | 2.0 |
@@ -148,7 +148,7 @@ What the product's AI does. Descriptive levels per area, with no headline: it ne
 | ARC-06 Ceilings measured, not discovered in incidents | assessed | 2 |  |  | A |  | Benchmark script (script/bench.rb); no documented per-surface limits or CI budgets. |
 | ARC-07 Service objectives defined and monitored | assessed | 1 |  |  | A |  | No published objectives in this repository; the prometheus exporter is a separate plugin not bundled here. |
 | ARC-08 Failure isolation and graceful degradation | assessed | 2 |  |  | A |  | AI-qualified reading: 0. Outbound requests go through FinalDestination with timeouts, and safe mode disables plugins and themes for a session (config/routes.rb:2036). Plugins run in-process. |
-| ARC-09 Backup, restore and recovery | assessed | 3 |  |  | A | IT | Inventory: data 3, definitions 3, files 3, secrets n/a. Built-in backup and restore of the database (data, site settings, themes) and uploads to local or S3 stores, with restore specs for both, including multisite (lib/backup_restore, spec/lib/backup_restore/database_restorer_spec.rb, uploads_restorer_spec.rb). Secrets live in the deployment environment, outside the product. No recovery objectives are stated (level 4). |
+| ARC-09 Backup, restore and recovery | assessed | 2 |  |  | A | IT | Inventory: data 3, definitions 3, files 3, secrets n/a, schedules 2. Built-in backup and restore of the database (data, site settings, themes) and uploads to local or S3 stores, with restore specs for both, including multisite (lib/backup_restore, spec/lib/backup_restore/database_restorer_spec.rb, uploads_restorer_spec.rb). Secrets live in the deployment environment, outside the product. No recovery objectives are stated (level 4). Scheduled work: restore pauses Sidekiq, clears its queues and limits email to staff (lib/backup_restore/restorer.rb:55-59, 132-135), and topic timers re-check the scheduling user's current permissions when they run (app/jobs/regular/close_topic.rb:14, publish_topic_to_category.rb:7-13). No view lists upcoming timers and the user each runs as, so scheduled work stays at 2 and the criterion reads 2. |
 | DEL-01 Request intake into a structured change specification | assessed | 1 | 2 |  | A |  | AI-qualified reading: 0. Communities collect requests as topics; the bundled topic-voting plugin ranks them (plugins/discourse-topic-voting). They are not linked to the settings or screens involved. |
 | DEL-02 Layers deploy independently | assessed | 1 |  |  | A |  | Rails and Ember monolith deployed as one application; container tooling lives in a separate repository. |
 | DEL-03 Module boundaries enforced by tooling | assessed | 1 |  |  | A |  | Plugin API is a contract, but internal module boundaries are convention; no architectural lint. |

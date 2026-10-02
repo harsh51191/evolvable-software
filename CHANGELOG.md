@@ -1,8 +1,18 @@
 # Changelog
 
-## EVOLVE v0.5.0 (AI Readiness), unreleased, 2026-10-01
+## EVOLVE v0.5.1, 2026-10-02
 
-On the `claude/ai-readiness-v0.5` branch, not merged. `spec/ai-readiness-v0.5-draft.md` records the design, the review and every decision.
+### Changed
+
+- **Scheduled work joins the backup-and-restore inventory (ARC-09).** Restoring a job is not enough: it can resume quietly under credentials or permissions that are no longer valid. Level 3 for this surface needs a tested restore, a list of what will run next and as whom, and a check of each job's current permissions and credentials before it runs. Products with no user-defined scheduled work record it as `n/a`. Raised by a practitioner running OpenClaw in production.
+
+### Field test
+
+- Hermes and OpenClaw score 3 on scheduled work and still pass the restore control. Discourse and Frappe score 2. Discourse now fails the restore control; no autonomy level changes.
+
+## EVOLVE v0.5.0 (AI Readiness), 2026-10-01
+
+`spec/ai-readiness-v0.5-draft.md` records the design, the review and every decision.
 
 ### Added
 

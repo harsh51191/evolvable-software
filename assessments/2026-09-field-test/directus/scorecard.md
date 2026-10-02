@@ -1,6 +1,6 @@
 # Directus: EVOLVE v0.5 scorecard
 
-Evaluator: Claude, single rater. Framework: EVOLVE 0.5.0 in this repository.
+Evaluator: Claude, single rater. Framework: EVOLVE 0.5.1 in this repository.
 
 Scope: the directus monorepo (API, Data Studio app, SDK, CLI, extensions SDK and registry, AI assistant and MCP server). Directus Cloud, the hosted marketplace catalogue and templates published in other repositories are out of scope.
 
@@ -13,7 +13,7 @@ Scope: the directus monorepo (API, Data Studio app, SDK, CLI, extensions SDK and
 Repository evidence only, main branch at the tip named above. No running instance was inspected, so approval and preview behaviour is read from code. Directus Cloud, the hosted marketplace catalogue and published templates are out of scope. The repository is under a source-available licence, so some features may be licence-gated (api/src/license); entitlement checks were not traced per feature. Single rater; 18 alternate readings mark likely disagreements.
 
 ---
-Framework EVOLVE 0.5.0. Date 2026-09-30. Source github.com/directus/directus @ 2878b4ef8ea9c1d09201debe89b3a5dc1d0bf93a (main). Archetype **configurable-application-platform**.
+Framework EVOLVE 0.5.1. Date 2026-09-30. Source github.com/directus/directus @ 2878b4ef8ea9c1d09201debe89b3a5dc1d0bf93a (main). Archetype **configurable-application-platform**.
 
 Scope facts true: persistent_data, schema_changes, hosted_service, machine_actions, agent_mutations, definition_change_path, ai_features, ai_data_access, ai_actions. False: multi_tenant, evolution_auto_apply, code_release_path.
 

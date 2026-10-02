@@ -18,7 +18,7 @@ Dispatch one read-only explorer per capability (six in parallel), or one per are
 - Data: query paths for lists and filters, index mappings, caching; migration framework, down steps, online or expand-and-contract tooling, migration tests in CI, how runtime definition changes reach storage.
 - Scale: where sessions, caches, locks and files live; singletons and leader election; deployment manifests and replica counts; queue framework, retries, back-off, dead-lettering, idempotency, once-only scheduling; tenancy model, quotas, isolation tests.
 - Capacity: load and performance suites, documented limits, CI budgets; metrics exported for core paths, published objectives, alert rules, error budgets.
-- Resilience: for each connector, plugin lane, AI provider, tenant workload and internal service, its timeouts, retries, circuit breakers, bulkheads, fallbacks and fault-injection tests; backup and restore commands for data, definitions, files and secrets; restore tests; stated RPO and RTO; drill records.
+- Resilience: for each connector, plugin lane, AI provider, tenant workload and internal service, its timeouts, retries, circuit breakers, bulkheads, fallbacks and fault-injection tests; backup and restore commands for data, definitions, files, secrets and scheduled work; for scheduled jobs, whether operators can list what runs next and as whom, and whether each run re-checks permissions and credentials; restore tests; stated RPO and RTO; drill records.
 
 ## Velocity: delivery (DEL)
 - Intake: request, feedback or feature-request objects; AI planners that ask clarifying questions; specifications with acceptance criteria, impact and risk class; who confirms them.

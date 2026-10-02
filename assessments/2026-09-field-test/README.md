@@ -63,7 +63,7 @@ What the results say:
 
 - **No system reached L3 in this repository-based, single-rater assessment.** Each fails at least one critical control:
   - **Definition rollback fails in all eleven.** Rollback covers some surfaces but not all: workflows but not credentials, or skills but not memory and configuration.
-  - **Tested backup and restore passes in three.** Discourse, Hermes and OpenClaw back up and restore every applicable surface, with tests. Frappe's restore is tested, except for the site secrets.
+  - **Tested backup and restore passes in two.** Hermes and OpenClaw back up and restore every applicable surface, with tests, including scheduled jobs: operators can list what runs next, and each job re-checks its credentials or owner before it runs. Discourse restores everything and re-checks permissions on timers, but nothing lists which timers will run next or as whom. Frappe's restore is tested, except for the site secrets, and its scheduled jobs resume without checks.
 - **Request intake decides Request → Release L2.** Only three systems structure a request before acting on it:
   - n8n's planner asks clarifying questions and produces a plan for approval.
   - OpenClaw's `/learn` stages a pending proposal.
@@ -95,6 +95,10 @@ What the results say:
 7. **OpenHands scope.** The OpenHands Automation Service (`OpenHands/automation`) was added after an inter-rater review found it missing.
 
 The v0.3 headline numbers are kept in `tools/v03_comparison.json`, and the v0.2 numbers in `tools/v02_comparison.json`.
+
+## What changed in v0.5.1
+
+Scheduled work is now a fifth surface in the backup-and-restore inventory (ARC-09), after a practitioner running OpenClaw pointed out that a restored job can restart quietly with stale permissions. `tools/migrate_v051.py` scores it for the four products with a restore inventory. Discourse moves from passing to failing the restore control; no autonomy level changes, because Discourse already failed definition rollback.
 
 ## What changed in v0.5
 

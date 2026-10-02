@@ -39,8 +39,8 @@ Read at github.com/openclaw/openclaw @ df2a29cac9ad37c31a0f5a0d977ba3e4fd833cb0 
 
 - **ARC-08 Failure isolation and graceful degradation**: **2** (grade A). Agents can declare model fallbacks (src/agents/agent-scope-config.ts); plugins run in-process, so a 3 is not defensible under the inventory rule.
   - AI-qualified reading: **3** (grade A), facets: implemented, tested. Model fallback attempts and configured provider fallback, tested.
-- **ARC-09 Backup, restore and recovery**: **3** (grade A), facets: implemented, tested. Backup covers state, configuration, credentials, workspaces, agents and managed skills (src/commands/backup-shared.ts:76), with verification, scheduling and a restore test that round-trips into a fresh target with a matching inventory (src/commands/backup-restore.test.ts:176). Private captures are excluded by design. No recovery objectives are stated (level 4).
-  - Inventory: data 3, definitions 3, files 3, secrets 3
+- **ARC-09 Backup, restore and recovery**: **3** (grade A), facets: implemented, tested. Backup covers state, configuration, credentials, workspaces, agents and managed skills (src/commands/backup-shared.ts:76), with verification, scheduling and a restore test that round-trips into a fresh target with a matching inventory (src/commands/backup-restore.test.ts:176). Private captures are excluded by design. No recovery objectives are stated (level 4). Scheduled work: cron jobs live in the state database the backup covers; openclaw cron list shows each job's next run and agent (src/cli/cron-cli/shared.ts:498-503); jobs keep their owner and grant generation, and scheduled runs require account provenance to match the persisted owner, so jobs whose owner no longer resolves do not run (src/cron/scheduled-tool-policy.test.ts:44, service.unresolved-owner.test.ts, service.grant-generation.test.ts); interrupted recurring jobs are marked failed rather than replayed after a restart (service.restart-catchup.test.ts:168).
+  - Inventory: data 3, definitions 3, files 3, secrets 3, schedules 3
 
 ## Velocity (DEL)
 

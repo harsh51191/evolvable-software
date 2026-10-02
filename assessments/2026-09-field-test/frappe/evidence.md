@@ -41,8 +41,8 @@ Read at github.com/frappe/frappe @ 82b0384810030c8d347780538821a3b006375d28 (dev
 ### Resilience
 
 - **ARC-08 Failure isolation and graceful degradation**: **2** (grade A). The automation engine counts failures per rule against a circuit breaker and isolates each row with a savepoint (frappe/automation_engine/runner.py:516-525, drainer.py:74); integrations accept timeouts (frappe/integrations/utils.py:59). Apps run in-process without isolation.
-- **ARC-09 Backup, restore and recovery**: **2** (grade A). bench backup covers the database, public and private files and site config, with optional encryption (frappe/commands/site.py:899-1030, frappe/utils/backups.py), and restore from full and partial backups is tested end to end (frappe/commands/test_commands.py:280-330). The site config holding the encryption key is backed up but its restore is not tested, so secrets stay at 2.
-  - Inventory: data 3, definitions 3, files 3, secrets 2
+- **ARC-09 Backup, restore and recovery**: **2** (grade A). bench backup covers the database, public and private files and site config, with optional encryption (frappe/commands/site.py:899-1030, frappe/utils/backups.py), and restore from full and partial backups is tested end to end (frappe/commands/test_commands.py:280-330). The site config holding the encryption key is backed up but its restore is not tested, so secrets stay at 2. Scheduled work: scheduled job records and server-script scheduler events restore with the database and resume with the scheduler; no check of each job's identity, permissions or credentials before it runs was found (frappe/utils/scheduler.py), so scheduled work is 2.
+  - Inventory: data 3, definitions 3, files 3, secrets 2, schedules 2
 
 ## Velocity (DEL)
 

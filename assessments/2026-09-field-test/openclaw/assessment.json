@@ -411,7 +411,7 @@
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Backup covers state, configuration, credentials, workspaces, agents and managed skills (src/commands/backup-shared.ts:76), with verification, scheduling and a restore test that round-trips into a fresh target with a matching inventory (src/commands/backup-restore.test.ts:176). Private captures are excluded by design. No recovery objectives are stated (level 4).",
+      "evidence": "Backup covers state, configuration, credentials, workspaces, agents and managed skills (src/commands/backup-shared.ts:76), with verification, scheduling and a restore test that round-trips into a fresh target with a matching inventory (src/commands/backup-restore.test.ts:176). Private captures are excluded by design. No recovery objectives are stated (level 4). Scheduled work: cron jobs live in the state database the backup covers; openclaw cron list shows each job's next run and agent (src/cli/cron-cli/shared.ts:498-503); jobs keep their owner and grant generation, and scheduled runs require account provenance to match the persisted owner, so jobs whose owner no longer resolves do not run (src/cron/scheduled-tool-policy.test.ts:44, service.unresolved-owner.test.ts, service.grant-generation.test.ts); interrupted recurring jobs are marked failed rather than replayed after a restart (service.restart-catchup.test.ts:168).",
       "facets": {
         "implemented": true,
         "tested": true,
@@ -421,7 +421,8 @@
         "data": 3,
         "definitions": 3,
         "files": 3,
-        "secrets": 3
+        "secrets": 3,
+        "schedules": 3
       }
     },
     "DEL-01": {
@@ -598,7 +599,7 @@
     }
   },
   "limits": "Repository evidence only, main at the tip named above. ClawHub (registry and scanning) is a separate repository. No evaluator plugin is bundled, so measurement depends on third-party or user plugins. The experience review was read from code and tests, not run. Single rater.",
-  "framework_version": "0.5.0",
+  "framework_version": "0.5.1",
   "reading": "**SAL 2**, joint highest. /learn turns a request into a pending skill proposal (DEL-01 2), and the experience review drafts and applies skills from observed runs (LRN-07 3), so both core loops reach L2. Backup and restore are verified and tested across state, configuration, credentials and skills (ARC-09 3). **Blocks L3:** configuration has only rotating backups, not operator rollback (GOV-05 2, inventory); skill changes have no staged exposure (DEL-09 1); the default auto-apply has no declared blast-radius limit (GOV-10 2).",
   "framework": "EVOLVE",
   "scope_facts": {

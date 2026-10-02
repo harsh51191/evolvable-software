@@ -192,7 +192,7 @@ CHANGELOG.md                      Version history
 
 ## Name and version
 
-EVOLVE v0.5.0 (AI Readiness, unreleased branch), 1 October 2026. EVOLVE was previously the Malleability and Self-Evolution Readiness (MSR) framework; see `CHANGELOG.md` for what changed and why. "EVOLVE" and "Software Autonomy Level" are working names until a trademark and prior-use search is complete.
+EVOLVE v0.5.1, public beta 5, 2 October 2026. EVOLVE was previously the Malleability and Self-Evolution Readiness (MSR) framework; see `CHANGELOG.md` for what changed and why. "EVOLVE" and "Software Autonomy Level" are working names until a trademark and prior-use search is complete.
 
 ## License
 

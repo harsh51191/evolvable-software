@@ -4,7 +4,7 @@
   "source": "github.com/anomalyco/opencode @ 2fa3363c924c5c3e367b84a87ae478296a0ed59b (dev)",
   "archetype": "agent-runtime",
   "framework": "EVOLVE",
-  "framework_version": "0.5.0",
+  "framework_version": "0.5.1",
   "scope_facts": {
     "persistent_data": true,
     "schema_changes": true,

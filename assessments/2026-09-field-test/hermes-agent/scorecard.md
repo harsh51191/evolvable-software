@@ -1,6 +1,6 @@
 # Hermes Agent: EVOLVE v0.5 scorecard
 
-Evaluator: Claude, single rater. Framework: EVOLVE 0.5.0 in this repository.
+Evaluator: Claude, single rater. Framework: EVOLVE 0.5.1 in this repository.
 
 Scope: the hermes-agent repository (agent loop, tools, skills, curator, approvals, gateway, MCP and ACP servers, desktop and web, CI) plus the first-party hermes-agent-self-evolution repository (DSPy and GEPA skill optimisation). Nous Portal and hosted services are out of scope.
 
@@ -13,7 +13,7 @@ Scope: the hermes-agent repository (agent loop, tools, skills, curator, approval
 Repository evidence only. The self-evolution repository's last commit is 2026-06-17, and only phase 1 (skills) is implemented; phases 2 and 3 were not scored. No live runs were performed, so the effects of background review and the curator are read from code and documentation. Single rater.
 
 ---
-Framework EVOLVE 0.5.0. Date 2026-09-30. Source github.com/NousResearch/hermes-agent @ bddd22be7c2e5f7630c3d90507e6e7280ff092e3 (main) + github.com/NousResearch/hermes-agent-self-evolution @ 0a929e3aa20e15cf04dc7c28492a7d41a5139125 (main, last commit 2026-06-17). Archetype **agent-runtime**.
+Framework EVOLVE 0.5.1. Date 2026-09-30. Source github.com/NousResearch/hermes-agent @ bddd22be7c2e5f7630c3d90507e6e7280ff092e3 (main) + github.com/NousResearch/hermes-agent-self-evolution @ 0a929e3aa20e15cf04dc7c28492a7d41a5139125 (main, last commit 2026-06-17). Archetype **agent-runtime**.
 
 Scope facts true: persistent_data, schema_changes, machine_actions, agent_mutations, evolution_auto_apply, definition_change_path, code_release_path, ai_features, ai_data_access, ai_actions. False: multi_tenant, hosted_service.
 
@@ -140,7 +140,7 @@ What the product's AI does. Descriptive levels per area, with no headline: it ne
 | ARC-06 Ceilings measured, not discovered in incidents | not_applicable | excluded |  |  | - |  | Scope fact hosted_service is false: A local single-user agent; the gateway relays messaging platforms for the same user. |
 | ARC-07 Service objectives defined and monitored | not_applicable | excluded |  |  | - |  | Scope fact hosted_service is false: A local single-user agent; the gateway relays messaging platforms for the same user. |
 | ARC-08 Failure isolation and graceful degradation | assessed | 2 |  |  | A |  | AI-qualified reading: 3. Fallback providers and credential pools take over when a primary model fails (agent/agent_init.py, tests/agent/test_restore_primary_pool_reselect.py); tool and MCP failures are contained to the turn. Plugins and gateway platforms have no breakers, so a 3 is not defensible under the inventory rule. |
-| ARC-09 Backup, restore and recovery | assessed | 3 |  |  | A | IT | Inventory: data 3, definitions 3, files 3, secrets 3. hermes backup and import cover the home directory: the sessions database (snapshotted with sqlite3.backup), skills, memory, configuration and secrets such as .env, auth.json and the vault (hermes_cli/backup.py:117-161), with pre-update backups and round-trip tests (tests/hermes_cli/test_backup*.py). No recovery objectives are stated (level 4). |
+| ARC-09 Backup, restore and recovery | assessed | 3 |  |  | A | IT | Inventory: data 3, definitions 3, files 3, secrets 3, schedules 3. hermes backup and import cover the home directory: the sessions database (snapshotted with sqlite3.backup), skills, memory, configuration and secrets such as .env, auth.json and the vault (hermes_cli/backup.py:117-161), with pre-update backups and round-trip tests (tests/hermes_cli/test_backup*.py). No recovery objectives are stated (level 4). Scheduled work: cron/jobs.json is in every backup and jobs lost during an update are restored automatically (hermes_cli/backup.py:1059, 1600-1665); hermes cron list shows each job's next run (hermes_cli/cron.py:125); jobs run under their own profile (cron/jobs.py:64-68); a pre-run check, on by default, blocks and alerts on jobs whose provider key, delivery target or skills no longer resolve (cron/scheduler_preflight.py:80-90, 387), with tests (tests/cron/test_preflight_credential_verdict_names_home.py). |
 | DEL-01 Request intake into a structured change specification | assessed | 1 | 2 |  | A |  | AI-qualified reading: 1. Requests are chat turns; the agent can create a skill when asked, without a specification step. |
 | DEL-02 Layers deploy independently | assessed | 2 |  |  | A |  | Python agent, gateway, desktop, web and sandbox images are separate artifacts built from one repository (Dockerfile, .github/workflows/sandbox-image.yml, desktop-bundled-release.yml). |
 | DEL-03 Module boundaries enforced by tooling | assessed | 2 |  |  | A |  | Import guards in CI (.github/workflows/lazy-deps-guard.yml, case-collision-check.yml); no architectural boundary lint. |

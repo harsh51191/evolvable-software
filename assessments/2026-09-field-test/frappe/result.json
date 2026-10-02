@@ -4,7 +4,7 @@
   "source": "github.com/frappe/frappe @ 82b0384810030c8d347780538821a3b006375d28 (develop)",
   "archetype": "configurable-application-platform",
   "framework": "EVOLVE",
-  "framework_version": "0.5.0",
+  "framework_version": "0.5.1",
   "scope_facts": {
     "persistent_data": true,
     "schema_changes": true,

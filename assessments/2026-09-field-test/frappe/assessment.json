@@ -394,12 +394,13 @@
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "bench backup covers the database, public and private files and site config, with optional encryption (frappe/commands/site.py:899-1030, frappe/utils/backups.py), and restore from full and partial backups is tested end to end (frappe/commands/test_commands.py:280-330). The site config holding the encryption key is backed up but its restore is not tested, so secrets stay at 2.",
+      "evidence": "bench backup covers the database, public and private files and site config, with optional encryption (frappe/commands/site.py:899-1030, frappe/utils/backups.py), and restore from full and partial backups is tested end to end (frappe/commands/test_commands.py:280-330). The site config holding the encryption key is backed up but its restore is not tested, so secrets stay at 2. Scheduled work: scheduled job records and server-script scheduler events restore with the database and resume with the scheduler; no check of each job's identity, permissions or credentials before it runs was found (frappe/utils/scheduler.py), so scheduled work is 2.",
       "inventory": {
         "data": 3,
         "definitions": 3,
         "files": 3,
-        "secrets": 2
+        "secrets": 2,
+        "schedules": 2
       }
     },
     "DEL-01": {
@@ -498,7 +499,7 @@
     }
   },
   "limits": "Repository evidence only, develop branch at the tip named above. No running site was inspected, so validation and preview behaviour is read from code, not exercised. Frappe Cloud features (marketplace, staging sites, backups) and apps built on the framework are out of scope. Whether CI checks block merges depends on branch protection, which is not visible in the repository. Single rater; the eight alternate readings mark where a second rater could reasonably differ.",
-  "framework_version": "0.5.0",
+  "framework_version": "0.5.1",
   "reading": "**SAL 1.** Operators reshape Frappe without code (Open 2.3), so every loop reaches L1, but nothing in the product drafts or builds a change (DEL-04 0) and requests have no intake (DEL-01 0), so no loop reaches L2. **Architecture:** backup and restore of data and files are tested end to end, but restoring the site secrets is not (ARC-09 2), and migrations are forward-only (ARC-02 1). **Next level:** an AI lane that drafts DocType, workflow or report changes as proposals, and structured request intake.",
   "framework": "EVOLVE",
   "scope_facts": {

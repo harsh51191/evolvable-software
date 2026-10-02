@@ -70,7 +70,7 @@ A failed applicable control caps every loop at L2.
 | Directus | fail | n/a | fail | fail | n/a | fail | fail |
 | Frappe Framework | fail | n/a | fail | fail | fail | fail | n/a |
 | OpenHands (Agent Canvas + software-agent-sdk) | fail | n/a | fail | fail | fail | fail | n/a |
-| Discourse | fail | n/a | pass | pass | fail | fail | n/a |
+| Discourse | fail | n/a | pass | fail | fail | fail | n/a |
 | LibreChat | fail | n/a | fail | fail | fail | fail | n/a |
 | OpenCode | fail | n/a | fail | fail | n/a | fail | n/a |
 
@@ -86,7 +86,7 @@ A failed applicable control caps every loop at L2.
 | Directus | 1.6 (1.6–1.8) | 1.5 (1.5–2.0) | 2.4 (2.4–3.0) | 0.8 (0.8–0.9) | 1.6 (1.6–2.3) | 1.1 (1.1–1.8) |
 | Frappe Framework | 1.9 (1.9–2.2) | 1.0 (1.0–1.3) | 2.3 (2.3–2.6) | 1.3 (1.3–1.7) | 1.8 (1.8–2.3) | 1.7 (1.7–1.9) |
 | OpenHands (Agent Canvas + software-agent-sdk) | 1.4 (1.4–1.8) | 1.5 (1.5–1.7) | 2.1 (2.1–2.3) | 1.1 (1.1–1.4) | 1.7 (1.7–1.8) | 1.0 (1.0–1.1) |
-| Discourse | 2.1 (2.1–2.3) | 1.4 (1.4–1.9) | 2.1 (2.1–2.3) | 1.4 (1.4–1.5) | 1.8 (1.8–2.5) | 1.5 |
+| Discourse | 2.0 (2.0–2.2) | 1.4 (1.4–1.9) | 2.1 (2.1–2.3) | 1.4 (1.4–1.5) | 1.8 (1.8–2.5) | 1.5 |
 | LibreChat | 1.4 (1.4–1.8) | 1.1 (1.1–1.2) | 1.7 (1.7–2.2) | 0.8 (0.8–0.9) | 1.9 (1.9–2.4) | 1.0 |
 | OpenCode | 1.3 (1.3–1.8) | 1.3 (1.3–1.5) | 2.2 (2.2–2.4) | 0.6 (0.6–0.7) | 1.7 (1.7–1.9) | 1.1 (1.1–1.2) |
 

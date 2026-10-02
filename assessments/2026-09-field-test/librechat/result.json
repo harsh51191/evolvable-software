@@ -4,7 +4,7 @@
   "source": "github.com/danny-avila/LibreChat @ 14f7b2865692d27364c934ecb9912496371018bb (main)",
   "archetype": "focused-application",
   "framework": "EVOLVE",
-  "framework_version": "0.5.0",
+  "framework_version": "0.5.1",
   "scope_facts": {
     "persistent_data": true,
     "schema_changes": true,

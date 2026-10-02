@@ -4,7 +4,7 @@
   "source": "github.com/discourse/discourse @ 2590ea9db1b7c38dcf80298aefd3e7cb3afe1f2b (main)",
   "archetype": "focused-application",
   "framework": "EVOLVE",
-  "framework_version": "0.5.0",
+  "framework_version": "0.5.1",
   "scope_facts": {
     "persistent_data": true,
     "schema_changes": true,
@@ -126,8 +126,8 @@
       {
         "control": "Tested backup and restore",
         "needs": "ARC-09 ≥ 3",
-        "observed": "3",
-        "status": "pass"
+        "observed": "2",
+        "status": "fail"
       },
       {
         "control": "Tenant isolation",
@@ -338,7 +338,7 @@
     }
   },
   "capabilities": {
-    "ARC": 2.1,
+    "ARC": 2.0,
     "DEL": 1.4,
     "MAL": 2.1,
     "LRN": 1.4,
@@ -347,8 +347,8 @@
   },
   "ranges": {
     "ARC": [
-      2.1,
-      2.3
+      2.0,
+      2.2
     ],
     "DEL": [
       1.4,
@@ -375,7 +375,7 @@
     "ARC Data": 2.5,
     "ARC Scale": 2,
     "ARC Capacity": 1.5,
-    "ARC Resilience": 2.5,
+    "ARC Resilience": 2,
     "DEL Intake": 1,
     "DEL Build": 0.7,
     "DEL Verify": 2,
@@ -409,7 +409,7 @@
     "ARC-06": 2,
     "ARC-07": 1,
     "ARC-08": 2,
-    "ARC-09": 3,
+    "ARC-09": 2,
     "DEL-01": 1,
     "DEL-02": 1,
     "DEL-03": 1,
@@ -479,7 +479,7 @@
   "variants": {
     "high": {
       "capabilities": {
-        "ARC": 2.3,
+        "ARC": 2.2,
         "DEL": 1.9,
         "MAL": 2.3,
         "LRN": 1.5,
@@ -522,7 +522,7 @@
     },
     "available": {
       "capabilities": {
-        "ARC": 2.1,
+        "ARC": 2.0,
         "DEL": 1.6,
         "MAL": 2.3,
         "LRN": 1.5,
@@ -565,7 +565,7 @@
     },
     "assessed_only": {
       "capabilities": {
-        "ARC": 2.1,
+        "ARC": 2.0,
         "DEL": 1.4,
         "MAL": 2.1,
         "LRN": 1.4,
@@ -575,7 +575,7 @@
     },
     "all_applicable": {
       "capabilities": {
-        "ARC": 2.1,
+        "ARC": 2.0,
         "DEL": 1.4,
         "MAL": 1.8,
         "LRN": 1.4,

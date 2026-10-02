@@ -660,7 +660,7 @@
     }
   },
   "limits": "Repository evidence only, master at the tip named above. Enterprise modules (*.ee) are included; they need a licence to run. n8n Cloud operations, the template gallery and community-node certification processes are outside the repository. Single rater.",
-  "framework_version": "0.5.0",
+  "framework_version": "0.5.1",
   "reading": "**SAL 2**, joint highest in the sample. The AI workflow builder asks clarifying questions and produces a plan for approval before it builds (DEL-01 2, DEL-04 2), and Insights reports failure rates per workflow (LRN-03 2), so both core loops reach L2. **Blocks L3:** controls, not workflow: migrations have no enforced online strategy (ARC-02 2), entity export has no restore test or recovery objectives (ARC-09 2), definition rollback covers workflows only (GOV-05 2), and AI changes have no declared blast-radius limit (GOV-10 2).",
   "framework": "EVOLVE",
   "scope_facts": {

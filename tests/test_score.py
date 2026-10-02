@@ -383,9 +383,20 @@ class ReviewRoundTests(unittest.TestCase):
         data = assessment(3)
         data["scores"]["ARC-09"]["inventory"] = {"data": 4}
         self.assertIn('ARC-09: inventory must list every surface, using "n/a" where one does not apply '
-                      '(missing: definitions, files, secrets)', errors(data))
+                      '(missing: definitions, files, secrets, schedules)', errors(data))
         data["scores"]["ARC-09"]["inventory"] = {s: "n/a" for s in MODEL["inventories"]["ARC-09"]}
         self.assertIn("ARC-09: inventory needs at least one surface with a level", errors(data))
+
+    def test_silently_resuming_scheduled_work_fails_the_restore_control(self):
+        data = assessment(3)
+        data["scores"]["ARC-09"]["inventory"] = {"data": 3, "definitions": 3, "files": 3, "secrets": 3,
+                                                 "schedules": 2}
+        self.assertIn("ARC-09: score 3 exceeds the lowest inventory level 2", errors(data))
+        data["scores"]["ARC-09"]["score"] = 2
+        self.assertEqual(controls(data)["Tested backup and restore"], "fail")
+        data["scores"]["ARC-09"]["score"] = 3
+        data["scores"]["ARC-09"]["inventory"]["schedules"] = "n/a"
+        self.assertEqual(errors(data), [])
 
     def test_progress_ignores_conditions_that_do_not_apply(self):
         on = sal(assessment(2))["loops"]["request"]

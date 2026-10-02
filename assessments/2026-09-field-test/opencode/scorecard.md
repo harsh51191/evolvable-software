@@ -1,6 +1,6 @@
 # OpenCode: EVOLVE v0.5 scorecard
 
-Evaluator: Claude, single rater. Framework: EVOLVE 0.5.0 in this repository.
+Evaluator: Claude, single rater. Framework: EVOLVE 0.5.1 in this repository.
 
 Scope: the opencode monorepo (agent core, server and HTTP API, SDK and codegen, TUI, desktop, web, plugin SDK, console and enterprise packages, CI). opencode.ai hosted services and models.dev are out of scope.
 
@@ -13,7 +13,7 @@ Scope: the opencode monorepo (agent core, server and HTTP API, SDK and codegen, 
 Repository evidence only, dev branch at the tip named above. Enterprise and console behaviour was not traced in depth. Single rater.
 
 ---
-Framework EVOLVE 0.5.0. Date 2026-09-30. Source github.com/anomalyco/opencode @ 2fa3363c924c5c3e367b84a87ae478296a0ed59b (dev). Archetype **agent-runtime**.
+Framework EVOLVE 0.5.1. Date 2026-09-30. Source github.com/anomalyco/opencode @ 2fa3363c924c5c3e367b84a87ae478296a0ed59b (dev). Archetype **agent-runtime**.
 
 Scope facts true: persistent_data, schema_changes, machine_actions, definition_change_path, ai_features, ai_data_access, ai_actions. False: multi_tenant, hosted_service, agent_mutations, evolution_auto_apply, code_release_path.
 

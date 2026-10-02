@@ -4,7 +4,7 @@
   "source": "github.com/langgenius/dify @ ea38e484b81b4104736d2484aaa1d0d7ea99627e (main)",
   "archetype": "configurable-application-platform",
   "framework": "EVOLVE",
-  "framework_version": "0.5.0",
+  "framework_version": "0.5.1",
   "scope_facts": {
     "persistent_data": true,
     "schema_changes": true,

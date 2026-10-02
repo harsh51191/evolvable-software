@@ -1,6 +1,6 @@
 # Frappe Framework: EVOLVE v0.5 scorecard
 
-Evaluator: Claude, single rater. Framework: EVOLVE 0.5.0 in this repository.
+Evaluator: Claude, single rater. Framework: EVOLVE 0.5.1 in this repository.
 
 Scope: the frappe repository only (framework, Desk UI, website module, automation engine). Apps built on it (ERPNext, HRMS, CRM) and Frappe Cloud are out of scope.
 
@@ -13,7 +13,7 @@ Scope: the frappe repository only (framework, Desk UI, website module, automatio
 Repository evidence only, develop branch at the tip named above. No running site was inspected, so validation and preview behaviour is read from code, not exercised. Frappe Cloud features (marketplace, staging sites, backups) and apps built on the framework are out of scope. Whether CI checks block merges depends on branch protection, which is not visible in the repository. Single rater; the eight alternate readings mark where a second rater could reasonably differ.
 
 ---
-Framework EVOLVE 0.5.0. Date 2026-09-30. Source github.com/frappe/frappe @ 82b0384810030c8d347780538821a3b006375d28 (develop). Archetype **configurable-application-platform**.
+Framework EVOLVE 0.5.1. Date 2026-09-30. Source github.com/frappe/frappe @ 82b0384810030c8d347780538821a3b006375d28 (develop). Archetype **configurable-application-platform**.
 
 Scope facts true: persistent_data, schema_changes, multi_tenant, hosted_service, machine_actions, definition_change_path. False: agent_mutations, evolution_auto_apply, code_release_path, ai_features, ai_data_access, ai_actions.
 
@@ -130,7 +130,7 @@ What the product's AI does. Descriptive levels per area, with no headline: it ne
 | ARC-06 Ceilings measured, not discovered in incidents | assessed | 2 |  |  | A |  | frappe/tests/test_perf.py and frappe/tests/microbenchmarks exist; no documented per-surface limits or CI budgets. |
 | ARC-07 Service objectives defined and monitored | assessed | 1 | 2 |  | A |  | No published objectives. frappe/monitor.py records request and job timings when monitoring is enabled. |
 | ARC-08 Failure isolation and graceful degradation | assessed | 2 |  |  | A |  | The automation engine counts failures per rule against a circuit breaker and isolates each row with a savepoint (frappe/automation_engine/runner.py:516-525, drainer.py:74); integrations accept timeouts (frappe/integrations/utils.py:59). Apps run in-process without isolation. |
-| ARC-09 Backup, restore and recovery | assessed | 2 |  |  | A |  | Inventory: data 3, definitions 3, files 3, secrets 2. bench backup covers the database, public and private files and site config, with optional encryption (frappe/commands/site.py:899-1030, frappe/utils/backups.py), and restore from full and partial backups is tested end to end (frappe/commands/test_commands.py:280-330). The site config holding the encryption key is backed up but its restore is not tested, so secrets stay at 2. |
+| ARC-09 Backup, restore and recovery | assessed | 2 |  |  | A |  | Inventory: data 3, definitions 3, files 3, secrets 2, schedules 2. bench backup covers the database, public and private files and site config, with optional encryption (frappe/commands/site.py:899-1030, frappe/utils/backups.py), and restore from full and partial backups is tested end to end (frappe/commands/test_commands.py:280-330). The site config holding the encryption key is backed up but its restore is not tested, so secrets stay at 2. Scheduled work: scheduled job records and server-script scheduler events restore with the database and resume with the scheduler; no check of each job's identity, permissions or credentials before it runs was found (frappe/utils/scheduler.py), so scheduled work is 2. |
 | DEL-01 Request intake into a structured change specification | assessed | 0 |  |  | A |  | No request or feature-request object for changing the product was found; requests live outside it. |
 | DEL-02 Layers deploy independently | assessed | 1 |  |  | A |  | One Python and JavaScript codebase deployed as a bench (web, workers, scheduler and realtime share the artifact); container images live in a separate repository. |
 | DEL-03 Module boundaries enforced by tooling | assessed | 1 |  |  | A |  | Module boundaries are convention; no architectural lint or dependency-graph enforcement found. |

@@ -40,8 +40,8 @@ Read at github.com/NousResearch/hermes-agent @ bddd22be7c2e5f7630c3d90507e6e7280
 
 - **ARC-08 Failure isolation and graceful degradation**: **2** (grade A). Fallback providers and credential pools take over when a primary model fails (agent/agent_init.py, tests/agent/test_restore_primary_pool_reselect.py); tool and MCP failures are contained to the turn. Plugins and gateway platforms have no breakers, so a 3 is not defensible under the inventory rule.
   - AI-qualified reading: **3** (grade A), facets: implemented, tested. Fallback providers and credential pools contain provider failure, with tests.
-- **ARC-09 Backup, restore and recovery**: **3** (grade A), facets: implemented, tested. hermes backup and import cover the home directory: the sessions database (snapshotted with sqlite3.backup), skills, memory, configuration and secrets such as .env, auth.json and the vault (hermes_cli/backup.py:117-161), with pre-update backups and round-trip tests (tests/hermes_cli/test_backup*.py). No recovery objectives are stated (level 4).
-  - Inventory: data 3, definitions 3, files 3, secrets 3
+- **ARC-09 Backup, restore and recovery**: **3** (grade A), facets: implemented, tested. hermes backup and import cover the home directory: the sessions database (snapshotted with sqlite3.backup), skills, memory, configuration and secrets such as .env, auth.json and the vault (hermes_cli/backup.py:117-161), with pre-update backups and round-trip tests (tests/hermes_cli/test_backup*.py). No recovery objectives are stated (level 4). Scheduled work: cron/jobs.json is in every backup and jobs lost during an update are restored automatically (hermes_cli/backup.py:1059, 1600-1665); hermes cron list shows each job's next run (hermes_cli/cron.py:125); jobs run under their own profile (cron/jobs.py:64-68); a pre-run check, on by default, blocks and alerts on jobs whose provider key, delivery target or skills no longer resolve (cron/scheduler_preflight.py:80-90, 387), with tests (tests/cron/test_preflight_credential_verdict_names_home.py).
+  - Inventory: data 3, definitions 3, files 3, secrets 3, schedules 3
 
 ## Velocity (DEL)
 

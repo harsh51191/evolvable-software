@@ -42,8 +42,8 @@ Read at github.com/discourse/discourse @ 2590ea9db1b7c38dcf80298aefd3e7cb3afe1f2
 
 - **ARC-08 Failure isolation and graceful degradation**: **2** (grade A). Outbound requests go through FinalDestination with timeouts, and safe mode disables plugins and themes for a session (config/routes.rb:2036). Plugins run in-process.
   - AI-qualified reading: **0** (grade A), **2** with opt-in settings. Off by default.
-- **ARC-09 Backup, restore and recovery**: **3** (grade A), facets: implemented, tested. Built-in backup and restore of the database (data, site settings, themes) and uploads to local or S3 stores, with restore specs for both, including multisite (lib/backup_restore, spec/lib/backup_restore/database_restorer_spec.rb, uploads_restorer_spec.rb). Secrets live in the deployment environment, outside the product. No recovery objectives are stated (level 4).
-  - Inventory: data 3, definitions 3, files 3, secrets n/a
+- **ARC-09 Backup, restore and recovery**: **2** (grade A), facets: implemented, tested. Built-in backup and restore of the database (data, site settings, themes) and uploads to local or S3 stores, with restore specs for both, including multisite (lib/backup_restore, spec/lib/backup_restore/database_restorer_spec.rb, uploads_restorer_spec.rb). Secrets live in the deployment environment, outside the product. No recovery objectives are stated (level 4). Scheduled work: restore pauses Sidekiq, clears its queues and limits email to staff (lib/backup_restore/restorer.rb:55-59, 132-135), and topic timers re-check the scheduling user's current permissions when they run (app/jobs/regular/close_topic.rb:14, publish_topic_to_category.rb:7-13). No view lists upcoming timers and the user each runs as, so scheduled work stays at 2 and the criterion reads 2.
+  - Inventory: data 3, definitions 3, files 3, secrets n/a, schedules 2
 
 ## Velocity (DEL)
 

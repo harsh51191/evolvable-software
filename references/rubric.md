@@ -117,7 +117,7 @@ A second reading, separate from SAL: **how safely can the product run AI in prod
 ```json evolve-model
 {
   "framework": "EVOLVE",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "capabilities": {
     "ARC": "Elastic",
     "DEL": "Velocity",
@@ -203,7 +203,8 @@ A second reading, separate from SAL: **how safely can the product run AI in prod
       "data",
       "definitions",
       "files",
-      "secrets"
+      "secrets",
+      "schedules"
     ],
     "GOV-05": null
   },
@@ -621,7 +622,8 @@ Can the product take the load and survive the change?
 ### ARC-09 Backup, restore and recovery
 **Definition.** Everything needed to rebuild the product's state can be backed up and restored, and restore is proven.
 **Why it matters.** A self-changing product will eventually make a change that rollback cannot undo. Restore is the last line of defence, and an untested restore is not one.
-**Inventory.** Data; definitions and configuration; uploaded files; secrets and keys. Record a level for each applicable item; the score is the level every applicable item reaches.
+**Inventory.** Data; definitions and configuration; uploaded files; secrets and keys; scheduled work. Record a level for each applicable item; the score is the level every applicable item reaches.
+**Scheduled work.** Jobs, timers, scheduled workflows and automations that people or the product's AI define; not the product's own code-defined maintenance jobs. Use `n/a` when the product has none. Restoring the job is not enough: a restored job can resume quietly under credentials or permissions that are no longer valid. For this surface, level 2 means jobs are restored but resume without checks; level 3 means they are restored with tests, operators can list what will run next and the identity each job runs as, and each job re-checks that identity's current permissions and credentials before it runs, holding or failing jobs that no longer pass, with tests; level 4 adds jobs held after a restore until an operator or automated check confirms them, exercised in a recorded drill.
 **Evidence.** Backup and restore commands or features. Restore tests. Stated recovery point and time objectives. Drill records.
 **Boundary.** Level 3 is tested recovery. Stated recovery objectives belong to level 4, because for self-hosted software the deployment operator often sets them.
 - **0** No supported backup.
