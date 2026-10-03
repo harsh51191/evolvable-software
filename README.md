@@ -103,9 +103,18 @@ What stands out:
 
 The framework itself contains no private repository evidence, client examples or employer-specific terminology.
 
-## Install as a skill
+## Install
 
-For Claude Code:
+**As a Claude Code plugin** (recommended):
+
+```bash
+claude plugin marketplace add harsh51191/evolvable-software
+claude plugin install evolvable-software@evolvable-software
+```
+
+Or from inside a session: `/plugin install evolvable-software --marketplace harsh51191/evolvable-software`. Update later with `claude plugin update evolvable-software@evolvable-software`.
+
+**As a plain skill** for Claude Code:
 
 ```bash
 git clone https://github.com/harsh51191/evolvable-software.git \
@@ -119,7 +128,14 @@ git clone https://github.com/harsh51191/evolvable-software.git \
   ~/.codex/skills/evolvable-software
 ```
 
-Restart or refresh the agent after installation. The skill can then be discovered for requests about self-evolution readiness, software autonomy levels, governed product change, architecture readiness for autonomous change, or agent-safe action surfaces.
+Restart or refresh the agent after installation. The skill can then be discovered for requests about self-evolution readiness, software autonomy levels, AI-driven change, governed product change, architecture readiness for autonomous change, or agent-safe action surfaces. It works best where it can read the repository being assessed, such as Claude Code or Cowork.
+
+## What the plugin runs and sends
+
+- **Reads** only the repositories and documents you point it at. It asks before cloning or opening any new remote source, and never changes the repository it assesses.
+- **Writes** one assessment input file (JSON), at a path you choose outside the assessed repository, and the reports you ask for.
+- **Runs** two bundled Python scripts, `scripts/init_scores.py` and `scripts/score.py`, which use the standard library only. They make no network calls and install nothing.
+- **Sends** nothing to any service. The plugin has no hooks, no MCP servers and no telemetry.
 
 ## Run the scorer directly
 
@@ -180,6 +196,7 @@ Optional fields:
 ## Repository structure
 
 ```text
+.claude-plugin/                   Plugin manifest and marketplace entry
 SKILL.md                          Agent instructions
 metadata.yaml                     Package metadata
 spec/evolve-v0.4-draft.md         Design and decisions

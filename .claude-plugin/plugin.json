@@ -1,0 +1,16 @@
+{
+  "name": "evolvable-software",
+  "displayName": "EVOLVE: Self-Evolution Readiness",
+  "version": "0.6.0",
+  "description": "Assess how ready a software product is to evolve itself safely, and how much of that AI drives: autonomy levels for request-to-release, issue-to-fix and opportunity-to-expansion, critical controls, what blocks the next level, and a fix-first plan, all from code evidence.",
+  "author": {
+    "name": "Vellanki Sriharsha",
+    "url": "https://github.com/harsh51191"
+  },
+  "homepage": "https://github.com/harsh51191/evolvable-software",
+  "repository": "https://github.com/harsh51191/evolvable-software",
+  "documentationUrl": "https://github.com/harsh51191/evolvable-software#readme",
+  "supportUrl": "https://github.com/harsh51191/evolvable-software/issues",
+  "license": "MIT",
+  "keywords": ["ai-agents", "self-improving-software", "software-architecture", "governance", "maturity-model", "ai-readiness", "assessment"]
+}

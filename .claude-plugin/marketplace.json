@@ -1,0 +1,13 @@
+{
+  "name": "evolvable-software",
+  "description": "EVOLVE: assess how ready a software product is to evolve itself safely, and how much of that AI drives.",
+  "owner": {
+    "name": "Vellanki Sriharsha"
+  },
+  "plugins": [
+    {
+      "name": "evolvable-software",
+      "source": "./"
+    }
+  ]
+}

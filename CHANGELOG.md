@@ -4,6 +4,7 @@
 
 ### Added
 
+- **Installable as a Claude Code plugin.** `.claude-plugin/plugin.json` and `marketplace.json` let people run `claude plugin marketplace add harsh51191/evolvable-software` and install `evolvable-software`, and prepare the repository for the Claude plugin directory. The README now states what the plugin reads, writes, runs and sends.
 - **AI-driven level per loop, on the headline.** Each loop is re-scored with its AI-performable stages (DEL-01, DEL-04, LRN-05 to LRN-08, EXP-05) read only on their AI-qualified readings, so the report shows how far AI itself carries each loop: **SAL 2 · AI-driven 0 · Request → Release L2 (AI L2) · Issue → Fix L2 (AI L0) · …**. AI first drives a stage at L2 and never above the loop's own level. The scorer lists what AI needs for its next level. `spec/ai-driven-v0.6.md` records the design.
 
 ### Changed
