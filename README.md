@@ -121,6 +121,18 @@ codex plugin marketplace add harsh51191/evolvable-software
 codex plugin add evolvable-software@evolvable-software
 ```
 
+**Gemini CLI** (extension):
+
+```bash
+gemini extensions install https://github.com/harsh51191/evolvable-software
+```
+
+**Cursor, Copilot, Claude Code, Codex and 40+ other agents** (via [skills.sh](https://skills.sh)):
+
+```bash
+npx skills add harsh51191/evolvable-software
+```
+
 **Any agent that reads skill folders** (copy the skill):
 
 ```bash

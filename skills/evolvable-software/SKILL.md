@@ -1,18 +1,18 @@
 ---
 name: evolvable-software
 description: >-
-  Assess how ready a software product is to evolve itself safely, using the
-  EVOLVE framework. Reports a Software Autonomy Level (L0 to L5) for three
-  loops (request to release, issue to fix, opportunity to expansion) with the
-  conditions that block the next level, seven critical controls, and a
-  six-capability profile (Elastic architecture, Velocity delivery, Open
-  malleability, Learn, Vet governance, Expand), AI Readiness for products
-  with AI features (Context, Quality, Governance, Operations, with three
-  production gates), and a prerequisite-ordered remediation plan. Works for platforms, focused applications, developer
-  platforms and agent runtimes. Use for self-evolution readiness, software
-  autonomy levels, AI-built change readiness, governed change, architecture
-  readiness for autonomous change, or repeatable reassessment. Do not use as
-  a security, accessibility, pull-request or delivery-process audit.
+  Assess how ready a software product is to evolve itself safely, and how much
+  of that AI drives, using the EVOLVE framework. Reports a Software Autonomy
+  Level (L0 to L5) for three loops (request to release, issue to fix,
+  opportunity to expansion), how far AI itself carries each loop, the critical
+  controls that fail, exactly what blocks the next level, a six-capability
+  profile, AI Readiness for products with AI features, and a
+  prerequisite-ordered remediation plan, with every score tied to file-level
+  evidence. Works for platforms, focused applications, developer platforms and
+  agent runtimes. Use for self-evolution readiness, software autonomy levels,
+  AI-driven or AI-built change, governed change, architecture readiness for
+  autonomous change, or repeatable reassessment. Do not use as a security,
+  accessibility, pull-request or delivery-process audit.
 allowed-tools: Read, Grep, Glob, Bash, Agent, Write
 ---
 
