@@ -1,5 +1,16 @@
 # Changelog
 
+## EVOLVE v0.6.1, 2026-10-03
+
+### Added
+
+- **ChatGPT plugin packaging.** A root `plugin.json` in the Agent Plugins 1.0 format carries the OpenAI listing fields; the Codex manifest is updated to match. Publication notes and outstanding listing facts are in `docs/publishing/chatgpt.md`.
+
+### Changed
+
+- **Honest fallback when Python is unavailable.** The skill checks whether the host can run the bundled scorer. If it cannot, it gives a clearly unscored evidence review and a hand-off for running the scorer elsewhere, and never computes levels by hand.
+- **Source access.** The repository named in the assessment request counts as authorised to read; the skill still asks before opening any other remote source.
+
 ## EVOLVE v0.6.0, 2026-10-02
 
 ### Added
