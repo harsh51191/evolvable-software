@@ -4,6 +4,24 @@ This folder scores 11 open-source products with EVOLVE from this repository: SAL
 
 > **Provisional.** These results come from one rater reading public source code. They are not maintainer-reviewed, and the 17 new criteria have not had a second independent assessment. Where repository evidence is missing, a criterion scores 0, which can understate products whose capabilities live elsewhere. Before quoting or comparing these results, give each project's maintainers a chance to correct the evidence.
 
+## Products assessed
+
+Each product was read at the commit below, on 30 September 2026. Every score in its evidence file cites a path at that commit.
+
+| Product | Archetype | Source read | Results |
+|---|---|---|---|
+| n8n | configurable application platform | [n8n-io/n8n](https://github.com/n8n-io/n8n) at [`c17c480`](https://github.com/n8n-io/n8n/tree/c17c48043eb1080e5ae9795ea3a384960f8748f1) | [scorecard](n8n/scorecard.md) · [evidence](n8n/evidence.md) |
+| OpenClaw | agent runtime | [openclaw/openclaw](https://github.com/openclaw/openclaw) at [`df2a29c`](https://github.com/openclaw/openclaw/tree/df2a29cac9ad37c31a0f5a0d977ba3e4fd833cb0) | [scorecard](openclaw/scorecard.md) · [evidence](openclaw/evidence.md) |
+| PostHog | focused application | [PostHog/posthog](https://github.com/PostHog/posthog) at [`645e1a7`](https://github.com/PostHog/posthog/tree/645e1a78140757ea1bb9ddeb0ff9d3915c60b6f6) | [scorecard](posthog/scorecard.md) · [evidence](posthog/evidence.md) |
+| Hermes Agent | agent runtime | [NousResearch/hermes-agent](https://github.com/NousResearch/hermes-agent) at [`bddd22b`](https://github.com/NousResearch/hermes-agent/tree/bddd22be7c2e5f7630c3d90507e6e7280ff092e3)<br>[NousResearch/hermes-agent-self-evolution](https://github.com/NousResearch/hermes-agent-self-evolution) at [`0a929e3`](https://github.com/NousResearch/hermes-agent-self-evolution/tree/0a929e3aa20e15cf04dc7c28492a7d41a5139125) | [scorecard](hermes-agent/scorecard.md) · [evidence](hermes-agent/evidence.md) |
+| OpenHands (Agent Canvas + software-agent-sdk) | agent runtime | [OpenHands/OpenHands](https://github.com/OpenHands/OpenHands) at [`21cc5c6`](https://github.com/OpenHands/OpenHands/tree/21cc5c6170fe093c0fcd23ffc61949f4933e17b9)<br>[OpenHands/software-agent-sdk](https://github.com/OpenHands/software-agent-sdk) at [`5ffdd29`](https://github.com/OpenHands/software-agent-sdk/tree/5ffdd2933c51423e302f5ee5e5b66df0ad9cc28a)<br>[OpenHands/automation](https://github.com/OpenHands/automation) at [`ec4c5cc`](https://github.com/OpenHands/automation/tree/ec4c5cc0cb05f3fb01816b36ff6271f6680b6675) | [scorecard](openhands/scorecard.md) · [evidence](openhands/evidence.md) |
+| Dify | configurable application platform | [langgenius/dify](https://github.com/langgenius/dify) at [`ea38e48`](https://github.com/langgenius/dify/tree/ea38e484b81b4104736d2484aaa1d0d7ea99627e) | [scorecard](dify/scorecard.md) · [evidence](dify/evidence.md) |
+| Discourse | focused application | [discourse/discourse](https://github.com/discourse/discourse) at [`2590ea9`](https://github.com/discourse/discourse/tree/2590ea9db1b7c38dcf80298aefd3e7cb3afe1f2b) | [scorecard](discourse/scorecard.md) · [evidence](discourse/evidence.md) |
+| Directus | configurable application platform | [directus/directus](https://github.com/directus/directus) at [`2878b4e`](https://github.com/directus/directus/tree/2878b4ef8ea9c1d09201debe89b3a5dc1d0bf93a) | [scorecard](directus/scorecard.md) · [evidence](directus/evidence.md) |
+| Frappe Framework | configurable application platform | [frappe/frappe](https://github.com/frappe/frappe) at [`82b0384`](https://github.com/frappe/frappe/tree/82b0384810030c8d347780538821a3b006375d28) | [scorecard](frappe/scorecard.md) · [evidence](frappe/evidence.md) |
+| OpenCode | agent runtime | [anomalyco/opencode](https://github.com/anomalyco/opencode) at [`2fa3363`](https://github.com/anomalyco/opencode/tree/2fa3363c924c5c3e367b84a87ae478296a0ed59b) | [scorecard](opencode/scorecard.md) · [evidence](opencode/evidence.md) |
+| LibreChat | focused application | [danny-avila/LibreChat](https://github.com/danny-avila/LibreChat) at [`14f7b28`](https://github.com/danny-avila/LibreChat/tree/14f7b2865692d27364c934ecb9912496371018bb) | [scorecard](librechat/scorecard.md) · [evidence](librechat/evidence.md) |
+
 ## Results (default configuration)
 
 Each loop shows its level, how many of the next level's applicable conditions it already meets, and how far AI itself carries it (AI L0: AI drives no stage; AI first drives a stage at L2). Conditions switched off by a scope fact count in neither number.

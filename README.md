@@ -51,23 +51,23 @@ This is a **public beta**. It is designed to produce a falsifiable assessment, n
 
 ## Field-test results
 
-EVOLVE was run on 11 open-source products from their public source code. Full tables, evidence and per-product scorecards are in [`assessments/2026-09-field-test/`](assessments/2026-09-field-test/README.md).
+EVOLVE was run on 11 open-source products from their public source code; each name links to the project, and the field-test README lists the exact commit read. Full tables, evidence and per-product scorecards are in [`assessments/2026-09-field-test/`](assessments/2026-09-field-test/README.md).
 
 > **Provisional, single rater.** These readings come from one rater and have not been reviewed by the projects' maintainers or by a second rater. Read them as findings to check, not rankings.
 
 | Product | Archetype | SAL | Request → Release | Issue → Fix | Expansion | AI Readiness |
 |---|---|---:|---|---|---|---|
-| n8n | configurable platform | **2** | L2 (AI L2) | L2 (AI L0) | L1 (AI L0) | L2 Deployed with material control gaps |
-| OpenClaw | agent runtime | **2** | L2 (AI L2) | L2 (AI L0) | L1 (AI L0) | L1 Experimental |
-| PostHog | focused application | **1** | L2 (AI L2) | L1 (AI L0) | L1 (AI L0) | L2 Deployed with material control gaps |
-| Hermes Agent | agent runtime | **1** | L1 (AI L0) | L2 (AI L0) | L1 (AI L0) | L1 Experimental |
-| OpenHands | agent runtime | **1** | L1 (AI L0) | L1 (AI L0) | L1 (AI L0) | L2 Deployed with material control gaps |
-| Dify | configurable platform | **1** | L1 (AI L0) | L1 (AI L0) | L1 (AI L0) | L1 Experimental |
-| Discourse | focused application | **1** | L1 (AI L0) | L1 (AI L0) | L0 (AI L0) | no AI by default; L1 Experimental with opt-in |
-| Directus | configurable platform | **1** | L1 (AI L0) | L1 (AI L0) | L1 (AI L0) | L0 Foundational gap |
-| Frappe | configurable platform | **1** | L1 (AI L0) | L1 (AI L0) | L1 (AI L0) | no AI features |
-| OpenCode | agent runtime | **0** | L0 (AI L0) | L0 (AI L0) | L0 (AI L0) | L1 Experimental |
-| LibreChat | focused application | **0** | L0 (AI L0) | L0 (AI L0) | L0 (AI L0) | L0 Foundational gap |
+| [n8n](https://github.com/n8n-io/n8n) | configurable platform | **2** | L2 (AI L2) | L2 (AI L0) | L1 (AI L0) | L2 Deployed with material control gaps |
+| [OpenClaw](https://github.com/openclaw/openclaw) | agent runtime | **2** | L2 (AI L2) | L2 (AI L0) | L1 (AI L0) | L1 Experimental |
+| [PostHog](https://github.com/PostHog/posthog) | focused application | **1** | L2 (AI L2) | L1 (AI L0) | L1 (AI L0) | L2 Deployed with material control gaps |
+| [Hermes Agent](https://github.com/NousResearch/hermes-agent) | agent runtime | **1** | L1 (AI L0) | L2 (AI L0) | L1 (AI L0) | L1 Experimental |
+| [OpenHands](https://github.com/OpenHands/OpenHands) | agent runtime | **1** | L1 (AI L0) | L1 (AI L0) | L1 (AI L0) | L2 Deployed with material control gaps |
+| [Dify](https://github.com/langgenius/dify) | configurable platform | **1** | L1 (AI L0) | L1 (AI L0) | L1 (AI L0) | L1 Experimental |
+| [Discourse](https://github.com/discourse/discourse) | focused application | **1** | L1 (AI L0) | L1 (AI L0) | L0 (AI L0) | no AI by default; L1 Experimental with opt-in |
+| [Directus](https://github.com/directus/directus) | configurable platform | **1** | L1 (AI L0) | L1 (AI L0) | L1 (AI L0) | L0 Foundational gap |
+| [Frappe](https://github.com/frappe/frappe) | configurable platform | **1** | L1 (AI L0) | L1 (AI L0) | L1 (AI L0) | no AI features |
+| [OpenCode](https://github.com/anomalyco/opencode) | agent runtime | **0** | L0 (AI L0) | L0 (AI L0) | L0 (AI L0) | L1 Experimental |
+| [LibreChat](https://github.com/danny-avila/LibreChat) | focused application | **0** | L0 (AI L0) | L0 (AI L0) | L0 (AI L0) | L0 Foundational gap |
 
 No product's AI drives both the request and the fix loop, so every AI-driven headline is 0.
 
