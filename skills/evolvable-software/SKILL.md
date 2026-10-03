@@ -13,7 +13,6 @@ description: >-
   AI-driven or AI-built change, governed change, architecture readiness for
   autonomous change, or repeatable reassessment. Do not use as a security,
   accessibility, pull-request or delivery-process audit.
-allowed-tools: Read, Grep, Glob, Bash, Agent, Write
 ---
 
 # EVOLVE: Self-Evolution Readiness Evaluation

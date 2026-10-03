@@ -208,10 +208,11 @@ Optional fields:
 ## Repository structure
 
 ```text
-.claude-plugin/                       Claude Code plugin manifest and marketplace entry
+.claude-plugin/marketplace.json       Claude Code marketplace entry
 .codex-plugin/                        Codex plugin manifest
 .agents/plugins/marketplace.json      Codex marketplace entry
-skills/evolvable-software/            The skill
+skills/evolvable-software/            The skill, which is also the Claude plugin folder
+  .claude-plugin/                     Claude plugin manifest and icon
   SKILL.md                            Agent instructions
   references/rubric.md                Criteria, anchored levels and the scoring model
   references/archetypes.md            Applicability and interpretation guidance

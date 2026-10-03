@@ -7,7 +7,7 @@
   "plugins": [
     {
       "name": "evolvable-software",
-      "source": "./"
+      "source": "./skills/evolvable-software"
     }
   ]
 }

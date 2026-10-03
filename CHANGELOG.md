@@ -4,6 +4,7 @@
 
 ### Added
 
+- **The Claude plugin folder is now the skill folder** (`skills/evolvable-software/`), with its own README, licence and icon, so the directory scans only the skill. The skill no longer pre-approves tools (`allowed-tools` removed), so the agent asks before running commands or writing files.
 - **Installable as a Gemini CLI extension** (`gemini-extension.json`) and through skills.sh (`npx skills add harsh51191/evolvable-software`). The skill description now leads with how much of the change AI drives.
 - **Installable as a Codex plugin** (`.codex-plugin/plugin.json`, `.agents/plugins/marketplace.json`): `codex plugin marketplace add harsh51191/evolvable-software`. The skill now lives in `skills/evolvable-software/`, the layout both Claude Code and Codex load; copy that folder to install it as a plain skill.
 - **Installable as a Claude Code plugin.** `.claude-plugin/plugin.json` and `marketplace.json` let people run `claude plugin marketplace add harsh51191/evolvable-software` and install `evolvable-software`, and prepare the repository for the Claude plugin directory. The README now states what the plugin reads, writes, runs and sends.
