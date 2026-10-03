@@ -1,6 +1,6 @@
 {
   "name": "evolvable-software",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Assess how ready a product is to evolve itself safely, and how much of that AI drives.",
   "author": {
     "name": "Vellanki Sriharsha",
@@ -21,11 +21,10 @@
   "interface": {
     "displayName": "EVOLVE",
     "shortDescription": "Score self-evolution readiness",
-    "longDescription": "EVOLVE assesses how ready a software product is to evolve itself safely: to take requests through to release, fix the issues users face and find adjacent opportunities, increasingly with AI doing the work. It reports an autonomy level for each loop, how much of it AI drives, the critical controls that fail, exactly what blocks the next level and a fix-first plan, with every score tied to file-level evidence.",
+    "longDescription": "EVOLVE assesses how ready a software product is to evolve itself safely: to take requests through to release, fix the issues users face and find adjacent opportunities, increasingly with AI doing the work. It reports an autonomy level for each loop, how much of it AI drives, the critical controls that fail, exactly what blocks the next level and a fix-first plan, with every score tied to file-level evidence. Runs as a skills-only workflow using supplied repository files and available host tools. Full scoring requires Python execution; without it, EVOLVE provides an evidence review and scoring handoff without inventing computed levels. It does not connect a repository or modify the assessed product.",
     "developerName": "Vellanki Sriharsha",
     "category": "Coding",
     "capabilities": [
-      "Interactive",
       "Read",
       "Write"
     ],
@@ -35,8 +34,8 @@
       "What blocks this product from the next autonomy level?",
       "How much of this product's change loop does AI drive?"
     ],
-    "logo": "./skills/evolvable-software/.claude-plugin/icon.png",
-    "composerIcon": "./skills/evolvable-software/.claude-plugin/icon.png",
+    "logo": "./assets/evolve-icon.png",
+    "composerIcon": "./assets/evolve-icon.png",
     "brandColor": "#2DD4BF"
   }
 }

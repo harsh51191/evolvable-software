@@ -55,6 +55,12 @@ The result is a reading for one product, not a leaderboard. Different archetypes
 - Roadmap scoring or future-state promises.
 - Declaring production readiness from repository evidence alone.
 
+## Host capability check
+
+Use the repository URL or files the user supplied as authorization to inspect that source with available tools. Do not imply this plugin adds GitHub access, a hosted server or a Python runtime. Uploaded repository archives and user-supplied evidence also work. If sources cannot be accessed, request a repository archive or relevant files and record the evidence gap.
+
+Before scoring, confirm that this host can execute Python and access the bundled scripts and references. If so, use the bundled scorer unchanged. If not, gather evidence and explain the rubric, but do not calculate Software Autonomy Levels or AI Readiness by hand. Supply a clearly marked unscored evidence report and an input/command handoff for running the scorer in a Python-capable environment. Never claim a script ran or an assessment passed without actual output.
+
 ## Procedure
 
 ### 1. Establish scope
@@ -65,7 +71,7 @@ Scope must include every first-party repository that implements the product's co
 
 Read `references/archetypes.md` before choosing among `configurable-application-platform`, `agent-runtime`, `developer-platform`, `focused-application` and `other`.
 
-Assess only repositories and documents the user supplied or authorised. Never mutate the target repository. Ask before cloning or accessing a new remote source.
+Assess only repositories and documents the user supplied or authorised. Never mutate the target repository. The supplied target is authorized by the assessment request; ask before accessing additional remote sources outside that scope.
 
 ### 2. Create the input
 

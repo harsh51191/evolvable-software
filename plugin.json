@@ -1,0 +1,48 @@
+{
+  "name": "evolvable-software",
+  "version": "0.6.1",
+  "description": "Assess how ready a product is to evolve itself safely, and how much of that AI drives.",
+  "author": {
+    "name": "Vellanki Sriharsha",
+    "url": "https://github.com/harsh51191"
+  },
+  "homepage": "https://github.com/harsh51191/evolvable-software",
+  "repository": "https://github.com/harsh51191/evolvable-software",
+  "license": "MIT",
+  "keywords": [
+    "ai-agents",
+    "self-improving-software",
+    "software-architecture",
+    "governance",
+    "maturity-model",
+    "assessment"
+  ],
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "EVOLVE",
+        "shortDescription": "Score self-evolution readiness",
+        "longDescription": "EVOLVE assesses how ready a software product is to evolve itself safely: to take requests through to release, fix the issues users face and find adjacent opportunities, increasingly with AI doing the work. It reports an autonomy level for each loop, how much of it AI drives, the critical controls that fail, exactly what blocks the next level and a fix-first plan, with every score tied to file-level evidence. Runs as a skills-only workflow using supplied repository files and available host tools. Full scoring requires Python execution; without it, EVOLVE provides an evidence review and scoring handoff without inventing computed levels. It does not connect a repository or modify the assessed product.",
+        "developerName": "Vellanki Sriharsha",
+        "category": "Coding",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "websiteURL": "https://github.com/harsh51191/evolvable-software",
+        "defaultPrompt": [
+          "Assess how ready this repository is to evolve itself safely",
+          "What blocks this product from the next autonomy level?",
+          "How much of this product's change loop does AI drive?"
+        ],
+        "logo": "./assets/evolve-icon.png",
+        "composerIcon": "./assets/evolve-icon.png",
+        "brandColor": "#2DD4BF"
+      },
+      "publication": {
+        "release_notes": "First portable ChatGPT plugin package. Includes EVOLVE v0.6 rubric, deterministic Python scorer, evidence workflow, remediation, existing branding, and host capability checks."
+      }
+    }
+  }
+}
