@@ -1,4 +1,4 @@
-"""Tests for scripts/score.py. Run with: python3 -m unittest discover -s tests"""
+"""Tests for skills/evolvable-software/scripts/score.py. Run with: python3 -m unittest discover -s tests"""
 
 import contextlib
 import io
@@ -10,12 +10,13 @@ import tempfile
 import unittest
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, os.path.join(ROOT, "scripts"))
+SKILL = os.path.join(ROOT, "skills", "evolvable-software")
+sys.path.insert(0, os.path.join(SKILL, "scripts"))
 import init_scores  # noqa: E402
 import score  # noqa: E402
 
-RUBRIC = os.path.join(ROOT, "references", "rubric.md")
-REMEDIATION = os.path.join(ROOT, "references", "remediation.md")
+RUBRIC = os.path.join(SKILL, "references", "rubric.md")
+REMEDIATION = os.path.join(SKILL, "references", "remediation.md")
 CRITERIA, ORDER, MODEL = score.load_rubric(RUBRIC)
 ALL_FACETS = {"implemented": True, "tested": True, "operated": True}
 

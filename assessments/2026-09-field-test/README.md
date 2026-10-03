@@ -116,7 +116,7 @@ Scheduled work is now a fifth surface in the backup-and-restore inventory (ARC-0
 ## How the scores were produced
 
 - **Evidence.** Shallow clones of each project's default branch, read on 30 September 2026 (1 October for the automation repository). Every score cites code or in-repository documentation at the named commit. No running instances were used, so no criterion has the operated facet.
-- **Scorer.** `scripts/score.py` from this repository computes every number. `tools/build.py` regenerates all outputs.
+- **Scorer.** `skills/evolvable-software/scripts/score.py` from this repository computes every number. `tools/build.py` regenerates all outputs.
 - **Ambiguity.** Where the next level up was also defensible, it is recorded as `alt_score` with an `alt_note`, and the "with every alternate reading" column shows its effect.
 - **Defaults.** Where a shipped opt-in setting changes a level, it is recorded as `available_score`.
 - **Rater.** Claude, as a single rater.

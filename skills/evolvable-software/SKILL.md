@@ -136,7 +136,7 @@ Never call a product "self-evolving" from a level alone; L3 and above are readin
 
 ## Public-Use Guardrails
 
-- The framework contains no private product examples or employer-specific terminology. The field test in `assessments/` scores public open-source code only.
+- The framework contains no private product examples or employer-specific terminology. The field test in the source repository scores public open-source code only.
 - Generated reports may name only the software the user explicitly asked to assess.
 - Never include confidential repository excerpts, credentials, customer names, tenant identifiers or internal URLs in a shared report.
 - Do not publish comparative scores without giving maintainers a chance to correct factual evidence and without disclosing evidence limitations.
@@ -149,9 +149,7 @@ Never call a product "self-evolving" from a level alone; L3 and above are readin
 - `references/evidence-plan.md`: evidence collection instructions.
 - `references/remediation.md`: prerequisite-aware moves to levels 3 and 4.
 - `references/scorecard-template.md`: report structure.
-- `spec/evolve-v0.4-draft.md`: design and decisions.
-- `spec/ai-readiness-v0.5-draft.md`: AI Readiness design and decisions.
+- Design and decisions for each version: `spec/` in the source repository, https://github.com/harsh51191/evolvable-software.
 - `scripts/init_scores.py`: input template generator.
 - `scripts/score.py`: validator, scorer and prescriber.
-- `tests/test_score.py`: scorer tests.
-- `assessments/`: field-test results.
+- Scorer tests and the 11-product field test: `tests/` and `assessments/` in the source repository.

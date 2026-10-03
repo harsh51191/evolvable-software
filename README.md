@@ -98,14 +98,14 @@ What stands out:
 - Scoring of the default configuration, with shipped opt-in settings and higher alternate readings reported separately.
 - Enforced archetype exclusions and an interpretation guide for agent runtimes and developer platforms.
 - A deterministic Python scorer with tests, and a remediation generator that orders work by prerequisites.
-- A reusable `SKILL.md` for compatible coding agents.
+- A reusable agent skill (`skills/evolvable-software/`), packaged as a plugin for Claude Code and Codex.
 - A field test on 11 open-source systems in `assessments/2026-09-field-test/`, scored from public source code and not yet reviewed by their maintainers.
 
 The framework itself contains no private repository evidence, client examples or employer-specific terminology.
 
 ## Install
 
-**As a Claude Code plugin** (recommended):
+**Claude Code** (plugin):
 
 ```bash
 claude plugin marketplace add harsh51191/evolvable-software
@@ -114,27 +114,27 @@ claude plugin install evolvable-software@evolvable-software
 
 Or from inside a session: `/plugin install evolvable-software --marketplace harsh51191/evolvable-software`. Update later with `claude plugin update evolvable-software@evolvable-software`.
 
-**As a plain skill** for Claude Code:
+**Codex** (plugin):
 
 ```bash
-git clone https://github.com/harsh51191/evolvable-software.git \
-  ~/.claude/skills/evolvable-software
+codex plugin marketplace add harsh51191/evolvable-software
+codex plugin add evolvable-software@evolvable-software
 ```
 
-For Codex:
+**Any agent that reads skill folders** (copy the skill):
 
 ```bash
-git clone https://github.com/harsh51191/evolvable-software.git \
-  ~/.codex/skills/evolvable-software
+git clone https://github.com/harsh51191/evolvable-software.git
+cp -r evolvable-software/skills/evolvable-software ~/.claude/skills/   # or ~/.codex/skills/
 ```
 
-Restart or refresh the agent after installation. The skill can then be discovered for requests about self-evolution readiness, software autonomy levels, AI-driven change, governed product change, architecture readiness for autonomous change, or agent-safe action surfaces. It works best where it can read the repository being assessed, such as Claude Code or Cowork.
+Restart or refresh the agent after installation. The skill can then be discovered for requests about self-evolution readiness, software autonomy levels, AI-driven change, governed product change, architecture readiness for autonomous change, or agent-safe action surfaces. It works best where it can read the repository being assessed, such as Claude Code, Codex or Cowork.
 
 ## What the plugin runs and sends
 
 - **Reads** only the repositories and documents you point it at. It asks before cloning or opening any new remote source, and never changes the repository it assesses.
 - **Writes** one assessment input file (JSON), at a path you choose outside the assessed repository, and the reports you ask for.
-- **Runs** two bundled Python scripts, `scripts/init_scores.py` and `scripts/score.py`, which use the standard library only. They make no network calls and install nothing.
+- **Runs** two bundled Python scripts, `init_scores.py` and `score.py` in the skill's `scripts/` folder, which use the standard library only. They make no network calls and install nothing.
 - **Sends** nothing to any service. The plugin has no hooks, no MCP servers and no telemetry.
 
 ## Run the scorer directly
@@ -144,7 +144,7 @@ Requires Python 3.8 or later. It uses only the standard library.
 Create an input template outside the repository you are assessing:
 
 ```bash
-python3 scripts/init_scores.py \
+python3 skills/evolvable-software/scripts/init_scores.py \
   --product "Example Software" \
   --archetype focused-application \
   --source "repository @ immutable-tip" \
@@ -156,16 +156,16 @@ Every scope fact starts empty and every criterion starts as `todo`. The scorer r
 - each fact is true or false, with evidence;
 - each criterion is assessed, marked `not_evidenced` with a search scope, or excluded as the archetype or a scope fact allows.
 
-Complete the file using `references/rubric.md` and `references/evidence-plan.md`, then run:
+Complete the file using the skill's `references/rubric.md` and `references/evidence-plan.md`, then run:
 
 ```bash
-python3 scripts/score.py ~/evolve/example-2026-10-01.json
+python3 skills/evolvable-software/scripts/score.py ~/evolve/example-2026-10-01.json
 ```
 
 Generate a plan that starts with what blocks the next level:
 
 ```bash
-python3 scripts/score.py ~/evolve/example-2026-10-01.json --prescribe --target 3
+python3 skills/evolvable-software/scripts/score.py ~/evolve/example-2026-10-01.json --prescribe --target 3
 ```
 
 ## Evidence states and fields
@@ -196,21 +196,23 @@ Optional fields:
 ## Repository structure
 
 ```text
-.claude-plugin/                   Plugin manifest and marketplace entry
-SKILL.md                          Agent instructions
-metadata.yaml                     Package metadata
-spec/evolve-v0.4-draft.md         Design and decisions
-spec/ai-readiness-v0.5-draft.md   AI Readiness design and decisions
-references/rubric.md              Criteria, anchored levels and the scoring model
-references/archetypes.md          Applicability and interpretation guidance
-references/evidence-plan.md       Evidence collection plan
-references/remediation.md         Level 3 and 4 improvement moves
-references/scorecard-template.md  Reporting structure
-scripts/init_scores.py            Input template generator
-scripts/score.py                  Validator, scorer and prescriber
-tests/test_score.py               Scorer tests (python3 -m unittest discover -s tests)
-assessments/                      Field-test results
-CHANGELOG.md                      Version history
+.claude-plugin/                       Claude Code plugin manifest and marketplace entry
+.codex-plugin/                        Codex plugin manifest
+.agents/plugins/marketplace.json      Codex marketplace entry
+skills/evolvable-software/            The skill
+  SKILL.md                            Agent instructions
+  references/rubric.md                Criteria, anchored levels and the scoring model
+  references/archetypes.md            Applicability and interpretation guidance
+  references/evidence-plan.md         Evidence collection plan
+  references/remediation.md           Level 3 and 4 improvement moves
+  references/scorecard-template.md    Reporting structure
+  scripts/init_scores.py              Input template generator
+  scripts/score.py                    Validator, scorer and prescriber
+spec/                                 Design and decisions for each version
+tests/test_score.py                   Scorer tests (python3 -m unittest discover -s tests)
+assessments/                          Field-test results
+metadata.yaml                         Package metadata
+CHANGELOG.md                          Version history
 ```
 
 ## Name and version
