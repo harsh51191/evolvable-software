@@ -34,6 +34,9 @@
       "Assess how ready this repository is to evolve itself safely",
       "What blocks this product from the next autonomy level?",
       "How much of this product's change loop does AI drive?"
-    ]
+    ],
+    "logo": "./skills/evolvable-software/.claude-plugin/icon.png",
+    "composerIcon": "./skills/evolvable-software/.claude-plugin/icon.png",
+    "brandColor": "#2DD4BF"
   }
 }
