@@ -1,0 +1,89 @@
+{
+  "product": "OpenClaw",
+  "commit": "df2a29cac9ad37c31a0f5a0d977ba3e4fd833cb0",
+  "archetype": "agent-runtime",
+  "scope_facts": {
+    "persistent_data": {"value": true, "evidence": "Global and per-agent SQLite state (src/state/openclaw-state-db*, openclaw-agent-db*), workspaces with memory/persona files, credentials and OAuth dirs; enumerated by the backup inventory src/commands/backup-resource-inventory.ts:125-140."},
+    "schema_changes": {"value": true, "evidence": "SQLite schema migrations and additive-column policy src/state/openclaw-agent-db-additive-columns.ts:1-35, src/state/openclaw-agent-db-schema-compatibility.ts:27-50, migration modules src/state/*migration*.ts; config migrations via doctor src/commands/doctor-config-preflight-migrations.ts."},
+    "multi_tenant": {"value": false, "evidence": "docs/start/teams.md:23-27: 'A gateway is one trust domain ... If you need to serve mutually untrusted people or organizations, run one gateway per tenant instead.' Default install is a single-user personal assistant."},
+    "hosted_service": {"value": true, "evidence": "The Gateway is a long-lived networked control plane (daemon, WebSocket RPC, channel connections): README.md 'How it fits together'; src/gateway/; deploy files fly.toml, render.yaml, docker-compose.yml."},
+    "machine_actions": {"value": true, "evidence": "Gateway RPC methods with operator scopes (src/gateway/method-scopes.ts:1-50) and agent tools (cron tool src/agents/tools/cron-tool.ts, system agent tool src/agents/tools/system-agent-tool.ts:462-465 config_set/config_unset/plugin_install) change config, cron jobs and skills."},
+    "agent_mutations": {"value": true, "evidence": "Skill Workshop experience review writes skills after runs (src/skills/workshop/experience-review.ts:122-275, scheduled from src/agents/harness/agent-end-side-effects.ts:47); weekly collection review (src/cron/skill-collection-review-monitor.ts:43); agent edits workspace memory/persona files; system agent changes config (system-agent-tool.ts:462-465)."},
+    "evolution_auto_apply": {"value": true, "evidence": "Skill Workshop defaults autonomous.mode='auto' and approvalPolicy='auto' (src/skills/workshop/config.ts:16-23); in auto mode the review edits skills directly with file tools (experience-review.ts:134-135, 248-253, 267-272 'Direct edits have normal file-tool semantics'); lifecycle approvals are skipped when approvalPolicy is auto (src/skills/workshop/policy.ts:170)."},
+    "definition_change_path": {"value": true, "evidence": "Config (openclaw.json via `openclaw config set/patch` src/cli/config-cli.ts:330-479), skills, memory/persona files, cron jobs and tool policies change without a release."},
+    "code_release_path": {"value": true, "evidence": "Judgement call. The system agent can propose and, on approval, activate task-authored plugin code built with `openclaw plugins pack` (src/system-agent/assistant-prompts.ts:159-160, src/agents/tools/system-agent-tool.ts:179,464; src/system-agent/plugin-artifact.ts), so the product's own AI lane ships executable backend code into the product. Product releases ship via `openclaw update` with managed rollback (docs/install/updating/rollback-and-recovery.md)."}
+  },
+  "scores": {
+    "GOV-05": {
+      "status": "assessed",
+      "score": 2,
+      "inventory": {
+        "config_openclaw_json": "2 (validated writes, 5 rotating backups, no operator history/diff/rollback command)",
+        "workshop_skills": "2 (collection review backups and restore_collection action; proposals record previous content; no per-skill history/diff view)",
+        "memory_and_persona_files": "1 (workspace is a git repo initialised at setup; history only through manual git)",
+        "cron_jobs": "1 (revision hash for optimistic concurrency only, no history)",
+        "tool_and_permission_policies": "2 (part of config; same as config)"
+      },
+      "evidence": "Config backup rotation CONFIG_BACKUP_COUNT=5 src/config/backup-rotation.ts:10-60; config CLI has get/set/patch/unset/file/schema/validate but no history or rollback subcommand src/cli/config-cli.ts:330-479. Skill collection backup/restore src/skills/workshop/collection-backup.ts:1-100, collection-restore.ts:33-55, collection-rollback.ts:8-60, restore_collection approval text policy.ts:35-40; workshop CLI offers list/inspect/propose/revise/evaluate/apply/reject/quarantine, no rollback src/cli/skills-cli.ts:877-1135; curator restore retired src/skills/workshop/curator.ts:25. Workspace git init src/agents/workspace.ts:682-708. Cron revision token only src/cron/config-revision.ts:1-17. Opt-in `openclaw backup git` snapshots with log/restore (src/commands/backup-git.ts:1-40, backup-schedule.ts) would give whole-state history but are off by default."
+    },
+    "DEL-11": {
+      "status": "assessed",
+      "score": 2,
+      "alt_score": 3,
+      "alt_note": "`openclaw update --tag <known-good>` is a managed, previewable rollback with compatibility check, and the updater retains the previous package and rolls back automatically when post-install verification fails; additive-only schema policy keeps many changes readable by older builds. Held at 2 because the docs state downgrade does not reverse migrations and rollback is refused once state is newer than the older release can read, so data compatibility across one release is not guaranteed; AI-activated plugin artifacts are removed by uninstall rather than a versioned rollback.",
+      "facets": {"implemented": true, "tested": true, "operated": false},
+      "evidence": "docs/install/updating/rollback-and-recovery.md:13-55 (managed rollback path, retained previous package, downgrade does not reverse migrations); docs/install/updating.md:405-409 ('Automatic rollback keeps compatible databases in place ... If the previous runtime cannot read the current databases, the updater ... reports why rollback was refused'), 498-511 (doctor rehearsal on private copies, 'Package rollback cannot undo migrated state'); updater implementation src/infra/package-update-*.ts (activation journal, swap, recovery contract); tests e.g. src/commands/backup-verify-manifest.update-recovery.test.ts, src/entry.update-failure.process.test.ts; CI workflow .github/workflows/update-migration.yml."
+    },
+    "ARC-02": {
+      "status": "assessed",
+      "score": 2,
+      "alt_score": 3,
+      "alt_note": "No down steps, but migrations are rehearsed by doctor on private copies, a verified recovery archive is required before live agent databases migrate, schema compatibility is checked by a contract that allows only additive columns/tables for older readers, config (the runtime definition surface) is migrated by the same doctor path, and migration tests exist. Whether this substitutes for reversible migrations and 'representative data' is a judgement call.",
+      "facets": {"implemented": true, "tested": true, "operated": false},
+      "evidence": "Additive compatibility contract src/state/openclaw-agent-db-schema-compatibility.ts:27-50 and additive columns src/state/openclaw-agent-db-additive-columns.ts:9-35 ('Bare nullable declarations keep older readers safe'); migration tests src/state/openclaw-agent-db-session-migrations.test.ts, openclaw-state-db-schema-migration-required.test.ts, openclaw-agent-session-snapshots-migration.test.ts; doctor config migrations src/commands/doctor-config-preflight-migrations.ts, doctor-legacy-config.migrations.test.ts; rehearsal and recovery archive docs/install/updating.md:498-511; no reversal docs/install/updating.md:405-409."
+    },
+    "ARC-09": {
+      "status": "assessed",
+      "score": 2,
+      "alt_score": 3,
+      "alt_note": "Data, definitions, files and secrets reach level 3 (supported create/verify/restore commands with automated round-trip restore tests). Held at 2 by the scheduled-work surface: cron jobs are restored with state and operators can list next run per job, and runs pass agent-availability and run-preparation preflights, but no evidence that each job re-checks its identity's current permissions/credentials and is held after restore; the restore output only warns operators to review approvals.",
+      "facets": {"implemented": true, "tested": true, "operated": false},
+      "inventory": {
+        "data": 3,
+        "definitions": 3,
+        "files": 3,
+        "secrets": 3,
+        "schedules": 2
+      },
+      "evidence": "Backup inventory (config, OAuth dirs, workspaces, agent roots, SQLite DBs, plugin resources) src/commands/backup-resource-inventory.ts:125-140; create/verify src/commands/backup.ts, backup-verify.ts; restore to staging after verification src/commands/backup-restore.ts:19-205 (warnings incl. 'Approvals ... roll back; review pending approvals before resuming'); tests src/commands/backup-restore.test.ts:176 ('round-trips a backup into a fresh target with matching inventory and readable databases'), backup-verify-completeness.test.ts, backup-sqlite.test.ts, backup.create-verify.test.ts. Scheduled work: cron list shows next run src/cli/cron-cli/shared.ts:498,626,677; agent availability check src/cron/agent-availability.ts:1-17; run preflight src/cron/service/ops-run-preparation.ts:86,339; scheduled backups opt-in src/commands/backup-schedule.ts. No stated RPO/RTO or drill records."
+    },
+    "ARC-05": {
+      "status": "not_applicable",
+      "rationale": "multi_tenant is false: one gateway is one trust domain; the documented model for tenants is one gateway per tenant (docs/start/teams.md:23-27).",
+      "if_applicable": 2,
+      "evidence": "Single-tenant per deployment by design (docs/start/teams.md:23-27)."
+    },
+    "GOV-04": {
+      "status": "assessed",
+      "score": 3,
+      "facets": {"implemented": true, "tested": true, "operated": false},
+      "evidence": "Authorisation is declared per gateway method: every core method must be classified to an operator scope src/gateway/method-scopes.ts:1-50,324; a test fails on any unclassified method src/gateway/method-scopes.test.ts:993-1003; tool allow/deny policy src/agents/tool-policy*.ts, src/agents/tool-fs-policy.ts. Scans gating changes: CI job security-fast runs on every non-draft PR (.github/workflows/ci.yml:1484) with private-key detection (ci.yml:1576), zizmor on changed workflows and a production dependency audit (ci.yml:1653-1654); opengrep on PR diffs for src/, extensions/, packages/ (.github/workflows/opengrep-precise.yml:10-23); CodeQL on PRs for security-critical paths (.github/workflows/codeql.yml:1-30); nightly strict dependency audit (dependency-audit.yml:3-5). Not 4: no auto-remediation proposals found."
+    },
+    "GOV-10": {
+      "status": "assessed",
+      "score": 2,
+      "alt_score": 3,
+      "alt_note": "The auto skill-maintenance lane is tightly bounded (rooted to the Workshop skills directory, workspace-only, fixed tool allow-list, skill size and pending caps, review cadence limits), and system-agent config/plugin changes go through a typed operation union with approval and audit. Held at 2 because the allow-list includes exec on the host when no sandbox is configured, the main agent's own memory/persona/workspace edits have no self-change scope by default (tools.fs.workspaceOnly unset), and no changes-per-period or blocked-change log across all self-change paths was found.",
+      "facets": {"implemented": true, "tested": true, "operated": false},
+      "evidence": "Auto-mode tool allow-list ls/read/write/edit/apply_patch/exec/process src/skills/workshop/maintenance-prompt.ts:1-9 applied at experience-review.ts:249-253; rooted execution root=Workshop skills dir with requireWorkspaceOnly src/agents/rooted-run-params.ts:44-53, experience-review.ts:134-135, writable-sandbox check src/agents/workspace-sandbox.ts:116-121; limits maxPending 50, maxSkillBytes 40000 src/skills/workshop/config.ts:16-23; review scheduler min iterations/max pending src/skills/workshop/experience-review-scheduler.ts:17-20; mode re-checked mid-run experience-review.ts:189-197. System agent typed ops with exact-operation approval and audit src/agents/tools/system-agent-tool.ts:1-5,462-465,519-578; src/system-agent/audit.ts. Default fs policy not workspace-only src/agents/tool-fs-policy.ts:15-33."
+    },
+    "LRN-08": {
+      "status": "assessed",
+      "score": 0,
+      "alt_score": 1,
+      "available_score": 2,
+      "alt_note": "In the default auto mode learned skill edits take effect directly with no scan or evaluation before apply; the only checks are an on-demand `openclaw security audit --deep` skill scan (manual), hence alt 1. With the shipped opt-in propose mode or approvalPolicy 'pending', proposals are secret/code-scanned and quarantined on failure, pass plugin evaluator hooks (none registered by default) and need human approval, so available reading 2; no baseline evaluation on representative tasks.",
+      "evidence": "Default config.ts:16-23; direct edits experience-review.ts:267-272; proposal scan src/skills/workshop/proposal-scan.ts:1-49 and quarantine on failed scan apply-transition.ts:137-170; evaluator hooks only if registered service-evaluation.ts:55-120 (hasSkillProposalEvaluators); deep audit skill scan src/security/audit.deep.runtime.ts:132-133."
+    }
+  }
+}

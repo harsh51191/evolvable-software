@@ -1,0 +1,82 @@
+{
+  "product": "n8n",
+  "commit": "c17c48043eb1080e5ae9795ea3a384960f8748f1",
+  "archetype": "configurable-application-platform",
+  "scope_facts": {
+    "persistent_data": {"value": true, "evidence": "TypeORM entities and migrations in packages/@n8n/db/src/migrations (common/, postgresdb/, sqlite/); workflows, credentials, executions, data tables stored durably."},
+    "schema_changes": {"value": true, "evidence": "Versioned migrations packages/@n8n/db/src/migrations/common (238 files); runtime DDL for user data tables packages/cli/src/modules/data-table/data-table-ddl.service.ts:25-95 (createTable, addColumn, dropColumn)."},
+    "multi_tenant": {"value": false, "evidence": "Community default is one organisation per instance: team projects quota defaults to 0 (packages/cli/src/license.ts:484 getValue(TEAM_PROJECT_LIMIT) ?? 0); users get personal projects inside one instance administered by the owner. Projects are access partitions, not isolated tenants."},
+    "hosted_service": {"value": true, "evidence": "Long-lived server/worker/webhook processes: packages/cli/src/commands/start.ts, worker.ts, webhook.ts; scaling/ queue mode."},
+    "machine_actions": {"value": true, "evidence": "Public REST API (packages/cli/src/public-api) and MCP server module enabled by default (packages/@n8n/backend-common/src/modules/module-registry.ts:44-82 lists 'mcp', 'oauth-server') let external agents create/update workflows."},
+    "agent_mutations": {"value": true, "evidence": "Instance AI (default module 'instance-ai', module-registry.ts:79; enabled=true default instance-ai-settings.service.ts:287) has tools that create/update/publish/delete workflows, data tables, credentials, folders: packages/@n8n/instance-ai/src/tools/workflows.tool.ts:1570-2220, data-tables.tool.ts:482-578. Agents module ('agents', module-registry.ts:80) has a builder that edits agent configs."},
+    "evolution_auto_apply": {"value": false, "evidence": "DEFAULT_INSTANCE_AI_PERMISSIONS sets every mutating action to 'require_approval' (packages/@n8n/api-types/src/schemas/instance-ai.schema.ts:2322-2348); planned-task overrides only apply after a human approves the plan (packages/@n8n/instance-ai/src/planned-tasks/planned-task-permissions.ts:8-31). The only always_allow write is createPreference, gated behind a PostHog experiment flag (packages/cli/src/modules/instance-ai/instance-ai.adapter.service.ts:733). Agent episodic-memory reflection is opt-in per agent (packages/cli/src/modules/agents/json-config/from-json-config.ts:533)."},
+    "definition_change_path": {"value": true, "evidence": "Workflows, agents, data tables, credentials and settings are changed at runtime through the editor UI/API without a release (packages/cli/src/workflows/workflows.controller.ts:206-351)."},
+    "code_release_path": {"value": false, "evidence": "The product's evolution lanes (Instance AI, workflow builder, agent builder) produce workflow/agent definitions stored in the DB, not product code releases; no first-party lane ships n8n code (searched packages/@n8n/instance-ai/src/tools, packages/cli/src/modules/agents, workflow-builder)."}
+  },
+  "scores": {
+    "GOV-05": {
+      "status": "assessed",
+      "score": 2,
+      "inventory": {
+        "workflows": "2 (history list + UI restore; default prune 24h for unlicensed; diff view licensed)",
+        "agents": "2 (version history, republish of older version = rollback)",
+        "credentials": "0",
+        "data_tables_schema": "0",
+        "folders_tags": "0",
+        "instance_settings_and_ai_permissions": "0",
+        "variables": "n/a (licensed)",
+        "custom_roles": "n/a (licensed)"
+      },
+      "evidence": "Workflow history API packages/cli/src/workflows/workflow-history/workflow-history.controller.ts:18-110 (list/get versions, unlicensed); restore = load version and save as current packages/frontend/editor-ui/src/features/workflows/workflowHistory/workflowHistory.store.ts:104-130, UI action WorkflowHistory.vue:273-292; diffs gated by license WorkflowHistory.vue:81 and packages/cli/src/services/frontend.service.ts:549 (isWorkflowDiffsLicensed); retention capped by license quota default 24h packages/@n8n/constants/src/index.ts:80, packages/cli/src/license.ts:475-480, workflow-history-helper.ts:11-27, pruned hourly workflow-history-manager.ts:24-47. Agents publish history and rollback to an older snapshot packages/cli/src/modules/agents/agent-publish.service.ts:50-58,296-306,358-400. No version history found for credentials, data-table schemas, folders, tags, instance/AI settings. Source control (git environments) is EE-licensed (modules/source-control.ee)."
+    },
+    "DEL-11": {
+      "status": "not_applicable",
+      "rationale": "code_release_path is false: the evolution system ships definitions, not code.",
+      "if_applicable": 2,
+      "evidence": "Releases are versioned Docker images/npm packages (previous versions redeployable); db:revert reverts only the last migration and refuses irreversible ones packages/cli/src/commands/db/revert.ts:17-56; no tested one-step rollback or cross-release data compatibility guarantee found."
+    },
+    "ARC-02": {
+      "status": "assessed",
+      "score": 2,
+      "evidence": "TypeORM migration framework with down steps (209 of 238 common migrations define down; grep 'async down' packages/@n8n/db/src/migrations/common); n8n db:revert command packages/cli/src/commands/db/revert.ts:46-56 (refuses irreversible migrations); 72 migration tests that seed data and run up/undo packages/cli/test/migration/*.test.ts (e.g. 1767018516000-change-workflow-statistics-fk-to-no-action.test.ts:1-40 uses runSingleMigration/undoLastSingleMigration) run in CI db-tests (.github/workflows/ci-pull-requests.yml required-checks list incl. db-tests). Not level 3: no expand-and-contract tooling enforced, and runtime definition changes for data tables apply DDL directly outside the migration mechanism, including destructive dropColumn packages/cli/src/modules/data-table/data-table-ddl.service.ts:80-95, data-table-column.repository.ts:99-129."
+    },
+    "ARC-09": {
+      "status": "assessed",
+      "score": 2,
+      "inventory": {
+        "data": "2 (export:entities/import:entities CLI; round-trip workflow is manual-dispatch only)",
+        "definitions": "2 (workflows/credentials/agents tables included in export:entities)",
+        "files": "1 (binary data store not exported)",
+        "secrets": "1 (credentials exported encrypted; instance encryption key not part of the backup, operator must keep it)",
+        "schedules": "2 (scheduled workflows restored with activeState; no re-check of owner permissions/credentials or hold after restore found)"
+      },
+      "evidence": "Built-in backup: n8n export:entities packages/cli/src/commands/export/entities.ts:33-63 (all DB tables, optional execution history, encryption with key file) and import:entities packages/cli/src/commands/import/entities.ts; services packages/cli/src/services/export.service.ts (415 lines, no binary-data handling), import.service.ts. Tests: unit tests packages/cli/src/services/__tests__/export.service.test.ts, integration packages/cli/test/integration/import.service.test.ts:36-496 (import only). The export->import round trip exists only as a manually dispatched workflow .github/workflows/util-data-tooling.yml:3-11 ('TODO: Uncomment this after it works'), so restore is not exercised by automated tests on every change. No stated RPO/RTO."
+    },
+    "ARC-05": {
+      "status": "not_applicable",
+      "rationale": "multi_tenant is false in the default community configuration (one organisation per instance, team projects quota 0).",
+      "if_applicable": 2,
+      "evidence": "packages/cli/src/license.ts:484 (team projects default 0); concurrency control is instance-wide (packages/cli/src/concurrency); project-scoped RBAC via @ProjectScope decorators packages/cli/src/workflows/workflows.controller.ts:206-351."
+    },
+    "GOV-04": {
+      "status": "assessed",
+      "score": 2,
+      "evidence": "Generic permission model: resources and scopes declared centrally packages/@n8n/permissions/src/constants.ee.ts:3-105, enforced by @ProjectScope/@GlobalScope decorators (workflows.controller.ts:206,296,340,351); request DTO validation via zod (@n8n/api-types, @Body decorators). Scanning: PR 'security-checks' job runs only poutine and zizmor (GitHub Actions workflow scanners) and only when workflows change (.github/workflows/sec-ci-reusable.yml:12-27 with 'Future security checks: dependency-scan, secret-detection, container-scan' commented; ci-pull-requests.yml:495-501 conditional on outputs.workflows); Trivy image scans run on docker build/release (docker-build-push.yml:763-790). No SAST or dependency scan gating every code change, so not level 3."
+    },
+    "GOV-10": {
+      "status": "assessed",
+      "score": 2,
+      "alt_score": 3,
+      "alt_note": "Every Instance AI mutating tool is checked against an admin-set per-action policy (require_approval/always_allow/blocked) and runs inside the user's project RBAC; blocked actions return 'Action blocked by admin'. A 3 is arguable for that lane, but there is no declared blast-radius or changes-per-period limit, no evidence blocked attempts are logged, and other AI paths (agent builder, workflow-builder module) are not shown to share the same enforced scope.",
+      "facets": {"implemented": true, "tested": true, "operated": false},
+      "evidence": "Permission modes schema and defaults packages/@n8n/api-types/src/schemas/instance-ai.schema.ts:2290-2348; enforcement in tools e.g. publish packages/@n8n/instance-ai/src/tools/workflows.tool.ts:1887-1928 (blocked -> denied, unverified workflows force approval), delete 903-916, update 1570, restore version 2125-2146; data tables data-tables.tool.ts:482-578; URL/domain gating packages/@n8n/instance-ai/src/domain-access/domain-gating.ts:60-140; plan-approved overrides planned-task-permissions.ts:16-31. Tests: tools/__tests__/workflows.tool.test.ts:382-403 ('should block update-version when updateWorkflow permission is blocked'), domain-access/__tests__/domain-gating.test.ts."
+    },
+    "LRN-08": {
+      "status": "assessed",
+      "score": 1,
+      "alt_score": 2,
+      "alt_note": "No learning-from-experience loop is on by default; the AI-proposed changes that exist (Instance AI workflow builds) get automated validation and a verification run before publish, which reads as level 2 for AI-made changes, but there is no baseline evaluation and the opt-in learned surfaces (agent episodic memory reflection, assistant preferences) have no pre-apply checks.",
+      "evidence": "Verification obligation for AI-built workflows packages/@n8n/instance-ai/src/workflow-loop/verification-obligation.ts:1-60 and publish refusal for unverified workflows workflows.tool.ts:1891-1909; human approval default instance-ai.schema.ts:2322-2348. Opt-in learning surfaces without checks: episodic memory packages/cli/src/modules/agents/json-config/from-json-config.ts:533, reflector packages/cli/src/modules/agents/episodic-memory.ts:1-8; preferences behind experiment flag instance-ai.adapter.service.ts:733. Workflow evaluations (packages/cli/src/evaluation.ee) are user-run test datasets, not a gate on learned changes. Searched packages/@n8n/instance-ai/src/{memory,knowledge-base,skills,workflow-loop}, packages/cli/src/modules/{agents,agent-evals}."
+    }
+  }
+}

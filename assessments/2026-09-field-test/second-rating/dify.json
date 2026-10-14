@@ -1,0 +1,82 @@
+{
+  "product": "Dify",
+  "commit": "ea38e484b81b4104736d2484aaa1d0d7ea99627e",
+  "archetype": "configurable-application-platform",
+  "scope_facts": {
+    "persistent_data": {"value": true, "evidence": "PostgreSQL models (api/models), object storage for files (api/extensions/ext_storage), vector stores for knowledge bases; docker/docker-compose-template.yaml volumes."},
+    "schema_changes": {"value": true, "evidence": "Alembic migrations api/migrations/versions (219 files); `flask upgrade-db` api/commands/system.py:136."},
+    "multi_tenant": {"value": true, "evidence": "Tenant (workspace) is the isolation unit across the data model (tenant_id on apps, datasets, agents, e.g. api/models/agent.py:464-487); operators can create additional isolated workspaces with `flask create-tenant` api/commands/account.py:91-95; self-service workspace creation defaults off (ALLOW_CREATE_WORKSPACE=false api/configs/feature/__init__.py:1629-1632, docker/envs/core-services/shared.env.example:28), but the deployment is built to serve several isolated workspaces."},
+    "hosted_service": {"value": true, "evidence": "Long-lived Flask API, Celery workers, web, plugin daemon and agent_backend services in docker/docker-compose-template.yaml (agent_backend at 654-670)."},
+    "machine_actions": {"value": true, "evidence": "Service API and MCP server controllers api/controllers/service_api, api/controllers/mcp; agent runtime pushes config via inner API (api/controllers/inner_api)."},
+    "agent_mutations": {"value": true, "evidence": "In build mode the Dify agent can mutate its own Agent config (notes, env, files, skills) with `dify-agent config ... push/delete` (dify-agent/src/dify_agent/layers/config/layer.py:29-48); server permits these writes only on the user's DEBUG_BUILD draft (api/services/agent_config_service.py:913-929, 968-983). AI also drafts/refines workflow graphs (api/services/workflow_generator_service.py:36-88)."},
+    "evolution_auto_apply": {"value": false, "evidence": "AI changes land in a per-user build draft; applying it to the agent draft is a console action (api/controllers/console/agent/roster.py:953 /agent/<id>/build-draft/apply) and publishing a version is separate; workflow generator returns a graph to the editor (workflow_generator_service.py:44-88). No learning loop that applies changes itself was found."},
+    "definition_change_path": {"value": true, "evidence": "Apps, workflows, agents, skills, knowledge bases, tools and model providers are configured at runtime through the console API/UI (api/controllers/console)."},
+    "code_release_path": {"value": false, "evidence": "Evolution lanes (workflow generator, agent build mode) produce definitions stored in the DB/object storage; no first-party lane ships Dify code (searched api/services/agent, api/services/workflow_generator_service.py, dify-agent/src)."}
+  },
+  "scores": {
+    "GOV-05": {
+      "status": "assessed",
+      "score": 2,
+      "inventory": {
+        "workflow_and_chatflow_apps": "2 (published versions; restore a published version into the draft from the console)",
+        "rag_pipelines": "2 (same restore helper)",
+        "agents_agent_soul": "2 (versioned snapshots with restore_version and revision audit)",
+        "workspace_skills": "2 (immutable published versions with hash)",
+        "basic_chat_completion_app_config": "1 (no restore path found)",
+        "knowledge_base_settings": "0",
+        "model_providers_tools_plugins": "0"
+      },
+      "evidence": "Workflow restore endpoint api/controllers/console/app/workflow.py:1557-1576 -> api/services/workflow_service.py:622 and shared helper api/services/workflow_restore.py:1-60 (restore into draft, then publish). Agent version operations including RESTORE_VERSION api/models/agent.py:80-99, snapshots 327-361, revisions 363-400. Skills publish immutable versions api/services/skill_management_service.py:1-9. No version history found for knowledge-base settings, model provider credentials, tool providers or plugin config; no diff view found for workflow versions. Not all customisation surfaces covered, so 2."
+    },
+    "DEL-11": {
+      "status": "not_applicable",
+      "rationale": "code_release_path is false: the evolution system ships definitions, not code.",
+      "if_applicable": 2,
+      "evidence": "Releases are versioned images (docker-compose-template.yaml image tags e.g. langgenius/dify-agent-backend:1.17.1 at 655) that can be redeployed; Alembic downgrade exists for every migration but no tested one-step rollback or cross-release compatibility guarantee found."
+    },
+    "ARC-02": {
+      "status": "assessed",
+      "score": 2,
+      "evidence": "Alembic migration framework; all 219 migrations define downgrade() (grep -L 'def downgrade' returns none), e.g. api/migrations/versions/fecff1c3da27_remove_extra_tracing_app_config_table.py downgrade recreates table. CI db-migration-test (.github/workflows/db-migration-test.yml:31-35 offline SQL generation for upgrade base:head and downgrade head:base; :59 `flask upgrade-db` against an empty database), wired into main-ci.yml:511-532. Not 3: migrations are not exercised against representative data, no expand-and-contract tooling enforced; runtime definitions (workflow graphs, agent configs) are JSON documents and do not go through migrations (graph migrations happen in code on read)."
+    },
+    "ARC-09": {
+      "status": "assessed",
+      "score": 0,
+      "alt_score": 1,
+      "alt_note": "No supported backup or restore of the database, files, vector store or secrets, and no repository documentation telling operators to back up. A partial, documented export/import exists for workflow and chatflow apps and their custom tools (cross-environment migration), plus the env-sync script backs up .env, which some raters may count as level 1.",
+      "inventory": {
+        "data": 0,
+        "definitions": "1 (export-app-migration/import-app-migration for workflow/advanced-chat apps and custom tools only; DSL export per app)",
+        "files": 0,
+        "secrets": 0,
+        "schedules": "1 (schedule triggers travel inside exported workflow definitions; no re-check on restore)"
+      },
+      "evidence": "Searched api/commands (account, data_migrate, data_migration, plugin, rbac, retention, storage, system, vector: no backup/restore command), docker/README.md, README.md, docs/ (only .env backup in docker/dify-env-sync.sh:82-86 and docker/README.md:72-80). App migration commands api/commands/data_migration.py:88,120,209; scope documented docs/cross-env-app-migration/README.md:1-25 (workflow apps, advanced-chat apps, custom API/workflow/MCP tool providers only). No restore tests or RPO/RTO."
+    },
+    "ARC-05": {
+      "status": "assessed",
+      "score": 2,
+      "evidence": "Shared database with tenant_id scoping by convention in services/queries (e.g. api/services/agent_config_service.py:890-929 filters by tenant_id; _assert_agent_belongs_to_tenant 889, 956-966). Basic per-tenant noisy-neighbour control for one workload: TenantIsolatedTaskQueue for RAG/indexing tasks api/core/rag/pipeline/queue.py:25-37 with TENANT_ISOLATED_TASK_CONCURRENCY default 1 api/configs/feature/__init__.py:1675-1679, used by api/tasks/document_indexing_task.py and rag_pipeline tasks. Some cross-tenant tests exist in api/tests/test_containers_integration_tests (74 test names mention tenant isolation/other tenant). Not 3: no per-tenant limits across workloads (app rate limits are per app), no noisy-neighbour detection, no systematic isolation verification."
+    },
+    "GOV-04": {
+      "status": "assessed",
+      "score": 2,
+      "evidence": "Generic role model (TenantAccountRole owner/admin/editor/normal/dataset_operator) applied through controller decorators such as edit_permission_required api/controllers/console/wraps.py:402; dataset permissions and an enterprise RBAC service (api/services/enterprise/rbac_service.py, api/commands/rbac.py:1-40). Request validation with pydantic/flask-restx models. Scanning: no SAST, dependency or container scan in PR CI (.github/workflows has no codeql/trivy/pip-audit/semgrep job); Dependabot version updates only (.github/dependabot.yml); a few ruff security rules (S102, S307, S301, S506 in api/.ruff.toml:35-55) run via autofix.yml:80-93. Authorisation is per endpoint decorator rather than generated per defined type, so not 3."
+    },
+    "GOV-10": {
+      "status": "assessed",
+      "score": 2,
+      "alt_score": 3,
+      "alt_note": "The one AI self-change path (agent build mode) is enforced server-side: config pushes are accepted only on the calling user's DEBUG_BUILD draft of an agent in the same tenant, published snapshots and the shared draft are not writable from the runtime surface, and a human applies and publishes. That is a declared scope with a small blast radius; held at 2 because there is no rate/volume limit, no evidence blocked attempts are logged beyond a 403, and the workflow generator path is unbounded (it relies on the human applying the returned graph).",
+      "facets": {"implemented": true, "tested": true, "operated": false},
+      "evidence": "api/services/agent_config_service.py:890-955 (resolve target; writable only for BUILD_DRAFT owned by user), 968-983 (_require_writable: 'config push is only allowed for build drafts', 403); allowed surfaces dify-agent/src/dify_agent/layers/config/layer.py:29-48; apply endpoint api/controllers/console/agent/roster.py:953. Tests api/tests/unit_tests/services/test_agent_config_service.py and api/tests/unit_tests/controllers/inner_api/plugin/test_agent_config.py (config_not_writable)."
+    },
+    "LRN-08": {
+      "status": "assessed",
+      "score": 1,
+      "alt_score": 2,
+      "alt_note": "No learning-from-experience loop exists, so there are no learned changes to check; AI-authored agent config changes are schema-validated (AgentSoulConfig.model_validate, composer_validator) and then reviewed and applied by a person, which supports 2 for AI-made changes. No baseline evaluation before apply.",
+      "evidence": "Build-draft validation api/services/agent_config_service.py:946-955 (AgentSoulConfig.model_validate), api/services/agent/composer_validator.py; human apply roster.py:953. Searched api/services/agent, api/services (no reflection/experience/learning job), dify-agent/src."
+    }
+  }
+}
