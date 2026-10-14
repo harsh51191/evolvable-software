@@ -2,7 +2,6 @@
   "product": "dify",
   "rater": "ChatGPT (Codex), blind, read via GitHub web at the pinned commit; evidence abbreviated from its report",
   "commit": "ea38e484b81b4104736d2484aaa1d0d7ea99627e",
-  "partial": "The rater's output was cut off after ARC-02; ARC-09, ARC-05, GOV-04, GOV-10 and LRN-08 are missing.",
   "scope_facts": {
     "persistent_data": {
       "value": true
@@ -46,6 +45,33 @@
       "status": "assessed",
       "score": 2,
       "evidence": "api/migrations/versions/16830a790f0f_.py:18-29; b289e2408ee2_add_workflow.py:215-239; .github/workflows/db-migration-test.yml:30-59"
+    },
+    "ARC-09": {
+      "status": "assessed",
+      "score": 0,
+      "evidence": "docker/docker-compose.yaml:210-265; docker/README.md:72-80; docs/cross-env-app-migration/README.md:7-64; api/schedule/workflow_schedule_task.py:55-110; api/tasks/workflow_schedule_tasks.py:23-72",
+      "alt_score": 1
+    },
+    "ARC-05": {
+      "status": "assessed",
+      "score": 2,
+      "evidence": "api/models/workflow.py:211-226; api/models/account.py:20-76; api/tasks/workflow_schedule_tasks.py:36-52; api/controllers/common/rbac/checks.py:32-65; api/configs/enterprise/__init__.py:38-40"
+    },
+    "GOV-04": {
+      "status": "assessed",
+      "score": 1,
+      "evidence": "api/models/account.py:20-76; api/core/rbac/entities.py:4-40; api/controllers/common/rbac/checks.py:32-65; api/configs/enterprise/__init__.py:38-40; .github/workflows/main-ci.yml:3-8",
+      "alt_score": 2
+    },
+    "GOV-10": {
+      "status": "assessed",
+      "score": 2,
+      "evidence": "api/services/workflow_generator_service.py:36-86; web/app/components/workflow/workflow-generator/apply.ts:83-157"
+    },
+    "LRN-08": {
+      "status": "assessed",
+      "score": 0,
+      "evidence": "api/services/workflow_generator_service.py:36-86; web/app/components/workflow/workflow-generator/apply.ts:83-157; no learning loop with baseline validation found"
     }
   }
 }

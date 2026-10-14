@@ -47,31 +47,49 @@ The first rating's field-test results are left unchanged until these differences
 
 ## Third rater: ChatGPT (Codex)
 
-A third rater, ChatGPT in Codex, ran the same blind task with the same rules. It read the code through GitHub's web pages at the pinned commits because it could not clone. Its report was cut off partway through Dify, so Dify has only three criteria from it. Its scores, with abbreviated evidence, are in `chatgpt-n8n.json`, `chatgpt-openclaw.json` and `chatgpt-dify.json`.
+A third rater, ChatGPT in Codex, ran the same blind task with the same rules. It read the code through GitHub's web pages at the pinned commits because it could not clone, so its absence findings are bounded by the files it opened. Its scores, with abbreviated evidence, are in `chatgpt-n8n.json`, `chatgpt-openclaw.json` and `chatgpt-dify.json`.
 
 | Product | Criterion | First | Second | Third |
 |---|---|---:|---:|---:|
 | n8n | GOV-05 definition rollback | 2 | 2 | 2 |
 | n8n | ARC-02 migrations | 2 | 2 | 2 |
 | n8n | ARC-09 backup and restore | 2 | 2 | 1 |
-| n8n | GOV-04 security | **3** | 2 | 2 |
+| n8n | ARC-05 tenant isolation | n/a | n/a | 2 |
+| n8n | GOV-04 security | 3 | 2 | 2 |
 | n8n | GOV-10 bounded self-change | 2 | 2 | 2 |
 | n8n | LRN-08 learned-change validation | 2 | 1 | 0 |
 | OpenClaw | GOV-05 definition rollback | 2 | 2 | 2 |
+| OpenClaw | DEL-11 release rollback | n/a | 2 | n/a |
 | OpenClaw | ARC-02 migrations | 2 | 2 | 1 |
-| OpenClaw | ARC-09 backup and restore | **3** | 2 | 2 |
+| OpenClaw | ARC-09 backup and restore | 3 | 2 | 2 |
+| OpenClaw | ARC-05 tenant isolation | n/a | n/a | 2 |
 | OpenClaw | GOV-04 security | 3 | 3 | 2 |
 | OpenClaw | GOV-10 bounded self-change | 2 | 2 | 2 |
 | OpenClaw | LRN-08 learned-change validation | 2 | 0 | 1 |
 | Dify | GOV-05 definition rollback | 2 | 2 | 2 |
 | Dify | ARC-02 migrations | 2 | 2 | 2 |
+| Dify | ARC-09 backup and restore | 1 | 0 | 0 |
+| Dify | ARC-05 tenant isolation | 2 | 2 | 2 |
+| Dify | GOV-04 security | 2 | 2 | 1 |
+| Dify | GOV-10 bounded self-change | n/a | 2 | 2 |
+| Dify | LRN-08 learned-change validation | 1 | 1 | 0 |
+
+"n/a" means the rater found the criterion not applicable because a scope fact was false. Rows where all three raters marked it not applicable are omitted.
 
 ### Three-rater agreement
 
-Across the 14 ratings that all three raters assessed:
+Across the 18 ratings that all three raters assessed:
 
-- **All three gave the same score** on 7 of 14.
-- **All three were within one level** on 12 of 14. Both exceptions are LRN-08, the criterion whose definition is unclear for products with no learning loop.
+- **All three gave the same score** on 8 of 18.
+- **All three were within one level** on 16 of 18. Both exceptions are LRN-08, the criterion whose definition is unclear for products with no learning loop.
+
+Exact agreement between each pair of raters:
+
+| Pair | Exact |
+|---|---|
+| First and second | 13 of 18 |
+| First and third | 8 of 18 |
+| Second and third | 12 of 19 |
 
 ### What the three raters show
 
@@ -80,4 +98,6 @@ Across the 14 ratings that all three raters assessed:
 - **Three rubric points need tightening:**
   - LRN-08 for products with no learning loop;
   - when a product counts as multi-tenant (the third rater counted n8n projects and OpenClaw workspaces);
-  - what counts as a code release path.
+  - what counts as a code release path or an agent mutation.
+
+All three raters are AI models. A human second rater is the next step.
