@@ -1,0 +1,83 @@
+{
+  "product": "openclaw",
+  "rater": "ChatGPT (Codex), blind, read via GitHub web at the pinned commit; evidence abbreviated from its report",
+  "commit": "df2a29cac9ad37c31a0f5a0d977ba3e4fd833cb0",
+  "scope_facts": {
+    "persistent_data": {
+      "value": true
+    },
+    "schema_changes": {
+      "value": true
+    },
+    "multi_tenant": {
+      "value": true
+    },
+    "hosted_service": {
+      "value": true
+    },
+    "machine_actions": {
+      "value": true
+    },
+    "agent_mutations": {
+      "value": true
+    },
+    "evolution_auto_apply": {
+      "value": true
+    },
+    "definition_change_path": {
+      "value": true
+    },
+    "code_release_path": {
+      "value": false
+    }
+  },
+  "scores": {
+    "GOV-05": {
+      "status": "assessed",
+      "score": 2,
+      "evidence": "docs/tools/skill-workshop/how-it-works.md:19-41; src/skills/lifecycle/workspace-skill-write.ts:216-254 and test:51-71; collection-review.md:55-63"
+    },
+    "DEL-11": {
+      "status": "not_applicable",
+      "rationale": "code_release_path=false"
+    },
+    "ARC-02": {
+      "status": "assessed",
+      "score": 1,
+      "evidence": "src/state/openclaw-state-db-contract.ts:22-23,143-164; openclaw-state-db-schema-repair.ts:262-294; docs/reference/database-schemas/state-schema-history.md:73-77,168-171"
+    },
+    "ARC-09": {
+      "status": "assessed",
+      "score": 2,
+      "evidence": "src/infra/backup-create.ts:73-115; src/commands/backup-restore.ts:1-80 and test:175-266; src/cron/store.ts:1-22; src/gateway/server-methods/cron-caller-scope.ts:79-138",
+      "inventory": {
+        "data": 3,
+        "definitions": 2,
+        "files": 2,
+        "secrets": 2,
+        "schedules": 2
+      }
+    },
+    "ARC-05": {
+      "status": "assessed",
+      "score": 2,
+      "evidence": "docs/concepts/multi-agent.md:9-56; src/agents/sandbox/workspace-authority.ts:25-64"
+    },
+    "GOV-04": {
+      "status": "assessed",
+      "score": 2,
+      "evidence": ".github/workflows/ci.yml:1484-1654,6036-6098; scripts/run-opengrep.sh:8-23"
+    },
+    "GOV-10": {
+      "status": "assessed",
+      "score": 2,
+      "evidence": "src/skills/lifecycle/workspace-skill-write.ts:8-164 and test:32-70; collection-review.md:26-63"
+    },
+    "LRN-08": {
+      "status": "assessed",
+      "score": 1,
+      "evidence": "docs/tools/self-learning.md:19-32; skill-workshop/how-it-works.md:30-41; collection-review.md:55-63",
+      "alt_score": 2
+    }
+  }
+}

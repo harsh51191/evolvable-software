@@ -44,3 +44,40 @@ The rater was blind. It was a separate AI agent (Claude), given only the skill a
   - what counts as a code release path and as an agent mutation.
 
 The first rating's field-test results are left unchanged until these differences are adjudicated.
+
+## Third rater: ChatGPT (Codex)
+
+A third rater, ChatGPT in Codex, ran the same blind task with the same rules. It read the code through GitHub's web pages at the pinned commits because it could not clone. Its report was cut off partway through Dify, so Dify has only three criteria from it. Its scores, with abbreviated evidence, are in `chatgpt-n8n.json`, `chatgpt-openclaw.json` and `chatgpt-dify.json`.
+
+| Product | Criterion | First | Second | Third |
+|---|---|---:|---:|---:|
+| n8n | GOV-05 definition rollback | 2 | 2 | 2 |
+| n8n | ARC-02 migrations | 2 | 2 | 2 |
+| n8n | ARC-09 backup and restore | 2 | 2 | 1 |
+| n8n | GOV-04 security | **3** | 2 | 2 |
+| n8n | GOV-10 bounded self-change | 2 | 2 | 2 |
+| n8n | LRN-08 learned-change validation | 2 | 1 | 0 |
+| OpenClaw | GOV-05 definition rollback | 2 | 2 | 2 |
+| OpenClaw | ARC-02 migrations | 2 | 2 | 1 |
+| OpenClaw | ARC-09 backup and restore | **3** | 2 | 2 |
+| OpenClaw | GOV-04 security | 3 | 3 | 2 |
+| OpenClaw | GOV-10 bounded self-change | 2 | 2 | 2 |
+| OpenClaw | LRN-08 learned-change validation | 2 | 0 | 1 |
+| Dify | GOV-05 definition rollback | 2 | 2 | 2 |
+| Dify | ARC-02 migrations | 2 | 2 | 2 |
+
+### Three-rater agreement
+
+Across the 14 ratings that all three raters assessed:
+
+- **All three gave the same score** on 7 of 14.
+- **All three were within one level** on 12 of 14. Both exceptions are LRN-08, the criterion whose definition is unclear for products with no learning loop.
+
+### What the three raters show
+
+- **Definition rollback (GOV-05) scored 2 in every rating:** all three raters, all three products. The finding that none of these products reaches L3 does not depend on the rater.
+- **The first rating was the most generous on two control criteria.** The other two raters both scored lower on n8n security (GOV-04) and on OpenClaw backup and restore (ARC-09, the scheduled-work surface). Both should be adjudicated down to 2.
+- **Three rubric points need tightening:**
+  - LRN-08 for products with no learning loop;
+  - when a product counts as multi-tenant (the third rater counted n8n projects and OpenClaw workspaces);
+  - what counts as a code release path.

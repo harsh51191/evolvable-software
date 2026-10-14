@@ -1,0 +1,76 @@
+{
+  "product": "n8n",
+  "rater": "ChatGPT (Codex), blind, read via GitHub web at the pinned commit; evidence abbreviated from its report",
+  "commit": "c17c48043eb1080e5ae9795ea3a384960f8748f1",
+  "scope_facts": {
+    "persistent_data": {
+      "value": true
+    },
+    "schema_changes": {
+      "value": true
+    },
+    "multi_tenant": {
+      "value": true
+    },
+    "hosted_service": {
+      "value": true
+    },
+    "machine_actions": {
+      "value": true
+    },
+    "agent_mutations": {
+      "value": true
+    },
+    "evolution_auto_apply": {
+      "value": true
+    },
+    "definition_change_path": {
+      "value": true
+    },
+    "code_release_path": {
+      "value": false
+    }
+  },
+  "scores": {
+    "GOV-05": {
+      "status": "assessed",
+      "score": 2,
+      "evidence": "packages/@n8n/db/src/entities/workflow-history.ts:9-43; packages/cli/src/workflows/workflow-history/workflow-history.service.ts:35-98; restore-workflow-version.tool.ts:42-109 and its test:71-98"
+    },
+    "DEL-11": {
+      "status": "not_applicable",
+      "rationale": "code_release_path=false"
+    },
+    "ARC-02": {
+      "status": "assessed",
+      "score": 2,
+      "evidence": "packages/@n8n/db/src/migrations/migration-types.ts:43-67; common/1714133768519-CreateProject.ts:47-58"
+    },
+    "ARC-09": {
+      "status": "assessed",
+      "score": 1,
+      "evidence": "packages/cli/src/commands/export/workflow.ts:17-55; export/credentials.ts:18-55; scheduling/schedule-trigger-node/schedule-trigger-task.ts:6-16",
+      "alt_score": 2
+    },
+    "ARC-05": {
+      "status": "assessed",
+      "score": 2,
+      "evidence": "packages/@n8n/db/src/entities/project.ts:20-26,37-50"
+    },
+    "GOV-04": {
+      "status": "assessed",
+      "score": 2,
+      "evidence": "packages/cli/src/workflows/workflow.service.ts:545-623; .github/workflows/sec-poutine-reusable.yml:27-38; security-trivy-scan-callable.yml:41-52 (exit-code 0)"
+    },
+    "GOV-10": {
+      "status": "assessed",
+      "score": 2,
+      "evidence": "update-workflow.tool.ts:260-268,1097-1103,1215-1348; api-types instance-ai.schema.ts:110-120"
+    },
+    "LRN-08": {
+      "status": "assessed",
+      "score": 0,
+      "evidence": "update-workflow.tool.ts:999-1043,1305-1348; no learning loop with baseline evaluation found"
+    }
+  }
+}

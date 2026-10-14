@@ -1,0 +1,51 @@
+{
+  "product": "dify",
+  "rater": "ChatGPT (Codex), blind, read via GitHub web at the pinned commit; evidence abbreviated from its report",
+  "commit": "ea38e484b81b4104736d2484aaa1d0d7ea99627e",
+  "partial": "The rater's output was cut off after ARC-02; ARC-09, ARC-05, GOV-04, GOV-10 and LRN-08 are missing.",
+  "scope_facts": {
+    "persistent_data": {
+      "value": true
+    },
+    "schema_changes": {
+      "value": true
+    },
+    "multi_tenant": {
+      "value": true
+    },
+    "hosted_service": {
+      "value": true
+    },
+    "machine_actions": {
+      "value": true
+    },
+    "agent_mutations": {
+      "value": true
+    },
+    "evolution_auto_apply": {
+      "value": false
+    },
+    "definition_change_path": {
+      "value": true
+    },
+    "code_release_path": {
+      "value": false
+    }
+  },
+  "scores": {
+    "GOV-05": {
+      "status": "assessed",
+      "score": 2,
+      "evidence": "api/models/workflow.py:193-231; api/services/workflow_restore.py:19-58; tests/unit_tests/services/workflow/test_workflow_restore.py:58-79"
+    },
+    "DEL-11": {
+      "status": "not_applicable",
+      "rationale": "code_release_path=false"
+    },
+    "ARC-02": {
+      "status": "assessed",
+      "score": 2,
+      "evidence": "api/migrations/versions/16830a790f0f_.py:18-29; b289e2408ee2_add_workflow.py:215-239; .github/workflows/db-migration-test.yml:30-59"
+    }
+  }
+}
