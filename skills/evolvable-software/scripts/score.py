@@ -90,20 +90,24 @@ def load_rubric(path):
     criteria, order, areas, ai_areas = {}, [], {}, {}
     with open(path, encoding="utf-8") as handle:
         text = handle.read()
-    cap, area, in_ai = None, None, False
+    cap, area, in_ai, cid = None, None, False, None
     for line in text.splitlines():
         line = line.strip()
+        anchor = re.match(r"^- \*\*([0-4])\*\* (.+)$", line)
+        if anchor and cid:
+            criteria[cid]["anchors"][int(anchor.group(1))] = anchor.group(2).strip()
+            continue
         heading = re.match(r"^# Capability ([A-Z]{3}): (.+)$", line)
         if heading:
-            cap, area, in_ai = heading.group(1), None, False
+            cap, area, in_ai, cid = heading.group(1), None, False, None
             continue
         heading = re.match(r"^# AI Readiness Checks \(([A-Z]{3})\)$", line)
         if heading:
-            cap, area, in_ai = heading.group(1), None, True
+            cap, area, in_ai, cid = heading.group(1), None, True, None
             continue
         heading = re.match(r"^## Area: (.+)$", line)
         if heading:
-            area = heading.group(1).strip()
+            area, cid = heading.group(1).strip(), None
             continue
         criterion = re.match(rf"^### ({ID}) (.+)$", line)
         if criterion:
@@ -112,11 +116,15 @@ def load_rubric(path):
                 raise ModelError(f"Rubric defines {cid} twice: {path}")
             if cap is None or area is None or not cid.startswith(cap + "-"):
                 raise ModelError(f"{cid} is not under a matching capability and area heading")
-            criteria[cid] = {"cap": cap, "area": area, "title": criterion.group(2).strip(), "ai_check": in_ai}
+            criteria[cid] = {"cap": cap, "area": area, "title": criterion.group(2).strip(), "ai_check": in_ai,
+                             "anchors": {}}
             (ai_areas if in_ai else areas).setdefault(cap, {}).setdefault(area, []).append(cid)
             order.append(cid)
     if not criteria:
         raise ModelError("Rubric has no criterion headings: " + path)
+    for cid, info in criteria.items():
+        if sorted(info["anchors"]) != [0, 1, 2, 3, 4]:
+            raise ModelError(f"{cid} needs one anchored level for each of 0 to 4")
     block = re.search(r"```json evolve-model\n(.*?)\n```", text, re.S)
     if not block:
         raise ModelError("Rubric has no evolve-model block: " + path)
@@ -152,6 +160,10 @@ def load_rubric(path):
                     raise ModelError(f"build path {loop}/{who} names unknown capability {alt['cap']}")
                 known(_test_ids(alt), f"build path {loop}/{who}")
     known([r["c"] for r in model["rollback"]], "rollback")
+    for level in range(1, len(model["levels"])):
+        for loop in model["loops"]:
+            if not model.get("challenges", {}).get(str(level), {}).get(loop):
+                raise ModelError(f"challenges need a text for level {level}, loop {loop}")
     if set(model["headline"]) - set(model["loops"]):
         raise ModelError("headline names unknown loops")
     for level, conds in model["conditions"].items():
@@ -1050,6 +1062,85 @@ def render_markdown(data, criteria, order, model, result):
     return "\n".join(lines)
 
 
+def describe_condition(cond, loop, criteria, model, facts):
+    """Plain words for one level condition, from the rubric's own anchored levels."""
+    operated = " Records must show it working in production." if cond.get("operated") else ""
+    if "c" in cond:
+        info = criteria[cond["c"]]
+        return f"{cond['c']} {info['title']}: {info['anchors'][cond['min']]}{operated}"
+    if "path" in cond:
+        parts = []
+        for alt in model["build_paths"][loop][cond["path"]]:
+            if "cap" in alt:
+                label = model["capabilities"][alt["cap"]]
+                parts.append(f"The {label} ({alt['cap']}) capability averages {cond['min']} or more.")
+            else:
+                text = f"{alt['c']} {criteria[alt['c']]['title']}: {criteria[alt['c']]['anchors'][cond['min']]}"
+                if "with" in alt:
+                    w = alt["with"]
+                    text += f" (with {w['c']} {criteria[w['c']]['title']}: {criteria[w['c']]['anchors'][w['min']]})"
+                parts.append(text)
+        who = "People build the change" if cond["path"] == "people" else "The product builds the change"
+        return f"{who}. " + " Or: ".join(parts)
+    if "rollback" in cond:
+        items = [f"{r['c']} {criteria[r['c']]['title']}: {criteria[r['c']]['anchors'][cond['rollback']]}"
+                 for r in model["rollback"] if not r.get("when") or facts.get(r["when"]) is True]
+        return " ".join(items) + operated
+    if "every" in cond:
+        label = model["capabilities"][cond["every"]]
+        return f"Every applicable {label} ({cond['every']}) criterion is at {cond['min']} or more.{operated}"
+    for key, joiner in (("any", " Or: "), ("all", " And: ")):
+        if key in cond:
+            return joiner.join(describe_condition(sub, loop, criteria, model, facts) for sub in cond[key])
+    raise ModelError(f"Unrecognised condition: {cond}")
+
+
+def checklist(data, criteria, model, default, target):
+    """What done means for each loop at the target level: the challenge to run on the product, and every
+    condition the next assessment must find, from the target level and any lower level not yet met."""
+    ev = Evaluator(data, default["effective"], default["capabilities"], model)
+    loops = {}
+    for loop, name in model["loops"].items():
+        now = default["sal"]["loops"][loop]["level"]
+        items = []
+        for level in range(1, target + 1):
+            for cond in model["conditions"].get(str(level), []):
+                if cond.get("loop") not in (None, loop):
+                    continue
+                ok, needs, observed = ev.test(cond, loop)
+                if observed == "n/a" or (ok and level < target):
+                    continue
+                items.append({"level": level, "part": cond["part"], "stage": cond["stage"],
+                              "control": cond.get("control"), "needs": needs, "observed": observed, "met": ok,
+                              "description": describe_condition(cond, loop, criteria, model, ev.facts)})
+        loops[loop] = {"name": name, "level": now, "target": target, "challenge": model["challenges"][str(target)][loop],
+                       "items": items}
+    return loops
+
+
+def render_checklist(product, loops, model, sal):
+    lines = [f"# Definition of done: {cell(product)} to L{next(iter(loops.values()))['target']}", "",
+             f"Today: {headline_text(sal, model)}.", "",
+             "A loop is done at the target level when its challenge passes on the running product and a fresh "
+             "assessment finds every item below. A score of 3 needs automated tests in scope (the `tested` facet); "
+             "a score of 4 also needs records of it working in production (`operated`).", ""]
+    for loop in loops.values():
+        lines.append(f"## {loop['name']}: L{loop['level']} → L{loop['target']}")
+        lines.append("")
+        if loop["level"] >= loop["target"]:
+            lines += [f"Already at L{loop['level']}.", ""]
+            continue
+        lines += [f"**Challenge.** {loop['challenge']}", "", "**Evidence the next assessment must find:**", ""]
+        for item in loop["items"]:
+            box = "x" if item["met"] else " "
+            tag = f" Critical control: {item['control']}." if item.get("control") else ""
+            lines.append(f"- [{box}] **{item['stage']}** (L{item['level']}, now {cell(item['observed'])}). "
+                         f"{cell(item['description'])}{tag}")
+        met = sum(i["met"] for i in loop["items"])
+        lines += ["", f"{met} of {len(loop['items'])} met.", ""]
+    return "\n".join(lines).rstrip() + "\n"
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description="Validate, score and prescribe an EVOLVE assessment.")
     parser.add_argument("scores")
@@ -1059,6 +1150,8 @@ def main(argv=None):
     parser.add_argument("--quiet", action="store_true", help="print only the SAL and profile summary")
     parser.add_argument("--prescribe", action="store_true")
     parser.add_argument("--target", type=int, choices=(3, 4), default=3)
+    parser.add_argument("--checklist", type=int, choices=(1, 2, 3, 4, 5), metavar="LEVEL",
+                        help="print what done means for each loop at this autonomy level")
     args = parser.parse_args(argv)
 
     criteria, order, model = load_rubric(args.rubric)
@@ -1076,6 +1169,15 @@ def main(argv=None):
         return 2
     result = score_assessment(data, criteria, order, model)
     default = result["variants"]["default"]
+
+    if args.checklist:
+        loops = checklist(data, criteria, model, default, args.checklist)
+        if args.json:
+            print(json.dumps({"product": data.get("product"), "target": args.checklist, "loops": loops},
+                             indent=2, ensure_ascii=False))
+        else:
+            print(render_checklist(data.get("product"), loops, model, default["sal"]), end="")
+        return 0
 
     if args.prescribe:
         remediation = load_remediation(args.remediation, criteria)

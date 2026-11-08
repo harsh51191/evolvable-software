@@ -123,6 +123,14 @@ python3 <skill-dir>/scripts/score.py <file>.json --prescribe --target 3
 
 The plan starts with what blocks the next autonomy level, then orders criterion moves by prerequisites. Projected scores are ceilings if every move lands, not forecasts. Re-estimate every size for the assessed software.
 
+For a target level, also print what done means:
+
+```bash
+python3 <skill-dir>/scripts/score.py <file>.json --checklist 3
+```
+
+For each loop it gives a challenge to run on the running product and every condition the next assessment must find, in the rubric's own words. Give it with any plan. A level is reached only when the challenge passes and a fresh assessment finds the evidence, never from a plan or a change request alone.
+
 ### 8. Report
 
 Use `references/scorecard-template.md`. Report:
@@ -156,5 +164,5 @@ Never call a product "self-evolving" from a level alone; L3 and above are readin
 - `references/scorecard-template.md`: report structure.
 - Design and decisions for each version: `spec/` in the source repository, https://github.com/harsh51191/evolvable-software.
 - `scripts/init_scores.py`: input template generator.
-- `scripts/score.py`: validator, scorer and prescriber.
+- `scripts/score.py`: validator, scorer, prescriber and definition-of-done checklist.
 - Scorer tests and the 11-product field test: `tests/` and `assessments/` in the source repository.

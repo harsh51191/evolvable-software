@@ -626,6 +626,73 @@ class AIDrivenTests(unittest.TestCase):
         self.assertIn("Issue → Fix L3 (AI L3)", text)
 
 
+class ChecklistTests(unittest.TestCase):
+    """What done means at a target level: a challenge per loop and the conditions from the rubric."""
+
+    def loops(self, data, target):
+        default = result(data)["variants"]["default"]
+        return score.checklist(data, CRITERIA, MODEL, default, target)
+
+    def test_every_criterion_has_five_anchored_levels(self):
+        for cid, info in CRITERIA.items():
+            self.assertEqual(sorted(info["anchors"]), [0, 1, 2, 3, 4], cid)
+
+    def test_every_level_and_loop_has_a_challenge(self):
+        for level in range(1, len(MODEL["levels"])):
+            for loop in MODEL["loops"]:
+                self.assertTrue(MODEL["challenges"][str(level)][loop])
+
+    def test_a_missing_challenge_is_a_model_error(self):
+        with self.assertRaises(score.ModelError):
+            rubric_with('"expansion": "A new capability launches to a cohort', '"other": "A new capability launches to a cohort')
+
+    def test_items_agree_with_the_scorer_progress_count(self):
+        data = assessment(2)
+        set_score(data, "GOV-05", 2)
+        sal_now = sal(data)
+        for loop, info in self.loops(data, 3).items():
+            target = [i for i in info["items"] if i["level"] == 3]
+            self.assertEqual(sum(i["met"] for i in target), sal_now["loops"][loop]["next_met"])
+            self.assertEqual(len(target), sal_now["loops"][loop]["next_total"])
+
+    def test_unmet_items_are_exactly_the_blockers(self):
+        data = assessment(2)
+        info = self.loops(data, 3)["request"]
+        blockers = {b["needs"] for b in sal(data)["loops"]["request"]["blockers"]}
+        self.assertEqual({i["needs"] for i in info["items"] if not i["met"]}, blockers)
+
+    def test_unmet_lower_levels_are_listed_and_met_ones_are_not(self):
+        data = assessment(2)
+        set_score(data, "DEL-01", 1)
+        items = self.loops(data, 3)["request"]["items"]
+        self.assertTrue(any(i["level"] == 2 and "DEL-01" in i["needs"] for i in items))
+        self.assertFalse(any(i["level"] == 2 and i["met"] for i in items))
+
+    def test_description_uses_the_anchor_at_the_required_level(self):
+        items = self.loops(assessment(2), 3)["request"]["items"]
+        rollback = [i for i in items if i.get("control") == "Definition rollback"][0]
+        self.assertIn(CRITERIA["GOV-05"]["anchors"][3], rollback["description"])
+
+    def test_rollback_names_only_change_paths_that_exist(self):
+        data = assessment(0, facts={"code_release_path": False})
+        item = [i for i in self.loops(data, 1)["request"]["items"] if i["stage"] == "Roll back"][0]
+        self.assertIn("GOV-05", item["description"])
+        self.assertNotIn("DEL-11", item["description"])
+
+    def test_checklist_command_prints_challenges_and_boxes(self):
+        code, out = run(assessment(2), "--checklist", "3")
+        self.assertEqual(code, 0)
+        self.assertIn("**Challenge.**", out)
+        self.assertIn("- [ ]", out)
+        self.assertIn("- [x]", out)
+
+    def test_checklist_does_not_change_scores(self):
+        data = assessment(2)
+        before = sal(data)
+        run(data, "--checklist", "4")
+        self.assertEqual(sal(data), before)
+
+
 class ScoringTests(unittest.TestCase):
     def test_rounding_is_half_up_and_applied_once(self):
         self.assertEqual(score.r1(1.45), 1.5)

@@ -2,6 +2,32 @@
 
 An open, evidence-backed framework and agent skill that answers one question: **how ready is a software product to evolve itself safely?**
 
+## What evolvable software means
+
+**Evolvable software improves itself.** It takes in what users ask for, notices what goes wrong, and spots needs it does not serve yet. Then it changes its own behaviour to meet them, safely, within limits people set.
+
+At the top of the scale the improvement becomes **recursive**. The product measures the effect of every change it makes, and uses the results to improve how it changes itself: its checks, its policies and its choice of what to do next. It is recursive self-improvement applied to software products, with safety built in. In the rubric, recursion is concrete:
+- at L4, measured impact decides whether a change is kept, revised or rolled back (LRN-09);
+- at L5, the product's policy adapts to how often its own checks wrongly passed a change (GOV-07), the results of evaluating its learned changes feed that policy (LRN-08), and it learns which kinds of change succeed (LRN-07).
+
+Three things it is not:
+
+- **Not an AI coding agent editing your repository.** An agent can build the machinery. The product has evolved when users can do something *in the running product* that they could not do before.
+- **Not AI features bolted on.** A product can have a lot of AI and evolve itself not at all. EVOLVE reports both: how far the product evolves, and how much of that AI does.
+- **Not autonomy without limits.** Each level adds autonomy only on top of the safety to undo it.
+
+**Why a product cannot jump levels.** Each level rests on the ones below, and the level is set by the weakest link. A product cannot be trusted to change itself until every change can be undone and a backup restored, so seven critical controls must pass before L3. And it cannot automate what people cannot yet do safely by hand. n8n shows this in the field test: its AI already builds workflows, yet it stays at L2, because credentials, variables and settings cannot be rolled back in the product and its restore is untested. The AI is ahead of its safety net.
+
+**What done means.** For any target level, the scorer prints a definition of done for each loop: a **challenge** to run on the running product, and the **evidence** the next assessment must find, taken from the rubric itself.
+
+```bash
+python3 skills/evolvable-software/scripts/score.py assessment.json --checklist 2
+```
+
+A loop is done when its challenge passes and a fresh assessment finds every item. A level is never claimed from a plan, a prompt or a pull request alone.
+
+## The three loops and six levels
+
 The question breaks into three loops:
 
 | Loop | Can the product... |
@@ -12,14 +38,14 @@ The question breaks into three loops:
 
 Each loop gets a **Software Autonomy Level (SAL)** from L0 to L5, modelled on the levels used for self-driving cars:
 
-| Level | Name | What the product can do |
-|---|---|---|
-| L0 | Manual | Every change is engineers writing and releasing code. |
-| L1 | Configurable | People make the change without bespoke engineering, and can roll it back. |
-| L2 | Assisted | The product structures the request, diagnoses the issue or drafts the proposal, and drafts the change. People build and release. |
-| L3 | Supervised | The product carries the loop end to end; a person approves each release. Every critical control passes. |
-| L4 | Policy-bounded | Low-risk changes ship without a person, under policy, with staged exposure, measurement and automatic rollback. |
-| L5 | Self-directing | The product initiates, ships and measures change within policy, backed by operational evidence. |
+| Level | Name | What the product can do | What users and admins experience |
+|---|---|---|---|
+| L0 | Manual | Every change is engineers writing and releasing code. | Every change is a ticket that waits for a release. |
+| L1 | Configurable | People make the change without bespoke engineering, and can roll it back. | An admin makes the change in the product and can undo it. |
+| L2 | Assisted | The product structures the request, diagnoses the issue or drafts the proposal, and drafts the change. People build and release. | You describe the need in the product; it asks questions and drafts the change. It explains problems and proposes fixes. An admin finishes. |
+| L3 | Supervised | The product carries the loop end to end; a person approves each release. Every critical control passes. | The product builds and tests the change, releases it to a few users first and rolls it back if it is bad. It notices and diagnoses problems itself. A person only approves. |
+| L4 | Policy-bounded | Low-risk changes ship without a person, under policy, with staged exposure, measurement and automatic rollback. | Routine changes and fixes ship on their own, within rules the company set, and undo themselves when they make things worse. |
+| L5 | Self-directing | The product initiates, ships and measures change within policy, backed by operational evidence. | The product decides what to improve next, does it, and gets better at deciding, within policy. |
 
 Beside each loop's level, EVOLVE reports how far **AI itself** carries that loop. Each loop is re-scored with its AI-performable stages (turning requests into specifications, building changes, diagnosing issues, proposing fixes, learning from experience, proposing new capabilities) read only on what AI does there. AI first drives a stage at L2, and never above the loop's own level; **AI L0** means AI drives no stage.
 

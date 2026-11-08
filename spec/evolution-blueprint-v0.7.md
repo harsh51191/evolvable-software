@@ -104,6 +104,10 @@ For each block in order, the agent writes a small number of product-specific ste
 - **Acceptance evidence:** what the next assessment will look for, taken from the rubric's anchor for the target level, including the facets the depth cap needs (a 3 needs `tested`);
 - **Touches** (section 5) and the **suggested lane** for the delivery process;
 - **Relative size,** re-estimated for this product.
+- **Prompt:** a self-contained prompt for a coding agent such as Claude Code or Codex, run in the product's repository, naming the files and patterns to follow, what must not change, and the tests to add;
+- **Done when:** a checklist for the step: the tests that must pass, the behaviour a person can see, what must be unchanged, and the criterion reading the next assessment must find.
+
+Each product's blueprint ends with the **level challenge** from the rubric's scoring model, made concrete for that product, and the evidence checklist from `score.py --checklist <level>`. A level is reached only when the challenge passes on the running product and a fresh assessment finds every item, never from a prompt or a pull request alone.
 
 A step that cannot cite evidence for what it changes is marked as a design question, not a step.
 

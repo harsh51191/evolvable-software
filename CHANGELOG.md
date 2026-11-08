@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- **What evolvable software means.** The README now opens with a plain definition: software that improves itself, safely, within limits people set, becoming recursive at the top levels. It says what it is not, why a product cannot jump levels, and what each level means for users and admins.
+- **A definition of done for every level.** `score.py --checklist LEVEL` prints, for each loop, a challenge to run on the running product and every condition the next assessment must find, quoted from the rubric's anchored levels. The challenges live in the rubric's scoring model, one per level and loop, and the scorer refuses a model without them. Scores and levels are unchanged.
+
 ## EVOLVE v0.6.1, 2026-10-03
 
 ### Added

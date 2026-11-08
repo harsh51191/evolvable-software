@@ -229,6 +229,33 @@ A supporting reading, separate from SAL: **how safely can the product run AI in 
     "request",
     "fix"
   ],
+  "challenges": {
+    "1": {
+      "request": "Take a change users often ask for (a field, a rule, a workflow step, a setting). An admin makes it in the running product, with no engineer, code change or redeploy, then undoes it.",
+      "fix": "Make the product fail the way a user would see it (a failed action, an error, negative feedback). The product records it where a person can query it, with the product area. An admin then changes the behaviour without engineering and can undo it.",
+      "expansion": "An admin adds support for a new kind of need, such as a new app, domain or bundle, without engineering, and can remove it again."
+    },
+    "2": {
+      "request": "A user describes a change in plain words inside the product. The product captures it with structure (what, who, where) and drafts the change for a person to finish. Every change, drafted or not, passes automated checks before it lands.",
+      "fix": "Cause a real failure. The product explains why it happened and proposes what to change, with evidence, and drafts the change for a person to finish.",
+      "expansion": "The product shows needs it does not yet serve, such as failed searches or unsupported requests, and proposes a new capability with evidence."
+    },
+    "3": {
+      "request": "A request goes in. The product writes a specification with acceptance criteria, impact and a risk class, builds the change with tests, and shows the evidence. A person approves it. It goes to a small group first, can be switched off, is measured against a baseline, and can be rolled back. Then run the safety drill: undo changes on every surface, restore a backup into a fresh copy with scheduled jobs held until checked, migrate a copy of production data online, show that tenants cannot reach each other (where there are tenants), show security checks blocking a bad change, and show the product's own changes staying inside declared limits.",
+      "fix": "Break something on purpose. Without being asked, the product raises it as an issue with the users affected and how often, diagnoses it, proposes a fix with evidence, and ships it after a person approves: staged, measured and reversible. The safety drill for Request → Release must also pass.",
+      "expansion": "From real usage, the product spots an unmet need, proposes a capability with evidence, and launches it to a selected group. The safety drill for Request → Release must also pass."
+    },
+    "4": {
+      "request": "A low-risk change ships from request to production with no person involved, under a written policy for that kind of change. It is staged, measured, and rolled back automatically when its measure gets worse, and every automatic decision is recorded. Every architecture criterion holds, with tests.",
+      "fix": "A low-risk fix ships with no person involved, under the same policy, and is rolled back automatically if the issue does not improve or something else gets worse.",
+      "expansion": "A new capability launches to a cohort and is kept or killed on its measured results, with the decision recorded."
+    },
+    "5": {
+      "request": "Over a period of real operation, the product starts changes itself across kinds of change, ships and measures them within policy, and rolls back automatically when they fail. Its policy adapts to how often its own checks wrongly passed a change. The records show all of this running in production.",
+      "fix": "Over a period of real operation, the product finds, prioritises, diagnoses and fixes issues itself, within policy, and the records show which kinds of fix worked.",
+      "expansion": "Over a period of real operation, the product senses demand, proposes and launches capabilities, and keeps or kills them on measured results, within policy."
+    }
+  },
   "build_paths": {
     "request": {
       "people": [
