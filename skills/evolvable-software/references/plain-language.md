@@ -12,7 +12,9 @@ Name: Configurable
 Product: The people running the product can make the changes they need most without engineers, and can undo them.
 People: Someone running the product makes the change in the product itself, and can undo it.
 ### L2
-Assisted-placeholder
+Name: Assisted
+Product: The product takes in requests, explains problems and drafts the change, and a person completes it and releases it.
+People: You describe what you need in the product, it drafts the change and explains what went wrong, and someone running the product finishes and releases it.
 ### L3
 Name: Supervised
 Product: The product carries a change from start to finish, including checks, release to a small group of users first and undo, and every safety gate passes.
