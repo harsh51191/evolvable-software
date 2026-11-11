@@ -4,7 +4,10 @@
 Every scope fact starts as null and every criterion as status "todo". The
 scorer refuses to score the file until each fact is true or false with
 evidence and each criterion is assessed, marked not_evidenced with a search scope, or
-excluded with a rationale the archetype or a scope fact allows.
+excluded with a rationale the archetype or a scope fact allows. It also refuses
+the empty change_kinds list until the kinds of change are listed, the proven
+entries while they are "todo", and the ai_delivery record while it holds nulls
+(delete proven or ai_delivery to leave them out). A design basis has no proven.
 """
 
 import argparse
@@ -15,7 +18,7 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-from score import DEFAULT_RUBRIC, load_rubric  # noqa: E402
+from score import BASES, DEFAULT_RUBRIC, load_rubric  # noqa: E402
 
 
 def main(argv=None):
@@ -24,6 +27,8 @@ def main(argv=None):
     parser.add_argument("--archetype", required=True)
     parser.add_argument("--source", required=True, help="repositories and immutable tips")
     parser.add_argument("--date", default=datetime.date.today().isoformat())
+    parser.add_argument("--basis", choices=BASES, default="shipped",
+                        help="shipped (what ships, the default) or design (design documents, grade D allowed)")
     parser.add_argument("--rubric", default=DEFAULT_RUBRIC)
     parser.add_argument("--out", help="write here instead of stdout; refuses to overwrite")
     args = parser.parse_args(argv)
@@ -38,9 +43,15 @@ def main(argv=None):
         "archetype": args.archetype,
         "framework": model["framework"],
         "framework_version": model["version"],
+        "basis": args.basis,
         "scope_facts": {fact: {"value": None, "evidence": ""} for fact in model["scope_facts"]},
-        "scores": {cid: {"status": "todo"} for cid in order},
+        # 1 to 8 entries: {"id", "name", "who", "main", "reach" 0..5, "evidence", "confidence"}.
+        "change_kinds": [],
     }
+    if args.basis == "shipped":
+        output["proven"] = {loop: {"status": "todo"} for loop in model["loops"]}
+    output["ai_delivery"] = {"present": None, "qualifies": None, "evidence": "", "note": ""}
+    output["scores"] = {cid: {"status": "todo"} for cid in order}
     # AI-qualified readings: required when ai_features is true; delete them if the product has no AI.
     for cid in model.get("ai_view", {}).get("readings", []):
         output["scores"][cid]["ai"] = {"status": "todo"}

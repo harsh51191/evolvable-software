@@ -21,8 +21,20 @@ CRITERIA, ORDER, MODEL = score.load_rubric(RUBRIC)
 ALL_FACETS = {"implemented": True, "tested": True, "operated": True}
 
 
-def assessment(value=3, archetype="configurable-application-platform", facts=None, **overrides):
-    """An assessment with every criterion at one value; depth facets and inventories filled in."""
+def kinds_at(reach, main=(True, True, False)):
+    """Kinds of change, all at one reach: two main kinds and one that is not, unless main says otherwise."""
+    names = ("settings", "workflows", "reports")
+    return [{"id": names[i], "name": f"Change the {names[i]}", "who": "admins", "main": m, "reach": reach,
+             "evidence": f"docs/{names[i]}.md"} for i, m in enumerate(main)]
+
+
+def assessment(value=3, archetype="configurable-application-platform", facts=None, kinds=None, **overrides):
+    """An assessment with every criterion at one value; depth facets and inventories filled in.
+
+    The kinds of change default to self-serve (reach 1) when value is 2 or more and to engineers only
+    (reach 0) below that. Before v0.7 the people build path was the MAL average, which equals value here,
+    and passed at 2; this keeps every uniform assessment at the level it had, and reach 1 needs no other
+    criterion, so tests that lower one criterion keep their meaning."""
     facts = dict({f: True for f in MODEL["scope_facts"]}, **(facts or {}))
     scores = {}
     for cid in ORDER:
@@ -48,6 +60,7 @@ def assessment(value=3, archetype="configurable-application-platform", facts=Non
                 scores[cid]["ai"]["facets"] = dict(ALL_FACETS)
     data = {"product": "P", "date": "2026-01-01", "source": "repo@abc", "archetype": archetype,
             "scope_facts": {f: {"value": v, "evidence": "README"} for f, v in facts.items()},
+            "change_kinds": kinds_at(1 if value >= 2 else 0) if kinds is None else kinds,
             "scores": scores}
     for key, entry in overrides.items():
         data["scores"][key.replace("_", "-")] = entry
@@ -108,8 +121,10 @@ def rubric_with(old, new):
 
 
 class ModelTests(unittest.TestCase):
-    def test_sixty_six_criteria_in_six_capabilities_plus_eight_ai_checks(self):
-        self.assertEqual(len([c for c in ORDER if not CRITERIA[c]["ai_check"]]), 66)
+    def test_sixty_seven_criteria_in_six_capabilities_plus_eight_ai_checks(self):
+        self.assertEqual(len([c for c in ORDER if not CRITERIA[c]["ai_check"]]), 67)
+        self.assertEqual(len(ORDER), 75)
+        self.assertEqual(MODEL["version"], "0.7.0")
         self.assertEqual(len([c for c in ORDER if CRITERIA[c]["ai_check"]]), 8)
         self.assertEqual(list(MODEL["capabilities"]), ["ARC", "DEL", "MAL", "LRN", "GOV", "EXP"])
 
@@ -221,10 +236,14 @@ class DepthTests(unittest.TestCase):
         self.assertEqual(res["variants"]["default"]["effective"]["ARC-09"], 2)
         self.assertIn("ARC-09: evidence depth caps 3 -> 2", res["flags"])
 
-    def test_four_without_operated_counts_as_three(self):
+    def test_a_four_needs_tested_only(self):
         data = assessment(4)
         data["scores"]["ARC-03"]["facets"] = {"implemented": True, "tested": True, "operated": False}
-        self.assertEqual(result(data)["variants"]["default"]["effective"]["ARC-03"], 3)
+        self.assertEqual(result(data)["variants"]["default"]["effective"]["ARC-03"], 4)
+        data["scores"]["ARC-03"]["facets"] = {"implemented": True, "tested": False, "operated": True}
+        res = result(data)
+        self.assertEqual(res["variants"]["default"]["effective"]["ARC-03"], 2)
+        self.assertIn("ARC-03: evidence depth caps 4 -> 2", res["flags"])
 
     def test_depth_does_not_cap_other_criteria(self):
         data = assessment()
@@ -234,7 +253,7 @@ class DepthTests(unittest.TestCase):
 
 
 class LevelTests(unittest.TestCase):
-    def test_everything_at_four_with_operated_evidence_is_level_five(self):
+    def test_everything_at_four_with_tested_evidence_is_level_five(self):
         out = sal(assessment(4))
         self.assertEqual(out["headline"], 5)
         self.assertEqual({l: v["level"] for l, v in out["loops"].items()},
@@ -307,8 +326,8 @@ class LevelTests(unittest.TestCase):
         self.assertEqual(out["headline"], 1)
 
     def test_people_build_path_gives_level_one(self):
-        data = assessment(0)
-        for cid in [c for c in ORDER if c.startswith("MAL-")] + ["GOV-05", "DEL-11"]:
+        data = assessment(0, kinds=kinds_at(1))
+        for cid in ("GOV-05", "DEL-11"):
             data["scores"][cid]["score"] = 2
         out = sal(data)
         self.assertEqual(out["loops"]["request"]["level"], 1)
@@ -730,7 +749,7 @@ class OutputTests(unittest.TestCase):
         data["scores"]["ARC-06"] = {"status": "assessed", "score": 1, "grade": "A", "evidence": "x"}
         code, out = run(data)
         self.assertEqual(code, 0)
-        self.assertIn("**SAL 2 (Assisted)", out)
+        self.assertIn("**Built to SAL 2 (Assisted) · Proven: not evidenced · AI-driven 2", out)
         self.assertIn("ARC-06 1", out)
 
     def test_missing_option_value_is_a_usage_error(self):
@@ -756,6 +775,440 @@ class OutputTests(unittest.TestCase):
         remediation = {"MAL-01": {"requires": ["MAL-02"]}, "MAL-02": {"requires": ["MAL-01"]}}
         with self.assertRaises(SystemExit):
             score.schedule(["MAL-01", "MAL-02"], {"MAL-01": 0, "MAL-02": 0}, remediation, 3)
+
+
+def rate(data, level="high", **low):
+    """Record confidence on every assessed criterion; ids given as keywords get that level instead."""
+    for cid, entry in data["scores"].items():
+        if entry["status"] == "assessed":
+            entry["confidence"] = low.get(cid.replace("-", "_"), level)
+    return data
+
+
+class KindsOfChangeTests(unittest.TestCase):
+    """Kinds of change (v0.7 section 2)."""
+
+    def test_an_assessment_without_change_kinds_fails(self):
+        data = assessment(3)
+        del data["change_kinds"]
+        self.assertTrue(any(e.startswith("change_kinds: missing") for e in errors(data)))
+        data["change_kinds"] = []
+        self.assertTrue(any(e.startswith("change_kinds: none listed yet") for e in errors(data)))
+        data["change_kinds"] = {"settings": 1}
+        self.assertTrue(any(e.startswith("change_kinds must be a list") for e in errors(data)))
+
+    def test_fields_are_validated(self):
+        kinds = kinds_at(1)
+        kinds[0].update(id="Settings", reach=6, name="", confidence="sure", extra=1)
+        kinds[1].update(id="reports", main="yes")
+        kinds[2].update(who=" ", evidence="todo")
+        errs = errors(assessment(3, kinds=kinds))
+        self.assertIn("change kind Settings: id must be lowercase letters, digits and hyphens, got 'Settings'", errs)
+        self.assertIn("change kind Settings: reach must be an integer 0..5, got 6", errs)
+        self.assertIn("change kind Settings: name must be non-empty text", errs)
+        self.assertTrue(any(e.startswith("change kind Settings: confidence must be one of") for e in errs))
+        self.assertTrue(any(e.startswith("change kind Settings: unknown field 'extra'") for e in errs))
+        self.assertIn("change kind reports: main must be true or false", errs)
+        self.assertIn("change kind reports: id is listed more than once", errs)
+        self.assertIn("change kind reports: who must be non-empty text", errs)
+        self.assertIn("change kind reports: evidence must be non-empty text", errs)
+
+    def test_at_least_one_main_kind_and_at_most_eight(self):
+        self.assertIn("change_kinds: at least one kind must be main",
+                      errors(assessment(3, kinds=kinds_at(1, main=(False, False)))))
+        many = [dict(kinds_at(1)[0], id=f"kind-{i}") for i in range(9)]
+        self.assertTrue(any(e.startswith("change_kinds: at most 8 kinds, got 9") for e in errors(assessment(3, kinds=many))))
+        self.assertEqual(errors(assessment(3, kinds=many[:8])), [])
+
+    def test_reach_two_needs_a_drafting_product(self):
+        data = assessment(1, kinds=kinds_at(2))
+        errs = errors(data)
+        self.assertIn("change kind settings: reach 2 (Drafted) needs DEL-04 ≥ 2 or (LRN-07 ≥ 2 with LRN-08 ≥ 2) "
+                      "for reach 2 or more, but has DEL-04 1, LRN-07 1, LRN-08 1", errs)
+        set_score(data, "DEL-04", 2)
+        self.assertEqual(errors(data), [])
+        data = assessment(1, kinds=kinds_at(2))
+        set_score(data, "LRN-07", 2)
+        self.assertTrue(errors(data))
+        set_score(data, "LRN-08", 2)
+        self.assertEqual(errors(data), [])
+
+    def test_reach_three_needs_del04_at_three(self):
+        data = assessment(2, kinds=kinds_at(3))
+        self.assertTrue(any("reach 3 (Carried) needs DEL-04 ≥ 3" in e for e in errors(data)))
+        data["scores"]["DEL-04"].update(score=3)
+        self.assertEqual(errors(data), [])
+
+    def test_reach_four_needs_gov07_at_three(self):
+        data = assessment(3, kinds=kinds_at(4))
+        set_score(data, "GOV-07", 2)
+        self.assertTrue(any("reach 4 (Pre-approved) needs GOV-07 ≥ 3" in e for e in errors(data)))
+        set_score(data, "GOV-07", 3)
+        self.assertEqual(errors(data), [])
+
+    def test_reach_five_needs_lrn07_at_three(self):
+        data = assessment(3, kinds=kinds_at(5))
+        set_score(data, "LRN-07", 2)
+        self.assertTrue(any("reach 5 (Self-chosen) needs LRN-07 ≥ 3" in e for e in errors(data)))
+        set_score(data, "LRN-07", 3)
+        self.assertEqual(errors(data), [])
+
+    def test_consistency_uses_default_effective_scores(self):
+        data = assessment(3, kinds=kinds_at(3))
+        data["scores"]["DEL-04"]["grade"] = "C"  # grade C caps the default score at 2
+        self.assertTrue(any("needs DEL-04 ≥ 3" in e and "has DEL-04 2" in e for e in errors(data)))
+        data = assessment(3, kinds=kinds_at(3))
+        data["scores"]["DEL-04"].update(score=2, alt_score=3, alt_note="higher")  # the alternate does not count
+        self.assertTrue(any("needs DEL-04 ≥ 3" in e for e in errors(data)))
+
+    def test_self_serve_main_kinds_reach_level_one_whatever_mal(self):
+        data = assessment(0, kinds=kinds_at(1))
+        for cid in ("GOV-05", "DEL-11"):
+            set_score(data, cid, 2)
+        self.assertEqual(errors(data), [])
+        self.assertEqual(result(data)["variants"]["default"]["capabilities"]["MAL"], 0)
+        self.assertEqual(sal(data)["loops"]["request"]["level"], 1)
+        data = assessment(4, kinds=kinds_at(1))
+        for cid in [c for c in ORDER if c.startswith("MAL-")]:
+            set_score(data, cid, 0)
+            data["scores"][cid].pop("facets", None)
+        self.assertEqual(errors(data), [])
+        self.assertEqual(sal(data)["headline"], 5)
+
+    def test_one_main_kind_engineers_only_fails_level_one(self):
+        kinds = kinds_at(1)
+        kinds[1]["reach"] = 0
+        data = assessment(0, kinds=kinds)
+        for cid in [c for c in ORDER if c.startswith("MAL-")] + ["GOV-05", "DEL-11"]:
+            set_score(data, cid, 4 if cid.startswith("MAL-") else 2)
+            if cid in MODEL["depth_capped"] or cid in MODEL["inventories"]:
+                data["scores"][cid]["score"] = 2
+        self.assertEqual(errors(data), [])
+        request = sal(data)["loops"]["request"]
+        self.assertEqual(request["level"], 0)
+        build = [b for b in request["blockers"] if b["stage"] == "Build"][0]
+        self.assertIn("kinds 1 of 2 main self-serve", build["observed"])
+        self.assertEqual(result(data)["kinds"]["value"], 1)
+
+    def test_a_kind_that_is_not_main_does_not_hold_level_one(self):
+        kinds = kinds_at(1)
+        kinds[2]["reach"] = 0
+        data = assessment(0, kinds=kinds)
+        for cid in ("GOV-05", "DEL-11"):
+            set_score(data, cid, 2)
+        self.assertEqual(sal(data)["loops"]["request"]["level"], 1)
+        self.assertEqual(result(data)["kinds"]["text"], "2 of 2 main kinds are self-serve")
+
+    def test_kinds_path_values(self):
+        self.assertEqual(score.kinds_summary({"change_kinds": kinds_at(0)})["value"], 0)
+        mixed = kinds_at(0)
+        mixed[2]["reach"] = 2
+        self.assertEqual(score.kinds_summary({"change_kinds": mixed})["value"], 1)
+        self.assertEqual(score.kinds_summary({"change_kinds": kinds_at(1)})["value"], 2)
+
+    def test_expansion_keeps_exp02_as_its_people_path(self):
+        self.assertEqual(MODEL["build_paths"]["expansion"]["people"], [{"c": "EXP-02"}])
+        for loop in ("request", "fix"):
+            self.assertEqual(MODEL["build_paths"][loop]["people"], [{"kinds": "main"}])
+
+    def test_checklist_describes_kinds_in_plain_words(self):
+        kinds = kinds_at(1)
+        kinds[0]["reach"] = 0
+        default = result(assessment(2, kinds=kinds))["variants"]["default"]
+        items = score.checklist(assessment(2, kinds=kinds), CRITERIA, MODEL, default, 1)["request"]["items"]
+        build = [i for i in items if i["stage"] == "Build"][0]
+        self.assertIn("Every main kind of change can be made by the people running the product, and undone.",
+                      build["description"])
+        self.assertIn("Not yet: Change the settings.", build["description"])
+
+    def test_report_has_a_kinds_table(self):
+        code, out = run(assessment(3))
+        self.assertEqual(code, 0)
+        self.assertIn("### Kinds of change", out)
+        self.assertIn("2 of 2 main kinds are self-serve", out)
+        self.assertIn("| Change the settings (`settings`) | admins | yes | 1 Self-serve | docs/settings.md |", out)
+
+
+class BasisAndProvenTests(unittest.TestCase):
+    """Designed, Built, Proven (v0.7 section 3)."""
+
+    def test_grade_d_only_in_a_design_assessment(self):
+        data = assessment(3)
+        data["scores"]["MAL-01"]["grade"] = "D"
+        self.assertIn("MAL-01: grade D (a design document) is only allowed when basis is design", errors(data))
+        data["basis"] = "design"
+        self.assertEqual(errors(data), [])
+        data["basis"] = "planned"
+        self.assertIn("basis must be one of shipped, design, got 'planned'", errors(data))
+
+    def test_design_needs_no_facets_and_has_no_depth_cap(self):
+        data = assessment(4)
+        for entry in data["scores"].values():
+            entry.pop("facets", None)
+            if isinstance(entry.get("ai"), dict):
+                entry["ai"].pop("facets", None)
+        self.assertIn("ARC-03: depth-capped criterion read at 3 or more needs facets", errors(data))
+        data["basis"] = "design"
+        self.assertEqual(errors(data), [])
+        self.assertEqual(result(data)["variants"]["default"]["effective"]["ARC-03"], 4)
+        del data["scores"]["ARC-09"]["inventory"]
+        self.assertIn("ARC-09: inventory criterion read at 3 or more needs an inventory", errors(data))
+
+    def test_design_headline_and_report(self):
+        data = assessment(3)
+        data["basis"] = "design"
+        res = result(data)
+        text = score.result_headline(res, MODEL)
+        self.assertTrue(text.startswith("Designed for SAL 3 (Supervised) · AI-driven 3 · "), text)
+        self.assertNotIn("Proven", text)
+        self.assertIsNone(res["proven"])
+        code, out = run(data)
+        self.assertEqual(code, 0)
+        self.assertIn("not comparable with a shipped", out)
+        code, out = run(data, "--quiet")
+        self.assertTrue(out.startswith("Designed for SAL 3"))
+
+    def test_proven_is_not_allowed_in_a_design_assessment(self):
+        data = assessment(3)
+        data["basis"] = "design"
+        data["proven"] = {"request": {"level": 1, "evidence": "changelog"}}
+        self.assertIn("proven: not allowed when basis is design; a design reading has no operating records",
+                      errors(data))
+
+    def test_proven_above_the_built_level_is_an_error(self):
+        data = assessment(3)
+        data["proven"] = {"request": {"level": 4, "evidence": "release records"}}
+        self.assertIn("proven request: level 4 is above the built level L3; a loop cannot be proven above what "
+                      "it is built to do", errors(data))
+        data["proven"]["request"]["level"] = 3
+        self.assertEqual(errors(data), [])
+
+    def test_proven_shape(self):
+        data = assessment(3)
+        data["proven"] = {"request": {"level": "2", "evidence": ""},
+                          "fix": {"status": "not_evidenced", "searched": ""},
+                          "expansion": {"status": "todo"}, "other": {}}
+        errs = errors(data)
+        self.assertIn("proven request: level must be an integer 0..5, got '2'", errs)
+        self.assertIn("proven request: a proven level needs evidence from operating records", errs)
+        self.assertIn("proven fix: not_evidenced needs the searched scope", errs)
+        self.assertTrue(any(e.startswith("proven expansion: not yet assessed") for e in errs))
+        self.assertTrue(any(e.startswith("proven other: not a loop") for e in errs))
+
+    def test_proven_headline_is_the_lower_of_request_and_fix(self):
+        data = assessment(3)
+        self.assertEqual(result(data)["proven"]["text"], "Proven: not evidenced")
+        data["proven"] = {"request": {"level": 2, "evidence": "changelog"},
+                          "fix": {"status": "not_evidenced", "searched": "issue tracker"}}
+        self.assertEqual(result(data)["proven"]["text"], "Proven: not evidenced")
+        data["proven"]["fix"] = {"level": 1, "evidence": "incident records"}
+        proven = result(data)["proven"]
+        self.assertEqual(proven["headline"], 1)
+        self.assertEqual(proven["text"], "Proven: SAL 1 (Configurable)")
+        self.assertEqual(proven["loops"]["expansion"]["status"], "not_recorded")
+        self.assertTrue(score.result_headline(result(data), MODEL).startswith(
+            "Built to SAL 3 (Supervised) · Proven: SAL 1 (Configurable) · AI-driven 3 · Request → Release L3 (AI L3)"))
+
+    def test_proven_never_changes_the_built_level(self):
+        data = assessment(3)
+        before = sal(data)
+        data["proven"] = {"request": {"level": 0, "evidence": "x"}, "fix": {"level": 0, "evidence": "y"}}
+        self.assertEqual(sal(data), before)
+
+    def test_no_level_condition_requires_operated(self):
+        def walk(cond):
+            yield cond
+            for key in ("any", "all"):
+                for sub in cond.get(key, []):
+                    yield from walk(sub)
+        for conds in MODEL["conditions"].values():
+            for cond in conds:
+                self.assertFalse(any("operated" in c for c in walk(cond)), cond)
+        with self.assertRaises(score.ModelError):
+            rubric_with('{"part": "governance", "stage": "Ceiling", "c": "GOV-10", "min": 4}',
+                        '{"part": "governance", "stage": "Ceiling", "c": "GOV-10", "min": 4, "operated": true}')
+
+    def test_level_five_without_any_operated_facet(self):
+        data = assessment(4)
+        for entry in data["scores"].values():
+            for item in (entry, entry.get("ai")):
+                if isinstance(item, dict) and "facets" in item:
+                    item["facets"]["operated"] = False
+        self.assertEqual(errors(data), [])
+        self.assertEqual(sal(data)["headline"], 5)
+        self.assertEqual(result(data)["flags"], [])
+
+
+class RecursionTests(unittest.TestCase):
+    """LRN-10 and the Recursion line (v0.7 section 4)."""
+
+    def level_four(self):
+        data = assessment(3)
+        set_score(data, "GOV-05", 4)
+        set_score(data, "DEL-11", 4)
+        return data
+
+    def test_lrn10_is_required_at_level_four(self):
+        data = self.level_four()
+        set_score(data, "LRN-10", 2)
+        self.assertEqual(sal(data)["headline"], 4)
+        set_score(data, "LRN-10", 1)
+        out = sal(data)
+        self.assertEqual(out["headline"], 3)
+        self.assertTrue(any(b["needs"] == "LRN-10 ≥ 2" and b["part"] == "spine" and b["stage"] == "Observe"
+                            for b in out["loops"]["request"]["blockers"]))
+
+    def test_lrn10_is_required_at_level_five(self):
+        data = assessment(4)
+        set_score(data, "LRN-10", 3)
+        out = sal(data)
+        self.assertEqual(out["headline"], 4)
+        self.assertTrue(any(b["needs"] == "LRN-10 ≥ 4" for b in out["loops"]["fix"]["blockers"]))
+
+    def test_recursion_line_follows_the_score(self):
+        names = ["Fixed", "By hand", "Governed", "Results-driven", "Self-improving"]
+        self.assertEqual(MODEL["recursion"], names)
+        for value, name in enumerate(names):
+            data = assessment(2)
+            data["scores"]["LRN-10"] = {"status": "assessed", "score": value, "grade": "A", "evidence": "x"}
+            reading = result(data)["recursion"]
+            self.assertEqual((reading["score"], reading["name"]), (value, name))
+            self.assertEqual(reading["text"], f"Recursion: {value} {name} (LRN-10 at {value})")
+        data = assessment(2, LRN_10={"status": "not_evidenced", "searched": "src/"})
+        self.assertEqual(result(data)["recursion"]["name"], "Fixed")
+        code, out = run(data)
+        self.assertIn("**Recursion: 0 Fixed (LRN-10 not evidenced, counted as 0).**", out)
+
+    def test_lrn10_sits_under_measure(self):
+        self.assertEqual(CRITERIA["LRN-10"]["area"], "Measure")
+        self.assertEqual(MODEL["areas"]["LRN"]["Measure"], ["LRN-09", "LRN-10"])
+
+
+class AIDeliveryTests(unittest.TestCase):
+    """The AI delivery record (v0.7 section 5)."""
+
+    def test_record_never_changes_a_score(self):
+        data = assessment(2)
+        before = result(data)
+        for present, qualifies in ((True, True), (True, False), (False, False)):
+            data["ai_delivery"] = {"present": present, "qualifies": qualifies, "evidence": "AGENTS.md"}
+            self.assertEqual(errors(data), [])
+            after = result(data)
+            self.assertEqual(after["variants"], before["variants"])
+            self.assertEqual(after["sensitivity"], before["sensitivity"])
+            self.assertEqual(after["proven"], before["proven"])
+
+    def test_record_shape(self):
+        data = assessment(2)
+        data["ai_delivery"] = {"present": False, "qualifies": True, "evidence": "", "note": 3, "extra": 1}
+        errs = errors(data)
+        self.assertIn("ai_delivery: qualifies can be true only when present is true", errs)
+        self.assertIn("ai_delivery: needs evidence (what was found, or what was searched)", errs)
+        self.assertIn("ai_delivery: note must be text", errs)
+        self.assertTrue(any(e.startswith("ai_delivery: unknown field 'extra'") for e in errs))
+        data["ai_delivery"] = {"present": None, "qualifies": None, "evidence": "x"}
+        self.assertIn("ai_delivery: present must be true or false, got None", errors(data))
+
+    def test_report_says_whether_it_counts(self):
+        data = assessment(2)
+        data["ai_delivery"] = {"present": True, "qualifies": False, "evidence": "AGENTS.md"}
+        code, out = run(data)
+        self.assertIn("not the product evolving itself, and it does not meet scoring rule 12", out)
+
+
+class ConfidenceTests(unittest.TestCase):
+    """Confidence on every score (v0.7 section 6)."""
+
+    def test_confidence_is_all_or_nothing(self):
+        data = assessment(2)
+        self.assertEqual(errors(data), [])
+        data["scores"]["MAL-01"]["confidence"] = "high"
+        errs = errors(data)
+        self.assertTrue(any(e.startswith("confidence is all or nothing: 1 assessed criteria record it") for e in errs))
+        self.assertEqual(errors(rate(assessment(2))), [])
+
+    def test_values_and_statuses(self):
+        data = rate(assessment(2), MAL_01="certain")
+        data["scores"]["MAL-02"] = {"status": "not_evidenced", "searched": "src/", "confidence": "low"}
+        data["scores"]["DEL-01"]["ai"]["confidence"] = "unsure"
+        errs = errors(data)
+        self.assertIn("MAL-01: confidence must be one of high, medium, low, got 'certain'", errs)
+        self.assertIn("MAL-02: confidence is only allowed when status is assessed", errs)
+        self.assertIn("DEL-01 (AI): confidence must be one of high, medium, low, got 'unsure'", errs)
+
+    def test_confidence_never_changes_a_score(self):
+        data = assessment(2)
+        before = result(data)["variants"]
+        self.assertEqual(result(rate(data, "low"))["variants"], before)
+
+    def test_counts_and_check_these_first(self):
+        data = rate(assessment(2), GOV_05="low", MAL_01="low", DEL_05="medium")
+        data["change_kinds"][0]["confidence"] = "low"
+        conf = result(data)["confidence"]
+        self.assertTrue(conf["recorded"])
+        assessed = result(data)["coverage"]["assessed"]
+        self.assertEqual(conf["criteria"], {"high": assessed - 3, "medium": 1, "low": 2, "none": 0})
+        self.assertEqual(conf["change_kinds"], {"high": 0, "medium": 0, "low": 1, "none": 2})
+        check = {i["id"]: i["holds"] for i in conf["check_first"]}
+        self.assertEqual(list(check), ["GOV-05"])
+        self.assertIn("Definition rollback control", check["GOV-05"])
+        self.assertIn("Request → Release to L3", check["GOV-05"])
+        code, out = run(data)
+        self.assertIn("Check these first", out)
+        self.assertIn("GOV-05 (", out)
+
+    def test_not_recorded(self):
+        conf = result(assessment(2))["confidence"]
+        self.assertFalse(conf["recorded"])
+        self.assertEqual(conf["check_first"], [])
+
+
+class V07OutputTests(unittest.TestCase):
+    def test_json_payload_carries_the_new_readings(self):
+        data = rate(assessment(3))
+        data["ai_delivery"] = {"present": True, "qualifies": False, "evidence": "AGENTS.md"}
+        code, out = run(data, "--json")
+        self.assertEqual(code, 0)
+        payload = json.loads(out)
+        for key in ("basis", "headline_text", "change_kinds", "kinds_summary", "proven", "recursion",
+                    "ai_delivery", "confidence"):
+            self.assertIn(key, payload)
+        self.assertEqual(payload["basis"], "shipped")
+        self.assertEqual(payload["change_kinds"][0]["reach_name"], "Self-serve")
+        self.assertEqual(payload["kinds_summary"]["value"], 2)
+        self.assertEqual(payload["recursion"]["name"], "Results-driven")
+        self.assertFalse(payload["ai_delivery"]["qualifies"])
+        self.assertEqual(payload["criteria_in_rubric"], 75)
+
+    def test_markdown_shows_proven_and_quiet_and_checklist_still_work(self):
+        code, out = run(assessment(3))
+        self.assertIn("### Proven", out)
+        self.assertIn("From a repository alone, proven is usually not evidenced.", out)
+        code, out = run(assessment(3), "--quiet")
+        self.assertEqual(code, 0)
+        self.assertTrue(out.startswith("Built to SAL 3 (Supervised) · Proven: not evidenced · AI-driven 3"))
+        code, out = run(assessment(2), "--checklist", "3")
+        self.assertIn("Today: Built to SAL 2", out)
+        code, out = run(assessment(2), "--prescribe")
+        self.assertEqual(code, 0)
+        self.assertIn("Current: Built to SAL 2", out)
+
+    def test_init_template_parts_are_rejected_until_filled(self):
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            init_scores.main(["--product", "P", "--archetype", "other", "--source", "x"])
+        template = json.loads(out.getvalue())
+        self.assertEqual(template["basis"], "shipped")
+        errs = errors(template)
+        self.assertTrue(any(e.startswith("change_kinds: none listed yet") for e in errs))
+        self.assertTrue(any(e.startswith("proven request: not yet assessed") for e in errs))
+        self.assertIn("ai_delivery: present must be true or false, got None", errs)
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            init_scores.main(["--product", "P", "--archetype", "other", "--source", "x", "--basis", "design"])
+        template = json.loads(out.getvalue())
+        self.assertEqual(template["basis"], "design")
+        self.assertNotIn("proven", template)
 
 
 if __name__ == "__main__":

@@ -320,6 +320,13 @@ To 4: Generate instrumentation with the proposal and let policy use measured imp
 Requires: LRN-01, GOV-05, GOV-06, DEL-06
 Size: M
 
+### LRN-10
+To 3: Record each production failure and each wrong pass against the check, evaluation case or policy that missed it, and turn them into proposed changes to those checks, cases and policies (a failure becomes a new test or evaluation case) that go through the governed change path for a person to approve.
+To 4: Let the product apply such changes itself within policy, measure whether later decisions improved, and reverse the changes that did not help.
+Requires: GOV-05, LRN-09
+Helps: LRN-02, LRN-08, AIR-05
+Size: M
+
 # GOV: Vet (governance)
 
 ### GOV-01

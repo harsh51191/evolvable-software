@@ -4,26 +4,35 @@
 Usage:
   score.py ASSESSMENT.json [--json] [--quiet] [--rubric PATH]
   score.py ASSESSMENT.json --prescribe [--target 3|4] [--json] [--remediation PATH]
+  score.py ASSESSMENT.json --checklist LEVEL [--json]
 
 Every scoring choice (capabilities, scope facts, applicability, loop conditions,
-critical controls, depth rules, archetype exclusions, caps) is read from the
-evolve-model block in references/rubric.md.
+critical controls, depth rules, archetype exclusions, caps, reach of kinds of
+change) is read from the evolve-model block in references/rubric.md.
 
 Assessment fields:
   product, date, source, archetype
+  basis            shipped (default) | design
   scope_facts      {fact: {"value": true|false, "evidence": text}} for every fact in the model
+  change_kinds     [{"id", "name", "who", "main": bool, "reach": 0..5, "evidence",
+                     "confidence" (optional), "note" (optional)}], 1 to 8 entries, at least one main
   scores           {criterion id: entry}
+  proven           {loop: {"level": n, "evidence": text} | {"status": "not_evidenced", "searched": text}}
+                   (optional, shipped only; level 0 to the loop's built level)
+  ai_delivery      {"present": bool, "qualifies": bool, "evidence": text, "note": text} (optional;
+                   never changes a score)
 
 Criterion entry fields:
   status          assessed | not_evidenced | not_applicable
   score           0..4, the level in the default configuration (assessed)
-  grade           A | B | C (assessed)
+  grade           A | B | C, or D in a design assessment (assessed)
   evidence        text (assessed)
+  confidence      high | medium | low (assessed; all assessed criteria or none)
   alt_score       score + 1, a higher reading that is also defensible (assessed, optional)
   alt_note        why the alternate is defensible (required with alt_score)
   available_score 0..4, the level with shipped opt-in settings enabled (assessed, optional)
   facets          {"implemented": bool, "tested": bool, "operated": bool}
-                  (required on depth-capped criteria for any reading of 3 or more)
+                  (required on depth-capped criteria for any reading of 3 or more, in a shipped assessment)
   inventory       {surface: 0..4 or "n/a"} (required on inventory criteria scoring 3 or more)
   single_entity   true | false (optional)
   incident        true | false (optional)
@@ -54,6 +63,15 @@ AI_DRIVEN_NONE = "AI drives no stage"
 PARTS = ("stages", "spine", "architecture", "governance")
 FACETS = ("implemented", "tested", "operated")
 ID = r"[A-Z]{3}-\d{2}"
+BASES = ("shipped", "design")
+CONFIDENCE = ("high", "medium", "low")
+KINDS_MAX = 8
+KIND_ID = r"^[a-z0-9][a-z0-9-]*$"
+KIND_FIELDS = ("id", "name", "who", "main", "reach", "evidence", "confidence", "note")
+RECURSION = "LRN-10"  # the criterion the Recursion line reads
+DESIGN_NOTE = ("A design reading says what the product is designed for. It is not comparable with a shipped "
+               "reading, which says what the product is built to do.")
+PROVEN_NOTE = "From a repository alone, proven is usually not evidenced."
 
 
 class ModelError(SystemExit):
@@ -84,6 +102,11 @@ def _test_ids(test):
         for sub in test.get(key, []):
             ids += _test_ids(sub)
     return ids
+
+
+def _uses_operated(test):
+    """True when a condition, or any part of it, asks for the operated facet."""
+    return "operated" in test or any(_uses_operated(sub) for key in ("any", "all") for sub in test.get(key, []))
 
 
 def load_rubric(path):
@@ -158,8 +181,18 @@ def load_rubric(path):
             for alt in paths[who]:
                 if "cap" in alt and alt["cap"] not in caps:
                     raise ModelError(f"build path {loop}/{who} names unknown capability {alt['cap']}")
+                if "kinds" in alt and alt["kinds"] != "main":
+                    raise ModelError(f"build path {loop}/{who}: kinds must be \"main\"")
                 known(_test_ids(alt), f"build path {loop}/{who}")
     known([r["c"] for r in model["rollback"]], "rollback")
+    if len(model.get("reach", [])) != 6:
+        raise ModelError("reach needs a name for each reach 0 to 5")
+    for level, test in model.get("reach_needs", {}).items():
+        if not level.isdigit() or not 1 <= int(level) <= 5:
+            raise ModelError(f"reach_needs names unknown reach {level!r}")
+        known(_test_ids(test), f"reach_needs {level}")
+    if RECURSION not in criteria or len(model.get("recursion", [])) != 5:
+        raise ModelError(f"recursion needs {RECURSION} in the rubric and a name for each of its levels 0 to 4")
     for level in range(1, len(model["levels"])):
         for loop in model["loops"]:
             if not model.get("challenges", {}).get(str(level), {}).get(loop):
@@ -178,6 +211,9 @@ def load_rubric(path):
                 raise ModelError(f"condition names unknown capability: {cond}")
             if set(_as_list(cond.get("when", []))) - facts:
                 raise ModelError(f"condition names unknown scope fact: {cond}")
+            if _uses_operated(cond):
+                raise ModelError(f"conditions may not require the operated facet; operating records belong to "
+                                 f"the Proven reading: {cond}")
             known(_test_ids(cond), f"level {level} condition")
     view = model.get("ai_view")
     if view:
@@ -270,22 +306,33 @@ def _switched_off(gate, data):
                               for f in gate)
 
 
-def _validate_assessed(cid, entry, model, errors, label=None, check_inventory=True):
+def basis_of(data):
+    """The assessment's basis: shipped unless it says design."""
+    return "design" if isinstance(data, dict) and data.get("basis") == "design" else "shipped"
+
+
+def _validate_assessed(cid, entry, model, errors, label=None, check_inventory=True, basis="shipped"):
     label = label or cid
     errs = []
-    _validate_assessed_inner(cid, entry, model, errs, check_inventory)
+    _validate_assessed_inner(cid, entry, model, errs, check_inventory, basis)
     errors.extend(e.replace(f"{cid}:", f"{label}:", 1) if label != cid else e for e in errs)
 
 
-def _validate_assessed_inner(cid, entry, model, errors, check_inventory):
+def _validate_assessed_inner(cid, entry, model, errors, check_inventory, basis):
     score = entry.get("score")
     if not _is_int_score(score):
         errors.append(f"{cid}: score must be an integer 0..4, got {score!r}")
         return
-    if str(entry.get("grade", "")).upper() not in ("A", "B", "C"):
-        errors.append(f"{cid}: grade must be A, B or C, got {entry.get('grade')!r}")
+    grade = str(entry.get("grade", "")).upper()
+    if grade == "D" and basis != "design":
+        errors.append(f"{cid}: grade D (a design document) is only allowed when basis is design")
+    elif grade not in ("A", "B", "C", "D"):
+        errors.append(f"{cid}: grade must be A, B or C" + (", or D" if basis == "design" else "")
+                      + f", got {entry.get('grade')!r}")
     if _text(entry, "evidence").lower() in PLACEHOLDERS:
         errors.append(f"{cid}: assessed criteria need evidence")
+    if "confidence" in entry and entry["confidence"] not in CONFIDENCE:
+        errors.append(f"{cid}: confidence must be one of {', '.join(CONFIDENCE)}, got {entry['confidence']!r}")
     if _is_int_score(entry.get("alt_score")):
         if entry["alt_score"] != score + 1:
             errors.append(f"{cid}: alt_score must be the next level up (score + 1); "
@@ -302,7 +349,7 @@ def _validate_assessed_inner(cid, entry, model, errors, check_inventory):
             errors.append(f"{cid}: facets must give implemented, tested and operated as true or false")
         elif (facets["tested"] or facets["operated"]) and not facets["implemented"]:
             errors.append(f"{cid}: tested or operated facets require implemented")
-    elif cid in model["depth_capped"] and max(readings) >= 3:
+    elif cid in model["depth_capped"] and max(readings) >= 3 and basis != "design":
         errors.append(f"{cid}: depth-capped criterion read at 3 or more needs facets")
     if cid not in model["inventories"] or not check_inventory:
         return
@@ -345,6 +392,9 @@ def validate(data, criteria, order, model):
     archetype = data.get("archetype")
     if archetype not in exclusions:
         errors.append("archetype must be one of: " + ", ".join(sorted(exclusions)))
+    if "basis" in data and data["basis"] not in BASES:
+        errors.append(f"basis must be one of {', '.join(BASES)}, got {data['basis']!r}")
+    basis = basis_of(data)
     raw_facts = data.get("scope_facts")
     if not isinstance(raw_facts, dict):
         errors.append("'scope_facts' must be an object keyed by fact")
@@ -376,6 +426,9 @@ def validate(data, criteria, order, model):
     paths = model.get("change_path_facts", [])
     if paths and all(isinstance(facts.get(f), bool) for f in paths) and not any(facts[f] for f in paths):
         errors.append("scope facts: at least one change path (" + " or ".join(paths) + ") must be true")
+    _validate_kinds(data, model, errors)
+    _validate_proven(data, model, errors, basis)
+    _validate_ai_delivery(data, errors)
     scores = data.get("scores")
     if not isinstance(scores, dict):
         return errors + ["'scores' must be an object keyed by criterion id"]
@@ -403,7 +456,7 @@ def validate(data, criteria, order, model):
                 errors.append(f"{cid}: {key} must be an integer 0..4, got {entry[key]!r}")
         for key, allowed in (("alt_score", "assessed"), ("available_score", "assessed"),
                              ("if_applicable", "not_applicable"), ("facets", "assessed"),
-                             ("inventory", "assessed")):
+                             ("inventory", "assessed"), ("confidence", "assessed")):
             if key in entry and status != allowed:
                 errors.append(f"{cid}: {key} is only allowed when status is {allowed}")
         gate = _as_list(model["applies_when"].get(cid, []))
@@ -412,7 +465,7 @@ def validate(data, criteria, order, model):
             errors.append(f"{cid}: does not apply because scope fact {' and '.join(gate)} is false; "
                           "mark it not_applicable")
         if status == "assessed":
-            _validate_assessed(cid, entry, model, errors)
+            _validate_assessed(cid, entry, model, errors, basis=basis)
         elif status == "not_evidenced":
             if _text(entry, "searched").lower() in PLACEHOLDERS:
                 errors.append(f"{cid}: not_evidenced needs the searched scope")
@@ -425,12 +478,174 @@ def validate(data, criteria, order, model):
                               f"(allowed: {', '.join(allowed_na) or 'none'}{hint})")
     for unknown in sorted(set(scores) - set(order)):
         errors.append(f"{unknown}: not in rubric")
+    assessed = [c for c in order if isinstance(scores.get(c), dict) and scores[c].get("status") == "assessed"]
+    rated = [c for c in assessed if "confidence" in scores[c]]
+    if rated and len(rated) < len(assessed):
+        errors.append(f"confidence is all or nothing: {len(rated)} assessed criteria record it, so every assessed "
+                      "criterion must; missing on " + ", ".join(c for c in assessed if c not in rated))
     if "ai_view" in model:
-        _validate_ai_readings(data, scores, model, errors)
+        _validate_ai_readings(data, scores, model, errors, basis)
+    if not errors:
+        # These checks read the default scores, so they run only on an otherwise valid assessment.
+        errors += _validate_against_scores(data, criteria, order, model)
     return errors
 
 
-def _validate_ai_readings(data, scores, model, errors):
+def _validate_kinds(data, model, errors):
+    kinds = data.get("change_kinds")
+    hint = ("list the kinds of change operators or users commonly need, 1 to 8, each with id, name, who, "
+            "main, reach and evidence, and at least one main kind")
+    if kinds is None:
+        errors.append("change_kinds: missing; " + hint)
+        return
+    if not isinstance(kinds, list):
+        errors.append("change_kinds must be a list; " + hint)
+        return
+    if not kinds:
+        errors.append("change_kinds: none listed yet; " + hint)
+        return
+    if len(kinds) > KINDS_MAX:
+        errors.append(f"change_kinds: at most {KINDS_MAX} kinds, got {len(kinds)}; fold the rarer ones into the "
+                      "nearest kind")
+    top, seen, has_main = len(model["reach"]) - 1, set(), False
+    for number, kind in enumerate(kinds, 1):
+        if not isinstance(kind, dict):
+            errors.append(f"change kind {number}: must be an object")
+            continue
+        kid = kind.get("id")
+        label = f"change kind {kid}" if isinstance(kid, str) and kid else f"change kind {number}"
+        if not isinstance(kid, str) or not re.match(KIND_ID, kid):
+            errors.append(f"{label}: id must be lowercase letters, digits and hyphens, got {kid!r}")
+        elif kid in seen:
+            errors.append(f"{label}: id is listed more than once")
+        seen.add(kid)
+        for key in ("name", "who", "evidence"):
+            if _text(kind, key).lower() in PLACEHOLDERS:
+                errors.append(f"{label}: {key} must be non-empty text")
+        if not isinstance(kind.get("main"), bool):
+            errors.append(f"{label}: main must be true or false")
+        elif kind["main"]:
+            has_main = True
+        reach = kind.get("reach")
+        if not (isinstance(reach, int) and not isinstance(reach, bool) and 0 <= reach <= top):
+            errors.append(f"{label}: reach must be an integer 0..{top}, got {reach!r}")
+        if "confidence" in kind and kind["confidence"] not in CONFIDENCE:
+            errors.append(f"{label}: confidence must be one of {', '.join(CONFIDENCE)}, got {kind['confidence']!r}")
+        for key in sorted(set(kind) - set(KIND_FIELDS)):
+            errors.append(f"{label}: unknown field {key!r} (allowed: {', '.join(KIND_FIELDS)})")
+    if not has_main:
+        errors.append("change_kinds: at least one kind must be main")
+
+
+def _validate_proven(data, model, errors, basis):
+    if "proven" not in data:
+        return
+    if basis == "design":
+        errors.append("proven: not allowed when basis is design; a design reading has no operating records")
+        return
+    proven = data["proven"]
+    if not isinstance(proven, dict):
+        errors.append("proven must be an object keyed by loop")
+        return
+    for loop in sorted(set(proven) - set(model["loops"])):
+        errors.append(f"proven {loop}: not a loop; use {', '.join(model['loops'])}")
+    top = len(model["levels"]) - 1
+    for loop in model["loops"]:
+        if loop not in proven:
+            continue
+        entry, label = proven[loop], f"proven {loop}"
+        if not isinstance(entry, dict):
+            errors.append(f"{label}: must be an object")
+            continue
+        status = entry.get("status")
+        if status == "todo":
+            errors.append(f"{label}: not yet assessed; give a level with evidence, or status not_evidenced "
+                          "with the searched scope")
+            continue
+        if status == "not_evidenced":
+            allowed = ("status", "searched", "note")
+            if _text(entry, "searched").lower() in PLACEHOLDERS:
+                errors.append(f"{label}: not_evidenced needs the searched scope")
+        elif status is not None:
+            errors.append(f"{label}: status must be not_evidenced, or leave it out and give a level, "
+                          f"got {status!r}")
+            continue
+        else:
+            allowed = ("level", "evidence", "note")
+            level = entry.get("level")
+            if not (isinstance(level, int) and not isinstance(level, bool) and 0 <= level <= top):
+                errors.append(f"{label}: level must be an integer 0..{top}, got {level!r}")
+            if _text(entry, "evidence").lower() in PLACEHOLDERS:
+                errors.append(f"{label}: a proven level needs evidence from operating records")
+        for key in sorted(set(entry) - set(allowed)):
+            errors.append(f"{label}: unknown field {key!r} (allowed: {', '.join(allowed)})")
+
+
+def _validate_ai_delivery(data, errors):
+    if "ai_delivery" not in data:
+        return
+    record = data["ai_delivery"]
+    if not isinstance(record, dict):
+        errors.append("ai_delivery must be an object")
+        return
+    for key in ("present", "qualifies"):
+        if not isinstance(record.get(key), bool):
+            errors.append(f"ai_delivery: {key} must be true or false, got {record.get(key)!r}")
+    if record.get("qualifies") is True and record.get("present") is not True:
+        errors.append("ai_delivery: qualifies can be true only when present is true")
+    if _text(record, "evidence").lower() in PLACEHOLDERS:
+        errors.append("ai_delivery: needs evidence (what was found, or what was searched)")
+    if "note" in record and not isinstance(record["note"], str):
+        errors.append("ai_delivery: note must be text")
+    allowed = ("present", "qualifies", "evidence", "note")
+    for key in sorted(set(record) - set(allowed)):
+        errors.append(f"ai_delivery: unknown field {key!r} (allowed: {', '.join(allowed)})")
+
+
+def _needs_text(test, nested=False):
+    if "c" in test:
+        return f"{test['c']} ≥ {test['min']}"
+    for key, joiner in (("any", " or "), ("all", " with ")):
+        if key in test:
+            text = joiner.join(_needs_text(sub, True) for sub in test[key])
+            return f"({text})" if nested else text
+    raise ModelError(f"Unrecognised reach test: {test}")
+
+
+def _meets(test, values):
+    """Whether default values meet a reach test. A criterion with no default value (not applicable) fails."""
+    if "c" in test:
+        return values.get(test["c"]) is not None and values[test["c"]] >= test["min"]
+    if "any" in test:
+        return any(_meets(sub, values) for sub in test["any"])
+    return all(_meets(sub, values) for sub in test["all"])
+
+
+def _validate_against_scores(data, criteria, order, model):
+    """Checks that compare declared readings with the default scores: kinds' reach and proven levels."""
+    errors = []
+    values, _ = effective_scores(data, order, model, "default")
+    for kind in data["change_kinds"]:
+        for level in sorted(model.get("reach_needs", {}), key=int):
+            test = model["reach_needs"][level]
+            if kind["reach"] < int(level) or _meets(test, values):
+                continue
+            has = ", ".join(f"{c} {'n/a' if values.get(c) is None else values[c]}"
+                            for c in dict.fromkeys(_test_ids(test)))
+            errors.append(f"change kind {kind['id']}: reach {kind['reach']} ({model['reach'][kind['reach']]}) "
+                          f"needs {_needs_text(test)} for reach {level} or more, but has {has}")
+    proven = data.get("proven")
+    if isinstance(proven, dict) and basis_of(data) == "shipped":
+        built = loop_levels(data, values, aggregate(values, criteria, model)["capabilities"], model)
+        for loop in model["loops"]:
+            entry = proven.get(loop)
+            if isinstance(entry, dict) and "level" in entry and entry["level"] > built["loops"][loop]["level"]:
+                errors.append(f"proven {loop}: level {entry['level']} is above the built level "
+                              f"L{built['loops'][loop]['level']}; a loop cannot be proven above what it is built to do")
+    return errors
+
+
+def _validate_ai_readings(data, scores, model, errors, basis="shipped"):
     view = model["ai_view"]
     required = fact_values(data).get("ai_features") is True or fact_values(data, True).get("ai_features") is True
     for cid in view["readings"]:
@@ -453,8 +668,8 @@ def _validate_ai_readings(data, scores, model, errors):
         if status not in STATUSES:
             errors.append(f"{label}: status must be one of {', '.join(STATUSES)}, got {status!r}")
             continue
-        for key in ("alt_score", "available_score"):
-            if key in ai and not _is_int_score(ai[key]):
+        for key in ("alt_score", "available_score", "confidence"):
+            if key in ai and key != "confidence" and not _is_int_score(ai[key]):
                 errors.append(f"{label}: {key} must be an integer 0..4, got {ai[key]!r}")
             if key in ai and status != "assessed":
                 errors.append(f"{label}: {key} is only allowed when status is assessed")
@@ -463,7 +678,7 @@ def _validate_ai_readings(data, scores, model, errors):
         if entry["status"] == "not_applicable" and status != "not_applicable":
             errors.append(f"{label}: must be not_applicable because {cid} is not applicable")
         if status == "assessed":
-            _validate_assessed(cid, ai, model, errors, label=label, check_inventory=False)
+            _validate_assessed(cid, ai, model, errors, label=label, check_inventory=False, basis=basis)
             surface = view["reading_inventory_surface"].get(cid)
             level = (entry.get("inventory") or {}).get(surface) if surface else None
             if _is_int_score(level) and _is_int_score(ai.get("score")) and ai["score"] != level:
@@ -503,10 +718,10 @@ def _inventory_cap(cid, value, entry, model, flags):
 
 
 def _depth_cap(cid, value, entry, model, flags):
+    """Rule 13: a 3 or a 4 on a depth-capped criterion needs tested evidence. Operated never changes a score."""
     if cid not in model["depth_capped"] or value < 3:
         return value
-    facets = entry.get("facets", {})
-    allowed = 4 if facets.get("tested") and facets.get("operated") else 3 if facets.get("tested") else 2
+    allowed = 4 if entry.get("facets", {}).get("tested") else 2
     if value > allowed:
         flags.append(f"{cid}: evidence depth caps {value} -> {allowed}")
         return allowed
@@ -515,8 +730,8 @@ def _depth_cap(cid, value, entry, model, flags):
 
 def effective_scores(data, order, model, variant):
     """Return ({criterion: value or None}, [cap flags]) for one variant."""
-    caps = model["caps"]
     values, flags = {}, []
+    depth = basis_of(data) == "shipped"
     for cid in order:
         entry = data["scores"][cid]
         status = entry["status"]
@@ -526,12 +741,13 @@ def effective_scores(data, order, model, variant):
         if status == "not_evidenced":
             values[cid] = None if variant == "assessed_only" else 0
             continue
-        values[cid] = _assessed_value(cid, entry, model, variant, flags)
+        values[cid] = _assessed_value(cid, entry, model, variant, flags, depth=depth)
     return values, flags
 
 
-def _assessed_value(cid, entry, model, variant, flags, use_inventory=True, label=None):
-    """One assessed entry's value for a variant, after every cap and deduction."""
+def _assessed_value(cid, entry, model, variant, flags, use_inventory=True, label=None, depth=True):
+    """One assessed entry's value for a variant, after every cap and deduction.
+    A design assessment (depth False) has no depth cap."""
     caps, label = model["caps"], label or cid
     value = entry["score"]
     if variant == "high" and "alt_score" in entry:
@@ -545,7 +761,8 @@ def _assessed_value(cid, entry, model, variant, flags, use_inventory=True, label
         flags.append(f"{label}: single-entity caps {value} -> {caps['single_entity_max']}")
         value = caps["single_entity_max"]
     before = len(flags)
-    value = _depth_cap(cid, value, entry, model, flags)
+    if depth:
+        value = _depth_cap(cid, value, entry, model, flags)
     if use_inventory:
         value = _inventory_cap(cid, value, entry, model, flags)
     if label != cid:
@@ -570,7 +787,8 @@ def effective_ai_readings(data, model, variant):
             not_evidenced.append(cid)
             continue
         label = f"{cid} (AI)"
-        value = _assessed_value(cid, ai, model, variant, flags, use_inventory=False, label=label)
+        value = _assessed_value(cid, ai, model, variant, flags, use_inventory=False, label=label,
+                                depth=basis_of(data) == "shipped")
         surface = model["ai_view"]["reading_inventory_surface"].get(cid)
         ceiling = (data["scores"][cid].get("inventory") or {}).get(surface) if surface else None
         if _is_int_score(ceiling) and value > ceiling:
@@ -655,20 +873,21 @@ class Evaluator:
         self.data, self.values, self.caps, self.model = data, values, capabilities, model
         self.facts = fact_values(data)
 
-    def _operated(self, cid):
-        return self.data["scores"][cid].get("facets", {}).get("operated") is True
-
-    def _crit(self, cid, minimum, operated=False):
+    def _crit(self, cid, minimum):
         """(passed, observed) for one criterion; a not-applicable criterion passes."""
         if self.data["scores"][cid]["status"] == "not_applicable":
             return True, "n/a"
         value = self.values.get(cid) or 0
-        return value >= minimum and (not operated or self._operated(cid)), value
+        return value >= minimum, value
 
     def _path(self, loop, who, minimum):
         observed = []
         for alt in self.model["build_paths"][loop][who]:
-            if "cap" in alt:
+            if "kinds" in alt:
+                kinds = kinds_summary(self.data)
+                ok = kinds["value"] >= minimum
+                observed.append(f"kinds {kinds['main_self_serve']} of {kinds['main']} main self-serve")
+            elif "cap" in alt:
                 value = self.caps.get(alt["cap"])
                 ok = value is not None and value >= minimum
                 observed.append(f"{alt['cap']} {fmt(value)}")
@@ -684,12 +903,12 @@ class Evaluator:
                 return True, ", ".join(observed)
         return False, ", ".join(observed)
 
-    def _rollback(self, minimum, operated=False):
+    def _rollback(self, minimum):
         ok_all, observed = True, []
         for item in self.model["rollback"]:
             if item.get("when") and self.facts.get(item["when"]) is not True:
                 continue
-            ok, value = self._crit(item["c"], minimum, operated)
+            ok, value = self._crit(item["c"], minimum)
             observed.append(f"{item['c']} {value}")
             ok_all = ok_all and ok
         return ok_all, ", ".join(observed)
@@ -701,25 +920,23 @@ class Evaluator:
             when = [when] if isinstance(when, str) else when
             if not any(self.facts.get(f) is True for f in when):
                 return True, "not applicable (" + " and ".join(when) + " false)", "n/a"
-        operated = cond.get("operated", False)
-        suffix = ", operated" if operated else ""
         if "c" in cond:
-            ok, value = self._crit(cond["c"], cond["min"], operated)
-            return ok, f"{cond['c']} ≥ {cond['min']}{suffix}", str(value)
+            ok, value = self._crit(cond["c"], cond["min"])
+            return ok, f"{cond['c']} ≥ {cond['min']}", str(value)
         if "path" in cond:
             ok, observed = self._path(loop, cond["path"], cond["min"])
             return ok, f"{cond['path']} build path ≥ {cond['min']}", observed
         if "rollback" in cond:
-            ok, observed = self._rollback(cond["rollback"], operated)
-            return ok, f"rollback ≥ {cond['rollback']}{suffix}", observed
+            ok, observed = self._rollback(cond["rollback"])
+            return ok, f"rollback ≥ {cond['rollback']}", observed
         if "every" in cond:
             below = []
             for ids in self.model["areas"][cond["every"]].values():
                 for cid in ids:
-                    ok, value = self._crit(cid, cond["min"], operated)
+                    ok, value = self._crit(cid, cond["min"])
                     if not ok:
                         below.append(f"{cid} {value}")
-            return not below, f"every applicable {cond['every']} ≥ {cond['min']}{suffix}", \
+            return not below, f"every applicable {cond['every']} ≥ {cond['min']}", \
                 ", ".join(below) or "all met"
         for key, combine in (("any", any), ("all", all)):
             if key in cond:
@@ -822,6 +1039,124 @@ def sensitivity(data, values, criteria, model):
             "raise_loop": raise_loop, "lower_loop": lower_loop}
 
 
+def kinds_summary(data):
+    """The kinds-of-change build path: 2 when every main kind is self-serve (reach 1 or more),
+    1 when any kind is, 0 otherwise; with the counts behind it."""
+    kinds = [k for k in data.get("change_kinds") or [] if isinstance(k, dict)]
+
+    def serve(kind):
+        reach = kind.get("reach")
+        return isinstance(reach, int) and not isinstance(reach, bool) and reach >= 1
+
+    main = [k for k in kinds if k.get("main") is True]
+    main_serve = sum(1 for k in main if serve(k))
+    any_serve = sum(1 for k in kinds if serve(k))
+    value = 2 if main and main_serve == len(main) else 1 if any_serve else 0
+    return {"value": value, "kinds": len(kinds), "self_serve": any_serve, "main": len(main),
+            "main_self_serve": main_serve, "text": f"{main_serve} of {len(main)} main kinds are self-serve"}
+
+
+def kinds_table(data, model):
+    """Every kind of change with its reach name, in the order listed."""
+    out = []
+    for kind in data.get("change_kinds") or []:
+        row = {k: kind[k] for k in KIND_FIELDS if k in kind}
+        row["reach_name"] = model["reach"][kind["reach"]]
+        out.append(row)
+    return out
+
+
+def proven_reading(data, sal, model):
+    """What operating records show, per loop, beside what the product is built to do. None for a design basis."""
+    if basis_of(data) == "design":
+        return None
+    proven = data.get("proven") if isinstance(data.get("proven"), dict) else {}
+    loops = {}
+    for loop in model["loops"]:
+        entry, built = proven.get(loop), sal["loops"][loop]["level"]
+        if isinstance(entry, dict) and "level" in entry:
+            loops[loop] = {"status": "evidenced", "level": entry["level"], "built": built,
+                           "evidence": entry.get("evidence")}
+        elif isinstance(entry, dict) and entry.get("status") == "not_evidenced":
+            loops[loop] = {"status": "not_evidenced", "level": None, "built": built,
+                           "searched": entry.get("searched")}
+        else:
+            loops[loop] = {"status": "not_recorded", "level": None, "built": built}
+    levels = [loops[l]["level"] for l in model["headline"]]
+    headline = None if None in levels else min(levels)
+    text = "Proven: not evidenced" if headline is None else \
+        f"Proven: SAL {headline} ({model['levels'][headline]})"
+    return {"headline": headline, "headline_name": None if headline is None else model["levels"][headline],
+            "text": text, "loops": loops}
+
+
+def recursion_reading(data, values, model):
+    """The Recursion line: how far the loop improves its own checks, named from LRN-10's default score."""
+    status, value = data["scores"][RECURSION]["status"], values.get(RECURSION)
+    name = None if value is None else model["recursion"][value]
+    if value is None:
+        text = f"Recursion: not applicable ({RECURSION} excluded)"
+    elif status == "not_evidenced":
+        text = f"Recursion: {value} {name} ({RECURSION} not evidenced, counted as 0)"
+    else:
+        text = f"Recursion: {value} {name} ({RECURSION} at {value})"
+    return {"criterion": RECURSION, "status": status, "score": value, "name": name, "text": text}
+
+
+def ai_delivery_reading(data):
+    """The AI delivery record, with a plain sentence. It never changes a score."""
+    record = data.get("ai_delivery")
+    if not isinstance(record, dict):
+        return {"recorded": False, "present": None, "qualifies": None, "evidence": None, "note": None,
+                "text": "No AI delivery record. Engineers building a product with AI coding agents is "
+                        "AI-assisted engineering, not the product evolving itself."}
+    if not record["present"]:
+        text = ("Engineers are not seen building this product with AI coding agents or a delivery framework. "
+                "Any self-evolution scored here is the product's own.")
+    elif record["qualifies"]:
+        text = ("Engineers build this product with AI coding agents or a delivery framework. AI-assisted "
+                "engineering is not the product evolving itself, but this setup meets scoring rule 12, so the "
+                "criteria may credit it as a first-party evolution system.")
+    else:
+        text = ("Engineers build this product with AI coding agents or a delivery framework. That is AI-assisted "
+                "engineering, not the product evolving itself, and it does not meet scoring rule 12, so it "
+                "earns no credit.")
+    return {"recorded": True, "present": record["present"], "qualifies": record["qualifies"],
+            "evidence": record.get("evidence"), "note": record.get("note"), "text": text}
+
+
+def confidence_summary(data, criteria, order, model, sal):
+    """Counts of each confidence level, and the low-confidence criteria that hold a next-level
+    blocker or an applicable critical control ("check these first")."""
+    scores = data["scores"]
+
+    def count(entries):
+        out = {c: 0 for c in CONFIDENCE}
+        out["none"] = 0
+        for entry in entries:
+            out[entry.get("confidence", "none")] += 1
+        return out
+
+    assessed = [c for c in order if scores[c]["status"] == "assessed"]
+    readings = [scores[c]["ai"] for c in model.get("ai_view", {}).get("readings", [])
+                if isinstance(scores[c].get("ai"), dict) and scores[c]["ai"].get("status") == "assessed"]
+    holds = {}
+    for loop, name in model["loops"].items():
+        info = sal["loops"][loop]
+        for blocker in info["blockers"]:
+            for cid in re.findall(ID, f"{blocker['needs']} {blocker['observed']}"):
+                holds.setdefault(cid, []).append(f"{name} to L{info['level'] + 1}")
+    for ctl in sal["controls"]:
+        if ctl["status"] != "n/a":
+            for cid in re.findall(ID, ctl["needs"]):
+                holds.setdefault(cid, []).append(f"{ctl['control']} control")
+    check = [{"id": c, "title": criteria[c]["title"], "holds": list(dict.fromkeys(holds[c]))}
+             for c in assessed if scores[c].get("confidence") == "low" and c in holds]
+    return {"recorded": any("confidence" in scores[c] for c in assessed),
+            "criteria": count(scores[c] for c in assessed), "ai_readings": count(readings),
+            "change_kinds": count(k for k in data.get("change_kinds") or []), "check_first": check}
+
+
 def score_assessment(data, criteria, order, model):
     result = {"variants": {}, "flags": []}
     for variant in VARIANTS:
@@ -843,13 +1178,20 @@ def score_assessment(data, criteria, order, model):
             result["flags"] = flags + entry.get("ai_flags", [])
             result["sensitivity"] = sensitivity(data, values, criteria, model)
     coverage = {s: 0 for s in STATUSES}
-    grades = {"A": 0, "B": 0, "C": 0}
+    grades = {"A": 0, "B": 0, "C": 0, "D": 0}
     for cid in order:
         entry = data["scores"][cid]
         coverage[entry["status"]] += 1
         if entry["status"] == "assessed":
             grades[str(entry["grade"]).upper()] += 1
     result["coverage"], result["grades"] = coverage, grades
+    default_sal = result["variants"]["default"]["sal"]
+    result["basis"] = basis_of(data)
+    result["kinds"] = kinds_summary(data)
+    result["proven"] = proven_reading(data, default_sal, model)
+    result["recursion"] = recursion_reading(data, result["variants"]["default"]["effective"], model)
+    result["ai_delivery"] = ai_delivery_reading(data)
+    result["confidence"] = confidence_summary(data, criteria, order, model, default_sal)
     # Alternates only ever move up, so the default and high readings bound every capability score.
     default, high = result["variants"]["default"]["capabilities"], result["variants"]["high"]["capabilities"]
     result["ranges"] = {cap: None if default[cap] is None else [default[cap], high[cap]]
@@ -883,13 +1225,22 @@ def progress(info):
     return f" ({info['next_met']}/{info['next_total']} toward L{info['level'] + 1})"
 
 
-def headline_text(sal, model, with_progress=False):
+def headline_text(sal, model, with_progress=False, basis="shipped", proven=None):
+    """`Built to SAL n (Name) · Proven: … · AI-driven n · loops`, or `Designed for SAL n …` for a design basis.
+    Proven appears only when given, and never for a design basis."""
     drv = sal.get("ai_driven")
     loops = " · ".join(f"{model['loops'][l]} L{sal['loops'][l]['level']}"
                        + (f" (AI L{drv['loops'][l]['level']})" if drv else "")
                        + (progress(sal["loops"][l]) if with_progress else "") for l in model["loops"])
+    claim = "Designed for" if basis == "design" else "Built to"
+    shown = f" · {proven['text']}" if proven and basis != "design" else ""
     ai = f" · AI-driven {drv['headline']}" if drv else ""
-    return f"SAL {sal['headline']} ({sal['headline_name']}){ai} · {loops}"
+    return f"{claim} SAL {sal['headline']} ({sal['headline_name']}){shown}{ai} · {loops}"
+
+
+def result_headline(result, model):
+    """The default headline of a scored assessment, with its basis and proven reading."""
+    return headline_text(result["variants"]["default"]["sal"], model, basis=result["basis"], proven=result["proven"])
 
 
 def ai_headline_text(view_result, model):
@@ -975,20 +1326,28 @@ def render_markdown(data, criteria, order, model, result):
     on = [f for f in model["scope_facts"] if facts[f]["value"]]
     off = [f for f in model["scope_facts"] if not facts[f]["value"]]
     cov, grades = result["coverage"], result["grades"]
+    basis = result["basis"]
+    design = basis == "design"
     lines = [f"# EVOLVE assessment: {cell(data.get('product'))}", "",
              f"Framework {model['framework']} {model['version']}. Date {cell(data.get('date'))}. "
-             f"Source {cell(data.get('source'))}. Archetype **{data.get('archetype')}**.", "",
-             f"Scope facts true: {', '.join(on) or 'none'}. False: {', '.join(off) or 'none'}.", "",
+             f"Source {cell(data.get('source'))}. Archetype **{data.get('archetype')}**. "
+             f"Basis **{basis}** ({'design documents' if design else 'what ships'}).", ""]
+    if design:
+        lines += [f"**Design reading.** {DESIGN_NOTE} Grade D evidence is allowed and the depth cap does not apply.",
+                  ""]
+    lines += [f"Scope facts true: {', '.join(on) or 'none'}. False: {', '.join(off) or 'none'}.", "",
              f"Coverage: {cov['assessed']} assessed, {cov['not_evidenced']} not evidenced, "
-             f"{cov['not_applicable']} not applicable. Grades: {grades['A']} A, {grades['B']} B, {grades['C']} C.", "",
+             f"{cov['not_applicable']} not applicable. Grades: {grades['A']} A, {grades['B']} B, {grades['C']} C"
+             + (f", {grades['D']} D" if design or grades["D"] else "") + ".", "",
+             confidence_text(result["confidence"]), "",
              "## Software Autonomy Level", "",
-             f"**{headline_text(sal, model)}**", "",
+             f"**{result_headline(result, model)}**", "",
              f"Progress toward the next level: " + "; ".join(
                  f"{name} {sal['loops'][l]['next_met']} of {sal['loops'][l]['next_total']} conditions for "
                  f"L{sal['loops'][l]['level'] + 1}" for l, name in model["loops"].items()
                  if sal["loops"][l]["next_total"]) + ".", "",
-             f"- With opt-in settings: {headline_text(avail, model)}.",
-             f"- With every alternate reading: {headline_text(high, model)}.", "",
+             f"- With opt-in settings: {headline_text(avail, model, basis=basis)}.",
+             f"- With every alternate reading: {headline_text(high, model, basis=basis)}.", "",
              "| Loop | Stages | Spine | Architecture | Governance | Level | AI-driven | With opt-in settings |",
              "|---|---:|---:|---:|---:|---:|---:|---:|"]
     drv = sal.get("ai_driven")
@@ -997,6 +1356,11 @@ def render_markdown(data, criteria, order, model, result):
         parts = " | ".join(f"L{info['parts'][p]}" for p in PARTS)
         ai_cell = f"L{drv['loops'][loop]['level']}" if drv else "–"
         lines.append(f"| {name} | {parts} | **L{info['level']}** | {ai_cell} | L{avail['loops'][loop]['level']} |")
+    lines += ["", f"**{result['recursion']['text']}.** How far the loop improves its own checks, evaluation sets, "
+              "policies and prompts from measured results.", "",
+              f"**AI delivery.** {result['ai_delivery']['text']}"]
+    lines += render_kinds(data, model, result)
+    lines += render_proven(result, model)
     lines += ["", "### Critical controls", "", "| Control | Needs | Observed | Status |", "|---|---|---|---|"]
     for ctl in sal["controls"]:
         lines.append(f"| {ctl['control']} | {cell(ctl['needs'])} | {cell(ctl['observed'])} | {ctl['status']} |")
@@ -1056,22 +1420,83 @@ def render_markdown(data, criteria, order, model, result):
             text = f"AI-qualified reading: {ai_text}. " + text
         lines.append(f"| {cid} {cell(criteria[cid]['title'])} | {status} | "
                      f"{'excluded' if value is None else value} | {entry.get('alt_score', '')} | "
-                     f"{entry.get('available_score', '')} | {entry.get('grade', '-') if status == 'assessed' else '-'} | "
+                     f"{entry.get('available_score', '')} | {grade_cell(entry)} | "
                      f"{facet_text} | {cell(text)} |")
-    lines += ["", "Facets: I implemented, T tested, O operated."]
+    lines += ["", "Grade cell: evidence grade, then confidence where recorded. Facets: I implemented, T tested, "
+              "O operated. Operated supports a Proven reading and never changes a score."]
     return "\n".join(lines)
 
 
-def describe_condition(cond, loop, criteria, model, facts):
+def grade_cell(entry):
+    if entry["status"] != "assessed":
+        return "-"
+    return str(entry.get("grade", "-")) + (f", {entry['confidence']}" if entry.get("confidence") else "")
+
+
+def confidence_text(conf):
+    if not conf["recorded"]:
+        return "Confidence: not recorded."
+    c = conf["criteria"]
+    text = f"Confidence: {c['high']} high, {c['medium']} medium, {c['low']} low across the assessed criteria."
+    if conf["check_first"]:
+        text += " Check these first (low confidence, and they hold a blocker or a critical control): " + "; ".join(
+            f"{i['id']} ({', '.join(i['holds'])})" for i in conf["check_first"]) + "."
+    else:
+        text += " No low-confidence criterion holds a next-level blocker or a critical control."
+    return text
+
+
+def render_kinds(data, model, result):
+    kinds = result["kinds"]
+    lines = ["", "### Kinds of change", "",
+             f"{kinds['text']} (reach 1 or more: the people running the product make it themselves and can undo it).",
+             "", "| Kind | Who | Main | Reach | Evidence |", "|---|---|---|---|---|"]
+    for kind in kinds_table(data, model):
+        conf = f" Confidence {kind['confidence']}." if kind.get("confidence") else ""
+        lines.append(f"| {cell(kind['name'])} (`{kind['id']}`) | {cell(kind['who'])} | "
+                     f"{'yes' if kind['main'] else 'no'} | {kind['reach']} {kind['reach_name']} | "
+                     f"{cell(kind['evidence'])}{conf} |")
+    return lines
+
+
+def render_proven(result, model):
+    proven = result["proven"]
+    if proven is None:
+        return ["", "### Proven", "", "Not read: a design assessment has no operating records. " + DESIGN_NOTE]
+    lines = ["", "### Proven", "",
+             f"**{proven['text']}.** What operating records show real changes doing, beside what the product is "
+             f"built to do. {PROVEN_NOTE}", "",
+             "| Loop | Built | Proven | Operating records, or what was searched |", "|---|---:|---|---|"]
+    for loop, name in model["loops"].items():
+        info = proven["loops"][loop]
+        if info["status"] == "evidenced":
+            shown, text = f"L{info['level']}", info["evidence"]
+        elif info["status"] == "not_evidenced":
+            shown, text = "not evidenced", "Searched: " + str(info["searched"])
+        else:
+            shown, text = "not recorded", "–"
+        lines.append(f"| {name} | L{info['built']} | {shown} | {cell(text)} |")
+    return lines
+
+
+def describe_condition(cond, loop, criteria, model, facts, kinds=()):
     """Plain words for one level condition, from the rubric's own anchored levels."""
-    operated = " Records must show it working in production." if cond.get("operated") else ""
     if "c" in cond:
         info = criteria[cond["c"]]
-        return f"{cond['c']} {info['title']}: {info['anchors'][cond['min']]}{operated}"
+        return f"{cond['c']} {info['title']}: {info['anchors'][cond['min']]}"
     if "path" in cond:
         parts = []
         for alt in model["build_paths"][loop][cond["path"]]:
-            if "cap" in alt:
+            if "kinds" in alt:
+                if cond["min"] >= 2:
+                    text = "Every main kind of change can be made by the people running the product, and undone."
+                    waiting = [k["name"] for k in kinds if k.get("main") and k.get("reach", 0) < 1]
+                    if waiting:
+                        text += " Not yet: " + "; ".join(waiting) + "."
+                else:
+                    text = "At least one kind of change can be made by the people running the product, and undone."
+                parts.append(text)
+            elif "cap" in alt:
                 label = model["capabilities"][alt["cap"]]
                 parts.append(f"The {label} ({alt['cap']}) capability averages {cond['min']} or more.")
             else:
@@ -1085,13 +1510,13 @@ def describe_condition(cond, loop, criteria, model, facts):
     if "rollback" in cond:
         items = [f"{r['c']} {criteria[r['c']]['title']}: {criteria[r['c']]['anchors'][cond['rollback']]}"
                  for r in model["rollback"] if not r.get("when") or facts.get(r["when"]) is True]
-        return " ".join(items) + operated
+        return " ".join(items)
     if "every" in cond:
         label = model["capabilities"][cond["every"]]
-        return f"Every applicable {label} ({cond['every']}) criterion is at {cond['min']} or more.{operated}"
+        return f"Every applicable {label} ({cond['every']}) criterion is at {cond['min']} or more."
     for key, joiner in (("any", " Or: "), ("all", " And: ")):
         if key in cond:
-            return joiner.join(describe_condition(sub, loop, criteria, model, facts) for sub in cond[key])
+            return joiner.join(describe_condition(sub, loop, criteria, model, facts, kinds) for sub in cond[key])
     raise ModelError(f"Unrecognised condition: {cond}")
 
 
@@ -1112,18 +1537,20 @@ def checklist(data, criteria, model, default, target):
                     continue
                 items.append({"level": level, "part": cond["part"], "stage": cond["stage"],
                               "control": cond.get("control"), "needs": needs, "observed": observed, "met": ok,
-                              "description": describe_condition(cond, loop, criteria, model, ev.facts)})
+                              "description": describe_condition(cond, loop, criteria, model, ev.facts,
+                                                                data.get("change_kinds") or [])})
         loops[loop] = {"name": name, "level": now, "target": target, "challenge": model["challenges"][str(target)][loop],
                        "items": items}
     return loops
 
 
-def render_checklist(product, loops, model, sal):
+def render_checklist(product, loops, model, today):
     lines = [f"# Definition of done: {cell(product)} to L{next(iter(loops.values()))['target']}", "",
-             f"Today: {headline_text(sal, model)}.", "",
+             f"Today: {today}.", "",
              "A loop is done at the target level when its challenge passes on the running product and a fresh "
-             "assessment finds every item below. A score of 3 needs automated tests in scope (the `tested` facet); "
-             "a score of 4 also needs records of it working in production (`operated`).", ""]
+             "assessment finds every item below. On a depth-capped criterion, a score of 3 or 4 needs automated "
+             "tests in scope (the `tested` facet). Records of it working in production support a Proven reading, "
+             "reported separately; they never change the level.", ""]
     for loop in loops.values():
         lines.append(f"## {loop['name']}: L{loop['level']} → L{loop['target']}")
         lines.append("")
@@ -1176,7 +1603,7 @@ def main(argv=None):
             print(json.dumps({"product": data.get("product"), "target": args.checklist, "loops": loops},
                              indent=2, ensure_ascii=False))
         else:
-            print(render_checklist(data.get("product"), loops, model, default["sal"]), end="")
+            print(render_checklist(data.get("product"), loops, model, result_headline(result, model)), end="")
         return 0
 
     if args.prescribe:
@@ -1198,7 +1625,7 @@ def main(argv=None):
             print(json.dumps(out, indent=2, ensure_ascii=False))
             return 0
         print(f"# EVOLVE prescription: {cell(out['product'])} to level {args.target}\n")
-        print(f"Current: {headline_text(default['sal'], model)}.\n")
+        print(f"Current: {result_headline(result, model)}.\n")
         print("## Unblock the next SAL level first\n")
         for name, items in blockers.items():
             text = "; ".join(f"{b['needs']} (has {b['observed']})" for b in items) or "at the top level"
@@ -1233,9 +1660,17 @@ def main(argv=None):
     payload = {"product": data.get("product"), "date": data.get("date"), "source": data.get("source"),
                "archetype": data.get("archetype"), "framework": model["framework"],
                "framework_version": model["version"],
+               "basis": result["basis"],
+               "headline_text": result_headline(result, model),
                "scope_facts": {f: data["scope_facts"][f]["value"] for f in model["scope_facts"]},
                "coverage": result["coverage"], "grades": result["grades"],
                "sal": default["sal"],
+               "change_kinds": kinds_table(data, model),
+               "kinds_summary": result["kinds"],
+               "proven": result["proven"],
+               "recursion": result["recursion"],
+               "ai_delivery": result["ai_delivery"],
+               "confidence": result["confidence"],
                "sensitivity": result["sensitivity"],
                **({"ai_readiness": {v: result["variants"][v]["ai_readiness"] for v in SAL_VARIANTS}}
                   if "ai_view" in model else {}),
@@ -1252,7 +1687,9 @@ def main(argv=None):
         print(json.dumps(payload, indent=2, ensure_ascii=False))
         return 0
     if args.quiet:
-        print(headline_text(default["sal"], model))
+        print(result_headline(result, model))
+        if result["basis"] == "design":
+            print(DESIGN_NOTE)
         if "ai_view" in model:
             print(ai_headline_text(default["ai_readiness"], model))
         print("  ".join(f"{label} {fmt(default['capabilities'][cap])}" for cap, label in model["capabilities"].items()))

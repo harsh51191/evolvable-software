@@ -2,7 +2,7 @@
 
 This file is the single source of truth for the EVOLVE framework. `scripts/score.py` reads the criterion ids, capabilities and areas from the headings below, and reads the scoring model (scope facts, applicability, loop conditions, critical controls, depth rules, archetype exclusions and caps) from the `evolve-model` block in this preamble. Change any of them here, nowhere else.
 
-EVOLVE answers one question: **how ready is a software product to evolve itself safely?** It reports a Software Autonomy Level (SAL) for three loops (Request → Release, Issue → Fix, Opportunity → Expansion) and a profile of six capabilities: **E**lastic (architecture, `ARC`), **V**elocity (delivery, `DEL`), **O**pen (malleability, `MAL`), **L**earn (learning, `LRN`), **V**et (governance, `GOV`) and **E**xpand (expansion, `EXP`). `spec/evolve-v0.4-draft.md` explains the design and why each piece exists.
+EVOLVE answers one question: **how ready is a software product to evolve itself safely?** It reports a Software Autonomy Level (SAL) for three loops (Request → Release, Issue → Fix, Opportunity → Expansion) and a profile of six capabilities: **E**lastic (architecture, `ARC`), **V**elocity (delivery, `DEL`), **O**pen (malleability, `MAL`), **L**earn (learning, `LRN`), **V**et (governance, `GOV`) and **E**xpand (expansion, `EXP`). The rubric has 67 criteria in those six capabilities and 8 AI Readiness checks, 75 in all. `spec/evolve-v0.4-draft.md` explains the design and why each piece exists; `spec/evolve-v0.7.md` adds kinds of change, the Designed, Built and Proven readings, recursion, the AI delivery record and confidence.
 
 Every criterion has a definition, why it matters, evidence to look for, and one anchored description per level 0 to 4. Levels are cumulative: a level includes the substance of the levels below it. Score the level whose description the evidence supports in full. If the evidence sits between two levels, score the lower one and record the higher one as `alt_score`.
 
@@ -28,7 +28,7 @@ The ladder reads most naturally for the Open criteria. Architecture, delivery an
 
 ## Evidence grades
 
-**A** code-verified in the repository at a named tip. **B** verified from first-party documentation, audits or configuration in hand. **C** inferred from product knowledge or secondary material; a C-graded score is capped at 2.
+**A** code-verified in the repository at a named tip. **B** verified from first-party documentation, audits or configuration in hand. **C** inferred from product knowledge or secondary material; a C-graded score is capped at 2. **D** design basis only: a design document, cited by path and section. Grade D is allowed only in an assessment with `"basis": "design"`, and is an error in a shipped one.
 
 ## Evidence status
 
@@ -38,6 +38,16 @@ The ladder reads most naturally for the Open criteria. Architecture, delivery an
 
 Read `archetypes.md` before scoring. Missing functionality is not non-applicability.
 
+## Confidence
+
+Each assessed criterion, each assessed AI-qualified reading and each kind of change may record `confidence`, how sure the rater is of the reading:
+
+- **high**: read the code path and its tests;
+- **medium**: read the code, not every path;
+- **low**: inferred from part of the evidence.
+
+It is all or nothing: if any assessed criterion records confidence, every assessed criterion must. New assessments record it. Confidence never changes a score. The scorer reports the counts and lists, as "check these first", the low-confidence criteria that hold a next-level blocker or a critical control.
+
 ## Scope facts
 
 Every assessment declares twelve facts, each with evidence, for the default configuration. The three AI facts may also record `available_value`, their value with shipped opt-in settings on; it is used only by the AI Readiness View. They decide which criteria and critical controls apply, so a stateless library is not failed on backups and a single-user tool is not failed on tenant isolation. A fact that is wrongly declared is a validation finding, not a shortcut.
@@ -46,18 +56,61 @@ Every assessment declares twelve facts, each with evidence, for the default conf
 |---|---|
 | `persistent_data` | The product stores durable user, tenant or operator data |
 | `schema_changes` | The product, or its evolution path, changes stored data structures (database schema or definition-driven storage) |
-| `multi_tenant` | One deployment serves several isolated tenants, workspaces or organisations |
+| `multi_tenant` | One deployment holds data or configuration for more than one group of people who administer themselves and must not see each other's data: customers, organisations, or workspaces and projects with their own members and roles. One person's several workspaces or profiles do not count |
 | `hosted_service` | It runs as a long-lived networked service rather than a library, CLI or local single-user tool |
 | `machine_actions` | Agents or automated clients can change the product's data or definitions through an API or tool surface |
-| `agent_mutations` | The product's own agents or AI can change its definitions, skills, memory, configuration or data |
+| `agent_mutations` | The product's own agents or AI can write to its definitions, skills, memory, configuration or data, including drafts and proposals the product stores awaiting approval. `evolution_auto_apply` says whether they take effect without a person |
 | `evolution_auto_apply` | A change produced by the evolution loop (an AI lane, a learning loop or self-modification) applies without human approval by default. Scheduled maintenance such as index or column tuning does not count |
 | `definition_change_path` | Changes to the product's behaviour are made through definitions or configuration, by people or by the product |
-| `code_release_path` | The product's evolution system ships code changes, not only definition changes |
+| `code_release_path` | The evolution system or the product's own AI produces code that then runs as part of the product: plugins, extensions, nodes, tools or scripts it writes and activates, or changes to its own source through its pipeline. Configuration and declarative definitions are not code |
 | `ai_features` | The product ships features that call a language or other ML model |
 | `ai_data_access` | AI features read product data, or call tools that can (requires `ai_features`) |
 | `ai_actions` | AI can take consequential actions: change data or definitions, send messages outside the product, or spend money (requires `ai_features`) |
 
 At least one change path (`definition_change_path` or `code_release_path`) must be true. Rollback is required on each path that exists: GOV-05 for definition changes, DEL-11 for code changes, both when both exist.
+
+## Kinds of change
+
+A product is changed in a handful of recurring ways: an answer, a rule, a workflow, a price list, a report, a form. Level 1 asks whether the people running the product can make those changes themselves, and undo them.
+
+Every assessment lists them in `change_kinds`, 1 to 8 entries:
+
+```json
+{"id": "answers", "name": "What the assistant tells customers", "who": "brand owners",
+ "main": true, "reach": 1, "evidence": "path/to/file:line …", "confidence": "high"}
+```
+
+- `id`: lowercase letters, digits and hyphens, unique.
+- `name`: plain words, no jargon. `who`: who needs to make this change.
+- `main`: true when this kind makes up a large share of the changes the product's operators and users actually need. At least one kind is main.
+- `reach`: how far this kind of change has come, 0 to 5.
+- `evidence`: where the kind and its reach were found. `confidence` is optional, as for criteria.
+
+| Reach | Name | Meaning |
+|---:|---|---|
+| 0 | Engineers only | Needs a code change, a deploy, or an engineer editing files or running scripts |
+| 1 | Self-serve | The people running the product make it through a supported path, with no deploy, and can undo it |
+| 2 | Drafted | The product drafts this kind of change; a person completes and releases it |
+| 3 | Carried | The product builds, checks and releases it end to end; a person approves |
+| 4 | Pre-approved | It ships without a person under a written policy, and is reversed automatically when it makes things worse |
+| 5 | Self-chosen | The product also decides when to make this kind of change, within policy |
+
+**Rules for raters.**
+
+- List every kind of change operators or users commonly need, from the product's own documentation, admin surfaces and request history. Include the kinds they cannot make themselves. A kind left out to raise the level is a finding, like a wrongly declared scope fact.
+- Record the evidence for each kind and for its reach.
+- Reach 1 needs both the supported path and undo. A path with no undo is reach 0, and the evidence says so.
+
+**How it scores.** The people build path for Request → Release and Issue → Fix is the kinds of change. It is 2 when every main kind has reach 1 or more, 1 when only some kinds do, and 0 when none do. Level 1 needs that path at 2, or the product path at 2. Opportunity → Expansion keeps EXP-02 as its people path. The Open (MAL) capability stays in the profile and no longer decides Level 1.
+
+A reach must agree with the criteria, read at their default scores. Otherwise the assessment fails validation:
+
+- reach 2 or more needs DEL-04 ≥ 2, or LRN-07 ≥ 2 with LRN-08 ≥ 2;
+- reach 3 or more needs DEL-04 ≥ 3;
+- reach 4 or more needs GOV-07 ≥ 3;
+- reach 5 needs LRN-07 ≥ 3.
+
+The scorer reports a table of kinds with their reach, and how many of the main kinds are self-serve.
 
 ## Scoring rules
 
@@ -72,28 +125,74 @@ At least one change path (`definition_change_path` or `code_release_path`) must 
 9. Compliance and security are scored on whether they are structural and continuously verified. The latest audit result is an input, never a score.
 10. Name the branch or tip the evidence was read from. A claim is branch-scoped until proven otherwise.
 11. **Alternates are upward only.** `alt_score` is always `score + 1`: the higher reading that is also defensible. The default reading is therefore the low end of every range.
-12. **Repository tooling counts only as a first-party evolution system.** For DEL-01, DEL-04, DEL-09 to DEL-11, LRN-03, LRN-05 to LRN-07 and EXP-04 to EXP-06, tooling counts only when it is executable, supported (documented and maintained as part of the product or an official first-party companion), bounded (subject to GOV-10 limits) and built to evolve this product from its requests, issues or opportunities. A team's ordinary CI, bots or scripts do not qualify; they still count for DEL-05 to DEL-08.
-13. **Evidence facets and the depth cap.** For depth-capped criteria (every ARC criterion and every critical-control criterion), any score, alternate or opt-in reading of 3 or more records `facets`: `implemented`, `tested` (automated tests in scope exercise it) and `operated` (records show it working in production). `tested` and `operated` each require `implemented`, and are recorded separately so operated evidence never implies tested. A 3 needs `tested`, otherwise it counts as 2. A 4 needs `tested` and `operated`, otherwise it counts as 3 if tested and 2 if not.
+12. **Repository tooling counts only as a first-party evolution system.** For DEL-01, DEL-04, DEL-09 to DEL-11, LRN-03, LRN-05 to LRN-07 and EXP-04 to EXP-06, tooling counts only when it is executable, supported (documented and maintained as part of the product or an official first-party companion), bounded (subject to GOV-10 limits) and built to evolve this product from its requests, issues or opportunities. A team's ordinary CI, bots or scripts do not qualify; they still count for DEL-05 to DEL-08. An installed delivery framework, such as an AI software factory, or a repository's agent workflows count as a first-party evolution system when, in the assessed repository: they are installed at a pinned version and maintained with the product; their enforcement runs (authority and merge checks are required checks, not documents); their limits meet GOV-10 for the changes they make; and their product layer describes this product. Instruction files, rules and templates alone are documentation and count for nothing. A framework that ships code sets `code_release_path`, so release rollback (DEL-11) applies.
+13. **Evidence facets and the depth cap.** For depth-capped criteria (every ARC criterion and every critical-control criterion), any score, alternate or opt-in reading of 3 or more records `facets`: `implemented`, `tested` (automated tests in scope exercise it) and `operated` (records show it working in production). `tested` and `operated` each require `implemented`, and are recorded separately so operated evidence never implies tested. A 3 or a 4 needs `tested`, otherwise it counts as 2. `operated` is still recorded: it says what the product has been seen to do, and supports a Proven reading, but it never changes a score. In a design assessment facets are not required and the depth cap does not apply.
 14. **Coverage inventories.** ARC-08, ARC-09 and GOV-05 span several surfaces. When any reading (score, alternate or opt-in) is 3 or more, record `inventory`, a level per applicable surface; no reading of 3 or more can exceed the lowest of them, so one strong surface cannot hide a weak one. Below 3 the anchors already describe partial coverage, and an inventory is optional.
+
+## Designed, Built, Proven
+
+Three different claims, never mixed:
+
+| Claim | Evidence | Where |
+|---|---|---|
+| **Designed for** | Design documents and architecture, before or beside the code | An assessment with `"basis": "design"` |
+| **Built to** | What ships: code, with tests where the depth cap needs them | An assessment with `"basis": "shipped"` (the default) |
+| **Proven at** | Operating records showing real changes going through the loop | `proven` in a shipped assessment |
+
+**Design basis.** `"basis": "design"` allows evidence grade D. Facets are not required and the depth cap does not apply; inventories still apply. Every headline and report says "Designed for", and says that a design reading is not comparable with a shipped one. `proven` is not allowed. Use it for a new product designed to evolve, before there is code to read.
+
+**Proven.** An optional field in a shipped assessment, one entry per loop:
+
+```json
+"proven": {
+  "request": {"level": 1, "evidence": "…"},
+  "fix": {"status": "not_evidenced", "searched": "…"},
+  "expansion": {"status": "not_evidenced", "searched": "…"}
+}
+```
+
+A loop is proven at level N when operating records (change history, release records, audit logs, published changelogs, incident records) show real changes going through the loop at that level, more than once, in a real deployment. `level` runs from 0 to the loop's built level; a higher value is a validation error. The headline proven level is the lower of Request → Release and Issue → Fix. When either is missing or not evidenced, the headline says "Proven: not evidenced". From a repository alone, proven is usually not evidenced, and the report says so plainly.
+
+Built says what the product can do; Proven says what it has been seen to do. A product should run at the level it has proven, and raise autonomy as proof builds up.
+
+## AI delivery record
+
+Many products are now built by engineers working with AI coding agents. That is AI-assisted engineering, not the product evolving itself. An optional field records it:
+
+```json
+"ai_delivery": {"present": true, "qualifies": false, "evidence": "AGENTS.md; .github/workflows/…", "note": "…"}
+```
+
+- `present`: engineers build this product with AI coding agents or a delivery framework (agent instruction files, agent workflows in CI, an installed AI software factory).
+- `qualifies`: it meets scoring rule 12, so DEL-01, DEL-04 and the other rule-12 criteria may credit it. `qualifies` true needs `present` true.
+- `evidence`: what was found, or what was searched. `note` is optional.
+
+The record never changes a score by itself; any credit flows through the criteria. Reports say, in plain words, that AI-assisted engineering is not the product evolving itself, and whether it counts.
 
 ## Software Autonomy Levels
 
 | Level | Name | What the product can do in a loop |
 |---|---|---|
 | L0 | Manual | Every change is engineers writing and releasing code. |
-| L1 | Configurable | People make the change without bespoke engineering, through governed configuration or an AI-drafted change they finish, and can roll it back. |
+| L1 | Configurable | People make every main kind of change themselves, through a supported path with no bespoke engineering, or finish a change the product drafts, and can roll it back. |
 | L2 | Assisted | The product structures the request, diagnoses the issue or drafts the proposal, and drafts the change. People build, check and release. |
 | L3 | Supervised | The product carries the loop end to end, including verification, staged release and rollback. A person approves each release. Every applicable critical control passes. |
-| L4 | Policy-bounded | Low-risk change classes ship without a person, under policy, with staged exposure, impact measurement and automatic rollback, on an architecture with tested evidence. |
-| L5 | Self-directing | Across change classes, the product initiates, ships and measures change within policy, backed by operational evidence. |
+| L4 | Policy-bounded | The product is built so that low-risk change classes ship without a person, under policy, with staged exposure, impact measurement and automatic rollback, on an architecture with tested evidence. The checks and policies that govern change are themselves versioned and changed through the governed path. |
+| L5 | Self-directing | The product is built to initiate, ship and measure change across change classes within policy, and to improve its own checks, evaluation sets and policies from measured results. |
+
+These levels say what the product is built to do. Whether real changes have been seen going through a loop at that level is the Proven reading, reported separately (see "Designed, Built, Proven").
 
 A loop's level is the highest level whose conditions, and every lower level's conditions, all hold. The conditions fall into four parts: the loop's own **stages**, the shared **release spine** (Build, Verify, Stage, Release, Observe, Roll back), the **architecture** foundation and the **governance** ceiling, so the level is the lowest of the four. **Headline SAL** is the lower of Request → Release and Issue → Fix; Opportunity → Expansion is reported beside it. Critical controls are L3 conditions, so failing an applicable one caps every loop at L2.
 
-In the conditions below, `path` is the loop's build path: the criteria through which people (`people`) or the product (`product`) build a change. `rollback` is the lower of GOV-05 when `definition_change_path` is true and DEL-11 when `code_release_path` is true. `every` applies a threshold to every applicable criterion of a capability. `operated` requires the operated facet.
+In the conditions below, `path` is the loop's build path: how people (`people`) or the product (`product`) build a change. For Request → Release and Issue → Fix the people path is the kinds of change (`{"kinds": "main"}`, see "Kinds of change"); for Opportunity → Expansion it is EXP-02. `rollback` is the lower of GOV-05 when `definition_change_path` is true and DEL-11 when `code_release_path` is true. `every` applies a threshold to every applicable criterion of a capability. No condition uses the `operated` facet: operating records belong to the Proven reading.
 
 ## AI-driven loop levels
 
 Beside each loop's level, the scorer reports how far AI itself carries the loop. It re-runs the loop rules with each AI-performable stage criterion replaced by its AI-qualified reading (the `driven` block of `ai_view`: DEL-01 and DEL-04 for Request → Release; LRN-05 to LRN-08 for Issue → Fix; EXP-05 for Opportunity → Expansion). Everything else stays as it is. The AI-driven level is at most the loop's own level, and starts at L2, the first level at which the product performs stage work; below that it is 0, "AI drives no stage". A missing or `not_evidenced` AI reading counts as 0. The AI-driven headline is the lower of the Request → Release and Issue → Fix AI levels.
+
+## Recursion
+
+Self-improvement is recursive when the loop improves its own checks, evaluation sets, policies and prompts from what it measures. LRN-10 scores this, and the scorer reports it as a **Recursion** line named from LRN-10's default score: 0 Fixed, 1 By hand, 2 Governed, 3 Results-driven, 4 Self-improving. Level 4 needs LRN-10 ≥ 2 and Level 5 needs LRN-10 ≥ 4, in the release spine at the Observe stage.
 
 ## AI Readiness View
 
@@ -121,7 +220,7 @@ A supporting reading, separate from SAL: **how safely can the product run AI in 
 ```json evolve-model
 {
   "framework": "EVOLVE",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "capabilities": {
     "ARC": "Elastic",
     "DEL": "Velocity",
@@ -229,9 +328,30 @@ A supporting reading, separate from SAL: **how safely can the product run AI in 
     "request",
     "fix"
   ],
+  "reach": [
+    "Engineers only",
+    "Self-serve",
+    "Drafted",
+    "Carried",
+    "Pre-approved",
+    "Self-chosen"
+  ],
+  "reach_needs": {
+    "2": {"any": [{"c": "DEL-04", "min": 2}, {"all": [{"c": "LRN-07", "min": 2}, {"c": "LRN-08", "min": 2}]}]},
+    "3": {"c": "DEL-04", "min": 3},
+    "4": {"c": "GOV-07", "min": 3},
+    "5": {"c": "LRN-07", "min": 3}
+  },
+  "recursion": [
+    "Fixed",
+    "By hand",
+    "Governed",
+    "Results-driven",
+    "Self-improving"
+  ],
   "challenges": {
     "1": {
-      "request": "Take a change users often ask for (a field, a rule, a workflow step, a setting). An admin makes it in the running product, with no engineer, code change or redeploy, then undoes it.",
+      "request": "Take each main kind of change the assessment lists (an answer, a rule, a workflow step, a setting). The people who need it make one in the running product, with no engineer, code change or redeploy, then undo it.",
       "fix": "Make the product fail the way a user would see it (a failed action, an error, negative feedback). The product records it where a person can query it, with the product area. An admin then changes the behaviour without engineering and can undo it.",
       "expansion": "An admin adds support for a new kind of need, such as a new app, domain or bundle, without engineering, and can remove it again."
     },
@@ -251,16 +371,16 @@ A supporting reading, separate from SAL: **how safely can the product run AI in 
       "expansion": "A new capability launches to a cohort and is kept or killed on its measured results, with the decision recorded."
     },
     "5": {
-      "request": "Over a period of real operation, the product starts changes itself across kinds of change, ships and measures them within policy, and rolls back automatically when they fail. Its policy adapts to how often its own checks wrongly passed a change. The records show all of this running in production.",
-      "fix": "Over a period of real operation, the product finds, prioritises, diagnoses and fixes issues itself, within policy, and the records show which kinds of fix worked.",
-      "expansion": "Over a period of real operation, the product senses demand, proposes and launches capabilities, and keeps or kills them on measured results, within policy."
+      "request": "Over a period of operation, the product starts changes itself across kinds of change, ships and measures them within policy, and rolls back automatically when they fail. When its own checks wrongly pass a change, it improves those checks and its policy, measures whether that helped, and reverses what did not. Records of this in a real deployment are a Proven reading, reported separately.",
+      "fix": "Over a period of operation, the product finds, prioritises, diagnoses and fixes issues itself, within policy, and the records show which kinds of fix worked.",
+      "expansion": "Over a period of operation, the product senses demand, proposes and launches capabilities, and keeps or kills them on measured results, within policy."
     }
   },
   "build_paths": {
     "request": {
       "people": [
         {
-          "cap": "MAL"
+          "kinds": "main"
         }
       ],
       "product": [
@@ -272,7 +392,7 @@ A supporting reading, separate from SAL: **how safely can the product run AI in 
     "fix": {
       "people": [
         {
-          "cap": "MAL"
+          "kinds": "main"
         }
       ],
       "product": [
@@ -519,6 +639,7 @@ A supporting reading, separate from SAL: **how safely can the product run AI in 
       {"part": "spine", "stage": "Stage", "c": "DEL-09", "min": 3},
       {"part": "spine", "stage": "Release", "c": "DEL-10", "min": 3},
       {"part": "spine", "stage": "Observe", "c": "LRN-09", "min": 3},
+      {"part": "spine", "stage": "Observe", "c": "LRN-10", "min": 2},
       {"part": "spine", "stage": "Roll back", "rollback": 4},
       {"part": "stages", "stage": "Launch", "loop": "expansion", "c": "EXP-06", "min": 3},
       {"part": "architecture", "stage": "Foundation", "every": "ARC", "min": 3},
@@ -539,8 +660,9 @@ A supporting reading, separate from SAL: **how safely can the product run AI in 
       {"part": "spine", "stage": "Verify", "c": "DEL-08", "min": 4},
       {"part": "spine", "stage": "Stage", "c": "DEL-09", "min": 4},
       {"part": "spine", "stage": "Release", "c": "DEL-10", "min": 4},
-      {"part": "spine", "stage": "Observe", "c": "LRN-09", "min": 4, "operated": true},
-      {"part": "spine", "stage": "Roll back", "rollback": 4, "operated": true},
+      {"part": "spine", "stage": "Observe", "c": "LRN-09", "min": 4},
+      {"part": "spine", "stage": "Observe", "c": "LRN-10", "min": 4},
+      {"part": "spine", "stage": "Roll back", "rollback": 4},
       {"part": "stages", "stage": "Intake", "loop": "request", "c": "DEL-01", "min": 4},
       {"part": "stages", "stage": "Detect", "loop": "fix", "c": "LRN-03", "min": 4},
       {"part": "stages", "stage": "Diagnose", "loop": "fix", "c": "LRN-05", "min": 4},
@@ -548,12 +670,12 @@ A supporting reading, separate from SAL: **how safely can the product run AI in 
       {"part": "stages", "stage": "Sense", "loop": "expansion", "c": "EXP-04", "min": 4},
       {"part": "stages", "stage": "Propose", "loop": "expansion", "c": "EXP-05", "min": 4},
       {"part": "stages", "stage": "Launch", "loop": "expansion", "c": "EXP-06", "min": 4},
-      {"part": "architecture", "stage": "Foundation", "every": "ARC", "min": 3, "operated": true},
+      {"part": "architecture", "stage": "Foundation", "every": "ARC", "min": 3},
       {"part": "architecture", "stage": "Foundation", "c": "ARC-06", "min": 4},
       {"part": "architecture", "stage": "Foundation", "c": "ARC-07", "min": 4},
       {"part": "architecture", "stage": "Foundation", "c": "ARC-08", "min": 4},
-      {"part": "governance", "stage": "Ceiling", "c": "GOV-07", "min": 4, "operated": true},
-      {"part": "governance", "stage": "Ceiling", "c": "GOV-10", "min": 4, "operated": true}
+      {"part": "governance", "stage": "Ceiling", "c": "GOV-07", "min": 4},
+      {"part": "governance", "stage": "Ceiling", "c": "GOV-10", "min": 4}
     ]
   }
 }
@@ -1100,6 +1222,7 @@ Does the product notice what is wrong, work out why, and know whether its change
 **Definition.** Changes the product proposes to itself are checked, and evaluated against the current baseline, before they apply.
 **Why it matters.** A system that rewrites itself without evaluation is self-modifying, not self-improving.
 **Evidence.** Scans and linters on learned changes. Evaluation datasets. Baseline comparison. Pass, revise or block decisions.
+**Boundary.** Scores the checks applied to changes that the product or its AI produces to the product's own behaviour: AI-built workflows, learned skills, memory, tuned rules. Checks on changes people author by hand are scored under DEL-05, not here. If the product produces no such changes, score what would apply to one, and 0 when nothing would; the evidence then says the product produces no learned or AI-made changes.
 **AI-qualified reading.** Scores only AI-backed behaviour, for the AI Readiness View and Footprint: 0 none · 1 manual review only · 2 automated scans or lint on AI-made changes · 3 AI-made changes evaluated against a baseline before apply, with a pass, revise or block decision · 4 automatic, on held-out data, feeding policy. Counts towards Governance only when `agent_mutations` is true.
 - **0** No checks.
 - **1** Manual review only.
@@ -1119,6 +1242,16 @@ Does the product notice what is wrong, work out why, and know whether its change
 - **2** Relevant telemetry exists, but it is not bound to the proposal version, baseline and decision.
 - **3** Applied proposals record a baseline, target metric, observation window and explicit keep, revise or rollback decision.
 - **4** Instrumentation is created with the proposal; policy uses measured impact to promote, revise or reverse the change, with attribution limits recorded.
+
+### LRN-10 The improvement loop improves itself
+**Definition.** The checks, evaluation sets, policies and prompts that govern change are themselves changed through the governed path, driven by measured results.
+**Why it matters.** This is what makes self-improvement recursive. A loop whose own checks never improve repeats its mistakes at higher speed.
+**Evidence.** Where checks, evaluation cases, policies and prompts live and how they change. Whether a production failure or a wrong pass is recorded against the check that missed it. Whether new tests or evaluation cases are created from failures. Whether policy changes cite measured results.
+- **0** The checks, evaluation sets, policies and prompts that govern change are fixed in code and change only when engineers edit them.
+- **1** People improve them by hand after incidents, outside the product.
+- **2** They are versioned definitions that change through the product's governed change path, but nothing links those changes to measured results.
+- **3** Results drive them: failures and wrong passes are recorded against the check, evaluation case or policy involved, and the product turns them into proposed changes to those checks, cases and policies (for example, a production failure becomes a new test), which a person approves.
+- **4** The product makes such changes itself within policy, measures whether they improved later decisions, and reverses those that did not.
 
 # Capability GOV: Vet (governance)
 
