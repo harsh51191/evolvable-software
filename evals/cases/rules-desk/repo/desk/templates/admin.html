@@ -1,0 +1,32 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Rules Desk admin</title>
+<h1>Answers and routing rules</h1>
+<p>Changes go live as soon as they pass the checks. Every change is kept as a version.</p>
+<label>Token <input id="token" type="password"></label>
+<select id="kind"><option value="answer">Answers</option><option value="rule">Routing rules</option></select>
+<button onclick="load()">Load</button>
+<table id="list"></table>
+<h2>Edit</h2>
+<input id="key" placeholder="key"> <textarea id="body" rows="6" cols="60"></textarea>
+<button onclick="save()">Save</button> <button onclick="undo()">Undo last change</button>
+<h2>Settings</h2>
+<select id="sname"><option>greeting</option><option>opening_hours</option></select>
+<input id="sval"> <button onclick="setting()">Save setting</button>
+<pre id="out"></pre>
+<script>
+const h = () => ({"X-Desk-Token": token.value, "Content-Type": "application/json"});
+const base = () => `/admin/${kind.value}s`;
+async function show(r) { out.textContent = JSON.stringify(await r.json(), null, 2); }
+async function load() {
+  const items = await (await fetch(base(), {headers: h()})).json();
+  list.innerHTML = items.map(i => `<tr><td>${i.key}</td><td>v${i.version}</td>` +
+    `<td><button onclick="hist('${i.key}')">History</button></td></tr>`).join("");
+}
+async function hist(k) { key.value = k; show(await fetch(`${base()}/${k}/history`, {headers: h()})); }
+async function save() { show(await fetch(`${base()}/${key.value}`, {method: "PUT", headers: h(), body: body.value})); }
+async function undo() { show(await fetch(`${base()}/${key.value}/undo`, {method: "POST", headers: h()})); }
+async function setting() {
+  show(await fetch(`/admin/settings/${sname.value}`, {method: "PUT", headers: h(), body: JSON.stringify({value: sval.value})}));
+}
+</script>

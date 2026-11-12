@@ -1,0 +1,558 @@
+{
+  "case": "drafting-desk",
+  "summary": "Rules Desk for several customer organisations, plus structured request intake, grouped failed lookups and an AI lane that drafts routing rules for a lead to finish, inside limits enforced in code.",
+  "archetype": {
+    "allowed": [
+      "focused-application"
+    ],
+    "reason": "A help desk product, not a platform for building others.",
+    "files": [
+      "README.md"
+    ]
+  },
+  "scope_facts": {
+    "persistent_data": {
+      "value": true,
+      "reason": "PostgreSQL holds every organisation's data.",
+      "files": [
+        "migrations/001_init.sql"
+      ]
+    },
+    "schema_changes": {
+      "value": true,
+      "reason": "Numbered migrations.",
+      "files": [
+        "deskctl.py",
+        "migrations/002_requests_and_drafts.sql"
+      ]
+    },
+    "multi_tenant": {
+      "value": true,
+      "reason": "Several customer organisations, each with its own leads, agents and data.",
+      "files": [
+        "migrations/001_init.sql",
+        "README.md",
+        "tests/test_isolation.py"
+      ]
+    },
+    "hosted_service": {
+      "value": true,
+      "reason": "A web service and a drafting worker.",
+      "files": [
+        "Dockerfile",
+        "desk/drafter.py"
+      ]
+    },
+    "machine_actions": {
+      "value": true,
+      "reason": "A token-authenticated JSON API changes answers, rules, settings and drafts.",
+      "files": [
+        "desk/app.py"
+      ]
+    },
+    "agent_mutations": {
+      "value": true,
+      "reason": "The AI writes drafts stored awaiting approval, which count as agent mutations.",
+      "files": [
+        "desk/drafter.py",
+        "migrations/002_requests_and_drafts.sql"
+      ]
+    },
+    "evolution_auto_apply": {
+      "value": false,
+      "reason": "A draft goes live only when a lead publishes it.",
+      "files": [
+        "desk/app.py"
+      ]
+    },
+    "definition_change_path": {
+      "value": true,
+      "reason": "Answers and rules are versioned definitions changed at runtime.",
+      "files": [
+        "desk/store.py"
+      ]
+    },
+    "code_release_path": {
+      "value": false,
+      "reason": "The AI writes routing rules, which are declarative data, not code.",
+      "files": [
+        "desk/drafter.py",
+        "prompts/draft_rule.txt"
+      ]
+    },
+    "ai_features": {
+      "value": true,
+      "reason": "The drafting worker calls a language model.",
+      "files": [
+        "desk/drafter.py"
+      ]
+    },
+    "ai_data_access": {
+      "value": true,
+      "reason": "The model receives failed questions and request text from the product's data.",
+      "files": [
+        "desk/drafter.py"
+      ]
+    }
+  },
+  "criteria": {
+    "DEL-01": {
+      "range": [
+        2,
+        2
+      ],
+      "reason": "Requests are captured in the product with area, requester, examples and the rules involved; no specification or risk class.",
+      "files": [
+        "desk/app.py",
+        "migrations/002_requests_and_drafts.sql"
+      ]
+    },
+    "DEL-04": {
+      "range": [
+        2,
+        2
+      ],
+      "reason": "An AI lane drafts routing rules on request; a lead finishes and publishes them.",
+      "files": [
+        "desk/drafter.py",
+        "desk/app.py"
+      ]
+    },
+    "DEL-05": {
+      "range": [
+        2,
+        3
+      ],
+      "reason": "CI on every pull request and checks on every answer, rule and AI draft; settings changes are unchecked.",
+      "files": [
+        ".github/workflows/ci.yml",
+        "desk/checks.py"
+      ]
+    },
+    "ARC-01": {
+      "range": [
+        1,
+        1
+      ],
+      "reason": "Relational queries with hand-made indexes; no search index.",
+      "files": [
+        "migrations/001_init.sql",
+        "desk/store.py"
+      ]
+    },
+    "ARC-02": {
+      "range": [
+        1,
+        1
+      ],
+      "reason": "Numbered forward-only migrations applied by a command; no down steps. At 1 it keeps every architecture criterion at 1 or more for Level 2.",
+      "files": [
+        "deskctl.py",
+        "migrations/001_init.sql"
+      ]
+    },
+    "ARC-03": {
+      "range": [
+        2,
+        2
+      ],
+      "reason": "Web instances are stateless with a documented caveat (one worker); scale-out is not exercised by tests or manifests.",
+      "files": [
+        "docs/operations.md"
+      ]
+    },
+    "ARC-04": {
+      "range": [
+        2,
+        2
+      ],
+      "reason": "A jobs table with row locks and up to three attempts; no back-off between jobs, idempotency or dead-letter view.",
+      "files": [
+        "desk/store.py",
+        "desk/drafter.py"
+      ]
+    },
+    "ARC-05": {
+      "range": [
+        2,
+        2
+      ],
+      "reason": "Data isolation is tested and per-organisation quotas exist, but there is no noisy-neighbour detection, so not 3.",
+      "files": [
+        "tests/test_isolation.py",
+        "desk/checks.py"
+      ],
+      "trap": true
+    },
+    "ARC-06": {
+      "range": [
+        1,
+        1
+      ],
+      "reason": "The only limit was found in an incident.",
+      "files": [
+        "docs/operations.md"
+      ]
+    },
+    "ARC-07": {
+      "range": [
+        1,
+        1
+      ],
+      "reason": "Uptime checks only.",
+      "files": [
+        "docs/operations.md"
+      ]
+    },
+    "ARC-08": {
+      "range": [
+        1,
+        2
+      ],
+      "reason": "Model calls have timeouts and retries and answering does not depend on the model; other surfaces have no isolation.",
+      "files": [
+        "desk/drafter.py",
+        "docs/operations.md"
+      ]
+    },
+    "ARC-09": {
+      "range": [
+        2,
+        2
+      ],
+      "reason": "A pg_dump backup command; the test only checks pg_dump is called, and restore is manual and never rehearsed.",
+      "files": [
+        "deskctl.py",
+        "tests/test_backup.py",
+        "docs/operations.md"
+      ],
+      "trap": true
+    },
+    "LRN-03": {
+      "range": [
+        2,
+        2
+      ],
+      "reason": "Failed lookups recorded with area, channel and rules version, queryable.",
+      "files": [
+        "desk/store.py"
+      ]
+    },
+    "LRN-05": {
+      "range": [
+        2,
+        2
+      ],
+      "reason": "Failed lookups grouped with samples, areas and the rules versions in force; no reproducible case or likely cause.",
+      "files": [
+        "desk/store.py"
+      ]
+    },
+    "LRN-06": {
+      "range": [
+        2,
+        2
+      ],
+      "reason": "Drafts for one area (routing rules) from a failure group or request; not ranked across the product.",
+      "files": [
+        "desk/drafter.py"
+      ]
+    },
+    "LRN-07": {
+      "range": [
+        2,
+        2
+      ],
+      "reason": "Experience is captured and candidate rules are generated when a lead asks, not continuously.",
+      "files": [
+        "desk/app.py",
+        "desk/drafter.py"
+      ]
+    },
+    "LRN-08": {
+      "range": [
+        2,
+        2
+      ],
+      "reason": "AI drafts pass the same automated checks before a lead can publish; no evaluation against a baseline.",
+      "files": [
+        "desk/drafter.py",
+        "desk/checks.py"
+      ]
+    },
+    "LRN-10": {
+      "range": [
+        0,
+        1
+      ],
+      "reason": "Checks and the prompt are files changed only by engineers.",
+      "files": [
+        "desk/checks.py",
+        "prompts/draft_rule.txt"
+      ]
+    },
+    "GOV-05": {
+      "range": [
+        2,
+        2
+      ],
+      "reason": "History and undo for answers and rules; settings have none.",
+      "files": [
+        "desk/app.py"
+      ]
+    },
+    "GOV-10": {
+      "range": [
+        2,
+        2
+      ],
+      "reason": "An allow-list and priority cap enforced in code; the README's daily limit and audit log of blocked drafts do not exist.",
+      "files": [
+        "desk/drafter.py",
+        "README.md"
+      ],
+      "trap": true
+    },
+    "MAL-20": {
+      "range": [
+        1,
+        1
+      ],
+      "reason": "The widget is still a keyword bot; the model only drafts rules.",
+      "files": [
+        "desk/matching.py",
+        "desk/app.py"
+      ],
+      "trap": true
+    },
+    "AIR-01": {
+      "range": [
+        1,
+        1
+      ],
+      "reason": "One provider endpoint; the model is chosen by environment variable.",
+      "files": [
+        "desk/drafter.py"
+      ]
+    },
+    "AIR-06": {
+      "range": [
+        0,
+        1
+      ],
+      "reason": "No evaluation runs before a prompt or model change; the prompt-check job only checks the file exists and has a placeholder.",
+      "files": [
+        ".github/workflows/ci.yml"
+      ],
+      "trap": true
+    },
+    "EXP-04": {
+      "range": [
+        2,
+        2
+      ],
+      "reason": "Unanswered questions are recorded and grouped in queryable form; no themes outside the domain.",
+      "files": [
+        "desk/store.py"
+      ]
+    }
+  },
+  "ai_readings": {
+    "DEL-01": {
+      "range": [
+        0,
+        1
+      ],
+      "reason": "Intake is a form; the model does not summarise or structure requests.",
+      "files": [
+        "desk/app.py"
+      ]
+    },
+    "DEL-04": {
+      "range": [
+        2,
+        2
+      ],
+      "reason": "The model drafts rule changes on request; a lead finishes them.",
+      "files": [
+        "desk/drafter.py"
+      ]
+    },
+    "LRN-05": {
+      "range": [
+        0,
+        0
+      ],
+      "reason": "Grouping is rule-based SQL; rule-based grouping counts as 0 for the AI reading.",
+      "files": [
+        "desk/store.py"
+      ],
+      "trap": true
+    },
+    "LRN-06": {
+      "range": [
+        2,
+        2
+      ],
+      "reason": "The model drafts proposals for one area, citing the failed questions.",
+      "files": [
+        "desk/drafter.py"
+      ]
+    },
+    "LRN-07": {
+      "range": [
+        2,
+        2
+      ],
+      "reason": "The model drafts candidate changes from experience on request.",
+      "files": [
+        "desk/drafter.py"
+      ]
+    },
+    "LRN-08": {
+      "range": [
+        2,
+        2
+      ],
+      "reason": "Automated checks on AI-made changes; no baseline evaluation.",
+      "files": [
+        "desk/drafter.py"
+      ]
+    },
+    "GOV-10": {
+      "range": [
+        2,
+        2
+      ],
+      "reason": "An allow-list in code for the one AI path; no blast-radius or rate limit.",
+      "files": [
+        "desk/drafter.py"
+      ]
+    },
+    "MAL-20": {
+      "range": [
+        0,
+        0
+      ],
+      "reason": "No model-backed conversation; the widget matches keywords.",
+      "files": [
+        "desk/matching.py"
+      ],
+      "trap": true
+    }
+  },
+  "change_kinds": {
+    "main_count": {
+      "range": [
+        2,
+        2
+      ],
+      "reason": "Routing rules (164) and answers (139) are nearly all requests.",
+      "files": [
+        "docs/change-requests.md"
+      ]
+    },
+    "kinds": [
+      {
+        "label": "routing rules",
+        "keywords": [
+          "rout",
+          "rule"
+        ],
+        "reach": [
+          2,
+          2
+        ],
+        "reason": "The AI drafts rules and a lead completes and publishes them: Drafted.",
+        "files": [
+          "desk/drafter.py",
+          "desk/app.py"
+        ],
+        "main": true
+      },
+      {
+        "label": "answers",
+        "keywords": [
+          "answer"
+        ],
+        "reach": [
+          1,
+          1
+        ],
+        "reason": "Leads change answers with checks, history and undo; the AI does not draft answers.",
+        "files": [
+          "desk/app.py",
+          "prompts/draft_rule.txt"
+        ],
+        "main": true
+      },
+      {
+        "label": "greeting and opening hours",
+        "keywords": [
+          "greet",
+          "hour",
+          "setting"
+        ],
+        "reach": [
+          0,
+          0
+        ],
+        "reason": "Self-serve but with no undo, so reach 0.",
+        "files": [
+          "desk/app.py"
+        ],
+        "main": false,
+        "trap": true
+      },
+      {
+        "label": "queues",
+        "keywords": [
+          "queue"
+        ],
+        "reach": [
+          0,
+          0
+        ],
+        "reason": "A new queue is a config file edit and a release.",
+        "files": [
+          "config/queues.yaml"
+        ],
+        "main": false
+      }
+    ]
+  },
+  "loops": {
+    "request": {
+      "range": [
+        2,
+        2
+      ],
+      "reason": "AI lane (DEL-04 2), structured intake (DEL-01 2), checks (DEL-05 2) and every architecture criterion at 1 or more; L3 fails on rollback and controls.",
+      "files": [
+        "desk/drafter.py",
+        "desk/app.py"
+      ]
+    },
+    "fix": {
+      "range": [
+        2,
+        2
+      ],
+      "reason": "Grouped failures (LRN-05 2) and drafted proposals (LRN-06 2) on top of the L1 conditions.",
+      "files": [
+        "desk/store.py",
+        "desk/drafter.py"
+      ]
+    },
+    "expansion": {
+      "range": [
+        1,
+        1
+      ],
+      "reason": "DEL-04 2 gives a build path; no adjacent-capability proposals (EXP-05) for L2.",
+      "files": [
+        "desk/drafter.py"
+      ]
+    }
+  }
+}

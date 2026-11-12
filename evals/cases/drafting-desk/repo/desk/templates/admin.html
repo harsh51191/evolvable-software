@@ -1,0 +1,26 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Drafting Desk admin</title>
+<h1>Answers, routing rules and AI drafts</h1>
+<label>Token <input id="token" type="password"></label>
+<select id="kind"><option value="answer">Answers</option><option value="rule">Routing rules</option></select>
+<button onclick="get(`/admin/${kind.value}s`)">Load</button>
+<input id="key" placeholder="key"> <textarea id="body" rows="6" cols="60"></textarea>
+<button onclick="send('PUT', `/admin/${kind.value}s/${key.value}`, body.value)">Save</button>
+<button onclick="get(`/admin/${kind.value}s/${key.value}/history`)">History</button>
+<button onclick="send('POST', `/admin/${kind.value}s/${key.value}/undo`)">Undo last change</button>
+<h2>Failed questions and requests</h2>
+<button onclick="get('/admin/failure-groups')">Failure groups</button> <button onclick="get('/admin/requests')">Requests</button>
+<input id="source" placeholder="group text or request id">
+<button onclick="send('POST', '/admin/drafts', JSON.stringify(isNaN(source.value) ? {failure_group: source.value} : {request: +source.value}))">Draft a rule with AI</button>
+<h2>AI drafts awaiting review</h2>
+<button onclick="get('/admin/drafts')">Drafts</button> <input id="draft" placeholder="draft id">
+<button onclick="send('POST', `/admin/drafts/${draft.value}/publish`, body.value || 'null')">Publish (edited body optional)</button>
+<button onclick="send('POST', `/admin/drafts/${draft.value}/discard`)">Discard</button>
+<pre id="out"></pre>
+<script>
+const h = () => ({"X-Desk-Token": token.value, "Content-Type": "application/json"});
+async function show(r) { out.textContent = JSON.stringify(await r.json(), null, 2); }
+async function get(url) { show(await fetch(url, {headers: h()})); }
+async function send(method, url, data) { show(await fetch(url, {method, headers: h(), body: data})); }
+</script>

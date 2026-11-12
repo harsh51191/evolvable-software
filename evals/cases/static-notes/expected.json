@@ -1,0 +1,434 @@
+{
+  "case": "static-notes",
+  "summary": "A notes board where every change is code: engineers edit Python, SQL or environment variables and cut a release. No backup, no undo, no signals, no AI.",
+  "archetype": {
+    "allowed": [
+      "focused-application"
+    ],
+    "reason": "A single-purpose notes board for one team, not a platform.",
+    "files": [
+      "README.md"
+    ]
+  },
+  "scope_facts": {
+    "persistent_data": {
+      "value": true,
+      "reason": "Notes are stored in SQLite at /data/notes.db.",
+      "files": [
+        "db.py",
+        "settings.py"
+      ]
+    },
+    "schema_changes": {
+      "value": true,
+      "reason": "The notes table changes over time by hand-run ALTER TABLE statements.",
+      "files": [
+        "schema.sql",
+        "README.md"
+      ]
+    },
+    "multi_tenant": {
+      "value": false,
+      "reason": "One team, no accounts: anyone on the VPN uses the same board.",
+      "files": [
+        "README.md"
+      ]
+    },
+    "hosted_service": {
+      "value": true,
+      "reason": "A long-lived gunicorn web service in a container.",
+      "files": [
+        "Dockerfile",
+        "deploy.sh"
+      ]
+    },
+    "agent_mutations": {
+      "value": false,
+      "reason": "No AI or agent anywhere in the code.",
+      "files": [
+        "app.py"
+      ]
+    },
+    "evolution_auto_apply": {
+      "value": false,
+      "reason": "There is no evolution loop at all.",
+      "files": [
+        "app.py"
+      ]
+    },
+    "definition_change_path": {
+      "value": true,
+      "reason": "The only configuration is environment variables read at start (page size, database path); with no evolution system this is the one change path the rubric allows.",
+      "files": [
+        "settings.py"
+      ]
+    },
+    "code_release_path": {
+      "value": false,
+      "reason": "Ordinary CI and a hand-run deploy script are not a first-party evolution system (rule 12), and no AI writes code.",
+      "files": [
+        ".github/workflows/release.yml",
+        "deploy.sh"
+      ]
+    },
+    "ai_features": {
+      "value": false,
+      "reason": "No model calls; search is a SQL LIKE.",
+      "files": [
+        "db.py"
+      ]
+    },
+    "ai_data_access": {
+      "value": false,
+      "reason": "No AI features.",
+      "files": [
+        "app.py"
+      ]
+    },
+    "ai_actions": {
+      "value": false,
+      "reason": "No AI features.",
+      "files": [
+        "app.py"
+      ]
+    }
+  },
+  "criteria": {
+    "MAL-02": {
+      "range": [
+        0,
+        1
+      ],
+      "reason": "Fields are columns in schema.sql; adding one is a code change.",
+      "files": [
+        "schema.sql"
+      ]
+    },
+    "MAL-07": {
+      "range": [
+        0,
+        1
+      ],
+      "reason": "The page layout is a template string in app.py.",
+      "files": [
+        "app.py"
+      ]
+    },
+    "MAL-09": {
+      "range": [
+        0,
+        1
+      ],
+      "reason": "Title and help text are Python constants.",
+      "files": [
+        "content.py"
+      ]
+    },
+    "MAL-10": {
+      "range": [
+        0,
+        1
+      ],
+      "reason": "No rules engine; the only behaviour is coded routes.",
+      "files": [
+        "app.py"
+      ]
+    },
+    "MAL-20": {
+      "range": [
+        0,
+        0
+      ],
+      "reason": "No conversational surface of any kind.",
+      "files": [
+        "app.py"
+      ]
+    },
+    "DEL-01": {
+      "range": [
+        0,
+        0
+      ],
+      "reason": "Requests live in a chat channel outside the product.",
+      "files": [
+        "README.md",
+        "docs/change-requests.md"
+      ]
+    },
+    "DEL-04": {
+      "range": [
+        0,
+        0
+      ],
+      "reason": "No AI implementation lane.",
+      "files": [
+        "app.py"
+      ]
+    },
+    "DEL-05": {
+      "range": [
+        2,
+        2
+      ],
+      "reason": "Tests run on pull requests but draft pull requests are skipped.",
+      "files": [
+        ".github/workflows/ci.yml"
+      ]
+    },
+    "DEL-06": {
+      "range": [
+        2,
+        2
+      ],
+      "reason": "A health endpoint with no version or configuration snapshot.",
+      "files": [
+        "app.py"
+      ]
+    },
+    "DEL-10": {
+      "range": [
+        0,
+        1
+      ],
+      "reason": "Nothing can be switched off without a release; at most an engineer edits an environment variable and restarts.",
+      "files": [
+        "settings.py",
+        "deploy.sh"
+      ]
+    },
+    "DEL-11": {
+      "status": "not_applicable",
+      "reason": "code_release_path is false: no evolution system ships code.",
+      "files": [
+        "deploy.sh"
+      ]
+    },
+    "ARC-02": {
+      "range": [
+        0,
+        0
+      ],
+      "reason": "Schema changes are hand-run SQL, the anchor for 0.",
+      "files": [
+        "schema.sql"
+      ]
+    },
+    "ARC-03": {
+      "range": [
+        0,
+        0
+      ],
+      "reason": "One process with its state in SQLite on local disk.",
+      "files": [
+        "settings.py",
+        "deploy.sh"
+      ]
+    },
+    "ARC-05": {
+      "status": "not_applicable",
+      "reason": "multi_tenant is false: one team, no accounts.",
+      "files": [
+        "README.md"
+      ]
+    },
+    "ARC-09": {
+      "range": [
+        0,
+        1
+      ],
+      "reason": "The only backup is a Makefile target that prints TODO; nothing copies or restores data.",
+      "files": [
+        "Makefile"
+      ],
+      "trap": true
+    },
+    "LRN-02": {
+      "range": [
+        0,
+        0
+      ],
+      "reason": "No feedback, rating or usage signal is recorded.",
+      "files": [
+        "app.py",
+        "db.py"
+      ]
+    },
+    "LRN-03": {
+      "range": [
+        1,
+        1
+      ],
+      "reason": "Unhandled errors are logged for engineers; nothing user-facing is recorded in the product.",
+      "files": [
+        "app.py"
+      ]
+    },
+    "LRN-08": {
+      "range": [
+        0,
+        0
+      ],
+      "reason": "The product produces no learned or AI-made changes and no check would apply to one (rubric LRN-08 boundary).",
+      "files": [
+        "app.py"
+      ]
+    },
+    "LRN-10": {
+      "range": [
+        0,
+        0
+      ],
+      "reason": "The only checks are tests in code, changed only when engineers edit them.",
+      "files": [
+        "tests/test_app.py",
+        ".github/workflows/ci.yml"
+      ]
+    },
+    "GOV-02": {
+      "range": [
+        0,
+        1
+      ],
+      "reason": "At most a log line when a note is deleted; no audit store.",
+      "files": [
+        "app.py"
+      ]
+    },
+    "GOV-04": {
+      "range": [
+        0,
+        1
+      ],
+      "reason": "No permission model; the dependency scan runs only when started by hand and gates nothing.",
+      "files": [
+        ".github/workflows/security.yml",
+        "README.md"
+      ],
+      "trap": true
+    },
+    "GOV-05": {
+      "range": [
+        1,
+        1
+      ],
+      "reason": "Configuration and text are versioned only in git, for engineers.",
+      "files": [
+        "content.py",
+        "settings.py"
+      ]
+    },
+    "GOV-06": {
+      "range": [
+        1,
+        1
+      ],
+      "reason": "Pull requests for code are the only proposal path.",
+      "files": [
+        "README.md"
+      ]
+    },
+    "EXP-04": {
+      "range": [
+        0,
+        0
+      ],
+      "reason": "The README claims failed searches are tracked, but search records nothing.",
+      "files": [
+        "app.py",
+        "db.py",
+        "README.md"
+      ],
+      "trap": true
+    }
+  },
+  "change_kinds": {
+    "main_count": {
+      "range": [
+        1,
+        2
+      ],
+      "reason": "Categories and help text are most of the requests.",
+      "files": [
+        "docs/change-requests.md"
+      ]
+    },
+    "all_reach": {
+      "range": [
+        0,
+        0
+      ],
+      "reason": "Every kind of change is a pull request and a release.",
+      "files": [
+        "README.md"
+      ]
+    },
+    "kinds": [
+      {
+        "label": "categories",
+        "keywords": [
+          "categor"
+        ],
+        "reach": [
+          0,
+          0
+        ],
+        "reason": "Categories are a Python list; the README's settings page does not exist.",
+        "files": [
+          "content.py",
+          "app.py",
+          "README.md"
+        ],
+        "main": true,
+        "trap": true
+      },
+      {
+        "label": "help text",
+        "keywords": [
+          "help",
+          "text",
+          "wording"
+        ],
+        "reach": [
+          0,
+          0
+        ],
+        "reason": "Help text is a Python constant.",
+        "files": [
+          "content.py"
+        ]
+      }
+    ]
+  },
+  "loops": {
+    "request": {
+      "range": [
+        0,
+        0
+      ],
+      "reason": "No main kind is self-serve and there is no AI lane.",
+      "files": [
+        "content.py"
+      ]
+    },
+    "fix": {
+      "range": [
+        0,
+        0
+      ],
+      "reason": "Same build path, and no user-facing issue detection.",
+      "files": [
+        "app.py"
+      ]
+    },
+    "expansion": {
+      "range": [
+        0,
+        0
+      ],
+      "reason": "No expansion path; EXP-02 is excluded for a focused application and DEL-04 is 0.",
+      "files": [
+        "app.py"
+      ]
+    }
+  }
+}

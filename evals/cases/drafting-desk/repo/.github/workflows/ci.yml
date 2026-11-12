@@ -1,0 +1,28 @@
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env: {POSTGRES_USER: desk, POSTGRES_PASSWORD: desk, POSTGRES_DB: desk_test}
+        ports: ["5432:5432"]
+    env:
+      TEST_DATABASE_URL: postgresql://desk:desk@localhost:5432/desk_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt pytest pip-audit
+      - run: pytest -q
+      - run: pip-audit -r requirements.txt
+  prompt-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: test -s prompts/draft_rule.txt && grep -q '{questions}' prompts/draft_rule.txt

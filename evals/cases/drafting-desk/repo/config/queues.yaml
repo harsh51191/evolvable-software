@@ -1,0 +1,6 @@
+# Queues are added by engineers: each queue's inbox is wired up at release time.
+queues:
+  - {name: general, inbox: support@example.com}
+  - {name: billing, inbox: billing@example.com}
+  - {name: accounts, inbox: accounts@example.com}
+  - {name: outages, inbox: oncall@example.com}

@@ -1,0 +1,439 @@
+{
+  "case": "rules-desk",
+  "summary": "Support leads change answers and routing rules themselves through an admin page with version history, undo and automatic checks. Failed lookups are captured with their area. No AI. A backup command exists, but nothing tests a restore.",
+  "archetype": {
+    "allowed": [
+      "focused-application"
+    ],
+    "reason": "A help desk for one company, not a platform for building others.",
+    "files": [
+      "README.md"
+    ]
+  },
+  "scope_facts": {
+    "persistent_data": {
+      "value": true,
+      "reason": "SQLite database of users, definitions, settings and failed lookups.",
+      "files": [
+        "migrations/001_init.sql"
+      ]
+    },
+    "schema_changes": {
+      "value": true,
+      "reason": "Numbered migrations change the schema.",
+      "files": [
+        "deskctl.py",
+        "migrations/002_failed_lookups.sql"
+      ]
+    },
+    "multi_tenant": {
+      "value": false,
+      "reason": "One company runs one Rules Desk; no organisation or workspace in the data model.",
+      "files": [
+        "README.md",
+        "migrations/001_init.sql"
+      ]
+    },
+    "hosted_service": {
+      "value": true,
+      "reason": "A long-lived web service.",
+      "files": [
+        "Dockerfile",
+        "desk/app.py"
+      ]
+    },
+    "machine_actions": {
+      "value": true,
+      "reason": "A token-authenticated JSON admin API changes answers, rules and settings.",
+      "files": [
+        "desk/app.py"
+      ]
+    },
+    "agent_mutations": {
+      "value": false,
+      "reason": "No AI or agent.",
+      "files": [
+        "desk/matching.py"
+      ]
+    },
+    "evolution_auto_apply": {
+      "value": false,
+      "reason": "No evolution loop; people make every change.",
+      "files": [
+        "desk/app.py"
+      ]
+    },
+    "definition_change_path": {
+      "value": true,
+      "reason": "Answers and rules are versioned definitions changed at runtime.",
+      "files": [
+        "desk/store.py"
+      ]
+    },
+    "code_release_path": {
+      "value": false,
+      "reason": "No evolution system or AI writes code.",
+      "files": [
+        "desk/app.py"
+      ]
+    },
+    "ai_features": {
+      "value": false,
+      "reason": "'Smart matching' is keyword overlap and regular expressions, not a model.",
+      "files": [
+        "desk/matching.py",
+        "README.md"
+      ],
+      "trap": true
+    },
+    "ai_data_access": {
+      "value": false,
+      "reason": "No AI features.",
+      "files": [
+        "desk/matching.py"
+      ]
+    },
+    "ai_actions": {
+      "value": false,
+      "reason": "No AI features.",
+      "files": [
+        "desk/matching.py"
+      ]
+    }
+  },
+  "criteria": {
+    "MAL-10": {
+      "range": [
+        2,
+        3
+      ],
+      "reason": "Routing rules are data (pattern, queue, priority) composed by leads with a try mode; narrow in scope, so 2 or 3.",
+      "files": [
+        "desk/app.py",
+        "desk/matching.py"
+      ]
+    },
+    "MAL-20": {
+      "range": [
+        1,
+        1
+      ],
+      "reason": "The help widget is a keyword bot, the anchor for 1.",
+      "files": [
+        "desk/matching.py"
+      ],
+      "trap": true
+    },
+    "DEL-01": {
+      "range": [
+        0,
+        0
+      ],
+      "reason": "Change requests arrive by email outside the product.",
+      "files": [
+        "docs/change-requests.md"
+      ]
+    },
+    "DEL-04": {
+      "range": [
+        0,
+        0
+      ],
+      "reason": "No AI implementation lane.",
+      "files": [
+        "desk/app.py"
+      ]
+    },
+    "DEL-05": {
+      "range": [
+        2,
+        3
+      ],
+      "reason": "CI runs on every pull request and answers and rules are checked before going live, but settings changes have no check.",
+      "files": [
+        ".github/workflows/ci.yml",
+        "desk/checks.py",
+        "desk/app.py"
+      ]
+    },
+    "DEL-06": {
+      "range": [
+        2,
+        2
+      ],
+      "reason": "Health endpoint with a version; no configuration snapshot.",
+      "files": [
+        "desk/app.py"
+      ]
+    },
+    "DEL-11": {
+      "status": "not_applicable",
+      "reason": "code_release_path is false.",
+      "files": [
+        "desk/app.py"
+      ]
+    },
+    "ARC-02": {
+      "range": [
+        1,
+        1
+      ],
+      "reason": "Numbered forward-only migrations applied by a command; no down steps.",
+      "files": [
+        "deskctl.py",
+        "migrations/001_init.sql"
+      ]
+    },
+    "ARC-05": {
+      "status": "not_applicable",
+      "reason": "multi_tenant is false.",
+      "files": [
+        "README.md"
+      ]
+    },
+    "ARC-09": {
+      "range": [
+        2,
+        2
+      ],
+      "reason": "A documented backup command; the only test checks that a file is written, and no restore exists or is tested.",
+      "files": [
+        "deskctl.py",
+        "tests/test_backup.py",
+        "README.md"
+      ],
+      "trap": true
+    },
+    "LRN-02": {
+      "range": [
+        1,
+        2
+      ],
+      "reason": "Failed lookups are typed records but not linked to the definition and version they concern.",
+      "files": [
+        "migrations/002_failed_lookups.sql"
+      ]
+    },
+    "LRN-03": {
+      "range": [
+        2,
+        2
+      ],
+      "reason": "Failed lookups are recorded with area and channel and queryable by area.",
+      "files": [
+        "desk/store.py",
+        "desk/app.py"
+      ]
+    },
+    "LRN-05": {
+      "range": [
+        0,
+        1
+      ],
+      "reason": "No grouping or diagnosis; leads read a raw list.",
+      "files": [
+        "desk/store.py"
+      ]
+    },
+    "LRN-07": {
+      "range": [
+        0,
+        1
+      ],
+      "reason": "Leads turn failed lookups into answers by hand at most.",
+      "files": [
+        "README.md"
+      ]
+    },
+    "LRN-08": {
+      "range": [
+        0,
+        2
+      ],
+      "reason": "No learned or AI-made changes; a rater may score 0, or 2 for the checks any rule change would pass. Two readings under the boundary.",
+      "files": [
+        "desk/checks.py"
+      ]
+    },
+    "LRN-10": {
+      "range": [
+        0,
+        1
+      ],
+      "reason": "Checks are fixed in code and change only when engineers edit them.",
+      "files": [
+        "desk/checks.py"
+      ]
+    },
+    "EXP-04": {
+      "range": [
+        2,
+        2
+      ],
+      "reason": "Unanswered questions are recorded in queryable form, the anchor for 2.",
+      "files": [
+        "desk/store.py",
+        "migrations/002_failed_lookups.sql"
+      ]
+    },
+    "GOV-02": {
+      "range": [
+        1,
+        2
+      ],
+      "reason": "Definition versions record the author; settings and other changes are not audited.",
+      "files": [
+        "desk/store.py",
+        "desk/app.py"
+      ]
+    },
+    "GOV-05": {
+      "range": [
+        2,
+        2
+      ],
+      "reason": "Answers and rules have history and undo, but greeting and opening hours are overwritten with no history, despite the README's 'every admin change can be undone'.",
+      "files": [
+        "desk/app.py",
+        "README.md"
+      ],
+      "trap": true
+    },
+    "GOV-06": {
+      "range": [
+        1,
+        1
+      ],
+      "reason": "Changes go live on save; the only proposal path is code pull requests. The try endpoint tests a rule but is not a reviewed proposal.",
+      "files": [
+        "desk/app.py"
+      ]
+    },
+    "GOV-10": {
+      "status": "not_applicable",
+      "reason": "agent_mutations and evolution_auto_apply are false.",
+      "files": [
+        "desk/matching.py"
+      ]
+    },
+    "AIR-06": {
+      "status": "not_applicable",
+      "reason": "ai_features is false.",
+      "files": [
+        "desk/matching.py"
+      ]
+    }
+  },
+  "change_kinds": {
+    "main_count": {
+      "range": [
+        2,
+        2
+      ],
+      "reason": "Answers (112) and routing rules (41) are nearly all requests.",
+      "files": [
+        "docs/change-requests.md"
+      ]
+    },
+    "kinds": [
+      {
+        "label": "routing rules",
+        "keywords": [
+          "rout",
+          "rule"
+        ],
+        "reach": [
+          1,
+          1
+        ],
+        "reason": "Leads change rules in the admin page, with checks, history and undo.",
+        "files": [
+          "desk/app.py",
+          "desk/store.py"
+        ],
+        "main": true
+      },
+      {
+        "label": "answers",
+        "keywords": [
+          "answer"
+        ],
+        "reach": [
+          1,
+          1
+        ],
+        "reason": "Leads change answers in the admin page, with checks, history and undo.",
+        "files": [
+          "desk/app.py",
+          "desk/store.py"
+        ],
+        "main": true
+      },
+      {
+        "label": "greeting and opening hours",
+        "keywords": [
+          "greet",
+          "hour",
+          "setting"
+        ],
+        "reach": [
+          0,
+          0
+        ],
+        "reason": "Leads change them in the admin page but cannot undo: a path with no undo is reach 0.",
+        "files": [
+          "desk/app.py"
+        ],
+        "main": false,
+        "trap": true
+      },
+      {
+        "label": "queues",
+        "keywords": [
+          "queue"
+        ],
+        "reach": [
+          0,
+          0
+        ],
+        "reason": "A new queue is a config file edit and a release.",
+        "files": [
+          "config/queues.yaml"
+        ],
+        "main": false
+      }
+    ]
+  },
+  "loops": {
+    "request": {
+      "range": [
+        1,
+        1
+      ],
+      "reason": "Both main kinds are self-serve with undo and GOV-05 is 2; no AI lane or intake for L2.",
+      "files": [
+        "desk/app.py"
+      ]
+    },
+    "fix": {
+      "range": [
+        1,
+        1
+      ],
+      "reason": "Self-serve main kinds, rollback at 2 and failed lookups recorded (LRN-03 2); no diagnosis or product build path for L2.",
+      "files": [
+        "desk/store.py"
+      ]
+    },
+    "expansion": {
+      "range": [
+        0,
+        0
+      ],
+      "reason": "EXP-02 is excluded for a focused application and DEL-04 is 0, so no build path.",
+      "files": [
+        "desk/app.py"
+      ]
+    }
+  }
+}
