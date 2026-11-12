@@ -1,0 +1,56 @@
+{
+  "product": "Answer Desk",
+  "note": "Foundation 1: the kinds of change the people running Answer Desk need, declared once. Everything else (storage validation, the door, the policy, the capability map) reads this file.",
+  "kinds": {
+    "answers": {
+      "name": "What the desk tells customers",
+      "who": "support lead",
+      "main": true,
+      "traffic": true,
+      "measure": "answered_and_helpful",
+      "fields": {
+        "keywords": {"type": "list[str]", "required": true, "min_items": 1, "max_items": 8, "pattern": "^[a-z0-9]+$"},
+        "need": {"type": "int", "required": false, "min": 1, "max": 8},
+        "answer": {"type": "str", "required": true, "max_length": 600},
+        "source": {"type": "str", "required": false, "max_length": 200}
+      }
+    },
+    "routing-rules": {
+      "name": "Which team gets a question the desk cannot answer",
+      "who": "support lead",
+      "main": true,
+      "traffic": true,
+      "measure": "routed_and_accepted",
+      "fields": {
+        "keywords": {"type": "list[str]", "required": true, "min_items": 1, "max_items": 8, "pattern": "^[a-z0-9]+$"},
+        "team": {"type": "str", "required": true, "max_length": 40},
+        "priority": {"type": "int", "required": false, "min": 0, "max": 100}
+      }
+    },
+    "checks": {
+      "name": "The checks every change must pass",
+      "who": "support lead, and the product from recorded failures",
+      "main": false,
+      "traffic": false,
+      "measure": "changes_kept",
+      "fields": {
+        "question": {"type": "str", "required": true, "max_length": 300},
+        "expect": {"type": "dict", "required": true, "keys": ["answer", "team"]}
+      }
+    },
+    "policy": {
+      "name": "What may change without a person, and within which limits",
+      "who": "product owner",
+      "main": false,
+      "traffic": false,
+      "single_key": "main",
+      "measure": "changes_kept",
+      "fields": {
+        "kinds": {"type": "dict", "required": true},
+        "raise_rule": {"type": "dict", "required": true},
+        "demote_after_reversals": {"type": "int", "required": true, "min": 1, "max": 100},
+        "min_unmet": {"type": "int", "required": true, "min": 1, "max": 1000}
+      }
+    }
+  }
+}

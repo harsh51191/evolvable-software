@@ -1,0 +1,13 @@
+{
+  "main": {
+    "kinds": {
+      "answers": {"dial": 3, "initial_share": 0.5, "max_auto_per_day": 3, "protected_keys": ["refunds"], "window": 8, "min_gain": 0.1, "tolerance": 0.15},
+      "routing-rules": {"dial": 3, "initial_share": 0.5, "max_auto_per_day": 3, "protected_keys": [], "window": 8, "min_gain": 0.1, "tolerance": 0.15},
+      "checks": {"dial": 3, "window": 5, "tolerance": 0.2},
+      "policy": {"dial": 1, "window": 5, "tolerance": 0.2}
+    },
+    "raise_rule": {"min_kept": 3, "max_reversal_rate": 0.25},
+    "demote_after_reversals": 2,
+    "min_unmet": 3
+  }
+}

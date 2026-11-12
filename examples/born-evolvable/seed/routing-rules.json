@@ -1,0 +1,4 @@
+{
+  "billing": {"keywords": ["invoice", "invoices", "billing", "payment", "charge"], "team": "billing", "priority": 20},
+  "bugs": {"keywords": ["error", "crash", "broken", "bug"], "team": "engineering", "priority": 10}
+}

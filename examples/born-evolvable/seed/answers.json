@@ -1,0 +1,5 @@
+{
+  "reset-password": {"keywords": ["reset", "password", "forgot"], "need": 1, "answer": "Choose 'Forgot password' on the sign-in page and follow the link we email you. The link works for one hour.", "source": "sources/help-centre.md#resetting-your-password"},
+  "refunds": {"keywords": ["refund", "refunds", "money"], "need": 1, "answer": "Refunds go back to the original payment method within 10 working days of approval.", "source": "sources/help-centre.md#refunds"},
+  "opening-hours": {"keywords": ["hours", "open", "opening"], "need": 1, "answer": "The support team is available Monday to Friday, 08:00 to 18:00 UK time.", "source": "sources/help-centre.md#opening-hours"}
+}
