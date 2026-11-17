@@ -2,8 +2,140 @@
   "product": "LibreChat",
   "date": "2026-09-30",
   "source": "github.com/danny-avila/LibreChat @ 14f7b2865692d27364c934ecb9912496371018bb (main)",
+  "framework": "EVOLVE",
+  "framework_version": "0.7.0",
+  "basis": "shipped",
   "archetype": "focused-application",
   "scope_line": "Scope: the LibreChat monorepo (api, client, packages/api, data-provider, data-schemas, e2e, helm, CI). The hosted code interpreter service, RAG API image and third-party MCP servers are out of scope.",
+  "limits": "Repository evidence only, main at the tip named above. The hosted code interpreter, RAG API and third-party MCP servers are out of scope. Whether the accessibility and Lighthouse checks run on every pull request depends on path filters and inputs that were read, not exercised. Single rater.",
+  "reading": "**SAL 0.** Configuration is file-based and partly unversioned (Open 1.7), and there is no AI lane for LibreChat's own definitions (DEL-04 0), so no loop has a build path at L1. Users rate messages with tags (LRN-03 2), which is a useful start. **Next level:** governed, versioned configuration in the product, and backup (ARC-09 0).",
+  "confidence_note": "Confidence for criteria whose reading did not change at the v0.7 migration was assigned at migration from the recorded evidence (high where it names the code path and its tests, medium where it names code but not every path, low where the reading is inferred or rests on documentation or absence); criteria re-read at migration were assigned from that re-reading.",
+  "scope_facts": {
+    "persistent_data": {
+      "value": true,
+      "evidence": "Conversations, agents, prompts and users in MongoDB."
+    },
+    "schema_changes": {
+      "value": true,
+      "evidence": "Data migration scripts change stored documents and indexes (config/migrate-*.js)."
+    },
+    "multi_tenant": {
+      "value": false,
+      "evidence": "Re-read at the v0.7 migration under the tightened definition. A default installation is one group of users under one administrator; groups (packages/data-schemas/src/methods/userGroup.ts) share agents and prompts but do not administer themselves. Tenant isolation ships (packages/data-schemas/src/models/plugins/tenantIsolation.ts) but users carry no tenant by default and the plugin passes unscoped queries through unless TENANT_ISOLATION_STRICT is set (tenantIsolation.ts:96-104; .env.example:165-167, 758-761); tenancy needs tenant identities supplied by a deployment's identity provider or proxy. The v0.6 reading (true) counted the plugin's presence."
+    },
+    "hosted_service": {
+      "value": true,
+      "evidence": "Node API serving many users, with optional Redis (api/cache)."
+    },
+    "machine_actions": {
+      "value": true,
+      "evidence": "The API changes agents, prompts and conversations for authenticated clients, and MCP tools act on users' behalf."
+    },
+    "agent_mutations": {
+      "value": true,
+      "evidence": "Re-read at the v0.7 migration under the tightened definition. Agents write skills: with the skills capability on by default (packages/data-provider/src/config.ts:830-841) and users allowed to create skills by default (packages/data-provider/src/roles.ts:208-213, 269-274), an agent with skills enabled creates SKILL.md files and edits skill files the user can edit (api/server/services/Endpoints/agents/skillDeps.js:113-147; packages/api/src/agents/handlers.ts:3845-3905, 4591-4594). The opt-in memory agent also writes user memories (librechat.example.yaml:1351-1360). The v0.6 reading (false) looked only at memory."
+    },
+    "evolution_auto_apply": {
+      "value": true,
+      "evidence": "Re-read at the v0.7 migration under the tightened definition. A skill an agent writes is saved to the live skill at once (packages/api/src/skills/save.ts:36-41); tool-call approval is off by default (librechat.example.yaml:767-768), so no person reviews the change before it takes effect."
+    },
+    "definition_change_path": {
+      "value": true,
+      "evidence": "librechat.yaml, agents and prompts are definitions."
+    },
+    "code_release_path": {
+      "value": false,
+      "evidence": "No first-party evolution system ships code changes."
+    },
+    "ai_features": {
+      "value": true,
+      "evidence": "Chat with many model providers and agents (packages/api/src/endpoints, agents)."
+    },
+    "ai_data_access": {
+      "value": true,
+      "evidence": "File search over uploaded files (api/app/clients/tools/util/fileSearch.js)."
+    },
+    "ai_actions": {
+      "value": true,
+      "evidence": "Agents call tools and MCP servers that act on external systems (packages/api/src/mcp)."
+    }
+  },
+  "change_kinds": [
+    {
+      "id": "models-config",
+      "name": "Which AI models and providers are offered, and app-wide settings",
+      "who": "administrators",
+      "main": true,
+      "reach": 0,
+      "evidence": "Endpoints, model specs and interface settings live in librechat.yaml and .env, edited on the server and read at start (librechat.example.yaml; packages/data-provider/src/config.ts). Per-principal overrides can be set through an admin API (api/server/routes/admin/config.js:38-46) with no admin screen in this repository and no history; deleting an override returns to the file, not to the earlier override.",
+      "confidence": "medium"
+    },
+    {
+      "id": "agents",
+      "name": "Agents: their instructions, tools and files",
+      "who": "users and administrators",
+      "main": true,
+      "reach": 1,
+      "evidence": "Built in the agent builder with no deploy; each save keeps a version (packages/data-schemas/src/schema/agent.ts:125) and an agent can be reverted to an earlier version (api/server/routes/agents/v1.js:154-168). No AI drafts agent changes (DEL-04 is 0).",
+      "confidence": "high"
+    },
+    {
+      "id": "tools-mcp",
+      "name": "Tools and connected services (MCP servers)",
+      "who": "administrators and users",
+      "main": true,
+      "reach": 0,
+      "evidence": "Servers in librechat.yaml need a server edit and restart; servers added in the UI (api/server/routes/mcp.js:1261-1287) can be removed but keep no history of earlier settings or credentials, so a change cannot be undone through the product. A path without undo is reach 0.",
+      "confidence": "medium"
+    },
+    {
+      "id": "prompts",
+      "name": "Saved prompts",
+      "who": "users",
+      "main": false,
+      "reach": 1,
+      "evidence": "Prompt groups keep versions and a chosen production version that can be switched back (packages/data-schemas/src/schema/promptGroup.ts:25).",
+      "confidence": "medium"
+    },
+    {
+      "id": "feature-access",
+      "name": "Who may use agents, prompts, skills and memories",
+      "who": "administrators",
+      "main": false,
+      "reach": 1,
+      "evidence": "Role permissions are toggled in the admin settings dialogs (client/src/components/ui/AdminSettingsDialog.tsx; api/server/routes/roles.js:160-172) with no deploy, and toggled back to undo.",
+      "confidence": "medium"
+    },
+    {
+      "id": "skills",
+      "name": "Skills that agents use",
+      "who": "users",
+      "main": false,
+      "reach": 0,
+      "evidence": "Written in the skill editor or by an agent (packages/api/src/agents/handlers.ts:3845-3905) and saved over the current file (packages/api/src/skills/save.ts:36-47); the skill keeps a version counter but no earlier content (packages/data-schemas/src/schema/skill.ts:176-180), so an edit cannot be undone. Agent writes apply directly rather than as drafts, and DEL-04 is 0, so this is not reach 2.",
+      "confidence": "medium"
+    }
+  ],
+  "ai_delivery": {
+    "present": true,
+    "qualifies": false,
+    "evidence": "AGENTS.md and CONTEXT.md (agent instructions), Claude Code skills (.claude/skills: codebase-design, improve-codebase-architecture), a .codex directory, and CI comments that record fixes made from Codex review findings (.github/workflows/backend-review.yml:37, 176-214).",
+    "note": "AI-assisted engineering and review, not LibreChat evolving itself. It does not meet rule 12: no installed delivery framework at a pinned version, no agent workflow in CI, and no enforced limits; the instruction files and skills are documentation."
+  },
+  "proven": {
+    "request": {
+      "status": "not_evidenced",
+      "searched": "The repository at the pinned commit: agent and prompt version fields, audit-log schema (packages/data-schemas/src/types/auditLog.ts), UPGRADING.md and release workflows for LibreChat's own engineer-made releases. No operating records of real changes made through the product's request loop in a deployment."
+    },
+    "fix": {
+      "status": "not_evidenced",
+      "searched": "The same sources plus message feedback (packages/data-schemas/src/schema/message.ts:103) and admin insights (packages/api/src/insights); no operating records of issues fixed through the product's loop."
+    },
+    "expansion": {
+      "status": "not_evidenced",
+      "searched": "The same sources; no records of capabilities launched to a group and kept or killed."
+    }
+  },
   "scores": {
     "MAL-01": {
       "status": "not_applicable",
@@ -14,7 +146,8 @@
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "No user-definable fields; schemas are code (packages/data-schemas/src/schema)."
+      "evidence": "No user-definable fields; schemas are code (packages/data-schemas/src/schema).",
+      "confidence": "medium"
     },
     "MAL-03": {
       "status": "not_applicable",
@@ -33,11 +166,10 @@
     },
     "MAL-06": {
       "status": "assessed",
-      "score": 1,
+      "score": 2,
       "grade": "A",
-      "evidence": "No published contract for LibreChat's own API; a shared typed client (packages/data-provider) serves the bundled frontend only. Agents are reachable through an OpenAI-compatible API.",
-      "alt_score": 2,
-      "alt_note": "The OpenAI-compatible agents API is a machine-readable contract."
+      "evidence": "A generated OpenAPI 3.1 contract covers the agents and skills management API (packages/api/src/openapi/: agents.ts, skills.ts, document.ts, generate.ts; committed as packages/api/openapi/agents.openapi.json, 8 paths) and CI fails when the committed contract drifts from the code (.github/workflows/backend-review.yml:311-315, generate.ts --check); docs are served when openapi.enabled is set (packages/api/src/openapi/router.ts:56-71). The rest of LibreChat's API has no published contract; a shared typed client (packages/data-provider) serves the bundled frontend only. Corrected from 1 to 2 at the v0.7 migration.",
+      "confidence": "high"
     },
     "MAL-07": {
       "status": "assessed",
@@ -45,7 +177,8 @@
       "grade": "A",
       "evidence": "Interface settings from librechat.yaml can be overridden per user, group or role in the database (packages/data-schemas/src/types/config.ts:6-14); model specs and presets are data. No layout editor or preview.",
       "alt_score": 3,
-      "alt_note": "Principal-scoped overrides are tenant-overridable presentation data."
+      "alt_note": "Principal-scoped overrides are tenant-overridable presentation data.",
+      "confidence": "medium"
     },
     "MAL-08": {
       "status": "not_applicable",
@@ -58,25 +191,29 @@
       "grade": "A",
       "evidence": "Theme registry (packages/client/src/theme) and 86 locale files synced through Locize (.github/workflows/locize-i18n-sync.yml); custom welcome and footer text in configuration; no admin theme editor.",
       "alt_score": 3,
-      "alt_note": "Per-principal configuration overrides include interface text."
+      "alt_note": "Per-principal configuration overrides include interface text.",
+      "confidence": "medium"
     },
     "MAL-10": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Agents can be started by schedules and webhook triggers (api/server/services/Schedules, packages/api/src/agents/triggers); there is no general rules engine."
+      "evidence": "Agents can be started by schedules and webhook triggers (api/server/services/Schedules, packages/api/src/agents/triggers); there is no general rules engine.",
+      "confidence": "medium"
     },
     "MAL-11": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Inbound agent trigger deliveries record succeeded, retry and dead outcomes with stable identities (packages/data-schemas/src/types/triggerDelivery.ts:23-79); LibreChat does not publish its own entity events to subscribers."
+      "evidence": "Inbound agent trigger deliveries record succeeded, retry and dead outcomes with stable identities (packages/data-schemas/src/types/triggerDelivery.ts:23-79); LibreChat does not publish its own entity events to subscribers.",
+      "confidence": "medium"
     },
     "MAL-12": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Admins and users attach MCP servers and OpenAPI actions that run custom server-side logic when agents call them; stdio MCP servers run as unsandboxed local processes; outbound connections have SSRF tests (packages/api/src/mcp/__tests__/MCPConnectionSSRF.test.ts)."
+      "evidence": "Admins and users attach MCP servers and OpenAPI actions that run custom server-side logic when agents call them; stdio MCP servers run as unsandboxed local processes; outbound connections have SSRF tests (packages/api/src/mcp/__tests__/MCPConnectionSSRF.test.ts).",
+      "confidence": "high"
     },
     "GOV-01": {
       "status": "assessed",
@@ -84,7 +221,8 @@
       "grade": "A",
       "evidence": "An axe linter workflow runs when triggered manually (.github/workflows/a11y.yml:8-28), Lighthouse audits exist (.github/workflows/lighthouse.yml, e2e/lighthouse), and the ESLint configuration includes accessibility rules.",
       "alt_score": 3,
-      "alt_note": "If Lighthouse or lint accessibility checks run on every pull request."
+      "alt_note": "If Lighthouse or lint accessibility checks run on every pull request.",
+      "confidence": "medium"
     },
     "GOV-02": {
       "status": "assessed",
@@ -92,19 +230,22 @@
       "grade": "A",
       "evidence": "Admin audit route and audit-log schema (api/server/routes/admin/audit.js, packages/data-schemas/src/types/auditLog.ts); coverage of configuration and definition changes was not verified.",
       "alt_score": 3,
-      "alt_note": "Admin UI and a generic store exist."
+      "alt_note": "Admin UI and a generic store exist.",
+      "confidence": "medium"
     },
     "GOV-03": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Users export conversations and delete their accounts, and an admin deletion script removes user data (config/delete-user.js); not driven by field tags."
+      "evidence": "Users export conversations and delete their accounts, and an admin deletion script removes user data (config/delete-user.js); not driven by field tags.",
+      "confidence": "medium"
     },
     "GOV-04": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "ACL-based permissions for agents, prompts and MCP servers (packages/data-schemas/src/types/accessRole.ts, aclEntry.ts) and system grants; no security scanning in CI."
+      "evidence": "ACL-based permissions for agents, prompts and MCP servers (packages/data-schemas/src/types/accessRole.ts, aclEntry.ts) and system grants; no security scanning in CI.",
+      "confidence": "medium"
     },
     "GOV-05": {
       "status": "assessed",
@@ -115,68 +256,69 @@
         "implemented": true,
         "tested": false,
         "operated": false
-      }
+      },
+      "confidence": "medium"
     },
     "GOV-06": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Prompt groups stage versions and promote one to production; agents are edited and saved directly; no review step."
+      "evidence": "Prompt groups stage versions and promote one to production; agents are edited and saved directly; no review step.",
+      "confidence": "low"
     },
     "GOV-07": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "Every definition change is a direct human action; the approval lifecycle (packages/api/src/stream/ApprovalLifecycle.ts) gates agent tool calls, not changes."
+      "evidence": "Every definition change is a direct human action; the approval lifecycle (packages/api/src/stream/ApprovalLifecycle.ts) gates agent tool calls, not changes.",
+      "confidence": "medium"
     },
     "GOV-08": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "librechat.yaml carries a schema version checked at load, and UPGRADING.md documents migrations; compatibility is mostly manual."
+      "evidence": "librechat.yaml carries a schema version checked at load, and UPGRADING.md documents migrations; compatibility is mostly manual.",
+      "confidence": "medium"
     },
     "ARC-01": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "MeiliSearch index for conversations and messages (search/) and MongoDB indexes; no definition-driven mapping."
+      "evidence": "MeiliSearch index for conversations and messages (search/) and MongoDB indexes; no definition-driven mapping.",
+      "confidence": "medium"
     },
     "ARC-05": {
-      "status": "assessed",
-      "score": 2,
-      "grade": "A",
-      "evidence": "Tenant isolation plugin with a coverage specification (packages/data-schemas/src/models/plugins/tenantIsolation.coverage.spec.ts), per-user token balances and rate limits; no noisy-neighbour detection.",
-      "alt_score": 3,
-      "alt_note": "Data isolation is verified by tests; per-tenant limits are partial.",
-      "facets": {
-        "implemented": true,
-        "tested": true,
-        "operated": false
-      }
+      "status": "not_applicable",
+      "rationale": "Scope fact multi_tenant is false: a default installation is one group under one administrator; tenant isolation is opt-in through deployment-supplied tenant identities.",
+      "if_applicable": 2
     },
     "ARC-06": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Performance scan and benchmark suites (e2e/perf/scan.ts, e2e/benchmarks) and Lighthouse audits; no documented per-surface limits."
+      "evidence": "Performance scan and benchmark suites (e2e/perf/scan.ts, e2e/benchmarks) and Lighthouse audits; no documented per-surface limits.",
+      "confidence": "medium"
     },
     "DEL-02": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "API and client ship together in one image; RAG API, search and a Langfuse fan-out service are separate containers with Helm charts (helm/)."
+      "evidence": "API and client ship together in one image; RAG API, search and a Langfuse fan-out service are separate containers with Helm charts (helm/).",
+      "confidence": "medium"
     },
     "DEL-03": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Workspace packages with explicit dependencies and a circular-dependency check (config/circular-deps.mjs)."
+      "evidence": "Workspace packages with explicit dependencies and a circular-dependency check (config/circular-deps.mjs).",
+      "confidence": "medium"
     },
     "DEL-05": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Backend, frontend, static checks, mocked Playwright journeys and Docker smoke tests run on pull requests (.github/workflows/backend-review.yml, frontend-review.yml, static-checks.yml, playwright-mock.yml); accessibility runs on demand and there is no security scan."
+      "evidence": "Backend, frontend, static checks, mocked Playwright journeys and Docker smoke tests run on pull requests (.github/workflows/backend-review.yml, frontend-review.yml, static-checks.yml, playwright-mock.yml); accessibility runs on demand and there is no security scan.",
+      "confidence": "medium"
     },
     "MAL-13": {
       "status": "assessed",
@@ -184,19 +326,22 @@
       "grade": "A",
       "evidence": "MCP servers, OpenAPI actions, custom endpoints and skills extend agents; no plugin points for UI, layout or theme.",
       "alt_score": 3,
-      "alt_note": "Declarative (OpenAPI actions, YAML endpoints) and code (MCP) extension both exist."
+      "alt_note": "Declarative (OpenAPI actions, YAML endpoints) and code (MCP) extension both exist.",
+      "confidence": "low"
     },
     "MAL-14": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Remote MCP servers use OAuth and SSRF guards; code execution runs in an external sandbox service; stdio MCP servers run with full trust."
+      "evidence": "Remote MCP servers use OAuth and SSRF guards; code execution runs in an external sandbox service; stdio MCP servers run with full trust.",
+      "confidence": "low"
     },
     "MAL-15": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Local development documentation and a bring-your-own-model E2E harness (e2e/byom)."
+      "evidence": "Local development documentation and a bring-your-own-model E2E harness (e2e/byom).",
+      "confidence": "medium"
     },
     "MAL-19": {
       "status": "assessed",
@@ -209,8 +354,10 @@
         "status": "assessed",
         "score": 1,
         "grade": "A",
-        "evidence": "Consumes MCP; exposes no MCP server for agents."
-      }
+        "evidence": "Consumes MCP; exposes no MCP server for agents.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "MAL-20": {
       "status": "assessed",
@@ -223,8 +370,10 @@
         "status": "assessed",
         "score": 2,
         "grade": "A",
-        "evidence": "Grounded chat with retrieval and tools for members."
-      }
+        "evidence": "Grounded chat with retrieval and tools for members.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "GOV-09": {
       "status": "assessed",
@@ -237,26 +386,31 @@
         "status": "assessed",
         "score": 2,
         "grade": "A",
-        "evidence": "Agent API keys, on-behalf-of token exchange for MCP and tool-call approvals (api/server/services/OboTokenService.js)."
-      }
+        "evidence": "Agent API keys, on-behalf-of token exchange for MCP and tool-call approvals (api/server/services/OboTokenService.js).",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "MAL-16": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Custom endpoints map any OpenAI-compatible provider onto the canonical chat interface through YAML configuration alone (librechat.example.yaml:575)."
+      "evidence": "Custom endpoints map any OpenAI-compatible provider onto the canonical chat interface through YAML configuration alone (librechat.example.yaml:575).",
+      "confidence": "medium"
     },
     "MAL-17": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "MCP is the connector standard, with OAuth flows, reconnect management and admin or user installation (api/server/services/initializeMCPs.js, initializeOAuthReconnectManager.js)."
+      "evidence": "MCP is the connector standard, with OAuth flows, reconnect management and admin or user installation (api/server/services/initializeMCPs.js, initializeOAuthReconnectManager.js).",
+      "confidence": "medium"
     },
     "MAL-18": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "The agents API follows the OpenAI Chat Completions and Responses contracts; LibreChat's own API is unversioned."
+      "evidence": "The agents API follows the OpenAI Chat Completions and Responses contracts; LibreChat's own API is unversioned.",
+      "confidence": "low"
     },
     "EXP-01": {
       "status": "not_applicable",
@@ -279,19 +433,22 @@
       "grade": "A",
       "evidence": "Token transactions are recorded per request and enforce balances live; OpenTelemetry and Langfuse tracing (otel/). Scored at the lower reading under rule 11 because: Usage accounting rather than behaviour telemetry.",
       "alt_score": 3,
-      "alt_note": "The September v0.3 pass scored 3 on the evidence above."
+      "alt_note": "The September v0.3 pass scored 3 on the evidence above.",
+      "confidence": "medium"
     },
     "LRN-02": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Message feedback with rating, tag and text is stored on messages (packages/data-schemas/src/schema/message.ts:103); no triage workflow."
+      "evidence": "Message feedback with rating, tag and text is stored on messages (packages/data-schemas/src/schema/message.ts:103); no triage workflow.",
+      "confidence": "medium"
     },
     "LRN-04": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "No joined usage, support and delivery models."
+      "evidence": "No joined usage, support and delivery models.",
+      "confidence": "low"
     },
     "LRN-06": {
       "status": "assessed",
@@ -302,8 +459,10 @@
         "status": "assessed",
         "score": 0,
         "grade": "A",
-        "evidence": "No AI involvement in this behaviour."
-      }
+        "evidence": "No AI involvement in this behaviour.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "DEL-04": {
       "status": "assessed",
@@ -314,14 +473,24 @@
         "status": "assessed",
         "score": 0,
         "grade": "A",
-        "evidence": "No AI involvement in this behaviour."
-      }
+        "evidence": "No AI involvement in this behaviour.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "LRN-09": {
       "status": "assessed",
       "score": 0,
       "grade": "A",
-      "evidence": "No binding of changes to baselines or metrics."
+      "evidence": "No binding of changes to baselines or metrics.",
+      "confidence": "low"
+    },
+    "LRN-10": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "The checks that govern change are code that engineers change: configuration validation (packages/data-provider/src/config.ts) and skill validation (packages/api/src/skills/deployment.ts:10-15); the tool-approval policy lives in librechat.yaml (librechat.example.yaml:767-775), edited by whoever runs the server. Admins change role permissions for agents, prompts, skills and memories by hand in the product (api/server/routes/roles.js:160-172) with no history. There are no evaluation sets (AIR-05 is 0) and nothing records a failure against the check that missed it.",
+      "confidence": "low"
     },
     "DEL-06": {
       "status": "assessed",
@@ -329,13 +498,15 @@
       "grade": "A",
       "evidence": "/health (api/server/index.js:328) and a startup configuration endpoint for the client; no build or version endpoint.",
       "alt_score": 3,
-      "alt_note": "The configuration endpoint is a machine-readable snapshot."
+      "alt_note": "The configuration endpoint is a machine-readable snapshot.",
+      "confidence": "medium"
     },
     "DEL-07": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Docker Compose and Helm charts, staging image builds (.github/workflows/dev-staging-images.yml) and seeded E2E setup (e2e/setup); no per-change ephemeral environment."
+      "evidence": "Docker Compose and Helm charts, staging image builds (.github/workflows/dev-staging-images.yml) and seeded E2E setup (e2e/setup); no per-change ephemeral environment.",
+      "confidence": "medium"
     },
     "DEL-08": {
       "status": "assessed",
@@ -343,7 +514,8 @@
       "grade": "A",
       "evidence": "Mocked and property-based Playwright journeys (playwright-mock.yml, playwright-bombadil.yml); code-graph test selection runs in observe-only shadow mode (.github/workflows/codegraph-select.yml:1-13); no adoption instrumentation.",
       "alt_score": 3,
-      "alt_note": "The changed-path map exists, though not yet enforced."
+      "alt_note": "The changed-path map exists, though not yet enforced.",
+      "confidence": "medium"
     },
     "LRN-07": {
       "status": "assessed",
@@ -353,21 +525,27 @@
       "available_score": 3,
       "ai": {
         "status": "assessed",
-        "score": 0,
+        "score": 1,
         "grade": "A",
-        "evidence": "Off by default.",
-        "available_score": 3
-      }
+        "evidence": "People ask an agent to write or edit skills (packages/api/src/agents/handlers.ts:3845-3905); nothing drafts changes from experience unprompted by default.",
+        "available_score": 3,
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "LRN-08": {
       "status": "assessed",
-      "score": 1,
+      "score": 2,
       "grade": "A",
-      "evidence": "No checks on learned memories beyond configured key and token limits (librechat.example.yaml:1354-1358).",
+      "evidence": "Re-read at the v0.7 migration under the tightened boundary: skills agents write are AI-made changes. Creating a skill runs validation whose warnings are returned to the agent (packages/api/src/agents/handlers.ts:1365-1380, 3903), duplicate names are refused and a skill cannot be renamed through an edit (handlers.ts:1500, 3873-3877), and the opt-in memory agent has key and token limits (librechat.example.yaml:1354-1358). Nothing evaluates a skill against a baseline before it takes effect.",
       "ai": {
-        "status": "not_applicable",
-        "rationale": "agent_mutations is false."
-      }
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Automated validation and refusal rules on agent-written skills (packages/api/src/agents/handlers.ts:1365-1380, 3873-3877); no baseline evaluation.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "ARC-02": {
       "status": "assessed",
@@ -375,25 +553,29 @@
       "grade": "A",
       "evidence": "One-off migration scripts with dry-run modes (config/migrate-*.js, package.json:134-139); no down steps.",
       "alt_score": 2,
-      "alt_note": "Dry runs reduce migration risk."
+      "alt_note": "Dry runs reduce migration risk.",
+      "confidence": "medium"
     },
     "ARC-03": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "With USE_REDIS, caches and request limits move to Redis for several instances (api/cache/clearPendingReq.js:5-39); Helm charts deploy it (helm/)."
+      "evidence": "With USE_REDIS, caches and request limits move to Redis for several instances (api/cache/clearPendingReq.js:5-39); Helm charts deploy it (helm/).",
+      "confidence": "medium"
     },
     "ARC-04": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "No job queue; background work runs in the API process."
+      "evidence": "No job queue; background work runs in the API process.",
+      "confidence": "medium"
     },
     "ARC-07": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "No metrics endpoint or objectives; tracing fans out to Langfuse."
+      "evidence": "No metrics endpoint or objectives; tracing fans out to Langfuse.",
+      "confidence": "medium"
     },
     "ARC-08": {
       "status": "assessed",
@@ -404,8 +586,10 @@
         "status": "assessed",
         "score": 2,
         "grade": "A",
-        "evidence": "Timeouts on provider calls (packages/api/src/endpoints/openai/config.ts); errors contained per conversation."
-      }
+        "evidence": "Timeouts on provider calls (packages/api/src/endpoints/openai/config.ts); errors contained per conversation.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "ARC-09": {
       "status": "assessed",
@@ -413,7 +597,8 @@
       "grade": "A",
       "evidence": "No backup command or documented backup in the repository.",
       "alt_score": 1,
-      "alt_note": "MongoDB tooling is the implied path."
+      "alt_note": "MongoDB tooling is the implied path.",
+      "confidence": "medium"
     },
     "DEL-01": {
       "status": "assessed",
@@ -424,26 +609,31 @@
         "status": "assessed",
         "score": 0,
         "grade": "A",
-        "evidence": "No AI involvement in this behaviour."
-      }
+        "evidence": "No AI involvement in this behaviour.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "DEL-09": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "Interface features are switched globally in librechat.yaml."
+      "evidence": "Interface features are switched globally in librechat.yaml.",
+      "confidence": "medium"
     },
     "DEL-10": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "Disabling a feature needs a configuration change and restart."
+      "evidence": "Disabling a feature needs a configuration change and restart.",
+      "confidence": "low"
     },
     "LRN-03": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Users rate messages with thumbs and tags, stored on the message (packages/data-schemas/src/schema/message.ts:103)."
+      "evidence": "Users rate messages with thumbs and tags, stored on the message (packages/data-schemas/src/schema/message.ts:103).",
+      "confidence": "medium"
     },
     "LRN-05": {
       "status": "assessed",
@@ -454,32 +644,45 @@
         "status": "assessed",
         "score": 0,
         "grade": "A",
-        "evidence": "No AI involvement in this behaviour."
-      }
+        "evidence": "No AI involvement in this behaviour.",
+        "confidence": "low"
+      },
+      "confidence": "low"
     },
     "GOV-10": {
-      "status": "not_applicable",
-      "rationale": "No self-change path by default; the memory agent is opt-in.",
-      "if_applicable": 1,
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Applies since agent_mutations was re-read as true. Agent skill writes are checked in code: the user's skill-create permission (handlers.ts:3845-3848), edits only to skills the user can already edit (api/server/services/Endpoints/agents/skillDeps.js:133-147), and refusals of duplicate names and renames (handlers.ts:1500, 3873-3877). No rate, volume or blast-radius limit; a skill shared with others changes for them at once.",
       "ai": {
-        "status": "not_applicable",
-        "rationale": "GOV-10 is not applicable."
-      }
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Permission and editable-scope checks in code on agent skill writes (skillDeps.js:133-147); no blast-radius limit.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "GOV-11": {
-      "status": "not_applicable",
-      "rationale": "No self-change path by default.",
-      "if_applicable": 1,
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Applies since agent_mutations was re-read as true. An agent-written skill records its author (packages/api/src/skills/save.ts:104-127) but not the conversation, files or tool results that led to it; no injection scanning was found on the authoring path, and with tool approval off by default (librechat.example.yaml:767-768) content read in the same run can lead to a skill write.",
       "ai": {
-        "status": "not_applicable",
-        "rationale": "GOV-11 is not applicable."
-      }
+        "status": "assessed",
+        "score": 1,
+        "grade": "A",
+        "evidence": "Author recorded on agent-written skills, not source inputs; no injection scanning found on the authoring path.",
+        "confidence": "low"
+      },
+      "confidence": "low"
     },
     "EXP-04": {
       "status": "assessed",
       "score": 0,
       "grade": "A",
-      "evidence": "No record of unmet intents was found."
+      "evidence": "No record of unmet intents was found.",
+      "confidence": "low"
     },
     "EXP-05": {
       "status": "assessed",
@@ -490,14 +693,17 @@
         "status": "assessed",
         "score": 0,
         "grade": "A",
-        "evidence": "No AI involvement in this behaviour."
-      }
+        "evidence": "No AI involvement in this behaviour.",
+        "confidence": "medium"
+      },
+      "confidence": "low"
     },
     "EXP-06": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Agents, prompts and MCP servers can be shared with selected users and groups through ACLs (packages/data-schemas/src/types/aclEntry.ts)."
+      "evidence": "Agents, prompts and MCP servers can be shared with selected users and groups through ACLs (packages/data-schemas/src/types/aclEntry.ts).",
+      "confidence": "medium"
     },
     "DEL-11": {
       "status": "not_applicable",
@@ -507,20 +713,23 @@
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Admins configure many providers and model specs (librechat.yaml, packages/api/src/endpoints); no declared resilience strategy."
+      "evidence": "Admins configure many providers and model specs (librechat.yaml, packages/api/src/endpoints); no declared resilience strategy.",
+      "confidence": "medium"
     },
     "AIR-02": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
       "evidence": "Token transactions recorded per user; balances that limit spending are opt-in (librechat.example.yaml:363-378).",
-      "available_score": 3
+      "available_score": 3,
+      "confidence": "medium"
     },
     "AIR-03": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "File search over uploaded files through the RAG API (api/app/clients/tools/util/fileSearch.js); other product data is not indexed."
+      "evidence": "File search over uploaded files through the RAG API (api/app/clients/tools/util/fileSearch.js); other product data is not indexed.",
+      "confidence": "medium"
     },
     "AIR-04": {
       "status": "assessed",
@@ -533,85 +742,36 @@
         "implemented": true,
         "tested": true,
         "operated": false
-      }
+      },
+      "confidence": "medium"
     },
     "AIR-05": {
       "status": "assessed",
       "score": 0,
       "grade": "A",
-      "evidence": "No evaluation harness."
+      "evidence": "No evaluation harness.",
+      "confidence": "medium"
     },
     "AIR-06": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "Configuration changes are tested manually in chat."
+      "evidence": "Configuration changes are tested manually in chat.",
+      "confidence": "low"
     },
     "AIR-07": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Messages store model, tokens and tool calls; Langfuse fan-out tracing is optional (packages/api/src/langfuse, traces/handlers.ts)."
+      "evidence": "Messages store model, tokens and tool calls; Langfuse fan-out tracing is optional (packages/api/src/langfuse, traces/handlers.ts).",
+      "confidence": "medium"
     },
     "AIR-08": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Users rate messages with tags, and admin insights summarise usage (packages/data-schemas/src/schema/message.ts:103, packages/api/src/insights); no drift alerts."
-    }
-  },
-  "limits": "Repository evidence only, main at the tip named above. The hosted code interpreter, RAG API and third-party MCP servers are out of scope. Whether the accessibility and Lighthouse checks run on every pull request depends on path filters and inputs that were read, not exercised. Single rater.",
-  "framework_version": "0.5.1",
-  "reading": "**SAL 0.** Configuration is file-based and partly unversioned (Open 1.7), and there is no AI lane for LibreChat's own definitions (DEL-04 0), so no loop has a build path at L1. Users rate messages with tags (LRN-03 2), which is a useful start. **Next level:** governed, versioned configuration in the product, and backup (ARC-09 0).",
-  "framework": "EVOLVE",
-  "scope_facts": {
-    "persistent_data": {
-      "value": true,
-      "evidence": "Conversations, agents, prompts and users in MongoDB."
-    },
-    "schema_changes": {
-      "value": true,
-      "evidence": "Data migration scripts change stored documents and indexes (config/migrate-*.js)."
-    },
-    "multi_tenant": {
-      "value": true,
-      "evidence": "A tenant isolation plugin scopes models by tenant (packages/data-schemas/src/models/plugins/tenantIsolation.coverage.spec.ts)."
-    },
-    "hosted_service": {
-      "value": true,
-      "evidence": "Node API serving many users, with optional Redis (api/cache)."
-    },
-    "machine_actions": {
-      "value": true,
-      "evidence": "The API changes agents, prompts and conversations for authenticated clients, and MCP tools act on users' behalf."
-    },
-    "agent_mutations": {
-      "value": false,
-      "evidence": "By default no AI changes LibreChat definitions; the memory agent is commented out in librechat.example.yaml:1351-1360."
-    },
-    "evolution_auto_apply": {
-      "value": false,
-      "evidence": "Definition changes are direct human actions by default."
-    },
-    "definition_change_path": {
-      "value": true,
-      "evidence": "librechat.yaml, agents and prompts are definitions."
-    },
-    "code_release_path": {
-      "value": false,
-      "evidence": "No first-party evolution system ships code changes."
-    },
-    "ai_features": {
-      "value": true,
-      "evidence": "Chat with many model providers and agents (packages/api/src/endpoints, agents)."
-    },
-    "ai_data_access": {
-      "value": true,
-      "evidence": "File search over uploaded files (api/app/clients/tools/util/fileSearch.js)."
-    },
-    "ai_actions": {
-      "value": true,
-      "evidence": "Agents call tools and MCP servers that act on external systems (packages/api/src/mcp)."
+      "evidence": "Users rate messages with tags, and admin insights summarise usage (packages/data-schemas/src/schema/message.ts:103, packages/api/src/insights); no drift alerts.",
+      "confidence": "medium"
     }
   }
 }
