@@ -6,7 +6,7 @@
   "framework": "EVOLVE",
   "framework_version": "0.7.0",
   "basis": "shipped",
-  "headline_text": "Built to SAL 0 (Manual) · Proven: not evidenced · AI-driven 0 · Request → Release L0 (AI L0) · Issue → Fix L0 (AI L0) · Opportunity → Expansion L0 (AI L0)",
+  "headline_text": "Built to SAL 1 (Configurable) · Proven: not evidenced · AI-driven 0 · Request → Release L1 (AI L0) · Issue → Fix L1 (AI L0) · Opportunity → Expansion L1 (AI L0)",
   "scope_facts": {
     "persistent_data": true,
     "schema_changes": true,
@@ -33,68 +33,82 @@
     "D": 0
   },
   "sal": {
-    "headline": 0,
-    "headline_name": "Manual",
+    "headline": 1,
+    "headline_name": "Configurable",
     "loops": {
       "request": {
-        "level": 0,
-        "name": "Manual",
+        "level": 1,
+        "name": "Configurable",
         "parts": {
           "stages": 1,
-          "spine": 0,
-          "architecture": 1,
+          "spine": 2,
+          "architecture": 2,
           "governance": 2
         },
-        "next_met": 1,
-        "next_total": 2,
+        "next_met": 3,
+        "next_total": 4,
         "blockers": [
           {
-            "part": "spine",
-            "stage": "Build",
-            "needs": "people build path ≥ 2 or product build path ≥ 2",
-            "observed": "kinds 1 of 3 main self-serve; DEL-04 0",
+            "part": "stages",
+            "stage": "Intake",
+            "needs": "DEL-01 ≥ 2",
+            "observed": "0",
             "control": null
           }
         ]
       },
       "fix": {
-        "level": 0,
-        "name": "Manual",
+        "level": 1,
+        "name": "Configurable",
         "parts": {
           "stages": 1,
-          "spine": 0,
-          "architecture": 1,
+          "spine": 2,
+          "architecture": 2,
           "governance": 2
         },
-        "next_met": 2,
-        "next_total": 3,
+        "next_met": 3,
+        "next_total": 5,
         "blockers": [
           {
-            "part": "spine",
-            "stage": "Build",
-            "needs": "people build path ≥ 2 or product build path ≥ 2",
-            "observed": "kinds 1 of 3 main self-serve; DEL-04 0, LRN-07 1",
+            "part": "stages",
+            "stage": "Diagnose",
+            "needs": "LRN-05 ≥ 2",
+            "observed": "1",
+            "control": null
+          },
+          {
+            "part": "stages",
+            "stage": "Propose",
+            "needs": "LRN-06 ≥ 2",
+            "observed": "0",
             "control": null
           }
         ]
       },
       "expansion": {
-        "level": 0,
-        "name": "Manual",
+        "level": 1,
+        "name": "Configurable",
         "parts": {
           "stages": 1,
-          "spine": 0,
-          "architecture": 1,
+          "spine": 2,
+          "architecture": 2,
           "governance": 2
         },
-        "next_met": 1,
-        "next_total": 2,
+        "next_met": 3,
+        "next_total": 5,
         "blockers": [
           {
-            "part": "spine",
-            "stage": "Build",
-            "needs": "people build path ≥ 2 or product build path ≥ 2",
-            "observed": "EXP-02 n/a; DEL-04 0, EXP-03 n/a",
+            "part": "stages",
+            "stage": "Sense",
+            "needs": "EXP-04 ≥ 2",
+            "observed": "0",
+            "control": null
+          },
+          {
+            "part": "stages",
+            "stage": "Propose",
+            "needs": "EXP-05 ≥ 2",
+            "observed": "0",
             "control": null
           }
         ]
@@ -122,7 +136,7 @@
       {
         "control": "Tested backup and restore",
         "needs": "ARC-09 ≥ 3",
-        "observed": "0",
+        "observed": "1",
         "status": "fail"
       },
       {
@@ -153,14 +167,14 @@
           "name": "AI drives no stage",
           "stages": {
             "DEL-01": 0,
-            "DEL-04": 0
+            "DEL-04": 2
           },
           "blockers": [
             {
-              "part": "spine",
-              "stage": "Build",
-              "needs": "people build path ≥ 2 or product build path ≥ 2",
-              "observed": "kinds 1 of 3 main self-serve; DEL-04 0",
+              "part": "stages",
+              "stage": "Intake",
+              "needs": "DEL-01 ≥ 2",
+              "observed": "0",
               "control": null
             }
           ]
@@ -176,10 +190,17 @@
           },
           "blockers": [
             {
-              "part": "spine",
-              "stage": "Build",
-              "needs": "people build path ≥ 2 or product build path ≥ 2",
-              "observed": "kinds 1 of 3 main self-serve; DEL-04 0, LRN-07 1",
+              "part": "stages",
+              "stage": "Diagnose",
+              "needs": "LRN-05 ≥ 2",
+              "observed": "0",
+              "control": null
+            },
+            {
+              "part": "stages",
+              "stage": "Propose",
+              "needs": "LRN-06 ≥ 2",
+              "observed": "0",
               "control": null
             }
           ]
@@ -192,10 +213,10 @@
           },
           "blockers": [
             {
-              "part": "spine",
-              "stage": "Build",
-              "needs": "people build path ≥ 2 or product build path ≥ 2",
-              "observed": "EXP-02 n/a; DEL-04 0, EXP-03 n/a",
+              "part": "stages",
+              "stage": "Propose",
+              "needs": "EXP-05 ≥ 2",
+              "observed": "0",
               "control": null
             }
           ]
@@ -281,19 +302,19 @@
       "request": {
         "status": "not_evidenced",
         "level": null,
-        "built": 0,
+        "built": 1,
         "searched": "The repository at the pinned commit: agent and prompt version fields, audit-log schema (packages/data-schemas/src/types/auditLog.ts), UPGRADING.md and release workflows for LibreChat's own engineer-made releases. No operating records of real changes made through the product's request loop in a deployment."
       },
       "fix": {
         "status": "not_evidenced",
         "level": null,
-        "built": 0,
+        "built": 1,
         "searched": "The same sources plus message feedback (packages/data-schemas/src/schema/message.ts:103) and admin insights (packages/api/src/insights); no operating records of issues fixed through the product's loop."
       },
       "expansion": {
         "status": "not_evidenced",
         "level": null,
-        "built": 0,
+        "built": 1,
         "searched": "The same sources; no records of capabilities launched to a group and kept or killed."
       }
     }
@@ -316,8 +337,8 @@
   "confidence": {
     "recorded": true,
     "criteria": {
-      "high": 2,
-      "medium": 50,
+      "high": 3,
+      "medium": 49,
       "low": 13,
       "none": 0
     },
@@ -333,17 +354,53 @@
       "low": 0,
       "none": 0
     },
-    "check_first": []
+    "check_first": [
+      {
+        "id": "LRN-05",
+        "title": "Automated diagnosis",
+        "holds": [
+          "Issue → Fix to L2"
+        ]
+      },
+      {
+        "id": "EXP-04",
+        "title": "Unmet-demand sensing",
+        "holds": [
+          "Opportunity → Expansion to L2"
+        ]
+      },
+      {
+        "id": "EXP-05",
+        "title": "Evidence-backed opportunity proposals",
+        "holds": [
+          "Opportunity → Expansion to L2"
+        ]
+      }
+    ]
   },
   "sensitivity": {
     "raise_headline": [],
-    "lower_headline": [],
-    "raise_loop": {
+    "lower_headline": [
+      "DEL-04",
+      "LRN-03",
+      "GOV-05"
+    ],
+    "raise_loop": {},
+    "lower_loop": {
+      "request": [
+        "DEL-04",
+        "GOV-05"
+      ],
       "fix": [
-        "LRN-07"
+        "DEL-04",
+        "LRN-03",
+        "GOV-05"
+      ],
+      "expansion": [
+        "DEL-04",
+        "GOV-05"
       ]
-    },
-    "lower_loop": {}
+    }
   },
   "ai_readiness": {
     "default": {
@@ -417,10 +474,10 @@
           }
         },
         "Build": {
-          "level": 0,
+          "level": 1,
           "readings": {
             "DEL-01": 0,
-            "DEL-04": 0
+            "DEL-04": 2
           }
         },
         "Diagnose and improve": {
@@ -511,10 +568,10 @@
           }
         },
         "Build": {
-          "level": 0,
+          "level": 1,
           "readings": {
             "DEL-01": 0,
-            "DEL-04": 0
+            "DEL-04": 2
           }
         },
         "Diagnose and improve": {
@@ -605,10 +662,10 @@
           }
         },
         "Build": {
-          "level": 0,
+          "level": 1,
           "readings": {
             "DEL-01": 0,
-            "DEL-04": 0
+            "DEL-04": 2
           }
         },
         "Diagnose and improve": {
@@ -630,8 +687,8 @@
     }
   },
   "capabilities": {
-    "ARC": 1.4,
-    "DEL": 1.1,
+    "ARC": 1.8,
+    "DEL": 1.3,
     "MAL": 1.9,
     "LRN": 1.1,
     "GOV": 1.8,
@@ -639,12 +696,12 @@
   },
   "ranges": {
     "ARC": [
-      1.4,
-      1.6
+      1.8,
+      1.9
     ],
     "DEL": [
-      1.1,
-      1.2
+      1.3,
+      1.4
     ],
     "MAL": [
       1.9,
@@ -665,11 +722,11 @@
   },
   "area_means": {
     "ARC Data": 1.5,
-    "ARC Scale": 1.5,
+    "ARC Scale": 2.5,
     "ARC Capacity": 1.5,
-    "ARC Resilience": 1,
+    "ARC Resilience": 1.5,
     "DEL Intake": 0,
-    "DEL Build": 1.3,
+    "DEL Build": 2,
     "DEL Verify": 2,
     "DEL Release": 1,
     "MAL Data model": 1,
@@ -694,16 +751,16 @@
     "ARC-01": 2,
     "ARC-02": 1,
     "ARC-03": 2,
-    "ARC-04": 1,
+    "ARC-04": 3,
     "ARC-05": null,
     "ARC-06": 2,
     "ARC-07": 1,
     "ARC-08": 2,
-    "ARC-09": 0,
+    "ARC-09": 1,
     "DEL-01": 0,
     "DEL-02": 2,
     "DEL-03": 2,
-    "DEL-04": 0,
+    "DEL-04": 2,
     "DEL-05": 2,
     "DEL-06": 2,
     "DEL-07": 2,
@@ -770,40 +827,40 @@
   "variants": {
     "high": {
       "capabilities": {
-        "ARC": 1.6,
-        "DEL": 1.2,
+        "ARC": 1.9,
+        "DEL": 1.4,
         "MAL": 2.2,
         "LRN": 1.1,
         "GOV": 2.1,
         "EXP": 1
       },
       "sal": {
-        "headline": 0,
-        "headline_name": "Manual",
+        "headline": 1,
+        "headline_name": "Configurable",
         "loops": {
           "request": {
-            "level": 0,
+            "level": 1,
             "parts": {
               "stages": 1,
-              "spine": 0,
+              "spine": 2,
               "architecture": 2,
               "governance": 2
             }
           },
           "fix": {
-            "level": 0,
+            "level": 1,
             "parts": {
               "stages": 1,
-              "spine": 0,
+              "spine": 2,
               "architecture": 2,
               "governance": 2
             }
           },
           "expansion": {
-            "level": 0,
+            "level": 1,
             "parts": {
               "stages": 1,
-              "spine": 0,
+              "spine": 2,
               "architecture": 2,
               "governance": 2
             }
@@ -821,23 +878,23 @@
     },
     "available": {
       "capabilities": {
-        "ARC": 1.4,
-        "DEL": 1.1,
+        "ARC": 1.8,
+        "DEL": 1.3,
         "MAL": 1.9,
         "LRN": 1.3,
         "GOV": 1.8,
         "EXP": 1
       },
       "sal": {
-        "headline": 0,
-        "headline_name": "Manual",
+        "headline": 1,
+        "headline_name": "Configurable",
         "loops": {
           "request": {
-            "level": 0,
+            "level": 1,
             "parts": {
               "stages": 1,
-              "spine": 0,
-              "architecture": 1,
+              "spine": 2,
+              "architecture": 2,
               "governance": 2
             }
           },
@@ -846,16 +903,16 @@
             "parts": {
               "stages": 1,
               "spine": 2,
-              "architecture": 1,
+              "architecture": 2,
               "governance": 2
             }
           },
           "expansion": {
-            "level": 0,
+            "level": 1,
             "parts": {
               "stages": 1,
-              "spine": 0,
-              "architecture": 1,
+              "spine": 2,
+              "architecture": 2,
               "governance": 2
             }
           }
@@ -872,8 +929,8 @@
     },
     "assessed_only": {
       "capabilities": {
-        "ARC": 1.4,
-        "DEL": 1.1,
+        "ARC": 1.8,
+        "DEL": 1.3,
         "MAL": 1.9,
         "LRN": 1.1,
         "GOV": 1.8,
@@ -882,8 +939,8 @@
     },
     "all_applicable": {
       "capabilities": {
-        "ARC": 1.4,
-        "DEL": 1.1,
+        "ARC": 1.7,
+        "DEL": 1.3,
         "MAL": 1.7,
         "LRN": 1.1,
         "GOV": 1.8,

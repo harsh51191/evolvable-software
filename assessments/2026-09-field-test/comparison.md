@@ -15,9 +15,9 @@ Each loop shows its level, how many of the next level's applicable conditions it
 | Dify | configurable-application-platform | **1** | 0 | L1 (2/4), AI L0 | L1 (2/5), AI L0 | L1 (2/5), AI L0 | 1 | 1 |
 | Directus | configurable-application-platform | **1** | 0 | L1 (2/4), AI L0 | L1 (2/5), AI L0 | L1 (2/5), AI L0 | 1 | 1 |
 | Frappe Framework | configurable-application-platform | **1** | 0 | L1 (2/4), AI L0 | L1 (4/5), AI L0 | L1 (3/5), AI L0 | 1 | 1 |
+| LibreChat | focused-application | **1** | 0 | L1 (3/4), AI L0 | L1 (3/5), AI L0 | L1 (3/5), AI L0 | 1 | 1 |
 | OpenHands (Agent Canvas + software-agent-sdk) | agent-runtime | **1** | 0 | L1 (1/4), AI L0 | L1 (2/5), AI L0 | L1 (2/5), AI L0 | 1 | 1 |
 | Discourse | focused-application | **1** | 0 | L1 (2/4), AI L0 | L1 (4/5), AI L0 | L0 (1/2), AI L0 | 1 | 1 |
-| LibreChat | focused-application | **0** | 0 | L0 (1/2), AI L0 | L0 (2/3), AI L0 | L0 (1/2), AI L0 | 0 | 0 |
 | OpenCode | agent-runtime | **0** | 0 | L0 (0/2), AI L0 | L0 (0/3), AI L0 | L0 (1/2), AI L0 | 0 | 0 |
 
 ## Kinds of change, recursion and proof
@@ -33,9 +33,9 @@ Level 1 needs every main kind of change to be self-serve. Recursion is whether t
 | Dify | 3 of 3 | Apps, workflows and agents 2; What the AI is told to do (prompts and instructions) 2; Knowledge the apps answer from 1; Which AI models and credentials are used 1 (not main); Tools and plugins the apps can use 1 (not main); New node types, screens and platform behaviour 0 (not main) | Fixed | Proven: not evidenced | present, does not count |
 | Directus | 2 of 3 | What data is kept (collections and fields) 0; Who can see and change what (roles, policies and permissions) 1; Automations (flows) 2; Dashboards and how lists are laid out 1 (not main); Add-ons from the marketplace 1 (not main); Custom screens, endpoints and hooks 0 (not main) | Fixed | Proven: not evidenced | present, does not count |
 | Frappe Framework | 4 of 4 | Record types, fields and form layouts 1; Approval workflows, notifications and automation rules 1; Who can see and change what (roles and permissions) 1; Reports and printed documents 1; Custom server-side logic, integrations and new apps 0 (not main) | By hand | Proven: not evidenced | present, does not count |
+| LibreChat | 1 of 3 | Which AI models and providers are offered, and app-wide settings 0; Agents: their instructions, tools and files 1; Tools and connected services (MCP servers) 0; Saved prompts 1 (not main); Who may use agents, prompts, skills and memories 1 (not main); Skills that agents use 0 (not main) | By hand | Proven: not evidenced | present, does not count |
 | OpenHands (Agent Canvas + software-agent-sdk) | 3 of 3 | Scheduled and event-driven automations 1; Skills, plugins and tool servers the agent uses 1; Which models it uses and how the agent behaves 1; Which agent actions need a person's approval 1 (not main); Interface extensions and themes 0 (not main) | Fixed | Proven: not evidenced | present, does not count |
 | Discourse | 3 of 3 | How the forum behaves and what it says (settings and wording) 1; Categories and who can see or post in them 1; Look and layout (themes and components) 1; Automatic rules (automations) 1 (not main); New features from plugins 0 (not main) | Fixed | Proven: not evidenced | present, does not count |
-| LibreChat | 1 of 3 | Which AI models and providers are offered, and app-wide settings 0; Agents: their instructions, tools and files 1; Tools and connected services (MCP servers) 0; Saved prompts 1 (not main); Who may use agents, prompts, skills and memories 1 (not main); Skills that agents use 0 (not main) | By hand | Proven: not evidenced | present, does not count |
 | OpenCode | 2 of 3 | Custom agents and commands 0; Standing instructions for a project (AGENTS.md) 1; Which models and providers it uses 1; What the agent may do without asking 0 (not main); Plugins, MCP servers and skills 0 (not main) | Fixed | Proven: not evidenced | present, does not count |
 
 ## What AI drives
@@ -51,9 +51,9 @@ Each loop's AI-performable stages, read only on what AI does there.
 | Dify | AI L0: DEL-01 0, DEL-04 2 | AI L0: LRN-05 0, LRN-06 0, LRN-07 0, LRN-08 2 | AI L0: EXP-05 0 |
 | Directus | AI L0: DEL-01 1, DEL-04 2 | AI L0: LRN-05 0, LRN-06 0, LRN-07 0, LRN-08 2 | AI L0: EXP-05 0 |
 | Frappe Framework | AI L0: DEL-01 0, DEL-04 0 | AI L0: LRN-05 0, LRN-06 0, LRN-07 0, LRN-08 0 | AI L0: EXP-05 0 |
+| LibreChat | AI L0: DEL-01 0, DEL-04 2 | AI L0: LRN-05 0, LRN-06 0, LRN-07 1, LRN-08 2 | AI L0: EXP-05 0 |
 | OpenHands (Agent Canvas + software-agent-sdk) | AI L0: DEL-01 0, DEL-04 1 | AI L0: LRN-05 0, LRN-06 0, LRN-07 0, LRN-08 1 | AI L0: EXP-05 0 |
 | Discourse | AI L0: DEL-01 0, DEL-04 0 | AI L0: LRN-05 0, LRN-06 0, LRN-07 0, LRN-08 n/a | AI L0: EXP-05 0 |
-| LibreChat | AI L0: DEL-01 0, DEL-04 0 | AI L0: LRN-05 0, LRN-06 0, LRN-07 1, LRN-08 2 | AI L0: EXP-05 0 |
 | OpenCode | AI L0: DEL-01 0, DEL-04 1 | AI L0: LRN-05 0, LRN-06 0, LRN-07 0, LRN-08 1 | AI L0: EXP-05 0 |
 
 ## What holds each loop at its level
@@ -69,9 +69,9 @@ A loop's level is the lowest of its four parts. Each cell names the parts with a
 | Dify | architecture, stages | architecture, stages | architecture, stages |
 | Directus | architecture, stages | architecture, stages | architecture, stages |
 | Frappe Framework | spine, stages | spine | stages |
+| LibreChat | stages | stages | stages |
 | OpenHands (Agent Canvas + software-agent-sdk) | architecture, spine, stages | architecture, spine, stages | architecture, stages |
 | Discourse | spine, stages | spine | spine |
-| LibreChat | spine | spine | spine |
 | OpenCode | spine | spine, stages | spine |
 
 ## Sensitivity of the headline
@@ -87,9 +87,9 @@ Criteria whose one-level change would move the headline SAL. A long first column
 | Dify | LRN-03, GOV-05 | none |
 | Directus | DEL-04, LRN-03, GOV-05 | none |
 | Frappe Framework | LRN-03, GOV-05 | none |
+| LibreChat | DEL-04, LRN-03, GOV-05 | none |
 | OpenHands (Agent Canvas + software-agent-sdk) | LRN-03, GOV-05 | none |
 | Discourse | LRN-03, GOV-05 | none |
-| LibreChat | none | none |
 | OpenCode | none | none |
 
 ## Critical controls
@@ -105,9 +105,9 @@ A failed applicable control caps every loop at L2.
 | Dify | fail | n/a | fail | fail | fail | fail | fail |
 | Directus | fail | n/a | fail | fail | n/a | fail | fail |
 | Frappe Framework | fail | n/a | fail | fail | fail | fail | n/a |
+| LibreChat | fail | n/a | fail | fail | n/a | fail | fail |
 | OpenHands (Agent Canvas + software-agent-sdk) | fail | n/a | fail | fail | fail | fail | fail |
 | Discourse | fail | n/a | pass | fail | fail | fail | n/a |
-| LibreChat | fail | n/a | fail | fail | n/a | fail | fail |
 | OpenCode | fail | n/a | fail | fail | n/a | fail | fail |
 
 ## EVOLVE profile (default, with the range from alternate readings)
@@ -121,9 +121,9 @@ A failed applicable control caps every loop at L2.
 | Dify | 1.4 (1.4–1.6) | 1.5 (1.5–1.6) | 2.2 (2.2–2.8) | 1.3 (1.3–1.6) | 1.7 (1.7–1.9) | 1.7 |
 | Directus | 1.5 (1.5–1.8) | 1.6 (1.6–2.0) | 2.4 (2.4–3.0) | 0.9 (0.9–1.0) | 1.6 (1.6–2.3) | 1.1 (1.1–1.8) |
 | Frappe Framework | 1.9 (1.9–2.2) | 1.0 (1.0–1.3) | 2.3 (2.3–2.6) | 1.4 (1.4–1.8) | 1.8 (1.8–2.3) | 1.7 (1.7–1.9) |
+| LibreChat | 1.8 (1.8–1.9) | 1.3 (1.3–1.4) | 1.9 (1.9–2.2) | 1.1 | 1.8 (1.8–2.1) | 1.0 |
 | OpenHands (Agent Canvas + software-agent-sdk) | 1.4 (1.4–1.8) | 1.5 (1.5–1.7) | 2.1 (2.1–2.3) | 1.0 (1.0–1.3) | 1.4 (1.4–1.6) | 1.0 (1.0–1.1) |
 | Discourse | 2.0 (2.0–2.2) | 1.4 (1.4–1.9) | 2.1 (2.1–2.3) | 1.3 (1.3–1.4) | 1.8 (1.8–2.5) | 1.5 |
-| LibreChat | 1.4 (1.4–1.6) | 1.1 (1.1–1.2) | 1.9 (1.9–2.2) | 1.1 | 1.8 (1.8–2.1) | 1.0 |
 | OpenCode | 1.3 (1.3–1.8) | 1.3 (1.3–1.5) | 2.2 (2.2–2.4) | 0.6 (0.6–0.8) | 1.6 (1.6–1.8) | 1.1 (1.1–1.2) |
 
 ## AI Readiness (provisional, single rater)
@@ -159,7 +159,7 @@ What each product's AI does, by area, with opt-in settings. Each level is descri
 | OpenCode | 2 | 0 | 0 | 0 |
 | OpenHands (Agent Canvas + software-agent-sdk) | 2 | 0 | 0 | 0 |
 | Directus | 2 | 1 | 0 | 0 |
-| LibreChat | 1 | 0 | 1 | 0 |
+| LibreChat | 1 | 1 | 1 | 0 |
 | Frappe Framework | – | – | – | – |
 
 ## Scope facts
@@ -175,9 +175,9 @@ Default value; where a shipped opt-in setting changes a fact, the cell reads def
 | Dify | yes | yes | yes | yes | yes | yes | no | yes | no | yes | yes | yes |
 | Directus | yes | yes | no | yes | yes | yes | no | yes | no | yes | yes | yes |
 | Frappe Framework | yes | yes | yes | yes | yes | no | no | yes | no | no | no | no |
+| LibreChat | yes | yes | no | yes | yes | yes | yes | yes | no | yes | yes | yes |
 | OpenHands (Agent Canvas + software-agent-sdk) | yes | yes | yes | yes | yes | yes | no | yes | no | yes | yes | yes |
 | Discourse | yes | yes | yes | yes | yes | no | no | yes | no | no → yes | no → yes | no → yes |
-| LibreChat | yes | yes | no | yes | yes | yes | yes | yes | no | yes | yes | yes |
 | OpenCode | yes | yes | no | no | yes | yes | no | yes | no | yes | yes | yes |
 
 ## Same systems under v0.3
@@ -193,7 +193,7 @@ v0.3 reported four non-overlapping indexes and a closed-loop flag. EVOLVE report
 | Dify | 2.5 | 1.9 | 1.6 | 2.3 | no / no | 1 |
 | Directus | 2.6 | 1.8 | 1.1 | 2.0 | no / no | 1 |
 | Frappe Framework | 2.8 | 1.9 | 1.3 | 1.7 | no / no | 1 |
+| LibreChat | 1.8 | 1.9 | 1.0 | 2.0 | no / no | 1 |
 | OpenHands (Agent Canvas + software-agent-sdk) | 2.1 | 1.6 | 1.0 | 2.2 | no / no | 1 |
 | Discourse | 2.1 | 1.8 | 1.5 | 1.7 | no / no | 1 |
-| LibreChat | 1.8 | 1.9 | 1.0 | 2.0 | no / no | 0 |
 | OpenCode | 2.3 | 1.5 | 0.9 | 2.2 | no / no | 0 |

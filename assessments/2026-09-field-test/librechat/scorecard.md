@@ -6,7 +6,7 @@ Scope: the LibreChat monorepo (api, client, packages/api, data-provider, data-sc
 
 ## Reading
 
-**SAL 0.** Configuration is file-based and partly unversioned (Open 1.7), and there is no AI lane for LibreChat's own definitions (DEL-04 0), so no loop has a build path at L1. Users rate messages with tags (LRN-03 2), which is a useful start. **Next level:** governed, versioned configuration in the product, and backup (ARC-09 0).
+**SAL 1.** The product's own agent writes skills on request, inside permission and content checks (DEL-04 2), and that AI lane gives every loop a build path at L1. The people path does not: agents and prompts are versioned and can be reverted, but model settings and tool connections have no undo in the product (1 of 3 main kinds self-serve). Each loop holds at L1 because requests arrive as free text with no record (DEL-01), problems are recorded but not diagnosed (LRN-05 1), and unmet demand is not sensed (EXP-04). **Fragile:** the level rests on one narrow lane for a kind of change that is not main; if GOV-05 or LRN-03 fell one level it would drop to L0. **Next level:** a structured request record, diagnosis of recorded failures, and history with undo for model settings, tool connections and skills; for Level 3, a supported backup (ARC-09 1).
 
 ## Limits
 
@@ -19,22 +19,22 @@ Scope facts true: persistent_data, schema_changes, hosted_service, machine_actio
 
 Coverage: 65 assessed, 0 not evidenced, 10 not applicable. Grades: 65 A, 0 B, 0 C.
 
-Confidence: 2 high, 50 medium, 13 low across the assessed criteria. No low-confidence criterion holds a next-level blocker or a critical control.
+Confidence: 3 high, 49 medium, 13 low across the assessed criteria. Check these first (low confidence, and they hold a blocker or a critical control): LRN-05 (Issue → Fix to L2); EXP-04 (Opportunity → Expansion to L2); EXP-05 (Opportunity → Expansion to L2).
 
 ## Software Autonomy Level
 
-**Built to SAL 0 (Manual) · Proven: not evidenced · AI-driven 0 · Request → Release L0 (AI L0) · Issue → Fix L0 (AI L0) · Opportunity → Expansion L0 (AI L0)**
+**Built to SAL 1 (Configurable) · Proven: not evidenced · AI-driven 0 · Request → Release L1 (AI L0) · Issue → Fix L1 (AI L0) · Opportunity → Expansion L1 (AI L0)**
 
-Progress toward the next level: Request → Release 1 of 2 conditions for L1; Issue → Fix 2 of 3 conditions for L1; Opportunity → Expansion 1 of 2 conditions for L1.
+Progress toward the next level: Request → Release 3 of 4 conditions for L2; Issue → Fix 3 of 5 conditions for L2; Opportunity → Expansion 3 of 5 conditions for L2.
 
-- With opt-in settings: Built to SAL 0 (Manual) · AI-driven 0 · Request → Release L0 (AI L0) · Issue → Fix L1 (AI L0) · Opportunity → Expansion L0 (AI L0).
-- With every alternate reading: Built to SAL 0 (Manual) · AI-driven 0 · Request → Release L0 (AI L0) · Issue → Fix L0 (AI L0) · Opportunity → Expansion L0 (AI L0).
+- With opt-in settings: Built to SAL 1 (Configurable) · AI-driven 0 · Request → Release L1 (AI L0) · Issue → Fix L1 (AI L0) · Opportunity → Expansion L1 (AI L0).
+- With every alternate reading: Built to SAL 1 (Configurable) · AI-driven 0 · Request → Release L1 (AI L0) · Issue → Fix L1 (AI L0) · Opportunity → Expansion L1 (AI L0).
 
 | Loop | Stages | Spine | Architecture | Governance | Level | AI-driven | With opt-in settings |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| Request → Release | L1 | L0 | L1 | L2 | **L0** | L0 | L0 |
-| Issue → Fix | L1 | L0 | L1 | L2 | **L0** | L0 | L1 |
-| Opportunity → Expansion | L1 | L0 | L1 | L2 | **L0** | L0 | L0 |
+| Request → Release | L1 | L2 | L2 | L2 | **L1** | L0 | L1 |
+| Issue → Fix | L1 | L2 | L2 | L2 | **L1** | L0 | L1 |
+| Opportunity → Expansion | L1 | L2 | L2 | L2 | **L1** | L0 | L1 |
 
 **Recursion: 1 By hand (LRN-10 at 1).** How far the loop improves its own checks, evaluation sets, policies and prompts from measured results.
 
@@ -59,9 +59,9 @@ Progress toward the next level: Request → Release 1 of 2 conditions for L1; Is
 
 | Loop | Built | Proven | Operating records, or what was searched |
 |---|---:|---|---|
-| Request → Release | L0 | not evidenced | Searched: The repository at the pinned commit: agent and prompt version fields, audit-log schema (packages/data-schemas/src/types/auditLog.ts), UPGRADING.md and release workflows for LibreChat's own engineer-made releases. No operating records of real changes made through the product's request loop in a deployment. |
-| Issue → Fix | L0 | not evidenced | Searched: The same sources plus message feedback (packages/data-schemas/src/schema/message.ts:103) and admin insights (packages/api/src/insights); no operating records of issues fixed through the product's loop. |
-| Opportunity → Expansion | L0 | not evidenced | Searched: The same sources; no records of capabilities launched to a group and kept or killed. |
+| Request → Release | L1 | not evidenced | Searched: The repository at the pinned commit: agent and prompt version fields, audit-log schema (packages/data-schemas/src/types/auditLog.ts), UPGRADING.md and release workflows for LibreChat's own engineer-made releases. No operating records of real changes made through the product's request loop in a deployment. |
+| Issue → Fix | L1 | not evidenced | Searched: The same sources plus message feedback (packages/data-schemas/src/schema/message.ts:103) and admin insights (packages/api/src/insights); no operating records of issues fixed through the product's loop. |
+| Opportunity → Expansion | L1 | not evidenced | Searched: The same sources; no records of capabilities launched to a group and kept or killed. |
 
 ### Critical controls
 
@@ -70,16 +70,16 @@ Progress toward the next level: Request → Release 1 of 2 conditions for L1; Is
 | Definition rollback | GOV-05 ≥ 3 | 2 | fail |
 | Release rollback | DEL-11 ≥ 3 | n/a | n/a |
 | Safe migrations | ARC-02 ≥ 3 | 1 | fail |
-| Tested backup and restore | ARC-09 ≥ 3 | 0 | fail |
+| Tested backup and restore | ARC-09 ≥ 3 | 1 | fail |
 | Tenant isolation | ARC-05 ≥ 3 | n/a | n/a |
 | Security as infrastructure | GOV-04 ≥ 3 | 2 | fail |
 | Bounded self-change | GOV-10 ≥ 3 and LRN-08 ≥ 2 | 2; 2 | fail |
 
 ### What blocks the next level
 
-- **Request → Release to L1**: spine Build needs people build path ≥ 2 or product build path ≥ 2 (has kinds 1 of 3 main self-serve; DEL-04 0)
-- **Issue → Fix to L1**: spine Build needs people build path ≥ 2 or product build path ≥ 2 (has kinds 1 of 3 main self-serve; DEL-04 0, LRN-07 1)
-- **Opportunity → Expansion to L1**: spine Build needs people build path ≥ 2 or product build path ≥ 2 (has EXP-02 n/a; DEL-04 0, EXP-03 n/a)
+- **Request → Release to L2**: stages Intake needs DEL-01 ≥ 2 (has 0)
+- **Issue → Fix to L2**: stages Diagnose needs LRN-05 ≥ 2 (has 1); stages Propose needs LRN-06 ≥ 2 (has 0)
+- **Opportunity → Expansion to L2**: stages Sense needs EXP-04 ≥ 2 (has 0); stages Propose needs EXP-05 ≥ 2 (has 0)
 
 ### What AI drives
 
@@ -87,21 +87,21 @@ Each loop re-scored with its AI-performable stages read only on what AI does the
 
 | Loop | Level | AI-driven | AI stage readings | What AI needs for its next level |
 |---|---:|---:|---|---|
-| Request → Release | L0 | L0 | DEL-01 0, DEL-04 0 | people build path ≥ 2 or product build path ≥ 2 (has kinds 1 of 3 main self-serve; DEL-04 0) |
-| Issue → Fix | L0 | L0 | LRN-05 0, LRN-06 0, LRN-07 1, LRN-08 2 | people build path ≥ 2 or product build path ≥ 2 (has kinds 1 of 3 main self-serve; DEL-04 0, LRN-07 1) |
-| Opportunity → Expansion | L0 | L0 | EXP-05 0 | people build path ≥ 2 or product build path ≥ 2 (has EXP-02 n/a; DEL-04 0, EXP-03 n/a) |
+| Request → Release | L1 | L0 | DEL-01 0, DEL-04 2 | DEL-01 ≥ 2 (has 0) |
+| Issue → Fix | L1 | L0 | LRN-05 0, LRN-06 0, LRN-07 1, LRN-08 2 | LRN-05 ≥ 2 (has 0); LRN-06 ≥ 2 (has 0) |
+| Opportunity → Expansion | L1 | L0 | EXP-05 0 | EXP-05 ≥ 2 (has 0) |
 
 ### Sensitivity
 
-- **Robust:** no single criterion falling one level lowers the headline.
+- **Fragile:** the headline drops if any of these falls one level: DEL-04, LRN-03, GOV-05.
 - No single criterion rising one level lifts the headline.
 
 ## EVOLVE profile
 
 | Capability | Default | Range with alternate readings | With opt-in settings | Assessed only | If every criterion counted |
 |---|---:|---|---:|---:|---:|
-| Elastic (ARC) | 1.4 | 1.4–1.6 | 1.4 | 1.4 | 1.4 |
-| Velocity (DEL) | 1.1 | 1.1–1.2 | 1.1 | 1.1 | 1.1 |
+| Elastic (ARC) | 1.8 | 1.8–1.9 | 1.8 | 1.8 | 1.7 |
+| Velocity (DEL) | 1.3 | 1.3–1.4 | 1.3 | 1.3 | 1.3 |
 | Open (MAL) | 1.9 | 1.9–2.2 | 1.9 | 1.9 | 1.7 |
 | Learn (LRN) | 1.1 | 1.1 | 1.3 | 1.1 | 1.1 |
 | Vet (GOV) | 1.8 | 1.8–2.1 | 1.8 | 1.8 | 1.8 |
@@ -112,11 +112,11 @@ Each loop re-scored with its AI-performable stages read only on what AI does the
 | Area | Default |
 |---|---:|
 | ARC Data | 1.5 |
-| ARC Scale | 1.5 |
+| ARC Scale | 2.5 |
 | ARC Capacity | 1.5 |
-| ARC Resilience | 1.0 |
+| ARC Resilience | 1.5 |
 | DEL Intake | 0.0 |
-| DEL Build | 1.3 |
+| DEL Build | 2.0 |
 | DEL Verify | 2.0 |
 | DEL Release | 1.0 |
 | MAL Data model | 1.0 |
@@ -165,7 +165,7 @@ What the product's AI does. Descriptive levels per area, with no headline: it ne
 | Area | Level | Readings |
 |---|---:|---|
 | Operate | 1 | MAL-19 1, MAL-20 2 |
-| Build | 0 | DEL-01 0, DEL-04 0 |
+| Build | 1 | DEL-01 0, DEL-04 2 |
 | Diagnose and improve | 0 | LRN-05 0, LRN-06 0, LRN-07 1, LRN-08 2 |
 | Expand | 0 | EXP-05 0 |
 
@@ -176,16 +176,16 @@ What the product's AI does. Descriptive levels per area, with no headline: it ne
 | ARC-01 Indexed query path, never a scan of a generic store | assessed | 2 |  |  | A, medium |  | MeiliSearch index for conversations and messages (search/) and MongoDB indexes; no definition-driven mapping. |
 | ARC-02 Safe schema and data migrations | assessed | 1 | 2 |  | A, medium |  | One-off migration scripts with dry-run modes (config/migrate-*.js, package.json:134-139); no down steps. |
 | ARC-03 Horizontal scale of services | assessed | 2 |  |  | A, medium |  | With USE_REDIS, caches and request limits move to Redis for several instances (api/cache/clearPendingReq.js:5-39); Helm charts deploy it (helm/). |
-| ARC-04 Reliable asynchronous work | assessed | 1 |  |  | A, medium |  | No job queue; background work runs in the API process. |
+| ARC-04 Reliable asynchronous work | assessed | 3 |  |  | A, medium | IT | Mongo-backed trigger delivery queue with leases, retry history, backoff and dead letters across replicas (packages/data-schemas/src/schema/triggerDelivery.ts:11-20,134-144,183,210-228; packages/api/src/agents/triggers/README.md:46-50; triggers/backoff.ts); stable deliveryId idempotency (README:10-12); schedule occurrences claimed once with deterministic delivery keys and concurrency slots (packages/data-schemas/src/schema/scheduleRun.ts:36,138,162-169); tests delivery.integration.spec.ts, backoff.spec.ts, schedules/engine.spec.ts. No per-tenant fairness or back-pressure policy (level 4). [v0.7 correction from the blind second rating, verified at 14f7b28.] |
 | ARC-05 Tenant isolation and noisy-neighbour controls | not_applicable | excluded |  |  | - |  | Scope fact multi_tenant is false: a default installation is one group under one administrator; tenant isolation is opt-in through deployment-supplied tenant identities. |
 | ARC-06 Ceilings measured, not discovered in incidents | assessed | 2 |  |  | A, medium |  | Performance scan and benchmark suites (e2e/perf/scan.ts, e2e/benchmarks) and Lighthouse audits; no documented per-surface limits. |
 | ARC-07 Service objectives defined and monitored | assessed | 1 |  |  | A, medium |  | No metrics endpoint or objectives; tracing fans out to Langfuse. |
 | ARC-08 Failure isolation and graceful degradation | assessed | 2 |  |  | A, medium |  | AI-qualified reading: 2. Provider calls have timeouts and errors are contained per conversation; MCP servers run as separate connections. |
-| ARC-09 Backup, restore and recovery | assessed | 0 | 1 |  | A, medium |  | No backup command or documented backup in the repository. |
+| ARC-09 Backup, restore and recovery | assessed | 1 |  |  | A, high |  | No backup or restore command in repo (searched for backup, mongodump across *.md, *.yml, *.js, *.ts, *.sh). UPGRADING.md:40 tells operators to back up MongoDB themselves. Scheduled runs do re-validate owner, policy and credentials before each run (CONTEXT.md:3, packages/api/src/schedules/README.md:1-40, readiness.ts), which would help a restored schedule surface, but nothing restores it. [v0.7 correction from the blind second rating, verified at 14f7b28.] |
 | DEL-01 Request intake into a structured change specification | assessed | 0 |  |  | A, medium |  | AI-qualified reading: 0. No request or feature-request object for changing the product was found; requests live outside it. |
 | DEL-02 Layers deploy independently | assessed | 2 |  |  | A, medium |  | API and client ship together in one image; RAG API, search and a Langfuse fan-out service are separate containers with Helm charts (helm/). |
 | DEL-03 Module boundaries enforced by tooling | assessed | 2 |  |  | A, medium |  | Workspace packages with explicit dependencies and a circular-dependency check (config/circular-deps.mjs). |
-| DEL-04 AI implementation lane | assessed | 0 |  |  | A, medium |  | AI-qualified reading: 0. No AI authoring lane for LibreChat's own definitions. |
+| DEL-04 AI implementation lane | assessed | 2 |  |  | A, medium |  | AI-qualified reading: 2. The product's agent authors skills (definitions) on a user's request: writeSkillMd validates frontmatter and name, applies content filters, checks create/edit permission, uses expectedVersion concurrency (packages/api/src/agents/handlers.ts:3805-3960; validation packages/data-schemas/src/methods/skill.ts:116-526). Narrow (skills only), on request, applied directly rather than proposed with evidence; a person edits further. [v0.7 correction from the blind second rating, verified at 14f7b28.] |
 | DEL-05 Every change class has an automated pre-land check | assessed | 2 |  |  | A, medium |  | Backend, frontend, static checks, mocked Playwright journeys and Docker smoke tests run on pull requests (.github/workflows/backend-review.yml, frontend-review.yml, static-checks.yml, playwright-mock.yml); accessibility runs on demand and there is no security scan. |
 | DEL-06 Verification surface | assessed | 2 | 3 |  | A, medium |  | /health (api/server/index.js:328) and a startup configuration endpoint for the client; no build or version endpoint. |
 | DEL-07 Environment reproducibility | assessed | 2 |  |  | A, medium |  | Docker Compose and Helm charts, staging image builds (.github/workflows/dev-staging-images.yml) and seeded E2E setup (e2e/setup); no per-change ephemeral environment. |

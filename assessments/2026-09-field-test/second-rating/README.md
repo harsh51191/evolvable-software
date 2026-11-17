@@ -110,3 +110,42 @@ All three raters are AI models. A human second rater is the next step.
   - OpenClaw scheduled-work restore (ARC-09) is being lowered to 2 in the v0.7 migration.
 - **Re-reading under the new definitions changed two scope facts.** n8n's team projects make it multi-tenant, and its agent builder writes code that runs, so tenant isolation and release rollback now apply to it. Its level did not change.
 - **The study is now repeatable.** `evals/agreement.py` compares any two or more assessments of a product and reproduces every number above. `evals/disagreements.md` logs each disagreement and the rubric change it led to.
+
+## Full blind second rating under v0.7 (November 2026)
+
+**Date:** 17 November 2026. **Framework:** EVOLVE v0.7.0.
+
+### What was done
+
+Three products were rated again from scratch on all 75 criteria, with scope facts, kinds of change, confidence and AI delivery: n8n (a level 2 product), LibreChat (published at 0) and Frappe (published at 1), at the same commits as the field test. Each rater was a separate AI agent (Claude) given only the skill folder and the product source. It had no access to `assessments/`, `evals/`, `spec/`, the README or the CHANGELOG. Its raw ratings are `v07-n8n.json`, `v07-librechat.json` and `v07-frappe.json`. Every number below comes from `evals/agreement.py`, comparing each with the product's published `assessment.json`.
+
+### Agreement
+
+| Product | Scores both assessed | Exact | Within one | Level 3 controls agree | Scope facts differ | Overall level, published · blind |
+|---|---:|---:|---:|---|---:|---|
+| n8n | 73 | 48 (66%) | 72 (99%) | 6 of 8 (the other 2 differ only through scope facts) | 3 of 12 | SAL 2 · SAL 2 |
+| LibreChat | 63 | 45 (71%) | 60 (95%) | 6 of 8 | 1 of 12 | SAL 0 · SAL 1, now SAL 1 · SAL 1 after corrections |
+| Frappe | 64 | 56 (88%) | 64 (100%) | 8 of 8 | 0 of 12 | SAL 1 · SAL 0 |
+| **All three** | **200** | **149 (74%)** | **196 (98%)** | | | |
+
+After the LibreChat corrections below, LibreChat's exact agreement is 48 of 63 (76%) and within one is 62 of 63 (98%).
+
+### What the raters agree on
+
+- **No product reaches Level 3.** Every applicable Level 3 control fails under both raters for all three products. Definition rollback (GOV-05) is 2 in all six ratings.
+- **Scores rarely differ by more than one point.** Of 200 shared scores, four differ by two: LibreChat's job queue, AI lane and integration mapping, and n8n's AI access check.
+
+### Where the overall level differs, and why
+
+The overall level can turn on a single judgement, usually about kinds of change.
+
+- **LibreChat: published 0, blind 1. Corrected to 1.** Re-reading the code at the pinned commit confirmed three errors in the published rating: the product's agent writes skills on request inside permission and content checks, which scoring rule 4 counts as an AI lane (DEL-04 0 to 2); a leased job queue with retries and dead letters exists (ARC-04 1 to 3); and the upgrade guide tells operators to back up MongoDB (ARC-09 0 to 1). The AI lane gives every loop a build path, so LibreChat is now Built to SAL 1. The level is fragile: it rests on one narrow lane for a kind of change that is not main.
+- **Frappe: published 1, blind 0. Open.** Both raters agree that custom server logic needs an engineer, because Server Scripts are off by default. The published rating judged it not a main kind of change, with low confidence; the blind rater judged it main. That one call moves Frappe between Level 1 and Level 0. The rubric needs a test for "main".
+- **n8n: both 2.** The raters differ on three scope facts: whether licence-gated team projects make it multi-tenant, whether AI-written code inside a workflow is a code release, and whether saved "always allow" preferences mean changes apply automatically. None moves the level. The blind rater also reads the fix loop as AI-driven at L2 (published AI L0).
+
+### What changed as a result
+
+- LibreChat corrected (above) and its report regenerated.
+- Five open questions added to `evals/disagreements.md`: what makes a kind of change main; whether reach 1 needs a screen in the assessed product and whether removing counts as undo; whether one narrow AI lane on a kind that is not main should lift a loop; whether a scope fact follows the default licence; and whether code inside a versioned definition is a code release.
+
+All raters are still AI models. A human second rating remains the next step.

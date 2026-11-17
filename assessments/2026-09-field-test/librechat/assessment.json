@@ -8,7 +8,7 @@
   "archetype": "focused-application",
   "scope_line": "Scope: the LibreChat monorepo (api, client, packages/api, data-provider, data-schemas, e2e, helm, CI). The hosted code interpreter service, RAG API image and third-party MCP servers are out of scope.",
   "limits": "Repository evidence only, main at the tip named above. The hosted code interpreter, RAG API and third-party MCP servers are out of scope. Whether the accessibility and Lighthouse checks run on every pull request depends on path filters and inputs that were read, not exercised. Single rater.",
-  "reading": "**SAL 0.** Configuration is file-based and partly unversioned (Open 1.7), and there is no AI lane for LibreChat's own definitions (DEL-04 0), so no loop has a build path at L1. Users rate messages with tags (LRN-03 2), which is a useful start. **Next level:** governed, versioned configuration in the product, and backup (ARC-09 0).",
+  "reading": "**SAL 1.** The product's own agent writes skills on request, inside permission and content checks (DEL-04 2), and that AI lane gives every loop a build path at L1. The people path does not: agents and prompts are versioned and can be reverted, but model settings and tool connections have no undo in the product (1 of 3 main kinds self-serve). Each loop holds at L1 because requests arrive as free text with no record (DEL-01), problems are recorded but not diagnosed (LRN-05 1), and unmet demand is not sensed (EXP-04). **Fragile:** the level rests on one narrow lane for a kind of change that is not main; if GOV-05 or LRN-03 fell one level it would drop to L0. **Next level:** a structured request record, diagnosis of recorded failures, and history with undo for model settings, tool connections and skills; for Level 3, a supported backup (ARC-09 1).",
   "confidence_note": "Confidence for criteria whose reading did not change at the v0.7 migration was assigned at migration from the recorded evidence (high where it names the code path and its tests, medium where it names code but not every path, low where the reading is inferred or rests on documentation or absence); criteria re-read at migration were assigned from that re-reading.",
   "scope_facts": {
     "persistent_data": {
@@ -466,17 +466,17 @@
     },
     "DEL-04": {
       "status": "assessed",
-      "score": 0,
+      "score": 2,
       "grade": "A",
-      "evidence": "No AI authoring lane for LibreChat's own definitions.",
+      "evidence": "The product's agent authors skills (definitions) on a user's request: writeSkillMd validates frontmatter and name, applies content filters, checks create/edit permission, uses expectedVersion concurrency (packages/api/src/agents/handlers.ts:3805-3960; validation packages/data-schemas/src/methods/skill.ts:116-526). Narrow (skills only), on request, applied directly rather than proposed with evidence; a person edits further. [v0.7 correction from the blind second rating, verified at 14f7b28.]",
+      "confidence": "medium",
       "ai": {
         "status": "assessed",
-        "score": 0,
+        "score": 2,
         "grade": "A",
-        "evidence": "No AI involvement in this behaviour.",
+        "evidence": "Same lane; inherently AI: model writes skills on request, narrow scope, no proposal or verification evidence (handlers.ts:3805-3960).",
         "confidence": "medium"
-      },
-      "confidence": "medium"
+      }
     },
     "LRN-09": {
       "status": "assessed",
@@ -565,10 +565,15 @@
     },
     "ARC-04": {
       "status": "assessed",
-      "score": 1,
+      "score": 3,
       "grade": "A",
-      "evidence": "No job queue; background work runs in the API process.",
-      "confidence": "medium"
+      "evidence": "Mongo-backed trigger delivery queue with leases, retry history, backoff and dead letters across replicas (packages/data-schemas/src/schema/triggerDelivery.ts:11-20,134-144,183,210-228; packages/api/src/agents/triggers/README.md:46-50; triggers/backoff.ts); stable deliveryId idempotency (README:10-12); schedule occurrences claimed once with deterministic delivery keys and concurrency slots (packages/data-schemas/src/schema/scheduleRun.ts:36,138,162-169); tests delivery.integration.spec.ts, backoff.spec.ts, schedules/engine.spec.ts. No per-tenant fairness or back-pressure policy (level 4). [v0.7 correction from the blind second rating, verified at 14f7b28.]",
+      "confidence": "medium",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      }
     },
     "ARC-07": {
       "status": "assessed",
@@ -593,12 +598,10 @@
     },
     "ARC-09": {
       "status": "assessed",
-      "score": 0,
+      "score": 1,
       "grade": "A",
-      "evidence": "No backup command or documented backup in the repository.",
-      "alt_score": 1,
-      "alt_note": "MongoDB tooling is the implied path.",
-      "confidence": "medium"
+      "evidence": "No backup or restore command in repo (searched for backup, mongodump across *.md, *.yml, *.js, *.ts, *.sh). UPGRADING.md:40 tells operators to back up MongoDB themselves. Scheduled runs do re-validate owner, policy and credentials before each run (CONTEXT.md:3, packages/api/src/schedules/README.md:1-40, readiness.ts), which would help a restored schedule surface, but nothing restores it. [v0.7 correction from the blind second rating, verified at 14f7b28.]",
+      "confidence": "high"
     },
     "DEL-01": {
       "status": "assessed",

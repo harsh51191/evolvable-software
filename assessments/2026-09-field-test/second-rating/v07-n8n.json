@@ -1,0 +1,875 @@
+{
+  "product": "n8n",
+  "date": "2026-11-17",
+  "source": "n8n-io/n8n@c17c48043eb1080e5ae9795ea3a384960f8748f1 (master)",
+  "archetype": "configurable-application-platform",
+  "framework": "EVOLVE",
+  "framework_version": "0.7.0",
+  "basis": "shipped",
+  "scope_facts": {
+    "persistent_data": {
+      "value": true,
+      "evidence": "Workflows, credentials, executions, data tables in SQLite/Postgres via @n8n/db (packages/@n8n/db/src/migrations/postgresdb, 59 migration files)."
+    },
+    "schema_changes": {
+      "value": true,
+      "evidence": "Versioned TypeORM migrations (packages/@n8n/db/src/migrations) and runtime DDL for user data tables (packages/cli/src/modules/data-table/data-table-ddl.service.ts:80-87 addColumn)."
+    },
+    "multi_tenant": {
+      "value": false,
+      "evidence": "Default (Community) configuration has no team projects: team-project quota defaults to 0 (packages/cli/src/license.ts:483-485 getTeamProjectLimit ?? 0; packages/@n8n/backend-common/src/license-state.ts:269 isTeamProjectsLicensed). Users get personal projects administered by the one instance owner; n8n Cloud runs one instance per customer. With an enterprise licence, team projects with their own members and roles would make this true (and ARC-05 apply)."
+    },
+    "hosted_service": {
+      "value": true,
+      "evidence": "Long-lived Express server, workers and webhook processes (packages/cli/src/commands/start.ts, worker.ts, webhook.ts; packages/cli/src/abstract-server.ts:139 /healthz/readiness)."
+    },
+    "machine_actions": {
+      "value": true,
+      "evidence": "Public REST API with per-user API keys (packages/cli/src/public-api/v1) and instance MCP server with OAuth scopes exposing workflow write tools (packages/cli/src/modules/mcp/mcp-scopes.ts TOOLS_BY_SCOPE 'workflow:write')."
+    },
+    "agent_mutations": {
+      "value": true,
+      "evidence": "Instance AI (n8n Assistant, default module, packages/@n8n/backend-common/src/modules/module-registry.ts:44-82 includes 'instance-ai') writes workflows, data tables, folders, credentials and saved preferences through tools (packages/@n8n/instance-ai/src/tools/workflows.tool.ts:446-460, data-tables.tool.ts, save-user-preference.tool.ts)."
+    },
+    "evolution_auto_apply": {
+      "value": true,
+      "evidence": "Default Instance AI permission map leaves every workflow/data/credential mutation at 'require_approval' but sets createPreference 'always_allow' (packages/@n8n/api-types/src/schemas/instance-ai.schema.ts:2322-2345): the assistant writes durable behaviour-shaping preferences (its own memory) without an approval step; the user can edit or undo afterwards (save-user-preference.tool.ts:1-5)."
+    },
+    "definition_change_path": {
+      "value": true,
+      "evidence": "Behaviour changes are workflow definitions (JSON nodes/connections) edited in the editor, public API, MCP and Instance AI, with draft/publish and history (packages/cli/src/workflows/workflow.service.ts, workflows/workflow-history/workflow-history.controller.ts:22-91)."
+    },
+    "code_release_path": {
+      "value": false,
+      "evidence": "No product AI writes or activates n8n source, nodes or plugins: Instance AI and the AI builder emit workflow definitions (TypeScript SDK compiled to workflow JSON, packages/@n8n/instance-ai/src/tools/workflows/workflow-source-compiler.ts); Code-node scripts they write live inside the workflow definition and are versioned and rolled back with it. The engineers' AI harness (agent-harness.lock.json, scripts/agent-harness.mjs) does not qualify under rule 12 (see ai_delivery). Low-confidence fact: a stricter reading of AI-written Code-node scripts as 'scripts it writes and activates' would switch DEL-11 on."
+    },
+    "ai_features": {
+      "value": true,
+      "evidence": "LangChain AI nodes ship in the default node set (packages/@n8n/nodes-langchain/nodes/agents/Agent); Instance AI module default-on and enabled (packages/cli/src/modules/instance-ai/instance-ai-settings.service.ts:287 enabled = true) once a model key is supplied."
+    },
+    "ai_data_access": {
+      "value": true,
+      "evidence": "Instance AI tools read workflows, executions, credentials metadata and data tables through InstanceAiAdapterService (packages/cli/src/modules/instance-ai/instance-ai.adapter.service.ts, 7 userHasScopes checks)."
+    },
+    "ai_actions": {
+      "value": true,
+      "evidence": "Instance AI can create/publish/delete workflows, run them, create credentials and mutate data tables (packages/@n8n/api-types/src/schemas/instance-ai.schema.ts:2296-2320 permission keys); AI Agent nodes call external tools in production workflows."
+    }
+  },
+  "change_kinds": [
+    {
+      "id": "automations",
+      "name": "Automations: what starts them, the steps and the logic",
+      "who": "workflow builders and admins",
+      "main": true,
+      "reach": 1,
+      "evidence": "Edited in the canvas with no deploy; every save writes a history version (workflow.service.ts:650, 1364; workflow-history.service.ts:168) with diff and restore (frontend features/workflows/workflowHistory/views/WorkflowHistoryDiff.vue, WorkflowHistory.vue). Community default keeps 24 h of history (packages/@n8n/constants/src/index.ts:80 DEFAULT_WORKFLOW_HISTORY_PRUNE_LIMIT=24; license.ts:475-480). The product drafts automations only with the opt-in sandbox (instance-ai.config.ts:70 sandboxEnabled=false) or the licensed AI builder (controllers/ai.controller.ts:83 @Licensed('feat:aiBuilder')), so reach stays 1 by default.",
+      "confidence": "high"
+    },
+    {
+      "id": "go-live",
+      "name": "Putting an automation live, taking it off, or going back to an earlier live version",
+      "who": "workflow builders and admins",
+      "main": true,
+      "reach": 1,
+      "evidence": "Publish/unpublish at runtime with a publish timeline (workflow-history.controller.ts:78 publish-timeline; packages/cli/src/workflows/workflow-publisher.service.ts) and restore of a prior version; audited as n8n.audit.workflow.activated/deactivated.",
+      "confidence": "high"
+    },
+    {
+      "id": "connections",
+      "name": "Connections to other apps (credentials)",
+      "who": "workflow builders",
+      "main": false,
+      "reach": 0,
+      "evidence": "Created and edited in the UI without deploy (packages/cli/src/credentials), but credentials have no version history: an overwritten secret or deleted credential cannot be restored in the product, so no undo (reach 0).",
+      "confidence": "medium"
+    },
+    {
+      "id": "data-tables",
+      "name": "Tables of data the automations keep",
+      "who": "workflow builders",
+      "main": false,
+      "reach": 0,
+      "evidence": "Tables and typed columns created in the UI (packages/cli/src/modules/data-table/data-table.controller.ts, data-table-ddl.service.ts:80-87); no history or undo for schema or row changes (dropped columns and rows are gone).",
+      "confidence": "medium"
+    },
+    {
+      "id": "access",
+      "name": "Who can see and change which automations",
+      "who": "admins and project owners",
+      "main": false,
+      "reach": 1,
+      "evidence": "Invite users, share workflows and credentials, set roles in the UI; each change is reversed by the inverse action and audited (n8n.audit.user.invited, user.credentials.shared in packages/cli/src/events/relays/log-streaming.event-relay.ts).",
+      "confidence": "medium"
+    },
+    {
+      "id": "new-app",
+      "name": "Support for an app n8n has no node for",
+      "who": "admins (install) or engineers (build)",
+      "main": false,
+      "reach": 1,
+      "evidence": "Admins install community node packages from the UI and uninstall them (default module community-packages; packages/cli/src/modules/community-packages), or use the HTTP Request node inside a workflow; writing a new node is engineering work (packages/@n8n/node-cli).",
+      "confidence": "medium"
+    },
+    {
+      "id": "instance-settings",
+      "name": "Instance settings: sign-in, log destinations, assistant settings",
+      "who": "instance admins",
+      "main": false,
+      "reach": 1,
+      "evidence": "Settings pages and services (sso-saml, sso-oidc, log-streaming.ee, instance-ai-settings.service.ts) change at runtime and can be set back; no version history.",
+      "confidence": "low"
+    }
+  ],
+  "proven": {
+    "request": {
+      "status": "not_evidenced",
+      "searched": "Repository only: CHANGELOG.md (release notes of engineer-built code), .github/workflows release workflows, packages/cli/src/modules/instance-version-history; no operating records of operator or AI changes going through the loop in a real deployment."
+    },
+    "fix": {
+      "status": "not_evidenced",
+      "searched": "Repository only: no incident or fix records from real deployments; insights and execution data are runtime stores not shipped with the repo."
+    },
+    "expansion": {
+      "status": "not_evidenced",
+      "searched": "Repository only: no launch or keep-or-kill records; PostHog experiment results live outside the repository (.agents/skills/experiments/SKILL.md)."
+    }
+  },
+  "ai_delivery": {
+    "present": true,
+    "qualifies": false,
+    "evidence": "AGENTS.md, CLAUDE.md, .agents/skills (spec-driven-development, create-pr, reproduce-bug, db-migrations), .claude/plugins/n8n, agent-harness.lock.json pinning the private n8n-io/cat-bot OpenCode harness v0.3.0 (scripts/agent-harness.mjs downloads it with gh), cat-bot PRs routed to owners (.github/workflows/ci-owners-assign-reviewers.yml:31-37) and gated by OWNERS required reviews (ci-owners-required-reviews.yml).",
+    "note": "AI-assisted engineering, not the product evolving itself. Does not meet rule 12: the harness code is private and outside the assessed repository, so its GOV-10 limits cannot be verified; the enforcement found is ordinary owner-review and CI gating; it is not built to evolve n8n from its own requests or issues inside the product."
+  },
+  "scores": {
+    "ARC-01": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Lists of workflows, executions, credentials use hand-written TypeORM queries with per-feature indexes (packages/@n8n/db/src/repositories; packages/@n8n/db/src/migrations/migration-index-sync.ts); user data tables are real SQL tables whose columns come from the definition (data-table-ddl.service.ts:80-87) but no index is derived from the definition and there is no search index. Cache service exists (packages/cli/src/services/cache).",
+      "confidence": "medium",
+      "alt_score": 2,
+      "alt_note": "Data-table definitions drive real typed columns that the database can filter, which is better than a generic key-value scan."
+    },
+    "ARC-02": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "TypeORM migration framework for Postgres and SQLite; 36 of 59 Postgres migration files define down() (packages/@n8n/db/src/migrations/postgresdb); `n8n db:revert` (packages/cli/src/commands/db/revert.ts); migration tests run against seeded data in CI (packages/cli/test/migration/*.test.ts, .github/workflows/test-db-reusable.yml). Expand-and-contract is review guidance only (.agents/review-rules/db-migrations, .agents/skills/db-migrations), and runtime data-table DDL is a separate path (data-table-ddl.service.ts) not migrated by the same mechanism.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "Migrations are tested in CI against data on both databases.",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      }
+    },
+    "ARC-03": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Default is regular mode, one main process (packages/@n8n/config/src/configs/scaling-mode.config.ts). Queue mode adds stateless workers and webhook processes over Redis/Bull (packages/cli/src/scaling/scaling.service.ts); a second main needs the licensed multi-main setup with leader election (packages/cli/src/scaling/multi-main-setup.ee.ts, leader-election-client.ts), so the main stays a singleton by default.",
+      "confidence": "medium",
+      "available_score": 3,
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      }
+    },
+    "ARC-04": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Executions run asynchronously in-process (regular) or as Bull jobs (scaling.service.ts:357-368 addJob with priority, removeOnFail); no automatic job retry/back-off or dead-letter queue; scheduled triggers run once across mains only through licensed multi-main leader election (multi-main-setup.ee.ts); Redis lock service (redis-lock.service.ts).",
+      "confidence": "medium"
+    },
+    "ARC-05": {
+      "status": "not_applicable",
+      "rationale": "multi_tenant is false in the default (Community) configuration: team projects need a licence (license.ts getTeamProjectLimit defaults to 0).",
+      "if_applicable": 1
+    },
+    "ARC-06": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Benchmark package and harnesses (packages/@n8n/benchmark, packages/testing/performance, packages/testing/playwright/tests/infrastructure/benchmarks) run nightly (.github/workflows/test-benchmark-nightly.yml cron, test-e2e-performance-reusable.yml cron) and on PRs only when performance tests change (ci-pull-requests.yml:148-152). No documented per-surface limits or budgets found.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "A performance suite exists and runs on schedule in CI.",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      }
+    },
+    "ARC-07": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Health and readiness endpoints (/healthz, /healthz/readiness, packages/cli/src/abstract-server.ts:139). Prometheus /metrics is off by default (packages/@n8n/config/src/configs/endpoints.config.ts:8-9 enable=false); no published SLOs or alert rules found (searched docs/, packages/cli/src/metrics).",
+      "confidence": "medium",
+      "available_score": 2
+    },
+    "ARC-08": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Per-node retryOnFail and continueOnFail, HTTP Request timeouts, workflow execution timeout, task runner timeout (packages/@n8n/config/src/configs/runners.config.ts:54-55 taskTimeout 300 s) with Code nodes in a separate runner process; a failing integration fails only its execution. Circuit breakers only in log-streaming destinations (packages/cli/src/modules/log-streaming.ee/log-streaming-destination.service.ts); no fault-injection suite beyond infrastructure chaos specs (packages/testing/playwright/tests/infrastructure/chaos).",
+      "confidence": "medium",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "AI Agent node supports an optional fallback model (packages/@n8n/nodes-langchain/nodes/agents/Agent/agents/ToolsAgent/V3/helpers/createAgentSequence.ts, tests in helpers/tests/createAgentSequence.test.ts) plus node retry and timeouts; a provider failure is contained to the node/execution. No breaker or declared degradation mode for Instance AI model calls.",
+        "confidence": "medium"
+      }
+    },
+    "ARC-09": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "export:entities / import:entities CLI commands dump and restore database entities to JSON with optional encryption key (packages/cli/src/commands/export/entities.ts:10-53, import/entities.ts) and export:workflow/credentials; unit tests only (commands/export/__tests__/entities.test.ts). Binary data files and the encryption key are outside the command; restored active workflows resume on start with only the workflowStart policy check (policy-infrastructure README), no hold-after-restore; no restore drill.",
+      "confidence": "medium"
+    },
+    "DEL-01": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Requests are captured inside the product as Instance AI threads; the planning skill turns multi-step requests into a stored task graph with per-task spec, dependencies, the workflow to modify, summary and assumptions, which the user approves (packages/@n8n/instance-ai/src/tools/orchestration/plan.tool.ts:9-54; docs/architecture.md 'Explicit Planning'); clarifying questions via ask-user. No acceptance criteria or risk class fields.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "The approved plan links the request to the affected workflows and the workflow loop derives a verification obligation (workflow-loop/verification-obligation.ts) that acts like an acceptance check.",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "A model asks clarifying questions (ask-user) and drafts a structured plan for approval (plan.tool.ts:36-54).",
+        "confidence": "medium",
+        "alt_score": 3,
+        "alt_note": "Verification obligations per build act as machine-checked acceptance."
+      }
+    },
+    "DEL-02": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "One n8n Docker image serves main, worker and webhook roles; task runners ship as a separate image (docker/images); front end is bundled into the same release train (.github/workflows/docker-build-push.yml, release-publish.yml).",
+      "confidence": "medium"
+    },
+    "DEL-03": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Turbo boundaries checked in lint:ci against a ratcheting baseline (package.json:66-69 boundaries:check, scripts/check-boundaries.mjs; .github/workflows/util-update-boundaries-baseline.yml), workspace private-deps check, lint rule that only PolicyEnforcementService may import the PolicyCleared minter (modules/policy-infrastructure/README.md 'The seal').",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "Typed API contracts between front end and back end live in @n8n/api-types, and lint rules guard specific boundaries."
+    },
+    "DEL-04": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Default: Instance AI (default module, no licence) drafts narrow changes on request and a person approves them: data tables and their schemas, workflow setup of credentials and parameters, publish/unpublish and version restore (packages/@n8n/instance-ai/src/tools/workflows.tool.ts:446-523; data-tables.tool.ts), each under the default require_approval permission (instance-ai.schema.ts:2322-2345). Full workflow building needs the sandbox, off by default (packages/@n8n/config/src/configs/instance-ai.config.ts:70 sandboxEnabled=false; README 'The workflow builder requires sandboxing'); the editor AI builder is licensed (controllers/ai.controller.ts:83).",
+      "confidence": "medium",
+      "available_score": 3,
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Same lane, inherently AI: narrow drafts by default; with the sandbox the build\u2192submit\u2192verify\u2192patch state machine builds whole workflows and verifies them by running them (workflow-loop/workflow-loop-controller.ts, tools/orchestration/verify-built-workflow.tool.ts).",
+        "confidence": "medium",
+        "available_score": 3
+      }
+    },
+    "DEL-05": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Code changes: PR CI (build, unit, lint, typecheck, DB, e2e with impact selection) on every PR including drafts (.github/workflows/ci-pull-requests.yml:3-5) plus required review checks. Operator definition changes: saves pass policy checks (policy-infrastructure) and publish refuses workflows with node issues, but no deterministic test runs before a workflow change goes live; evaluations are optional (packages/cli/src/evaluation.ee).",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "Code and AI-built workflow classes have automated checks before landing; only hand-edited workflows lack a test gate."
+    },
+    "DEL-06": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "/healthz and /healthz/readiness (abstract-server.ts:139); version in /rest/settings and instance version history (packages/cli/src/modules/instance-version-history); no machine-readable deployed-configuration snapshot endpoint found.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "Instance version history and the settings endpoint together expose much of the deployed configuration."
+    },
+    "DEL-07": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Per-PR Docker image built and cleaned up (util-cleanup-pr-images.yml), testcontainers stacks created per test run from that image with seeded data and destroyed after (packages/testing/containers; test-e2e-reusable.yml), Codespaces preview per change (util-codespace-preview.yml).",
+      "confidence": "medium"
+    },
+    "DEL-08": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Large Playwright suite with journeys across owner/admin/member roles (packages/testing/playwright/tests/e2e: journeys, projects, sharing, workflows...), changed-path to test coverage map (packages/testing/test-impact/src/impact-map.ts, select.ts), telemetry event registry adopted incrementally (AGENTS.md 'telemetry catalog'). No device coverage; adoption instrumentation is not required at ship.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "Role journeys and a changed-path map exist; only device coverage and mandatory adoption instrumentation are missing."
+    },
+    "DEL-09": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "PostHog feature flags and experiments expose code features to user cohorts (AGENTS.md 'We use Posthog for feature flags'; .agents/skills/experiments/SKILL.md; packages/cli/src/posthog); licence features per instance. Workflow definitions and AI-built changes have no cohort or percentage exposure.",
+      "confidence": "medium"
+    },
+    "DEL-10": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Every change the evolution path ships is a workflow that can be unpublished at runtime (workflows.tool.ts:339 unpublish; workflow-publisher.service.ts), audited as n8n.audit.workflow.deactivated; the AI lane itself can be switched off by an admin at runtime (instance-ai-settings.service.ts:1264-1266 enabled) or per action set to blocked (instance-ai.schema.ts:2290); PostHog flags switch code features off.",
+      "confidence": "medium"
+    },
+    "DEL-11": {
+      "status": "not_applicable",
+      "rationale": "code_release_path is false: no product AI or qualifying evolution system ships code into n8n.",
+      "if_applicable": 2
+    },
+    "MAL-01": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Operators create data tables (a new kind of record with typed columns, project-scoped permissions and generic public-API presence) in the UI with no deploy; the product runs the DDL itself (packages/cli/src/modules/data-table/data-table.controller.ts, data-table-ddl.service.ts:80-87, packages/@n8n/api-types/src/dto/data-table/data-table-public.dto.ts). Not versioned, so not 4.",
+      "confidence": "medium"
+    },
+    "MAL-02": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Data-table columns carry a type (dataTableColumnTypeSchema, packages/@n8n/api-types/src/dto/data-table/create-data-table-column.dto.ts) read by the grid, API and Data Table node; no field-level validation rules (required, format, range).",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "Operators add typed fields through the UI and the same definition drives UI and API."
+    },
+    "MAL-03": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "No declarable relations between data tables and no lifecycle-state definitions; state is coded per feature (workflow active/archived, review states in workflow-reviews.ee). Workflows can implement state machines but nothing declares them.",
+      "confidence": "medium"
+    },
+    "MAL-04": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Generic data-table rows API for any operator-defined table with no per-table code (packages/cli/src/public-api/v1 data-table handlers; data-table-public.dto.ts).",
+      "confidence": "medium"
+    },
+    "MAL-05": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Publishing a workflow with a Webhook or Form trigger creates a live HTTP endpoint at runtime with no build (packages/cli/src/webhooks); adding a data-table column changes what the generic rows API accepts immediately. No per-consumer versioning or dry-run.",
+      "confidence": "medium"
+    },
+    "MAL-06": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Hand-written OpenAPI spec for the public API v1 (packages/cli/src/public-api/v1/openapi.yml, published by .github/workflows/util-publish-api-schema.yml), Zod-validated DTOs with structured errors; internal REST API undocumented; no dry-run.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "The public surface is fully described in OpenAPI and typed clients can be generated from it."
+    },
+    "MAL-07": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Product pages are coded Vue components (packages/frontend/editor-ui/src); no operator page layout data. Form Trigger forms are defined as node parameters and rendered generically, but that is end-user forms, not product layout.",
+      "confidence": "low",
+      "alt_score": 2,
+      "alt_note": "Form layouts are data in the workflow definition."
+    },
+    "MAL-08": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Data tables get a generic grid (list and inline edit) from their column definitions (frontend features/core/dataTable); forms render from Form Trigger specs; no view-spec format for detail views.",
+      "confidence": "medium"
+    },
+    "MAL-09": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Design tokens in @n8n/design-system and UI text in @n8n/i18n locale files, engineer-managed; light/dark theme; no operator theme editor or per-instance text overrides found.",
+      "confidence": "medium"
+    },
+    "MAL-10": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Workflows are the rules engine: operators compose triggers, conditions (IF/Switch/Filter) and actions across every integration and data table in the editor, with manual test runs and pinned data; 'Debug in editor' replays past execution data; JSON definitions are versioned (workflow history). AI authoring by the product needs the opt-in sandbox; MCP workflow:write tools need an admin to enable MCP (packages/cli/src/modules/mcp/mcp.settings.service.ts:27,73 default false).",
+      "confidence": "medium",
+      "alt_score": 4,
+      "alt_note": "Workflows are machine-readable, versioned, simulatable against past executions and AI-authorable with structured validation through MCP validate_workflow/create_workflow_from_code once MCP is on.",
+      "available_score": 4
+    },
+    "MAL-11": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Internal events reach workflows through the n8n Trigger node and error workflows; the event bus (packages/cli/src/eventbus) streams workflow lifecycle and audit events to destinations only with licensed log streaming (modules/log-streaming.ee, 'Requires feat:logStreaming'), which has a circuit breaker; no replay.",
+      "confidence": "low",
+      "available_score": 3
+    },
+    "MAL-12": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Code nodes run in task runners (runners.config.ts:16-17 mode 'internal' child process; Python runner) with module allowlists and a task timeout (runners.config.ts:54-55); triggered by events and requests via workflows. No egress control found.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "Runner isolation, allowlists and timeouts cover most of level 3; only egress control is missing."
+    },
+    "MAL-13": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Plugin points are nodes and credential types, in code or declarative routing style (packages/workflow node interfaces; packages/@n8n/node-cli), installable as community packages; no plugin points for layout, theme or text.",
+      "confidence": "medium"
+    },
+    "MAL-14": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Community nodes run in the main/worker process with full trust after optional scanning (packages/@n8n/scan-community-package, verified community nodes); Code-node code (including AI-written code) runs in a separate task-runner process with memory and time limits but no egress control.",
+      "confidence": "medium"
+    },
+    "MAL-15": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "@n8n/node-cli scaffolds, lints and runs a node in a local n8n dev loop; scan-community-package validator; no preview against a real tenant or staged branches.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "Local dev with hot reload, lint and a validator is close to the level-3 loop."
+    },
+    "MAL-16": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Every node exchanges generic JSON items; a configurable mapping layer (expressions, drag-and-drop field mapping, resource mapper that fetches the target schema, resource mapper used from packages/frontend/editor-ui/src/features/ndv/parameters/components/ParameterInputList.vue) lets a second system be integrated by mapping in a workflow, often through the generic HTTP Request node.",
+      "confidence": "medium"
+    },
+    "MAL-17": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Node SDK covers credentials (generic OAuth2/API key), polling, webhook trigger lifecycle (webhookMethods checkExists/create/delete) and execution (packages/workflow/src/interfaces.ts); partners publish community nodes; admins install and configure them from the UI (modules/community-packages).",
+      "confidence": "medium"
+    },
+    "MAL-18": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Public API versioned by path (/api/v1); node contracts versioned by typeVersion with old versions kept; breaking-changes module for major upgrades. No stated deprecation windows, idempotency keys or conflict handling.",
+      "confidence": "medium"
+    },
+    "MAL-19": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Introspectable public API by default. The instance MCP server ships as a default module with typed tools, OAuth scopes mapped to tools (packages/cli/src/modules/mcp/mcp-scopes.ts TOOLS_BY_SCOPE) and get_instance_context, but MCP access is off until an admin enables it (mcp.settings.service.ts:27,73).",
+      "confidence": "medium",
+      "available_score": 3,
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "API agents can call by default; typed MCP tools with scoped OAuth once an admin enables MCP.",
+        "confidence": "medium",
+        "available_score": 3
+      }
+    },
+    "MAL-20": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Instance AI is a grounded assistant for users (query and run workflows, inspect executions, manage data tables with approval cards); operators' natural-language authoring of whole workflows needs the opt-in sandbox (instance-ai.config.ts:70). Chat hub gives end users conversational access to agents and workflows (modules/chat-hub).",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "Data-table and setup authoring already run through the assistant with preview cards.",
+      "available_score": 3,
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Grounded model assistant for builders by default; full NL authoring with workflow preview and diff with the sandbox.",
+        "confidence": "medium",
+        "alt_score": 3,
+        "alt_note": "Users complete tasks through it today.",
+        "available_score": 3
+      }
+    },
+    "LRN-01": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Insights module (default) collects execution events and flushes them on a seconds-level interval (packages/cli/src/modules/insights/insights.config.ts:43-50 N8N_INSIGHTS_FLUSH_INTERVAL_SECONDS) for the in-product dashboard; activity_event table read by Instance AI (packages/cli/src/events/relays/activity.event-relay.ts).",
+      "confidence": "medium"
+    },
+    "LRN-02": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Execution records link to workflow and status; evaluation test runs are pinned to a workflow version snapshot (workflow-history.service.ts:113-160 snapshotCurrent); agent-evals ratings (modules/agent-evals/agent-eval-rating.service.ts). No triage workflow over signals.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "Evaluation results are typed and tied to the workflow version."
+    },
+    "LRN-03": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Failed executions are stored with workflow, node and error and are filterable in the executions list; insights reports failure counts and rates per workflow; first production failure emails the owner (packages/cli/src/events/relays/workflow-failure-notification.event-relay.ts).",
+      "confidence": "high"
+    },
+    "LRN-04": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Insights joins execution outcomes with workflows and projects; Instance AI can read activity, executions and workflows together; no joined model with feedback and change history.",
+      "confidence": "medium"
+    },
+    "LRN-05": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Each failed execution carries per-node inputs, outputs and the error; 'Debug in editor' loads it for reproduction; failures are grouped per workflow in insights. No automatic root-cause linking.",
+      "confidence": "medium",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Instance AI debugging-executions skill explains a failed execution with its data on request (packages/@n8n/instance-ai/skills/debugging-executions); Ask AI node-error help is licensed (ai.controller.ts:220 feat:askAi).",
+        "confidence": "medium",
+        "alt_score": 3,
+        "alt_note": "With pin data the assistant can re-run a step to reproduce (cli/src/modules/instance-ai/instance-ai-run-pin-data.ts)."
+      }
+    },
+    "LRN-06": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Proposals exist for one area: the assistant proposes fixes for a failed workflow on request; no ranked proposals across the product.",
+      "confidence": "low",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "A model drafts fix proposals for a failing workflow, citing the execution, on request.",
+        "confidence": "low"
+      }
+    },
+    "LRN-07": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "No background job turns operating experience into candidate changes; observational memory only condenses conversations (docs/architecture.md 'Observational Memory'); preferences are saved when the user states them (save-user-preference.tool.ts:1-5). Asking the assistant to improve a workflow from its executions needs the opt-in sandbox builder.",
+      "confidence": "medium",
+      "available_score": 2,
+      "ai": {
+        "status": "assessed",
+        "score": 1,
+        "grade": "A",
+        "evidence": "People ask the model to save preferences or change workflows.",
+        "confidence": "medium",
+        "available_score": 2
+      }
+    },
+    "LRN-08": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "AI-made changes get automated checks: Zod schema validation of tool input, data-table schema validation, preference length/duplicate/row caps (save-user-preference.tool.ts), node-type policy checks on save; with the sandbox, TypeScript compile and workflow validation plus verification runs (workflow-loop). No baseline comparison before apply.",
+      "confidence": "medium",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Automated validation on AI-made workflows and data changes; no baseline evaluation before apply.",
+        "confidence": "medium"
+      }
+    },
+    "LRN-09": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Insights show time-saved and failure trends per workflow and evaluation runs can be compared across versions (frontend features/ai/evaluation.ee/components/Compare), but nothing binds an applied change to a baseline, target metric, window and keep/rollback decision.",
+      "confidence": "medium"
+    },
+    "LRN-10": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "The checks that govern change are code (instance-ai workflow-loop, validation services) and evaluation sets in the repository changed by engineers (packages/@n8n/instance-ai/evaluations); admins change Instance AI permissions in settings without versioning. Type-availability policy documents are versioned (policyVersions in policy-infrastructure audit line) but the module is licensed and not default (type-availability-policies/README.md 'Turn it on'); nothing links changes to measured results.",
+      "confidence": "low",
+      "available_score": 2
+    },
+    "GOV-01": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Component kit and tokens (@n8n/design-system, Storybook, Chromatic visual tests on approved PRs, ci-pull-request-review.yml); one axe-based landmark scan in e2e (packages/testing/playwright/tests/e2e/a11y/a11y-landmark-structure.spec.ts). No scan gating every change.",
+      "confidence": "medium"
+    },
+    "GOV-02": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Generic event bus with n8n.audit.* events for workflows, credentials, users, variables, reviews, policy blocks (packages/cli/src/events/relays/log-streaming.event-relay.ts), written to local event log and streamed only with licensed log streaming; activity_event table omits data tables, folders, projects (activity.event-relay.ts:43-46). No admin audit UI.",
+      "confidence": "medium"
+    },
+    "GOV-03": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Execution-data redaction policy (modules/redaction), execution pruning retention, user deletion with transfer; no field-level privacy classification or generic data-subject export/erasure.",
+      "confidence": "medium"
+    },
+    "GOV-04": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Generic RBAC scopes and custom roles (@n8n/permissions), mandatory Zod DTO validation, security audit command (packages/cli/src/commands/audit.ts); PR scans cover workflow security (poutine, zizmor via sec-ci-reusable.yml) while Trivy image scanning runs at image build (docker-build-push.yml:763-790). Authorisation is not generated per defined type and dependency/SAST scans do not gate every change.",
+      "confidence": "medium"
+    },
+    "GOV-05": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Workflows: history, diff and restore in the UI (workflow-history.controller.ts:22-91, WorkflowHistoryDiff.vue), 24 h retention by default (constants index.ts:80); agents have version history (modules/agents/repositories/agent-history.repository.ts). Credentials, data-table schemas, variables, folders, project settings and Instance AI settings have no version history; source control (git) covers more for admins.",
+      "confidence": "high"
+    },
+    "GOV-06": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Draft/publish separation lets builders save, test-run on real data and publish (workflow-publisher.service.ts); AI builder changes show a diff to accept (frontend features/ai/assistant/components/Agent/AIBuilderDiffModal.vue); git-based source control environments. Review with approval before publish needs the licensed, policy-enabled workflow reviews (modules/workflow-reviews.ee/workflow-review-feature-gate.service.ts, workflow-review-publish-guard.service.ts:19-31).",
+      "confidence": "medium",
+      "available_score": 3
+    },
+    "GOV-07": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "A policy object per AI change class (createWorkflow, updateWorkflow, publishWorkflow, mutateDataTableSchema \u2026: require_approval / always_allow / blocked; instance-ai.schema.ts:2290-2345) decides whether AI changes need a person; thread grants persist always-allow choices. Approval outcomes are not durably recorded (pending-confirmation table is only a lookup index, instance-ai-pending-confirmation.entity.ts; controller comment at instance-ai.controller.ts:416). Human changes have no policy beyond licensed workflow reviews.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "The permission map is a real per-class policy object an admin edits; recorded approvals are the missing half."
+    },
+    "GOV-08": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Nodes keep old typeVersions so saved workflows keep working; the breaking-changes module scans workflows and configuration against rules for the target major version and ships automated workflow migrations (modules/breaking-changes/README.md, rules/v2, rules/v3, migrations/execute-workflow-each-to-loop.migration.ts).",
+      "confidence": "medium"
+    },
+    "GOV-09": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Public API keys per user (with scopes) and MCP OAuth with scopes (mcp-scopes.ts); actions audited (n8n.audit.mcp.tool.called, workflow events). No dry-run or idempotency keys on mutations; rate limiting not evidenced across the API.",
+      "confidence": "medium",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Instance AI acts as the requesting user through RBAC (adapter userHasScopes; security tests in modules/instance-ai/__tests__/instance-ai.adapter.service.security.test.ts), with approval cards for mutations, per-node destructiveness classification (tools/workflows/classify-node-destructiveness.service.ts), run limits and credits; idempotency not evidenced.",
+        "confidence": "medium",
+        "alt_score": 3,
+        "alt_note": "Scoped identity, approval for mutations and run limits are present."
+      }
+    },
+    "GOV-10": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "AI change paths are bounded in code: per-action permission modes including blocked (instance-ai.schema.ts:2290-2345), update grants only for workflows the agent created in the thread (instance-ai.schema.ts:110-119), branchReadOnly set, preference length and row caps, reserved MCP tool names, folder scope (modules/instance-ai/instance-ai-folder-scope.ts), sandbox path scoping. No per-period change limits or blast-radius limit, and blocked attempts are not logged as such.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "Every AI mutation path is checked against a declared, admin-set scope.",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      },
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Allow/deny modes in code for every AI path; no blast-radius or rate limit on changes.",
+        "confidence": "medium",
+        "alt_score": 3,
+        "alt_note": "Every AI mutation path is enforced against the admin permission map.",
+        "facets": {
+          "implemented": true,
+          "tested": true,
+          "operated": false
+        }
+      }
+    },
+    "GOV-11": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Untrusted web and MCP content is fenced and sanitised (packages/@n8n/instance-ai/src/tools/web-research/sanitize-web-content.ts wrapUntrustedData; agent/sanitize-mcp-descriptions.ts; UNTRUSTED_CONTENT_DOCTRINE in agent/shared-prompts.ts); preferences record the user who stated them; mutations need approval. No injection scanning or bulk revert by source.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "Untrusted content cannot alone trigger an applied change because mutations require approval.",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Fencing and sanitising of untrusted content in prompts; provenance partial.",
+        "confidence": "medium",
+        "alt_score": 3,
+        "alt_note": "Approval gates stop untrusted content from applying changes alone."
+      }
+    },
+    "EXP-01": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Kernel primitives are domain-neutral: workflow, node, connection, credential, execution, project, user, data table (packages/workflow, packages/@n8n/db/src/entities); every business domain lives in nodes and workflows above them.",
+      "confidence": "high"
+    },
+    "EXP-02": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "A new business domain is workflows plus credentials plus data tables with no kernel change; curated templates across domains ship in the assistant knowledge base (packages/@n8n/instance-ai/knowledge-base) and the template gallery (packages/@n8n/config/src/configs/templates.config.ts).",
+      "confidence": "medium"
+    },
+    "EXP-03": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Installable .n8np packages bundle projects, folders, workflows and credential dependencies with a manifest and requirements, imported through UI, public API and CLI with import gates (packages/cli/src/modules/n8n-packages/spec/manifest.schema.ts, requirements.schema.ts, engine/import-orchestrator.ts).",
+      "confidence": "medium"
+    },
+    "EXP-04": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "No in-product record of unmet intents (failed node searches, unsupported assistant requests) that operators can query; such signals go to the vendor's telemetry (AGENTS.md telemetry catalog) outside the product.",
+      "confidence": "low"
+    },
+    "EXP-05": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Suggest-automations proposes common automations from the model's knowledge of the user's team and apps, not from demand data (packages/@n8n/instance-ai/skills/suggest-automations/SKILL.md).",
+      "confidence": "low",
+      "alt_score": 2,
+      "alt_note": "It drafts adjacent automations on request citing what the user said about their apps.",
+      "ai": {
+        "status": "assessed",
+        "score": 1,
+        "grade": "A",
+        "evidence": "Model suggestions from general knowledge on request.",
+        "confidence": "low",
+        "alt_score": 2,
+        "alt_note": "Drafts a proposal on request."
+      }
+    },
+    "EXP-06": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "New capabilities reach selected users through PostHog flags and experiments with a retire lifecycle (.agents/skills/experiments/SKILL.md; release-create-experiment.yml); success metrics and decisions live outside the product.",
+      "confidence": "medium"
+    },
+    "AIR-03": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Instance AI reaches live workflows, executions, credential metadata, data tables, node definitions and docs through schema-aware tools via the adapter (instance-ai.adapter.service.ts; tools/*.tool.ts), always current because they read the database at call time.",
+      "confidence": "medium"
+    },
+    "AIR-04": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Every Instance AI tool call goes through the adapter, which enforces the requesting user's RBAC scopes (instance-ai.adapter.service.ts, 7 userHasScopes checks); tests prove cross-project and missing-scope requests are refused (__tests__/instance-ai.adapter.service.security.test.ts:195-543). Workflow AI agents run with their project's credentials (a scoped identity).",
+      "confidence": "medium",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      }
+    },
+    "AIR-05": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Evaluation harnesses and datasets for Instance AI, the AI builder and MCP (packages/@n8n/instance-ai/evaluations, ai-workflow-builder.ee evaluations, modules/mcp/evaluations) with LangSmith experiments; users can evaluate their own AI workflows (packages/cli/src/evaluation.ee). Not every AI feature has a maintained set.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "The main AI features have maintained sets with stored baselines."
+    },
+    "AIR-06": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Instance AI 'PR Gate' runs a pr-tier eval suite on PR open (.github/workflows/ci-instance-ai-evals.yml:1-20) but not on later pushes and is not shown as a required check; AI builder evals run on master push and release (test-evals-ai.yml, test-evals-ai-release.yml); MCP evals manual.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "A PR-time eval gate exists for the main AI feature.",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      }
+    },
+    "AIR-07": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Durable per-thread event log of agent steps and tool calls (instance_ai_events, modules/instance-ai/entities/instance-ai-event-log-entry.entity.ts), MCP tool calls audited (n8n.audit.mcp.tool.called), LangSmith tracing for engineers (docs/architecture.md 'Tracing'). No operator-queryable record of approvals, model and prompt version per action.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "Event log and audit events reconstruct most consequential AI actions.",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      }
+    },
+    "AIR-01": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Model per AI node chosen in the editor, Instance AI model chosen in settings with a model catalog (modules/instance-ai/instance-ai-model-catalog.service.ts); AI Agent node offers a tested fallback model per node. No declared strategy for Instance AI model failure.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "Operators choose models per feature in the UI and the agent node's fallback is tested."
+    },
+    "AIR-02": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Token counts go to telemetry (modules/instance-ai/instance-ai.service.ts:4413, 7068-7070); no per-user token or cost store. Gateway credits enforce an instance quota only with the licensed AI gateway (instance-ai-credit.service.ts:55-136).",
+      "confidence": "low",
+      "available_score": 2
+    },
+    "AIR-08": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "User feedback on assistant answers is sent to vendor telemetry; no per-feature quality monitoring visible to operators or drift alerts.",
+      "confidence": "low"
+    }
+  }
+}

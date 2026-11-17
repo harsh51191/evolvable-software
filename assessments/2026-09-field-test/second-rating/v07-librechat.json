@@ -1,0 +1,821 @@
+{
+  "product": "LibreChat",
+  "date": "2026-11-17",
+  "source": "danny-avila/LibreChat@14f7b2865692d27364c934ecb9912496371018bb (main)",
+  "archetype": "agent-runtime",
+  "framework": "EVOLVE",
+  "framework_version": "0.7.0",
+  "basis": "shipped",
+  "scope_facts": {
+    "persistent_data": {
+      "value": true,
+      "evidence": "MongoDB stores users, conversations, messages, agents, prompts, skills, memories, schedules: packages/data-schemas/src/models/*.ts (e.g. convo.ts, message.ts, agent.ts, skill.ts, memory.ts, schedule.ts)."
+    },
+    "schema_changes": {
+      "value": true,
+      "evidence": "Mongoose schemas evolve between releases and ship explicit migration commands: packages/data-schemas/src/migrations/index.ts:1-4 (tenant/prompt/MCP index migrations, name backfill), config/migrate-*.js, UPGRADING.md:29-40 (tenant index migration)."
+    },
+    "multi_tenant": {
+      "value": false,
+      "evidence": "Tenant isolation exists but is opt-in: tenant context is only taken from X-Tenant-Id when TRUST_TENANT_HEADER=true (packages/api/src/middleware/preAuthTenant.ts:20-46, .env.example:167) and strict mode is off by default (packages/data-schemas/src/tenant/policy.ts:48-50, .env.example:761). The default install is one organisation whose users are administered by one admin; per-user privacy is not self-administered groups."
+    },
+    "hosted_service": {
+      "value": true,
+      "evidence": "Long-lived Express server: api/server/index.js (health at :328, metrics at :456); Docker images and Helm chart helm/librechat/templates/deployment.yaml."
+    },
+    "machine_actions": {
+      "value": true,
+      "evidence": "External clients act through agent API keys and OpenAI-compatible endpoints (/api/agents/v1/chat/completions, /api/agents/v1/responses listed in packages/api/src/app/metrics.ts:41-42; model packages/data-schemas/src/models/agentApiKey.ts), a skills management API (docs/skills-management-api.md) and trigger ingress (packages/api/src/agents/triggers/README.md:1-45)."
+    },
+    "agent_mutations": {
+      "value": true,
+      "evidence": "The product's agents write skills through create_file/edit_file in the skills/ namespace (packages/api/src/agents/handlers.ts:3805-3960 writeSkillMd -> options.createSkill/updateSkill); skills capability is on by default (packages/data-provider/src/config.ts:830-847) and USER role has SKILLS CREATE (packages/data-provider/src/roles.ts:269-274). Agents also have a memory tool (agents/memory.ts)."
+    },
+    "evolution_auto_apply": {
+      "value": false,
+      "evidence": "No autonomous evolution loop is on by default: automatic memory extraction is opt-in (packages/data-schemas/src/app/memory.ts:18-23,39-42 requires memory.agent.enabled: true) and memory itself needs librechat.yaml memory config (isDisabled when config absent, :12-13). Skill writes happen only when a user asks the agent in chat; they then apply without content approval because HITL is default-off (packages/api/src/agents/hitl/policy.ts:85), which is recorded under GOV-07/GOV-10 rather than as an autonomous loop."
+    },
+    "definition_change_path": {
+      "value": true,
+      "evidence": "Behaviour changes through agent definitions, prompts, skills, MCP servers, role permissions and librechat.yaml plus DB config overrides (packages/api/src/admin/config.ts; api/server/routes/admin/config.js:38-46; packages/api/src/app/service.ts:396-518 merges overrides live)."
+    },
+    "code_release_path": {
+      "value": false,
+      "evidence": "The product never changes its own source and has no code-generating evolution pipeline. AI-authored skill files may include scripts, but they execute only inside the external code-execution sandbox as user workload (CONTEXT.md:5 attached code environment; packages/api/src/agents/skillFiles.ts), not as product code. Judgement call; see least-sure list."
+    },
+    "ai_features": {
+      "value": true,
+      "evidence": "Core product is LLM chat and agents: packages/api/src/agents/run.ts, packages/api/src/endpoints."
+    },
+    "ai_data_access": {
+      "value": true,
+      "evidence": "File search/RAG, web search, memory and MCP tools read product and user data: AgentCapabilities file_search, context, memory, tools in packages/data-provider/src/config.ts:830-847."
+    },
+    "ai_actions": {
+      "value": true,
+      "evidence": "Agents call actions (OpenAPI), MCP tools and write skills and memories; scheduled and event-triggered runs act unattended (packages/api/src/schedules/README.md, packages/api/src/agents/triggers/README.md)."
+    }
+  },
+  "change_kinds": [
+    {
+      "id": "agents",
+      "name": "What an assistant is told, which model and tools it uses",
+      "who": "users and agent builders",
+      "main": true,
+      "reach": 1,
+      "evidence": "Agent Builder side panel (client/src/components/SidePanel/Agents) with version history and revert: agent.versions packages/data-schemas/src/schema/agent.ts:125-128, revertAgentVersion packages/data-schemas/src/methods/agent.ts:1647-1680, client/src/components/SidePanel/Agents/Version/VersionPanel.tsx. No AI drafting of agents.",
+      "confidence": "high"
+    },
+    {
+      "id": "prompts",
+      "name": "Saved prompts people reuse",
+      "who": "users",
+      "main": true,
+      "reach": 1,
+      "evidence": "Prompt library: each save is a new Prompt in a PromptGroup with a selectable productionId (packages/data-schemas/src/schema/promptGroup.ts:25, schema/prompt.ts), so a prior version can be made current again (client/src/components/Prompts).",
+      "confidence": "medium"
+    },
+    {
+      "id": "models-config",
+      "name": "Which models and providers people can use, and their settings and interface options",
+      "who": "administrators",
+      "main": true,
+      "reach": 1,
+      "evidence": "Base in librechat.yaml (file + restart). Live path: admin config overrides per role/group/user stored in Mongo, validated (getConfigOverrideIssues) and merged per request (packages/api/src/admin/config.ts:1-120, api/server/routes/admin/config.js:38-46, packages/api/src/app/service.ts:396-518); undo by deleting a field/override or toggling it inactive (routes :44-46). No history or diff. The admin UI is a separate first-party image (deploy-compose.yml:46 librechat-admin-panel) outside this repository.",
+      "confidence": "medium"
+    },
+    {
+      "id": "permissions",
+      "name": "Who can use which features, agents, prompts and skills",
+      "who": "administrators and owners",
+      "main": true,
+      "reach": 1,
+      "evidence": "Role permissions and ACL sharing through UI and admin API (api/server/routes/admin/roles.js:38-46, grants.js:31-36, api/server/routes/accessPermissions.js); toggles undo by toggling back; grant changes audited (packages/data-schemas/src/types/admin.ts:68-73).",
+      "confidence": "medium"
+    },
+    {
+      "id": "tools",
+      "name": "Tool and service connections (MCP servers, actions)",
+      "who": "administrators and permitted users",
+      "main": true,
+      "reach": 1,
+      "evidence": "MCP servers added and edited in the UI and DB (packages/data-schemas/src/models/mcpServer.ts, client/src/components/MCP), or through mcpServers config overrides; undo by removing the server or the override (tombstones, packages/api/src/admin/config.ts). Edits keep no history.",
+      "confidence": "low"
+    },
+    {
+      "id": "skills",
+      "name": "Reusable skills (instructions and files) agents load",
+      "who": "users",
+      "main": false,
+      "reach": 0,
+      "evidence": "Created in the Skills UI, by zip/GitHub sync, or by the agent on request (packages/api/src/agents/handlers.ts:3805-3960). Only a version counter for optimistic concurrency (packages/data-schemas/src/schema/skill.ts:176-180); no revision history or revert for inline skills (methods/skill.ts lists create/update/delete only, :1165-1765; no history UI under client/src/components/Skills). Edits cannot be undone, so reach 0; GitHub-synced skills undo upstream.",
+      "confidence": "medium"
+    },
+    {
+      "id": "memories",
+      "name": "What the assistant remembers about a person",
+      "who": "users",
+      "main": false,
+      "reach": 1,
+      "evidence": "Memories panel and API (api/server/routes/memories.js) to edit or delete entries (schema packages/data-schemas/src/schema/memory.ts); feature requires memory config (packages/data-schemas/src/app/memory.ts:12-13).",
+      "confidence": "medium"
+    },
+    {
+      "id": "schedules",
+      "name": "Scheduled and event-triggered agent runs",
+      "who": "users",
+      "main": false,
+      "reach": 1,
+      "evidence": "Schedules UI and API with pause/disable (api/server/routes/schedules.js, packages/api/src/schedules/handlers.ts); README packages/api/src/schedules/README.md.",
+      "confidence": "medium"
+    }
+  ],
+  "proven": {
+    "request": {
+      "status": "not_evidenced",
+      "searched": "Repository only at 14f7b28: no operating records of changes going through the loop in a deployment (no audit exports, release records of product-made changes)."
+    },
+    "fix": {
+      "status": "not_evidenced",
+      "searched": "Repository only: no incident or fix records from a running deployment."
+    },
+    "expansion": {
+      "status": "not_evidenced",
+      "searched": "Repository only: no records of capabilities launched and kept or removed."
+    }
+  },
+  "ai_delivery": {
+    "present": true,
+    "qualifies": false,
+    "evidence": "AGENTS.md (contributor and agent guidance), CONTEXT.md, .claude/skills/codebase-design and improve-codebase-architecture, .codex marker; ordinary CI in .github/workflows (static-checks, backend-review, codegraph-select).",
+    "note": "Instruction files and skills for coding agents plus a team's CI; no installed delivery framework with enforced authority checks or GOV-10 limits, so rule 12 is not met. AI-assisted engineering is not the product evolving itself."
+  },
+  "scores": {
+    "ARC-01": {
+      "status": "not_applicable",
+      "rationale": "agent-runtime archetype excludes generic business-object query paths. For reference: Mongo indexes plus optional Meilisearch index for conversations/messages (search/README.md, packages/data-schemas/src/models/plugins/mongoMeili.ts).",
+      "if_applicable": 2
+    },
+    "ARC-02": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Mongo with no migration framework or down steps. Migrations are explicit maintenance commands and startup index fixes (packages/data-schemas/src/migrations/index.ts:1-4, config/migrate-*.js, migrate-tenant-indexes.js); UPGRADING.md:29-40 tells operators to back up and stop all replicas before the tenant index migration. Mixed-version compatibility is handled by convention in code (CONTEXT.md:28,31), not tooling.",
+      "confidence": "medium"
+    },
+    "ARC-03": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Default Helm replicaCount 1, autoscaling.enabled false, redis.enabled false (helm/librechat/values.yaml:5,215-219,397-398). With Redis (USE_REDIS, package.json backend:redis:* scripts) sessions, caches, streams and subagent routing move to shared stores; LeaderElection (packages/api/src/cluster/LeaderElection.ts); HPA template helm/librechat/templates/hpa.yaml; cross-replica tests (packages/api/src/agents/subagentCrossReplica.integration.spec.ts, .github/workflows/cache-integration-tests.yml, e2e playwright.config.redis.ts).",
+      "confidence": "medium",
+      "available_score": 3,
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      }
+    },
+    "ARC-04": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Mongo-backed trigger delivery queue with leases, retry history, backoff and dead letters across replicas (packages/data-schemas/src/schema/triggerDelivery.ts:11-20,134-144,183,210-228; packages/api/src/agents/triggers/README.md:46-50; triggers/backoff.ts); stable deliveryId idempotency (README:10-12); schedule occurrences claimed once with deterministic delivery keys and concurrency slots (packages/data-schemas/src/schema/scheduleRun.ts:36,138,162-169); tests delivery.integration.spec.ts, backoff.spec.ts, schedules/engine.spec.ts. No per-tenant fairness or back-pressure policy (level 4).",
+      "confidence": "medium",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      }
+    },
+    "ARC-05": {
+      "status": "not_applicable",
+      "rationale": "multi_tenant is false in the default configuration. For reference: opt-in tenant isolation plugin on models with conformance tests (packages/data-schemas/src/models/plugins/tenantIsolation.ts, tenant/conformance.ts, tenantIsolation.coverage.spec.ts) and per-user balance and rate limits, but no per-tenant quotas or noisy-neighbour detection.",
+      "if_applicable": 2
+    },
+    "ARC-06": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Load/performance suites exist (e2e/benchmarks*, perf, npm scripts e2e:benchmark:* in package.json) and a Lighthouse lane on PRs that adds 250 ms per Mongo query and checks conversation LCP (.github/workflows/lighthouse.yml, AGENTS.md:58-61, e2e/lighthouse/README.md). Limits are not documented per surface; benchmarks run on demand.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "Lighthouse is a CI performance gate with budgets for the conversation-load surface.",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      }
+    },
+    "ARC-07": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Prometheus metrics for HTTP routes, agent startup milestones and RUM proxy (packages/api/src/app/metrics.ts:1-60; mounted api/server/index.js:174-190,456). No published objectives, alert rules or error budgets found in repo (searched *.md, *.yaml, *.ts for SLO/alert/error budget).",
+      "confidence": "high"
+    },
+    "ARC-08": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Timeouts and retries on outbound calls: MCP connection and tool timeouts, RUM proxy timeout (packages/api/src/rum/proxy.ts:9-31), provider fallbacks for summarization (packages/api/src/agents/run.ts:1512-1552), model error tracking that lets retries/fallbacks recover (packages/api/src/agents/failures/tracker.ts:37-40), stream circuit breakers on tool-arg size (run.ts:2997). Failures are contained to a run, but there are no circuit breakers or bulkheads per surface and no fault-injection suite.",
+      "confidence": "medium",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Model calls have provider SDK retries, configurable fallbacks (run.ts:1512-1552) and error classification (failures/tracker.ts); no circuit breakers around providers or tested degradation modes.",
+        "confidence": "medium"
+      }
+    },
+    "ARC-09": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "No backup or restore command in repo (searched for backup, mongodump across *.md, *.yml, *.js, *.ts, *.sh). UPGRADING.md:40 tells operators to back up MongoDB themselves. Scheduled runs do re-validate owner, policy and credentials before each run (CONTEXT.md:3, packages/api/src/schedules/README.md:1-40, readiness.ts), which would help a restored schedule surface, but nothing restores it.",
+      "confidence": "high"
+    },
+    "DEL-01": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "No request or feature-request object for changes to the product. Requests to change behaviour arrive as free text in chat; message feedback stores rating, tag and free text (packages/data-provider/src/feedback.ts:1-80, packages/data-schemas/src/schema/message.ts:103-120). No specification with acceptance criteria.",
+      "confidence": "medium",
+      "ai": {
+        "status": "assessed",
+        "score": 1,
+        "grade": "A",
+        "evidence": "A model handles the request in chat and can ask the user questions through the default ask_user_question capability (packages/data-provider/src/config.ts:843; packages/api/src/agents/hitl/askUserQuestionTool.ts) before authoring a skill, but nothing makes it structure the request or draft a plan.",
+        "confidence": "low",
+        "alt_score": 2,
+        "alt_note": "The ask_user_question tool lets the model ask clarifying questions before it writes a skill."
+      }
+    },
+    "DEL-02": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "One API image that also serves the built client (Dockerfile.multi stages client-build and api-build); RAG API and admin panel are separate images (deploy-compose.yml:7,46,104). Front end and API build and release together.",
+      "confidence": "medium",
+      "alt_score": 2,
+      "alt_note": "Separate containers exist for RAG API and admin panel, but the core layers ship together."
+    },
+    "DEL-03": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "npm workspaces define the package graph (package.json workspaces; packages/data-provider, data-schemas, api, client); config/circular-deps.mjs fails on cycles in module graphs and runs in static checks (scripts/static-checks.mts). Module rules in AGENTS.md:71-99 are convention; no architectural tests of layer boundaries.",
+      "confidence": "medium"
+    },
+    "DEL-04": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "The product's agent authors skills (definitions) on a user's request: writeSkillMd validates frontmatter and name, applies content filters, checks create/edit permission, uses expectedVersion concurrency (packages/api/src/agents/handlers.ts:3805-3960; validation packages/data-schemas/src/methods/skill.ts:116-526). Narrow (skills only), on request, applied directly rather than proposed with evidence; a person edits further.",
+      "confidence": "medium",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Same lane; inherently AI: model writes skills on request, narrow scope, no proposal or verification evidence (handlers.ts:3805-3960).",
+        "confidence": "medium"
+      }
+    },
+    "DEL-05": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "CI on PRs for backend, frontend, static checks (lint, prettier, types, imports, circular deps), integration, a11y, lighthouse, Playwright mock (.github/workflows/*.yml); checks are path-selected (static-checks.yml:46). Runtime definition changes are schema-validated (skill.ts validators, admin config getConfigOverrideIssues). Some classes are uncovered (agent and prompt text has no check beyond schema; Playwright mock runs only for members, playwright-mock.yml:50-54).",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "Every code change and every runtime definition write passes a deterministic check."
+    },
+    "DEL-06": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Health endpoint (api/server/index.js:328), build info (commit, branch, date) in /api/config (packages/api/src/app/build.ts:1-30, api/server/routes/config.js:232-248), metrics. Base config readable through the admin API (api/server/routes/admin/config.js:39), not verified to be a full deployed-config snapshot.",
+      "confidence": "low",
+      "alt_score": 3,
+      "alt_note": "GET /api/admin/config/base may serve as a machine-readable config snapshot."
+    },
+    "DEL-07": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "docker-compose and deploy-compose for scripted instances from tagged images; CI builds per-PR instances for Playwright mock and docker smoke tests with seeded test users (e2e/playwright.config.mock.ts, e2e/setup, .github/workflows/docker-smoke.yml). Not a per-change environment for reviewers.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "CI creates an ephemeral seeded instance per PR and destroys it."
+    },
+    "DEL-08": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Many Playwright journeys (e2e/specs/mock, deployed, a11y, bombadil) and a changed-path to e2e selection (.github/workflows/codegraph-select.yml, codegraph-e2e-votes.yml); no per-feature adoption instrumentation at ship.",
+      "confidence": "medium"
+    },
+    "DEL-09": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Features can be enabled per role, group or user through principal config overrides (packages/api/src/app/service.ts:396-518) and agents/skills shared to chosen groups (ACL). Code ships to everyone at once (canary branch is an engineering branch, AGENTS.md:15-21).",
+      "confidence": "medium"
+    },
+    "DEL-10": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Interface features and capabilities can be switched off at runtime via config overrides and toggled active/inactive (api/server/routes/admin/config.js:46); agents unshared, skills disabled per user (packages/api/src/skills/skillStates.ts). Config changes are not audited (audit actions are grants only, packages/data-schemas/src/types/admin.ts:68-73).",
+      "confidence": "medium"
+    },
+    "DEL-11": {
+      "status": "not_applicable",
+      "rationale": "code_release_path is false. For reference: tagged images can be redeployed (.github/workflows/tag-images.yml); no tested one-step rollback.",
+      "if_applicable": 2
+    },
+    "MAL-01": {
+      "status": "not_applicable",
+      "rationale": "agent-runtime archetype excludes generic business-object modelling and CRUD; LibreChat has fixed Mongoose models (packages/data-schemas/src/schema).",
+      "if_applicable": 1
+    },
+    "MAL-02": {
+      "status": "not_applicable",
+      "rationale": "agent-runtime archetype excludes generic business-object modelling and CRUD; LibreChat has fixed Mongoose models (packages/data-schemas/src/schema).",
+      "if_applicable": 1
+    },
+    "MAL-03": {
+      "status": "not_applicable",
+      "rationale": "agent-runtime archetype excludes generic business-object modelling and CRUD; LibreChat has fixed Mongoose models (packages/data-schemas/src/schema).",
+      "if_applicable": 1
+    },
+    "MAL-04": {
+      "status": "not_applicable",
+      "rationale": "agent-runtime archetype excludes generic business-object modelling and CRUD; LibreChat has fixed Mongoose models (packages/data-schemas/src/schema).",
+      "if_applicable": 1
+    },
+    "MAL-05": {
+      "status": "not_applicable",
+      "rationale": "agent-runtime archetype excludes generic business-object modelling and CRUD; LibreChat has fixed Mongoose models (packages/data-schemas/src/schema).",
+      "if_applicable": 1
+    },
+    "MAL-06": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "OpenAPI document for the agents and skills APIs generated from code and checked against the committed spec (packages/api/src/openapi/generate.ts:1-25, document.ts, skills.ts); structured validation issues on skill and config writes. No full introspection or dry-run.",
+      "confidence": "medium"
+    },
+    "MAL-07": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Layout is coded React (client/src/components); librechat.yaml interface section toggles which panels show, which is configuration of coded layout, not layout as data.",
+      "confidence": "medium"
+    },
+    "MAL-08": {
+      "status": "not_applicable",
+      "rationale": "agent-runtime archetype excludes generic business-object modelling and CRUD; LibreChat has fixed Mongoose models (packages/data-schemas/src/schema).",
+      "if_applicable": 1
+    },
+    "MAL-09": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Versioned, validated theme-token definitions (CONTEXT.md:32; packages/client/src/theme/index.ts) and 44 locales with a Locize pipeline (client/src/locales, .github/workflows/locize-i18n-sync.yml). No operator theme editor or per-principal text overrides found in config schema (grep theme in packages/data-provider/src/config.ts returned none).",
+      "confidence": "medium"
+    },
+    "MAL-10": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "No general rules engine. Users define schedules and event bindings that run an agent on a cadence or trigger (packages/api/src/schedules, packages/api/src/agents/triggers); HITL tool-approval rules are declarative but default-off (hitl/policy.ts:85). Narrow scope.",
+      "confidence": "medium"
+    },
+    "MAL-11": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Inbound event ingress to agents with durable delivery, retry and dead letters (packages/api/src/agents/triggers/README.md); no outbound webhook subscriptions for product events.",
+      "confidence": "medium"
+    },
+    "MAL-12": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Operator-supplied tool-approval hook modules load in process (packages/api/src/agents/hitl/hookLoader.ts:10); agent code runs in the external Code API sandbox. No sandboxed server-side hook framework.",
+      "confidence": "medium"
+    },
+    "MAL-13": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Extension lanes: MCP servers, OpenAPI actions, custom endpoints, skills, deployment skills dir (skill/README.md), MCP UI resources. No UI, layout or form plugin points.",
+      "confidence": "medium"
+    },
+    "MAL-14": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "MCP remote servers and the Code API worker run out of process; stdio MCP servers only from librechat.yaml (packages/api/src/admin/config.ts PROCESS_MCP_CONFIG_ERROR); action domain allowlists. Resource limits and egress for code live in the external Code API, not in scope.",
+      "confidence": "low",
+      "alt_score": 3,
+      "alt_note": "Out-of-process execution with worker sandbox (CONTEXT.md:5) may meet runtime isolation."
+    },
+    "MAL-15": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Local development (npm backend:dev, frontend:dev), skills management API with validation and docs (docs/skills-management-api.md), MCP inspector-style flows; no preview against a real tenant or staged branches for extensions.",
+      "confidence": "medium"
+    },
+    "MAL-16": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "No canonical data model or mapping layer; each integration (actions, MCP, SharePoint, web search) is its own module (packages/api/src/actions, mcp, web).",
+      "confidence": "medium"
+    },
+    "MAL-17": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "MCP is the connector protocol with OAuth, per-user credentials and lifecycle handled in packages/api/src/mcp; admins add servers in UI or config. No sync or webhook lifecycle.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "MCP covers auth and lifecycle and admins install and configure servers without code."
+    },
+    "MAL-18": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "OpenAI-compatible /api/agents/v1 endpoints versioned by path; committed OpenAPI check; idempotent queued-turn request identity (CONTEXT.md:23). No deprecation policy or contract tests both ways.",
+      "confidence": "medium"
+    },
+    "MAL-19": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Introspectable APIs (OpenAPI for agents and skills, agent API keys). LibreChat consumes MCP but exposes no MCP server or typed tool surface of its own (searched packages/api/src/mcp, api/server/routes).",
+      "confidence": "medium",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Agents can call LibreChat through its HTTP APIs with agent API keys; no typed agent tool surface.",
+        "confidence": "medium"
+      }
+    },
+    "MAL-20": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Users complete tasks through grounded agents (files, memory, web search, tools); operators and users author skills through natural language in chat (handlers.ts:3805-3960) without preview. One authoring surface.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "Users act conversationally with grounding and actions; skill authoring is natural-language authoring.",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Grounded agent chat plus natural-language skill authoring for one surface, no preview.",
+        "confidence": "medium",
+        "alt_score": 3,
+        "alt_note": "As the parent criterion."
+      }
+    },
+    "LRN-01": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Prometheus metrics and logs by default (packages/api/src/app/metrics.ts); OpenTelemetry export opt-in (packages/api/src/telemetry/config.ts); Insights reads live conversation and message data for in-product dashboards only when ENABLE_INSIGHTS is set (api/server/routes/insights.js:12).",
+      "confidence": "medium",
+      "available_score": 3
+    },
+    "LRN-02": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Typed feedback (thumbsUp/Down, reason tag, text) on each message (packages/data-provider/src/feedback.ts:1-80; packages/data-schemas/src/schema/message.ts:103-120), linked to message and model but not to agent version; no triage workflow. Optional export to Langfuse scores (packages/api/src/langfuse/feedback.ts).",
+      "confidence": "medium"
+    },
+    "LRN-03": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Failed generations persist as messages with error flag and finish_reason, carrying endpoint, model and conversation/agent (schema/message.ts:95-101); schedule runs record failure codes per occurrence (packages/api/src/schedules/README.md:36-45); trigger deliveries keep per-attempt outcomes incl. dead (triggerDelivery.ts:11-20). Queryable in Mongo; no friction-pattern detection or issue objects.",
+      "confidence": "medium"
+    },
+    "LRN-04": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Default: no joined models in product. Opt-in Insights joins conversations, messages and users per agent with usage and churn (packages/data-schemas/src/methods/insights.ts:25-60,160-230), without errors, feedback or change history.",
+      "confidence": "medium",
+      "available_score": 2
+    },
+    "LRN-05": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Engineers read logs; opt-in trace viewer reads Langfuse traces for a conversation (packages/api/src/traces/handlers.ts:1-60, client Chat/Trace/Viewer.tsx). No failure grouping or diagnosis.",
+      "confidence": "medium",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "No model-backed diagnosis of the product's own failures (searched packages/api/src/agents/failures, traces, protection).",
+        "confidence": "medium"
+      }
+    },
+    "LRN-06": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No recommendations or proposals to change the product (searched packages/api/src, client/src/components/Insights). Opt-in Insights dashboard only.",
+      "confidence": "medium",
+      "available_score": 1,
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "None.",
+        "confidence": "high"
+      }
+    },
+    "LRN-07": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Experience is captured (conversations, memories) and the agent writes or edits skills from a conversation when asked (handlers.ts:3805-3960). Continuous unprompted memory extraction exists but is opt-in (packages/data-schemas/src/app/memory.ts:18-23,39-42; packages/api/src/agents/memory.ts).",
+      "confidence": "medium",
+      "available_score": 3,
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Model drafts skills from conversation on request; memory agent continuously writes memories when enabled.",
+        "confidence": "medium",
+        "available_score": 3
+      }
+    },
+    "LRN-08": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "AI-written skills pass automated schema checks (name, description, body, frontmatter, path, size: packages/data-schemas/src/methods/skill.ts:116-526) and content filters (handlers.ts filteredSkillResult); memories are limited by key regex and validKeys/char limits (schema/memory.ts:4-8; config.ts:2837-2843). No evaluation against a baseline.",
+      "confidence": "medium",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Automated schema and filter checks on AI-made skills and memories; no baseline evaluation.",
+        "confidence": "medium"
+      }
+    },
+    "LRN-09": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "No post-change measurement bound to a change. Agent versions carry timestamps and feedback is per message, so an operator can compare by hand; opt-in Insights shows per-agent usage over a range.",
+      "confidence": "low",
+      "available_score": 2
+    },
+    "LRN-10": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Checks (CI tests, schema validators), policies (HITL rules, filters in librechat.yaml) and system prompts are edited by engineers or admins by hand; agent instructions are versioned but nothing links changes to measured results; no evaluation sets exist.",
+      "confidence": "medium"
+    },
+    "GOV-01": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Shared component kit packages/client and semantic theme roles (AGENTS.md:142-151); eslint-plugin-jsx-a11y recommended (eslint.config.mjs:10,74) gates changed files with --max-warnings=0 (.husky/lint-staged.config.js, static-checks.yml); axe-linter on PRs (.github/workflows/a11y.yml); Playwright a11y config (e2e/playwright.config.a11y.ts).",
+      "confidence": "medium"
+    },
+    "GOV-02": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Generic append-only, hash-chained audit store with admin API, CSV export and verify (packages/data-schemas/src/schema/auditLog.ts:1-140; api/server/routes/admin/audit.js:29-33), but actions cover grants and insights permissions only (packages/data-schemas/src/types/admin.ts:68-82); config, agent, skill and prompt changes are not audited.",
+      "confidence": "high"
+    },
+    "GOV-03": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Account deletion and delete-user script across code-declared collections (config/delete-user.js), conversation export/import, temporary-chat retention (config.ts:2303 retentionMode), opt-in PII filters (packages/api/src/middleware/messageFilterPii.ts). No field-level privacy classification.",
+      "confidence": "medium"
+    },
+    "GOV-04": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Generic permission model (role permissions, ACL entries, system grants: packages/api/src/middleware/capabilities.ts, packages/data-schemas/src/methods/aclEntry.ts) and zod validation of config. No SAST, dependency or container scanning in the repository (searched .github/workflows for codeql, audit, snyk, trivy, semgrep, osv, dependabot; none).",
+      "confidence": "medium",
+      "alt_score": 2,
+      "alt_note": "Permission model and validation are generic; scanning may run in GitHub settings outside the repo."
+    },
+    "GOV-05": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "History and revert for agents (schema/agent.ts:125-128, methods/agent.ts:1647-1680, VersionPanel.tsx) and prompt versions with production selection (promptGroup.ts:25). No history for skills (schema/skill.ts:176-180 counter only), config overrides (schema/config.ts configVersion counter), MCP servers, memories or role permissions.",
+      "confidence": "high"
+    },
+    "GOV-06": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "No proposal object for definition changes. GitHub skill sync is a GitOps flow for engineers (packages/api/src/skills/sync, admin route api/server/routes/admin/skills.js); HITL approvals gate tool actions, not definition changes.",
+      "confidence": "medium"
+    },
+    "GOV-07": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "No policy object over definition changes; changes apply by permission, and AI skill writes apply without approval because HITL is default-off (packages/api/src/agents/hitl/policy.ts:85).",
+      "confidence": "low",
+      "alt_score": 2,
+      "available_score": 2,
+      "alt_note": "AI skill writes are a narrow auto-applied class."
+    },
+    "GOV-08": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Customisations are data (agents, prompts, skills) that survive upgrades; config schema with defaults reproducing behaviour (AGENTS.md:90-92), config migration tests in static checks (AGENTS.md:66-68), explicit migration commands (UPGRADING.md). Compatibility mostly manual.",
+      "confidence": "medium"
+    },
+    "GOV-09": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Per-user JWT and per-agent API keys (models/agentApiKey.ts), remote agent auth (middleware/remoteAgentAuth.ts), rate limiters (api/server/middleware/limiters), idempotent queued turns and trigger deliveries; no dry-run or preview for mutations.",
+      "confidence": "medium",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "AI acts with the requesting user's identity and permissions (ensureCanCreateSkill/ensureCanEditSkill in handlers.ts:3843-3920); approval of tool calls exists but is default-off (hitl/policy.ts:85).",
+        "confidence": "medium",
+        "available_score": 3
+      }
+    },
+    "GOV-10": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Code-enforced allow lists for some self-change paths: skill authoring limited to the skills/ namespace, permission checks, 1 MiB file cap and path validation (handlers.ts:3843-3920; docs/skills-management-api.md; methods/skill.ts:527); memory keys by regex and validKeys, tokenLimit/charLimit (schema/memory.ts:4-8; config.ts:2837-2843). No declared per-period limits or blast-radius limits; blocked attempts are returned to the model, not logged centrally.",
+      "confidence": "medium",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Same code-level limits on AI skill and memory writes.",
+        "confidence": "medium"
+      }
+    },
+    "GOV-11": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Skills record source (inline/github) and author (schema/skill.ts:166-200), but AI-written skills and memories record no source inputs; content filters with provenance classes exist but are opt-in (packages/api/src/protection/types.ts; config filters section, config.ts:3228).",
+      "confidence": "medium",
+      "available_score": 2,
+      "ai": {
+        "status": "assessed",
+        "score": 1,
+        "grade": "A",
+        "evidence": "Tool and retrieval output reaches the model as tool messages and the model can then write skills or memories without approval; provenance-aware filters are opt-in.",
+        "confidence": "low",
+        "available_score": 2
+      }
+    },
+    "EXP-01": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Kernel primitives are domain-neutral: users, groups, roles, conversations, messages, files, agents, skills, tools, schedules (packages/data-schemas/src/models); domain behaviour lives in agent definitions, skills and MCP connectors above them.",
+      "confidence": "medium"
+    },
+    "EXP-02": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "A new use is built as agents plus skills plus MCP connectors without core change, but no adjacent domain is shown shipped this way in the repository.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "Agent marketplace categories and deployment skills (skill/README.md) show domains built as definitions."
+    },
+    "EXP-03": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Skills import/export as zip and sync from GitHub (packages/api/src/skills/import.ts, sync/); agents shareable; no versioned bundle of agents, skills and connectors.",
+      "confidence": "medium"
+    },
+    "EXP-04": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Only feedback reason tags such as unjustified_refusal or not_matched and free text (packages/data-provider/src/feedback.ts); no failed-intent or unsupported-request logs.",
+      "confidence": "medium"
+    },
+    "EXP-05": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No opportunity or proposal objects (searched packages/api/src, packages/data-schemas/src/models).",
+      "confidence": "high",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "None.",
+        "confidence": "high"
+      }
+    },
+    "EXP-06": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "A new agent, skill or feature can be enabled for selected groups or roles via ACL sharing and principal config overrides (api/server/routes/accessPermissions.js; app/service.ts:396-518); no success metric or recorded keep-or-kill.",
+      "confidence": "medium"
+    },
+    "AIR-03": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "File search over uploaded files via RAG API with citations, web search, memory and MCP tools (config.ts:830-847; packages/api/src/files, web, memory). Indexing is per upload, not a governed context layer over product data.",
+      "confidence": "medium"
+    },
+    "AIR-04": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Retrieval and tools mostly run as the requesting user: file ACL (packages/data-schemas/src/methods/file.acl.spec.ts), memory authorization (packages/api/src/memory/authorization.ts + spec), skill permission checks, per-user MCP OAuth and OBO. Admin-configured MCP servers and actions with static credentials run with the operator's credentials for every user.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "Most sources are permission-scoped with tests.",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      }
+    },
+    "AIR-05": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No evaluation datasets or harness in the repository (searched e2e, packages/api/src, workflows); Langfuse integration is opt-in tracing (packages/api/src/langfuse).",
+      "confidence": "medium",
+      "available_score": 1
+    },
+    "AIR-06": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Prompt and model changes ship through code review and ordinary CI only; no evaluation gate (searched .github/workflows).",
+      "confidence": "high"
+    },
+    "AIR-07": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Messages persist tool calls, arguments, outputs, model and user per conversation; audit categories agent_run and tool_call exist but have no actions (types/admin.ts:50-73). With Langfuse configured, per-run traces with model, inputs and tool calls are viewable by operators and in an in-product trace viewer (packages/api/src/langfuse/trace.ts, packages/api/src/traces).",
+      "confidence": "medium",
+      "available_score": 3,
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      }
+    },
+    "AIR-01": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Provider abstraction across many endpoints and custom endpoints configured in librechat.yaml and admin config overrides; per-feature models for titles, summarization and memory (config.ts:2845-2858); fallbacks for summarization (run.ts:1512-1552). No declared, tested resilience strategy for chat.",
+      "confidence": "medium"
+    },
+    "AIR-02": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Transactions record tokens and cost per request and user, enabled by default (transactions schema config.ts:2832; packages/data-schemas/src/methods/spendTokens.ts, transaction.ts); balances enforced per user only when balance.enabled (default false, config.ts:2816-2817; middleware/checkBalance.ts); admin views via scripts (config/list-balances.js, user-stats.js).",
+      "confidence": "high",
+      "available_score": 3
+    },
+    "AIR-08": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Feedback is collected per message with model (message.ts:103-120) but not analysed in product by default; Langfuse feedback export opt-in (langfuse/feedback.ts). No drift alerts.",
+      "confidence": "medium",
+      "available_score": 2
+    }
+  }
+}

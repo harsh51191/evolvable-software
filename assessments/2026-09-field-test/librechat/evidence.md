@@ -46,7 +46,7 @@ Confidence for criteria whose reading did not change at the v0.7 migration was a
 ### Scale
 
 - **ARC-03 Horizontal scale of services**: **2** (grade A, confidence medium). With USE_REDIS, caches and request limits move to Redis for several instances (api/cache/clearPendingReq.js:5-39); Helm charts deploy it (helm/).
-- **ARC-04 Reliable asynchronous work**: **1** (grade A, confidence medium). No job queue; background work runs in the API process.
+- **ARC-04 Reliable asynchronous work**: **3** (grade A, confidence medium), facets: implemented, tested. Mongo-backed trigger delivery queue with leases, retry history, backoff and dead letters across replicas (packages/data-schemas/src/schema/triggerDelivery.ts:11-20,134-144,183,210-228; packages/api/src/agents/triggers/README.md:46-50; triggers/backoff.ts); stable deliveryId idempotency (README:10-12); schedule occurrences claimed once with deterministic delivery keys and concurrency slots (packages/data-schemas/src/schema/scheduleRun.ts:36,138,162-169); tests delivery.integration.spec.ts, backoff.spec.ts, schedules/engine.spec.ts. No per-tenant fairness or back-pressure policy (level 4). [v0.7 correction from the blind second rating, verified at 14f7b28.]
 - **ARC-05 Tenant isolation and noisy-neighbour controls**: **not applicable**. Scope fact multi_tenant is false: a default installation is one group under one administrator; tenant isolation is opt-in through deployment-supplied tenant identities. If counted: 2.
 
 ### Capacity
@@ -58,8 +58,7 @@ Confidence for criteria whose reading did not change at the v0.7 migration was a
 
 - **ARC-08 Failure isolation and graceful degradation**: **2** (grade A, confidence medium). Provider calls have timeouts and errors are contained per conversation; MCP servers run as separate connections.
   - AI-qualified reading: **2** (grade A, confidence medium). Timeouts on provider calls (packages/api/src/endpoints/openai/config.ts); errors contained per conversation.
-- **ARC-09 Backup, restore and recovery**: **0** (grade A, confidence medium). No backup command or documented backup in the repository.
-  - Higher reading 1: MongoDB tooling is the implied path.
+- **ARC-09 Backup, restore and recovery**: **1** (grade A, confidence high). No backup or restore command in repo (searched for backup, mongodump across *.md, *.yml, *.js, *.ts, *.sh). UPGRADING.md:40 tells operators to back up MongoDB themselves. Scheduled runs do re-validate owner, policy and credentials before each run (CONTEXT.md:3, packages/api/src/schedules/README.md:1-40, readiness.ts), which would help a restored schedule surface, but nothing restores it. [v0.7 correction from the blind second rating, verified at 14f7b28.]
 
 ## Velocity (DEL)
 
@@ -72,8 +71,8 @@ Confidence for criteria whose reading did not change at the v0.7 migration was a
 
 - **DEL-02 Layers deploy independently**: **2** (grade A, confidence medium). API and client ship together in one image; RAG API, search and a Langfuse fan-out service are separate containers with Helm charts (helm/).
 - **DEL-03 Module boundaries enforced by tooling**: **2** (grade A, confidence medium). Workspace packages with explicit dependencies and a circular-dependency check (config/circular-deps.mjs).
-- **DEL-04 AI implementation lane**: **0** (grade A, confidence medium). No AI authoring lane for LibreChat's own definitions.
-  - AI-qualified reading: **0** (grade A, confidence medium). No AI involvement in this behaviour.
+- **DEL-04 AI implementation lane**: **2** (grade A, confidence medium). The product's agent authors skills (definitions) on a user's request: writeSkillMd validates frontmatter and name, applies content filters, checks create/edit permission, uses expectedVersion concurrency (packages/api/src/agents/handlers.ts:3805-3960; validation packages/data-schemas/src/methods/skill.ts:116-526). Narrow (skills only), on request, applied directly rather than proposed with evidence; a person edits further. [v0.7 correction from the blind second rating, verified at 14f7b28.]
+  - AI-qualified reading: **2** (grade A, confidence medium). Same lane; inherently AI: model writes skills on request, narrow scope, no proposal or verification evidence (handlers.ts:3805-3960).
 
 ### Verify
 
