@@ -69,7 +69,7 @@ python3 -m unittest discover -s examples/born-evolvable/tests
 | 1 | Name your kinds of change first | `kinds.json`; `answerdesk/kinds.py` |
 | 2 | Store them as versioned data | `answerdesk/store.py` (`changes`, `live`); validation in `answerdesk/kinds.py`; starting data in `seed/` |
 | 3 | One door for every change | `answerdesk/door.py` (`submit`, `approve`); used by `cli.py`, `app.draft` and `scheduler.py` |
-| 4 | Everything can be undone | `Door.undo`, `Door.switch_off`; `Store.migrate` (down steps); `Store.backup` and `Store.restore` |
+| 4 | Everything can be undone | `Door.undo`, `Door.switch_off`; `Store.backup` and `Store.restore`. (`Store.migrate` down steps drop tables: they reverse the storage layout, not the data, and are a gap.) |
 | 5 | Signals from the first user, privacy designed in | `answerdesk/desk.py` (`ask`, `feedback`, `redact`, `unmet`); `Store.purge_signals` |
 | 6 | Every change has a goal and is measured | `Door._traffic_plan`, `Door._loop_plan`, `Door.evaluate` |
 | 7 | Checks are automatic and they grow | `answerdesk/checks.py`; `Door.check`; `Door.propose_check`; `scheduler._after_reversal` |
@@ -90,4 +90,6 @@ The AI drafter's interface is `Drafter.draft_answer` in `answerdesk/drafter.py`.
 - **No code releases.** Answer Desk changes only definitions through its loop. Code changes are the team's work, through their own delivery process, and are not rolled back by the product.
 - **No operating record.** It has never run in production, so nothing here proves how it behaves over time.
 
-No readiness level is claimed here. The example is to be assessed blind, and the result published whatever it is.
+No readiness level was claimed before it was assessed. A blind assessment by a separate rater, who saw only the skill and this folder, is in [`assessment/`](assessment/): **Built to Level 1, Configurable; Designed for Level 1; not proven in operation.** Its plain-language report is [`assessment/report.md`](assessment/report.md).
+
+What held it at Level 1, in the rater's words: there is no AI implementation lane (the drafter is a rule-based stand-in, which the rubric does not count as AI), undo shows no differences between versions, data-layout changes are not online and their down steps drop tables, and there is no authentication or security scanning. The rater also found places where this README and DESIGN.md claimed more than the code did; those claims are corrected here and in DESIGN.md.

@@ -1,0 +1,747 @@
+{
+  "product": "Answer Desk",
+  "date": "2026-11-17",
+  "source": "examples/born-evolvable @ e266f177c3c6617ef8aa8acc11e01d9ce92ebaff",
+  "archetype": "focused-application",
+  "framework": "EVOLVE",
+  "framework_version": "0.7.0",
+  "basis": "design",
+  "scope_facts": {
+    "persistent_data": {
+      "value": true,
+      "evidence": "DESIGN.md \u00a73 (24-36): one SQLite file with changes, live, events, signals, exposures."
+    },
+    "schema_changes": {
+      "value": true,
+      "evidence": "DESIGN.md \u00a73 (26): numbered migrations with up and down steps; \u00a710 (111)."
+    },
+    "multi_tenant": {
+      "value": false,
+      "evidence": "DESIGN.md \u00a711 (115): no tenants; README.md:86."
+    },
+    "hosted_service": {
+      "value": false,
+      "evidence": "DESIGN.md \u00a711 (115): one process, no service; README.md:86 'a command line'."
+    },
+    "machine_actions": {
+      "value": true,
+      "evidence": "DESIGN.md \u00a79 (102-104): a capability map so an agent can read what it may do; \u00a74 (48): people, the AI drafter and the scheduler all call the door; README.md:30 every step is a command."
+    },
+    "agent_mutations": {
+      "value": true,
+      "evidence": "DESIGN.md \u00a74 (48): the AI drafter calls the door as ai:rule-drafter and the scheduler as product:scheduler; \u00a77 (95-96) the scheduler proposes checks."
+    },
+    "evolution_auto_apply": {
+      "value": false,
+      "evidence": "DESIGN.md \u00a76 (69-76, 86): starting dials answers 3, routing 3, checks 3, policy 1; at dial 3 a person approves; pre-approval only at dial 4, raised only on a measured record (\u00a76, 83)."
+    },
+    "definition_change_path": {
+      "value": true,
+      "evidence": "DESIGN.md \u00a72 (9-22) and \u00a74 (38-48): four kinds of change, all through the door."
+    },
+    "code_release_path": {
+      "value": false,
+      "evidence": "DESIGN.md \u00a711 (118): Answer Desk ships no code changes through its loop; README.md:90."
+    },
+    "ai_features": {
+      "value": false,
+      "evidence": "DESIGN.md \u00a711 (117): the AI drafter is a deterministic rule-based stand-in, not a language model; a model 'would plug in' but would then need evaluation sets, cost limits and injection defences, which the design does not specify. README.md:82, 87.",
+      "available_value": false
+    },
+    "ai_data_access": {
+      "value": false,
+      "evidence": "Requires ai_features (false in the design, \u00a711 line 117).",
+      "available_value": false
+    },
+    "ai_actions": {
+      "value": false,
+      "evidence": "Requires ai_features (false in the design, \u00a711 line 117).",
+      "available_value": false
+    }
+  },
+  "change_kinds": [
+    {
+      "id": "answers",
+      "name": "What the desk tells customers",
+      "who": "support lead",
+      "main": true,
+      "reach": 2,
+      "evidence": "DESIGN.md \u00a72 (15): answers, changed by the support lead, the AI drafter and the product at the top of the dial; \u00a74 (40-48) people propose, approve and undo; \u00a76 (71-73) dial 2 'People, the AI' draft and a person releases; \u00a710 (108) undo. Carried would need DEL-04 >= 3 and the design's drafter is rule-based (\u00a711, 117).",
+      "confidence": "medium"
+    },
+    {
+      "id": "routing-rules",
+      "name": "Which team gets a question the desk cannot answer",
+      "who": "support lead",
+      "main": true,
+      "reach": 1,
+      "evidence": "DESIGN.md \u00a72 (16): support lead only; \u00a74 (48) propose/approve/undo; \u00a710 (108).",
+      "confidence": "high"
+    },
+    {
+      "id": "checks",
+      "name": "The questions every change is checked against",
+      "who": "support lead; the product from failures",
+      "main": false,
+      "reach": 2,
+      "evidence": "DESIGN.md \u00a72 (17); \u00a77 (90-96): the scheduler proposes checks from flagged failures and wrong passes; a person approves at dial 3.",
+      "confidence": "high"
+    },
+    {
+      "id": "policy",
+      "name": "What may change without a person, and within which limits",
+      "who": "product owner",
+      "main": false,
+      "reach": 1,
+      "evidence": "DESIGN.md \u00a72 (18) product owner only; \u00a76 (67, 81-84) dial capped, undo needs a person.",
+      "confidence": "high"
+    },
+    {
+      "id": "drafter-sources",
+      "name": "The help-centre pages the drafter copies from",
+      "who": "support lead or content owner",
+      "main": false,
+      "reach": 0,
+      "evidence": "README.md:82 and DESIGN.md \u00a711 (117): the drafter copies from local help-centre pages; the design gives them no kind, version or undo (\u00a72 lists four kinds only).",
+      "confidence": "high"
+    },
+    {
+      "id": "matching-and-replies",
+      "name": "How questions are matched, and the reply sent when a question is passed on",
+      "who": "support lead",
+      "main": false,
+      "reach": 0,
+      "evidence": "DESIGN.md \u00a72 (22): a new kind of change is added by an engineer; matching is not a kind in \u00a72.",
+      "confidence": "high"
+    }
+  ],
+  "ai_delivery": {
+    "present": false,
+    "qualifies": false,
+    "evidence": "Searched examples/born-evolvable: no agent instruction files, agent workflows, CI files or installed delivery framework. The repository root and .github were outside the permitted read scope, so a repository-level setup was not inspected.",
+    "note": "AI-assisted engineering, if any, is not the product evolving itself and would not count unless it met scoring rule 12."
+  },
+  "scores": {
+    "ARC-01": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "D",
+      "evidence": "DESIGN.md \u00a73 (34): signals get their own typed tables and indexes; definitions share one versioned table. Per-feature tuning, no definition-driven index or cache.",
+      "confidence": "medium"
+    },
+    "ARC-02": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "D",
+      "evidence": "DESIGN.md \u00a73 (26) and \u00a710 (111): numbered migrations with up and down steps. No online strategy, no CI against representative data in the design.",
+      "confidence": "high"
+    },
+    "ARC-03": {
+      "status": "not_applicable",
+      "rationale": "hosted_service is false: a CLI over one local SQLite file (cli.py:97-105; README.md:86). (Design: DESIGN.md \u00a72 line 22 and \u00a711 lines 115-118.)",
+      "if_applicable": 0
+    },
+    "ARC-04": {
+      "status": "not_applicable",
+      "rationale": "hosted_service is false. Deferred work (measurement, reversal) runs only when someone runs 'tick' (scheduler.py:14-55; cli.py:78-79). (Design: DESIGN.md \u00a72 line 22 and \u00a711 lines 115-118.)",
+      "if_applicable": 1
+    },
+    "ARC-05": {
+      "status": "not_applicable",
+      "rationale": "multi_tenant is false: single installation per store (README.md:86; DESIGN.md \u00a711). (Design: DESIGN.md \u00a72 line 22 and \u00a711 lines 115-118.)",
+      "if_applicable": 2
+    },
+    "ARC-06": {
+      "status": "not_applicable",
+      "rationale": "hosted_service is false; no load or performance suite in tests/. (Design: DESIGN.md \u00a72 line 22 and \u00a711 lines 115-118.)",
+      "if_applicable": 0
+    },
+    "ARC-07": {
+      "status": "not_applicable",
+      "rationale": "hosted_service is false; no objectives or metrics export in answerdesk/. (Design: DESIGN.md \u00a72 line 22 and \u00a711 lines 115-118.)",
+      "if_applicable": 0
+    },
+    "ARC-08": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "D",
+      "evidence": "Design is silent on timeouts or isolation; \u00a711 (115) one process. The drafter is an in-process interface (README.md:82).",
+      "confidence": "medium",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "D",
+        "evidence": "DESIGN.md \u00a711 (117): no model in the design; missing AI behaviour scores 0.",
+        "confidence": "high"
+      }
+    },
+    "ARC-09": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "D",
+      "evidence": "DESIGN.md \u00a710 (110): backup copies the whole store; restore writes into a fresh location only, checks integrity and schema version, refuses to overwrite. README.md:63 says tests cover restore into a fresh location. No RPO/RTO or drills.",
+      "confidence": "high",
+      "inventory": {
+        "data": 3,
+        "definitions": 3,
+        "files": "n/a",
+        "secrets": "n/a",
+        "schedules": "n/a"
+      }
+    },
+    "DEL-01": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "D",
+      "evidence": "DESIGN.md \u00a73 (31) and \u00a75 (52): every question is a structured signal with the answer or team and feedback; unmet questions are grouped. No request-to-specification step in the design.",
+      "confidence": "medium",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "D",
+        "evidence": "DESIGN.md \u00a711 (117): no model in the design; missing AI behaviour scores 0.",
+        "confidence": "high"
+      }
+    },
+    "DEL-02": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "D",
+      "evidence": "DESIGN.md \u00a711 (115): one process and one SQLite file; no build or deploy design.",
+      "confidence": "medium"
+    },
+    "DEL-03": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "D",
+      "evidence": "DESIGN.md \u00a74 (48): 'There is no other write path, except init' is stated as a rule, with no enforcing tool named.",
+      "confidence": "high"
+    },
+    "DEL-04": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "D",
+      "evidence": "DESIGN.md \u00a74 (48), \u00a76 (71-76) design an AI drafter lane through the door, but \u00a711 (117) designs it as a deterministic rule-based stand-in, not a model, so it is not an AI lane.",
+      "confidence": "low",
+      "alt_score": 2,
+      "alt_note": "If a governed rule-based drafting lane counted, it meets level 2: it drafts answers for one narrow task on request, through the same door, checks and policy, and a person approves (app.py:53-62; tests/test_release.py:36,43; tests/test_platform.py:92). Level 3 would still fail on breadth (answers only).",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "D",
+        "evidence": "DESIGN.md \u00a711 (117): no model in the design; missing AI behaviour scores 0.",
+        "confidence": "high"
+      }
+    },
+    "DEL-05": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "D",
+      "evidence": "DESIGN.md \u00a74 (42-45) and \u00a77 (92): validation, one change in flight, the check suite and raise rules on every definition change, re-run on approval. Code changes are the team's own process (\u00a711, 118).",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "Every change class the evolution system makes (definitions) has an unskippable pre-land check with drafts included; only engineers' code changes lack an in-scope gate."
+    },
+    "DEL-06": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "D",
+      "evidence": "DESIGN.md \u00a79 (104): describe prints kinds, dials, limits, actors, invariants and operations. No health or build id in the design.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "For a local CLI, describe plus the restore integrity check cover most of a verification surface."
+    },
+    "DEL-07": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "D",
+      "evidence": "README.md:16 and 63: the walkthrough and tests run on a fresh temporary store with seed data and a fixed clock.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "Ephemeral seeded stores per test run, created and destroyed in seconds, meet most of level 3."
+    },
+    "DEL-08": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "D",
+      "evidence": "README.md:9-26, 63: a deterministic walkthrough and 41 tests including the walkthrough; no path map.",
+      "confidence": "medium"
+    },
+    "DEL-09": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "D",
+      "evidence": "DESIGN.md \u00a72 (15-18) and \u00a74 (45): answers and routing rules go to a share of traffic; checks and policy apply at once.",
+      "confidence": "high",
+      "alt_score": 3,
+      "alt_note": "Every customer-facing change class the evolution system makes, including product-drafted answers, can go to a percentage first."
+    },
+    "DEL-10": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "D",
+      "evidence": "DESIGN.md \u00a710 (109): off switch per change, at once, by a person or the product; undo of any version (108).",
+      "confidence": "medium"
+    },
+    "DEL-11": {
+      "status": "not_applicable",
+      "rationale": "code_release_path is false: the product's loop changes definitions only (README.md:90; drafter.py:39-53). (Design: DESIGN.md \u00a72 line 22 and \u00a711 lines 115-118.)"
+    },
+    "MAL-01": {
+      "status": "not_applicable",
+      "rationale": "focused-application exclusion: Answer Desk is deliberately narrow (DESIGN.md \u00a72, line 22: not a platform). (Design: DESIGN.md \u00a72 line 22 and \u00a711 lines 115-118.)",
+      "if_applicable": 1
+    },
+    "MAL-02": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "D",
+      "evidence": "DESIGN.md \u00a72 (11) and \u00a73 (28): kinds and their fields and types declared once in kinds.json, which every part reads; edited by engineers (\u00a72, 22).",
+      "confidence": "high"
+    },
+    "MAL-03": {
+      "status": "not_applicable",
+      "rationale": "focused-application exclusion. Statuses are coded in door.py. (Design: DESIGN.md \u00a72 line 22 and \u00a711 lines 115-118.)",
+      "if_applicable": 1
+    },
+    "MAL-04": {
+      "status": "not_applicable",
+      "rationale": "focused-application exclusion. 'propose KIND KEY --body' is generic across kinds (cli.py:60-63). (Design: DESIGN.md \u00a72 line 22 and \u00a711 lines 115-118.)",
+      "if_applicable": 2
+    },
+    "MAL-05": {
+      "status": "not_applicable",
+      "rationale": "focused-application exclusion. The CLI is generated from OPERATIONS in code (cli.py:16-30); kinds.json is read at start (kinds.py:11-13). (Design: DESIGN.md \u00a72 line 22 and \u00a711 lines 115-118.)",
+      "if_applicable": 2
+    },
+    "MAL-06": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "D",
+      "evidence": "DESIGN.md \u00a79 (104): the operations table is the single definition the CLI parser is generated from. No dry-run in the design.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "Introspection is complete for the CLI and validation errors are returned as a structured list."
+    },
+    "MAL-07": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "D",
+      "evidence": "DESIGN.md \u00a72 (22): layouts out of scope.",
+      "confidence": "high"
+    },
+    "MAL-08": {
+      "status": "not_applicable",
+      "rationale": "focused-application exclusion; there is no UI. (Design: DESIGN.md \u00a72 line 22 and \u00a711 lines 115-118.)",
+      "if_applicable": 0
+    },
+    "MAL-09": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "D",
+      "evidence": "Design is silent on UI text or locales; README.md:86 a command line.",
+      "confidence": "medium"
+    },
+    "MAL-10": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "D",
+      "evidence": "DESIGN.md \u00a72 (15-16): answers and routing rules as keyword rules; \u00a77 (92) every check runs before release.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "The check suite acts as a test mode for every rule change (checks.py:16-27)."
+    },
+    "MAL-11": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "D",
+      "evidence": "DESIGN.md \u00a73 (30): an events table as the audit trail; no subscriptions.",
+      "confidence": "medium"
+    },
+    "MAL-12": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "D",
+      "evidence": "DESIGN.md \u00a72 (22): no plugin system; logic is core code.",
+      "confidence": "high"
+    },
+    "MAL-13": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "D",
+      "evidence": "README.md:82: Drafter.draft_answer is the one interface a model would implement; \u00a72 (22) no plugin system.",
+      "confidence": "medium",
+      "alt_score": 2,
+      "alt_note": "The Drafter interface is a narrow code plugin point."
+    },
+    "MAL-14": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "D",
+      "evidence": "Design is silent on isolating a drafter implementation; README.md:82 it plugs in behind the same interface.",
+      "confidence": "high"
+    },
+    "MAL-15": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "D",
+      "evidence": "README.md:7-63: stdlib, local, deterministic walkthrough and tests.",
+      "confidence": "medium"
+    },
+    "MAL-16": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "D",
+      "evidence": "Design has no integrations; README.md:7 no network.",
+      "confidence": "high"
+    },
+    "MAL-17": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "D",
+      "evidence": "Design has no connectors; README.md:7 no network.",
+      "confidence": "high"
+    },
+    "MAL-18": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "D",
+      "evidence": "DESIGN.md \u00a79 (104) and README.md:28-53 document the CLI; no versioning or deprecation policy.",
+      "confidence": "medium"
+    },
+    "MAL-19": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "D",
+      "evidence": "DESIGN.md \u00a79 (104): capability map in JSON for agents; \u00a711 (116): no authentication, so no scoped auth.",
+      "confidence": "high",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "D",
+        "evidence": "DESIGN.md \u00a79 (104): a capability map an agent can read; no typed agent tools or scoped auth (\u00a711, 116).",
+        "confidence": "medium"
+      }
+    },
+    "MAL-20": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "D",
+      "evidence": "DESIGN.md \u00a71 (7): answers from written answers; \u00a711 (117) no model. A keyword FAQ desk.",
+      "confidence": "high",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "D",
+        "evidence": "DESIGN.md \u00a711 (117): no model in the design; missing AI behaviour scores 0.",
+        "confidence": "high"
+      }
+    },
+    "LRN-01": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "D",
+      "evidence": "DESIGN.md \u00a73 (31-32) and \u00a75 (61): every question is a signal with the version that served it and its exposures, used by measurement.",
+      "confidence": "high",
+      "alt_score": 4,
+      "alt_note": "Per-definition and per-version instrumentation is added automatically for every candidate change (exposures, desk.py:87-96), although nothing streams."
+    },
+    "LRN-02": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "D",
+      "evidence": "DESIGN.md \u00a73 (31): signals with the version that served them, feedback and the expected outcome; \u00a77 (95) flagged failures become proposed checks. Routed questions are linked to a team.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "For answers, signals are linked to definition and version, with a review workflow."
+    },
+    "LRN-03": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "D",
+      "evidence": "DESIGN.md \u00a75 (52): unmet questions grouped; feedback recorded. No issue objects.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "Measurement detects a candidate change that worsens negative feedback against a control and raises it (door.py:185-217; scheduler.py:19-28), with frequency."
+    },
+    "LRN-04": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "D",
+      "evidence": "DESIGN.md \u00a73 (31-32) and \u00a75 (59-63): signals, exposures and change history joined for measurement.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "The joins used by measurement cover usage, feedback and change history."
+    },
+    "LRN-05": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "D",
+      "evidence": "DESIGN.md \u00a77 (96): on a wrong pass, the event names the checks that passed the change and a check is proposed from the first failed question.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "For change-induced failures it produces a reproducible case (a check from the first failed question) linked to the responsible change, for a person to confirm (scheduler.py:65-73; tests/test_release.py:68).",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "D",
+        "evidence": "DESIGN.md \u00a711 (117): no model in the design; missing AI behaviour scores 0.",
+        "confidence": "high"
+      }
+    },
+    "LRN-06": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "D",
+      "evidence": "DESIGN.md \u00a77 (95-96) proposed checks; \u00a75 (63) keep/revise/undo per change; \u00a76 (76) answers for frequent unmet questions at dial 5. Not ranked.",
+      "confidence": "high",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "D",
+        "evidence": "DESIGN.md \u00a711 (117): no model in the design; missing AI behaviour scores 0.",
+        "confidence": "high"
+      }
+    },
+    "LRN-07": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "D",
+      "evidence": "DESIGN.md \u00a76 (76) and \u00a77 (95-96): the scheduler (tick) turns failures into proposed checks and, at dial 5, drafts answers for frequent unmet questions. \u00a74 (48): tick is run as a command.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "Run periodically, tick is a background review job that drafts changes unprompted.",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "D",
+        "evidence": "DESIGN.md \u00a711 (117): no model in the design; missing AI behaviour scores 0.",
+        "confidence": "high"
+      }
+    },
+    "LRN-08": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "D",
+      "evidence": "DESIGN.md \u00a74 (44) and \u00a77 (92): every check runs against today's definitions and with the change; a regression rejects it; re-run on approval (\u00a74, 45).",
+      "confidence": "medium",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "D",
+        "evidence": "DESIGN.md \u00a711 (117): no model in the design; missing AI behaviour scores 0.",
+        "confidence": "high"
+      }
+    },
+    "LRN-09": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "D",
+      "evidence": "DESIGN.md \u00a75 (59-63): baseline, target, window and tolerance at release; keep, revise or undo once the window is full; \u00a78 (100) loop changes measured by later kept share.",
+      "confidence": "high",
+      "alt_score": 4,
+      "alt_note": "Exposure instrumentation is created with each release and the policy's tolerance and the dial drive promote or reverse automatically; attribution limits are not recorded and loop changes are not reversed (DESIGN.md \u00a711)."
+    },
+    "LRN-10": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "D",
+      "evidence": "DESIGN.md \u00a77 (93-96) and \u00a78 (98-100): wrong passes recorded against the checks that missed them become proposed checks; dial raises need a record, reversals lower it. \u00a711 (120): loop changes are not reversed automatically.",
+      "confidence": "high"
+    },
+    "GOV-01": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "D",
+      "evidence": "Design has no user interface (README.md:86).",
+      "confidence": "high"
+    },
+    "GOV-02": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "D",
+      "evidence": "DESIGN.md \u00a73 (30): every proposal, decision, check result, approval, release, switch, measurement, reversal and wrong pass, with actor and time. Signal changes, migrations and backups are not listed; no retention for events.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "All definition changes and approvals are covered and an operator command queries them."
+    },
+    "GOV-03": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "D",
+      "evidence": "DESIGN.md \u00a75 (52): emails and long numbers removed, session ids hashed, purge-signals retention. No per-person export or erasure.",
+      "confidence": "medium"
+    },
+    "GOV-04": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "D",
+      "evidence": "DESIGN.md \u00a74 (42) validation for every change; \u00a76 (80-84) invariants in code; \u00a711 (116) no authentication. No scanning in the design.",
+      "confidence": "medium",
+      "alt_score": 2,
+      "alt_note": "A generic actor-type permission model and mandatory validation exist; only scanning and authentication are missing."
+    },
+    "GOV-05": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "D",
+      "evidence": "DESIGN.md \u00a73 (28-29) every version stored; \u00a710 (108) undo of any version in one step, a later version first. No diffs in the design.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "History and rollback cover every customisation surface through a supported command; the versions are small JSON documents shown in full beside the one they replaced. Inventory levels are for this reading.",
+      "inventory": {
+        "answers": 3,
+        "routing-rules": 3,
+        "checks": 3,
+        "policy": 3
+      }
+    },
+    "GOV-06": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "D",
+      "evidence": "DESIGN.md \u00a74 (40-46): propose, policy, check (with and without the change), release to a share, approval re-runs steps 2-3.",
+      "confidence": "medium"
+    },
+    "GOV-07": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "D",
+      "evidence": "DESIGN.md \u00a76 (67-88): policy per kind with dial and limits; raising needs a measured record; repeated reversals lower the dial automatically.",
+      "confidence": "high",
+      "alt_score": 4,
+      "alt_note": "Reversals of changes that passed every check are verifier false passes, and the dial adapts to them; audit is not complete (GOV-02) and approver identity is unauthenticated."
+    },
+    "GOV-08": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "D",
+      "evidence": "Design is silent on how stored definitions survive a change to kinds.json (\u00a72, 22: added by an engineer).",
+      "confidence": "low",
+      "alt_score": 2,
+      "alt_note": "Definitions are confined to a declared schema (kinds.json) that the door validates."
+    },
+    "GOV-09": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "D",
+      "evidence": "DESIGN.md \u00a711 (116): the command line takes the actor's name on trust; approval by the author is possible.",
+      "confidence": "medium",
+      "alt_score": 1,
+      "alt_note": "The product's own machine actors use fixed typed identities (app.py:55; scheduler.py:11) that the policy constrains, and file access acts as one shared credential.",
+      "ai": {
+        "status": "not_applicable",
+        "rationale": "ai_actions is false: no model acts in the product."
+      }
+    },
+    "GOV-10": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "D",
+      "evidence": "DESIGN.md \u00a76 (78-84, 88): protected keys, daily cap, initial share, invariants held in code, the policy capped at dial 3, tightening automatic after reversals.",
+      "confidence": "high",
+      "alt_score": 4,
+      "alt_note": "The scopes are a versioned, person-reviewed policy that the product tightens automatically after reversals (scheduler.py:75-87; tests/test_release.py:82), though only from dial 4.",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "D",
+        "evidence": "DESIGN.md \u00a711 (117): no model in the design; missing AI behaviour scores 0.",
+        "confidence": "high"
+      }
+    },
+    "GOV-11": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "D",
+      "evidence": "DESIGN.md \u00a73 (28) provenance on every change; \u00a75 (52) redaction; README.md:87 no injection resistance shown; \u00a711 (117) injection defences would be needed for a model.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "Untrusted input cannot alone apply a change at the default dials, and provenance covers every product-made change.",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "D",
+        "evidence": "DESIGN.md \u00a711 (117): no model in the design; missing AI behaviour scores 0.",
+        "confidence": "high"
+      }
+    },
+    "EXP-01": {
+      "status": "not_applicable",
+      "rationale": "focused-application exclusion: the kernel is the help-desk domain (answers, routing, teams). (Design: DESIGN.md \u00a72 line 22 and \u00a711 lines 115-118.)",
+      "if_applicable": 1
+    },
+    "EXP-02": {
+      "status": "not_applicable",
+      "rationale": "focused-application exclusion; a new domain would need core changes (DESIGN.md \u00a72, line 22). (Design: DESIGN.md \u00a72 line 22 and \u00a711 lines 115-118.)",
+      "if_applicable": 1
+    },
+    "EXP-03": {
+      "status": "not_applicable",
+      "rationale": "focused-application exclusion; seed/ is a fixed starting set, not a bundle format. (Design: DESIGN.md \u00a72 line 22 and \u00a711 lines 115-118.)",
+      "if_applicable": 1
+    },
+    "EXP-04": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "D",
+      "evidence": "DESIGN.md \u00a75 (52): unmet questions grouped; \u00a711 (121) no clustering into themes.",
+      "confidence": "high"
+    },
+    "EXP-05": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "D",
+      "evidence": "DESIGN.md \u00a76 (76): drafts answers for frequent unmet questions (in-domain), no adjacent-capability proposals.",
+      "confidence": "medium",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "D",
+        "evidence": "DESIGN.md \u00a711 (117): no model in the design; missing AI behaviour scores 0.",
+        "confidence": "high"
+      }
+    },
+    "EXP-06": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "D",
+      "evidence": "DESIGN.md \u00a75 (59-63): new answers released to a share with a target and keep/undo decision. No capability launch or review date.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "For new answers the cohort launch has a declared success metric, a removal path and a recorded keep-or-kill decision."
+    },
+    "AIR-03": {
+      "status": "not_applicable",
+      "rationale": "ai_data_access is false because ai_features is false. (Design: DESIGN.md \u00a72 line 22 and \u00a711 lines 115-118.)"
+    },
+    "AIR-04": {
+      "status": "not_applicable",
+      "rationale": "ai_data_access is false because ai_features is false. (Design: DESIGN.md \u00a72 line 22 and \u00a711 lines 115-118.)"
+    },
+    "AIR-05": {
+      "status": "not_applicable",
+      "rationale": "ai_features is false: RuleDrafter is not a model (drafter.py:1-8) and no model adapter ships. (Design: DESIGN.md \u00a72 line 22 and \u00a711 lines 115-118.)"
+    },
+    "AIR-06": {
+      "status": "not_applicable",
+      "rationale": "ai_features is false: RuleDrafter is not a model (drafter.py:1-8) and no model adapter ships. (Design: DESIGN.md \u00a72 line 22 and \u00a711 lines 115-118.)"
+    },
+    "AIR-07": {
+      "status": "not_applicable",
+      "rationale": "ai_features is false: RuleDrafter is not a model (drafter.py:1-8) and no model adapter ships. (Design: DESIGN.md \u00a72 line 22 and \u00a711 lines 115-118.)"
+    },
+    "AIR-01": {
+      "status": "not_applicable",
+      "rationale": "ai_features is false: RuleDrafter is not a model (drafter.py:1-8) and no model adapter ships. (Design: DESIGN.md \u00a72 line 22 and \u00a711 lines 115-118.)"
+    },
+    "AIR-02": {
+      "status": "not_applicable",
+      "rationale": "ai_features is false: RuleDrafter is not a model (drafter.py:1-8) and no model adapter ships. (Design: DESIGN.md \u00a72 line 22 and \u00a711 lines 115-118.)"
+    },
+    "AIR-08": {
+      "status": "not_applicable",
+      "rationale": "ai_features is false: RuleDrafter is not a model (drafter.py:1-8) and no model adapter ships. (Design: DESIGN.md \u00a72 line 22 and \u00a711 lines 115-118.)"
+    }
+  }
+}

@@ -1,0 +1,781 @@
+{
+  "product": "Answer Desk",
+  "date": "2026-11-17",
+  "source": "examples/born-evolvable @ e266f177c3c6617ef8aa8acc11e01d9ce92ebaff",
+  "archetype": "focused-application",
+  "framework": "EVOLVE",
+  "framework_version": "0.7.0",
+  "basis": "shipped",
+  "scope_facts": {
+    "persistent_data": {
+      "value": true,
+      "evidence": "One SQLite store holds definitions (changes, live), the audit trail (events), customer questions (signals) and exposures: answerdesk/store.py:13-38; README.md:86."
+    },
+    "schema_changes": {
+      "value": true,
+      "evidence": "Numbered schema migrations with up and down steps, applied on every open: answerdesk/store.py:13-38, 63-79; answerdesk/app.py:22; CLI 'migrate' answerdesk/cli.py:88-89. Definition changes do not change storage structure (JSON bodies in one versioned table, store.py:16-20)."
+    },
+    "multi_tenant": {
+      "value": false,
+      "evidence": "One process, one SQLite file, no tenants, no accounts: README.md:86; DESIGN.md \u00a711 (line 115). Nothing in answerdesk/ partitions data by tenant."
+    },
+    "hosted_service": {
+      "value": false,
+      "evidence": "A command-line tool run per command (answerdesk/__main__.py, answerdesk/cli.py:97-105); no server or network listener anywhere in answerdesk/; README.md:86 'No server'."
+    },
+    "machine_actions": {
+      "value": true,
+      "evidence": "The CLI is declared 'for people and agents' (answerdesk/cli.py:1) and the capability map exists 'so an agent can discover what it may do' (answerdesk/describe.py:1-6). Any automated client can run propose/approve/undo/off/draft/tick (cli.py:60-79), which change definitions."
+    },
+    "agent_mutations": {
+      "value": true,
+      "evidence": "The drafter (acting as ai:rule-drafter) and the product's scheduler (product:scheduler) write proposed definitions that are stored awaiting approval: answerdesk/app.py:53-62; answerdesk/scheduler.py:38-54, 65-73, 75-87; answerdesk/door.py:50-59, 266-271."
+    },
+    "evolution_auto_apply": {
+      "value": false,
+      "evidence": "Default dials are answers 3, routing-rules 3, checks 3, policy 1 (seed/policy.json:4-7); below dial 4 every AI or product change needs a person (answerdesk/policy.py:56-57). The scheduler's own automatic actions are reversals and widening a person-approved candidate (scheduler.py:20-26), not new changes. Pre-approval (policy.py:58-61) and product tightening (policy.py:40-41, scheduler.py:82-87) only occur at dial 4 or more, which needs a person-approved policy change on a measured record (policy.py:85-94)."
+    },
+    "definition_change_path": {
+      "value": true,
+      "evidence": "Answers, routing rules, checks and the policy are versioned definitions changed through Door.submit/approve: kinds.json:4-54; answerdesk/door.py:50-95; answerdesk/store.py:82-139."
+    },
+    "code_release_path": {
+      "value": false,
+      "evidence": "Nothing in answerdesk/ generates or activates code; the drafter returns answer definitions only (answerdesk/drafter.py:39-53). README.md:90 and DESIGN.md \u00a711 (line 118): code changes are the team's own work and are not rolled back by the product."
+    },
+    "ai_features": {
+      "value": false,
+      "evidence": "No feature calls a language or ML model. The only 'AI' is RuleDrafter, a deterministic word-overlap selector that copies the first sentences of a help-centre section (answerdesk/drafter.py:1-8, 39-53); the code and docs say it is not a language model (drafter.py:3; README.md:82, 87; DESIGN.md \u00a711 line 117). No model client, adapter or opt-in setting ships, so available_value is also false.",
+      "available_value": false
+    },
+    "ai_data_access": {
+      "value": false,
+      "evidence": "Requires ai_features. (The rule drafter reads only local files under sources/: drafter.py:30-37.)",
+      "available_value": false
+    },
+    "ai_actions": {
+      "value": false,
+      "evidence": "Requires ai_features. (The rule drafter's output is a proposal through the door: app.py:59-62.)",
+      "available_value": false
+    }
+  },
+  "change_kinds": [
+    {
+      "id": "answers",
+      "name": "What the desk tells customers",
+      "who": "support lead",
+      "main": true,
+      "reach": 2,
+      "evidence": "Declared in kinds.json:5-17. Self-serve: 'propose answers KEY --body' validated against kinds.json (cli.py:60-63, kinds.py:20-37), 'approve' (door.py:61-68), one-step 'undo' (door.py:236-254), no deploy; tested by tests/test_door.py:42 and :77. Drafted: the product drafts answers by rule on request ('draft', app.py:53-62) and by itself at dial 5 (scheduler.py:47-54); a person approves at the default dial 3 (policy.py:56-57). Not 'carried' (reach 3): the reach rule needs DEL-04 >= 3, and the drafter is not an AI lane.",
+      "confidence": "medium"
+    },
+    {
+      "id": "routing-rules",
+      "name": "Which team gets a question the desk cannot answer",
+      "who": "support lead",
+      "main": true,
+      "reach": 1,
+      "evidence": "kinds.json:18-29; same propose/approve/undo path as answers (cli.py:60-75; door.py:50-95, 236-254), including removal and its undo (tests/test_door.py:53). Nothing in the product drafts routing rules (drafter.py:39-53 returns answers only; scheduler.py:47-54 drafts answers only).",
+      "confidence": "high"
+    },
+    {
+      "id": "checks",
+      "name": "The questions every change is checked against",
+      "who": "support lead; the product from failures",
+      "main": false,
+      "reach": 2,
+      "evidence": "kinds.json:30-40. People propose and undo checks (tests/test_door.py:60). The scheduler drafts a check from each flagged failure and each reversal (scheduler.py:38-45, 65-73; door.py:266-271); a person approves at dial 3 (tests/test_loop.py:10; tests/test_release.py:68).",
+      "confidence": "high"
+    },
+    {
+      "id": "policy",
+      "name": "What may change without a person, and within which limits",
+      "who": "product owner",
+      "main": false,
+      "reach": 1,
+      "evidence": "kinds.json:41-54; policy dial 1 means people only (seed/policy.json:7; policy.py:44-47); validated by policy.validate (policy.py:64-95); undo by a person only, never the first version (door.py:239-248; tests/test_door.py:66; tests/test_loop.py:30).",
+      "confidence": "high"
+    },
+    {
+      "id": "drafter-sources",
+      "name": "The help-centre pages the drafter copies from",
+      "who": "support lead or content owner",
+      "main": false,
+      "reach": 0,
+      "evidence": "sources/help-centre.md is a file read at start-up (drafter.py:30-37). Changing it means editing a file in the repository; it is not a kind in kinds.json, not versioned in the store and has no undo in the product. (Its stale refund text, 5 vs 10 days, is what the walkthrough's blocked refunds draft comes from.)",
+      "confidence": "high"
+    },
+    {
+      "id": "matching-and-replies",
+      "name": "How questions are matched, and the reply sent when a question is passed on",
+      "who": "support lead",
+      "main": false,
+      "reach": 0,
+      "evidence": "Matching (keyword overlap, 'need', tie-breaks, triage fallback) and the routing reply text are code: desk.py:27-40, 107. Only the per-answer 'need' threshold is data (kinds.json:9). DESIGN.md \u00a72 (line 22): a new kind of change is added by an engineer.",
+      "confidence": "high"
+    }
+  ],
+  "proven": {
+    "request": {
+      "status": "not_evidenced",
+      "searched": "Everything in examples/born-evolvable: no change history, release record, audit export or changelog from a real deployment; README.md:91 says it has never run in production. All measurements come from simulated customers (walkthrough.py, tests/helpers.py)."
+    },
+    "fix": {
+      "status": "not_evidenced",
+      "searched": "Everything in examples/born-evolvable: no change history, release record, audit export or changelog from a real deployment; README.md:91 says it has never run in production. All measurements come from simulated customers (walkthrough.py, tests/helpers.py)."
+    },
+    "expansion": {
+      "status": "not_evidenced",
+      "searched": "Everything in examples/born-evolvable: no change history, release record, audit export or changelog from a real deployment; README.md:91 says it has never run in production. All measurements come from simulated customers (walkthrough.py, tests/helpers.py)."
+    }
+  },
+  "ai_delivery": {
+    "present": false,
+    "qualifies": false,
+    "evidence": "Searched examples/born-evolvable: no agent instruction files, agent workflows, CI files or installed delivery framework. The repository root and .github were outside the permitted read scope, so a repository-level setup was not inspected.",
+    "note": "AI-assisted engineering, if any, is not the product evolving itself and would not count unless it met scoring rule 12."
+  },
+  "scores": {
+    "ARC-01": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "SQLite with hand-chosen indexes per feature: UNIQUE(kind,key,version) on changes, PK on live, signals_at, exposures_change (store.py:20-34). Several paths scan: unmet() reads every signal (desk.py:115-122, store.py:180-185), track_record/_auto_today load every change of a kind into Python (door.py:257-264). Definition bodies are JSON and not filterable. No caching.",
+      "confidence": "medium"
+    },
+    "ARC-02": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Migration framework with up and down steps and PRAGMA user_version (store.py:13-38, 63-79), applied on open (app.py:22), exercised down and up by tests/test_platform.py:46. Not 3: the down steps are destructive (DROP TABLE, store.py:29, 36; 'migrate --to 0' via cli.py:88-89 drops every definition with no audit event), no online or expand-and-contract strategy, no test against representative data in CI within scope.",
+      "confidence": "high"
+    },
+    "ARC-03": {
+      "status": "not_applicable",
+      "rationale": "hosted_service is false: a CLI over one local SQLite file (cli.py:97-105; README.md:86).",
+      "if_applicable": 0
+    },
+    "ARC-04": {
+      "status": "not_applicable",
+      "rationale": "hosted_service is false. Deferred work (measurement, reversal) runs only when someone runs 'tick' (scheduler.py:14-55; cli.py:78-79).",
+      "if_applicable": 1
+    },
+    "ARC-05": {
+      "status": "not_applicable",
+      "rationale": "multi_tenant is false: single installation per store (README.md:86; DESIGN.md \u00a711).",
+      "if_applicable": 2
+    },
+    "ARC-06": {
+      "status": "not_applicable",
+      "rationale": "hosted_service is false; no load or performance suite in tests/.",
+      "if_applicable": 0
+    },
+    "ARC-07": {
+      "status": "not_applicable",
+      "rationale": "hosted_service is false; no objectives or metrics export in answerdesk/.",
+      "if_applicable": 0
+    },
+    "ARC-08": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Inspected every outbound dependency: the SQLite file and the pluggable drafter (app.py:20-26, 53-62). Errors are caught locally at the CLI and printed as JSON (cli.py:97-105). No timeouts, retries or isolation around Drafter.draft_answer; an exception there aborts 'draft' and, at dial 5, the rest of 'tick' (scheduler.py:47-54). Answering ('ask', desk.py:72-108) does not depend on the drafter. No connectors, tenants or services.",
+      "confidence": "medium",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "No model ships (answerdesk/drafter.py:1-8; README.md:82,87). No model provider exists to fail; missing AI behaviour scores 0.",
+        "confidence": "high"
+      }
+    },
+    "ARC-09": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Backup copies the whole store with the SQLite backup API (store.py:218-224; cli.py:86-87). Restore writes only into a fresh location, refuses to overwrite, and verifies integrity and schema version (store.py:226-242). tests/test_platform.py:28 backs up a store with a live candidate, restores it, compares every table and checks the restored store works and refuses overwrite. Data and definitions live in that one file. Not 4: no RPO/RTO, no point-in-time restore, no drill records.",
+      "confidence": "high",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      },
+      "inventory": {
+        "data": 3,
+        "definitions": 3,
+        "files": "n/a",
+        "secrets": "n/a",
+        "schedules": "n/a"
+      }
+    },
+    "DEL-01": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Requests arrive as customer questions recorded as structured signals: redacted question, hashed session, the answer key and version or team that handled it, feedback and a staff 'expected' outcome (store.py:24-26, 164-174; desk.py:72-113), queryable and grouped ('signals --unmet', cli.py:58-59; desk.py:115-122). Not 3: there is no request object for operator requests and no step that turns a request into a specification with acceptance criteria and a risk class; a proposal goes straight to Door.submit (cli.py:60-63).",
+      "confidence": "medium",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "No model ships (answerdesk/drafter.py:1-8; README.md:82,87). No model in intake.",
+        "confidence": "high"
+      }
+    },
+    "DEL-02": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "One Python package run from source (answerdesk/, __main__.py); no build, container or deploy automation in examples/born-evolvable.",
+      "confidence": "medium"
+    },
+    "DEL-03": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Module split by convention (door.py, store.py, desk.py, policy.py). The 'one door' is not enforced: Store methods that write definitions are public (store.py:82-132) and App.seed writes outside the door (app.py:31-51). No import-linter or architecture test in tests/.",
+      "confidence": "high"
+    },
+    "DEL-04": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "There is no AI implementation lane. The drafting lane (Drafter interface, drafter.py:20-25; App.draft acting as ai:rule-drafter, app.py:53-62; governed by the door and policy) is driven by RuleDrafter, a deterministic word-overlap rule, not a model (drafter.py:1-8, 39-53; README.md:82). The rubric reads DEL-04 as inherently AI and rule-based behaviour as 0 in AI readings, so the stand-in is not credited as an AI lane. People implement each change by hand per installation through 'propose' (cli.py:60-63).",
+      "confidence": "low",
+      "alt_score": 2,
+      "alt_note": "If a governed rule-based drafting lane counted, it meets level 2: it drafts answers for one narrow task on request, through the same door, checks and policy, and a person approves (app.py:53-62; tests/test_release.py:36,43; tests/test_platform.py:92). Level 3 would still fail on breadth (answers only).",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "No model ships (answerdesk/drafter.py:1-8; README.md:82,87). RuleDrafter is rule-based; the same anchors as the criterion, scored on model behaviour only.",
+        "confidence": "high"
+      }
+    },
+    "DEL-05": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Every definition change, including AI drafts and product proposals, passes deterministic pre-land checks in Door.check: kind validation, one change in flight, the regression suite for answers and routing rules, the raise rules for policy (door.py:98-119; checks.py:16-27; kinds.py:20-70), re-run at approval (door.py:61-68; tests/test_door.py:88,94). Gap: code changes have a unit-test suite (41 tests, all pass) but no gate in scope (no CI configuration in examples/born-evolvable). Checks changes are only validated (door.py:111-112).",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "Every change class the evolution system makes (definitions) has an unskippable pre-land check with drafts included; only engineers' code changes lack an in-scope gate."
+    },
+    "DEL-06": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "'describe' prints a machine-readable map with version, schema version, kinds, current dials, limits and operations (describe.py:54-84; cli.py:84-85), which is a deployed-configuration snapshot. No build id (VERSION is a constant, app.py:16) and no health command; restore has an integrity check (store.py:235-241) but nothing probes a running store.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "For a local CLI, describe plus the restore integrity check cover most of a verification surface."
+    },
+    "DEL-07": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "A fresh seeded instance is one command ('--store PATH init', cli.py:45-47; app.py:31-51); tests and the walkthrough create a temporary seeded store per test and destroy it (tests/helpers.py:43-58; walkthrough.py:126-136). No build id, nothing provisions an instance per proposed change.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "Ephemeral seeded stores per test run, created and destroyed in seconds, meet most of level 3."
+    },
+    "DEL-08": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "End-to-end journeys exist: the walkthrough test runs the whole story deterministically (tests/test_platform.py:109; walkthrough.py:61-123) and a CLI journey (tests/test_platform.py:92). Per-definition usage is recorded on every question (store.py:164-174). No changed-path to journey map.",
+      "confidence": "medium"
+    },
+    "DEL-09": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Answers and routing-rule changes are released to a share of sessions, deterministic per session (door.py:128-134; desk.py:53-56, 78-83; tests/test_release.py:10). Checks and policy changes apply to everyone at once (door.py:135-138; DESIGN.md \u00a72) and code has no staged exposure.",
+      "confidence": "high",
+      "alt_score": 3,
+      "alt_note": "Every customer-facing change class the evolution system makes, including product-drafted answers, can go to a percentage first."
+    },
+    "DEL-10": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "'off' switches a live change off at runtime, audited, and 'on' resumes it (door.py:220-234; cli.py:70-73; tests/test_release.py:25). Any kept version of any kind is reversed at once by 'undo', audited (door.py:236-254). Global scope only (single installation). Not 4: the scheduler reverses on measured impact (scheduler.py:19-23) but only when 'tick' is run, and it is a reversal rather than a switch.",
+      "confidence": "medium"
+    },
+    "DEL-11": {
+      "status": "not_applicable",
+      "rationale": "code_release_path is false: the product's loop changes definitions only (README.md:90; drafter.py:39-53)."
+    },
+    "MAL-01": {
+      "status": "not_applicable",
+      "rationale": "focused-application exclusion: Answer Desk is deliberately narrow (DESIGN.md \u00a72, line 22: not a platform).",
+      "if_applicable": 1
+    },
+    "MAL-02": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Fields per kind carry type and validation (types, required, min/max, length, pattern) in kinds.json:5-54, read by validate_body (kinds.py:20-70) in the door and seed and printed by describe (describe.py:63). They are engineer-managed in a file that nothing validates, and matching code (desk.py:27-40) does not read new fields.",
+      "confidence": "high"
+    },
+    "MAL-03": {
+      "status": "not_applicable",
+      "rationale": "focused-application exclusion. Statuses are coded in door.py.",
+      "if_applicable": 1
+    },
+    "MAL-04": {
+      "status": "not_applicable",
+      "rationale": "focused-application exclusion. 'propose KIND KEY --body' is generic across kinds (cli.py:60-63).",
+      "if_applicable": 2
+    },
+    "MAL-05": {
+      "status": "not_applicable",
+      "rationale": "focused-application exclusion. The CLI is generated from OPERATIONS in code (cli.py:16-30); kinds.json is read at start (kinds.py:11-13).",
+      "if_applicable": 2
+    },
+    "MAL-06": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Introspection: 'describe' lists every operation with typed arguments and every kind with its fields (describe.py:9-50, 54-84); the parser is generated from the same table (cli.py:16-30; tests/test_platform.py:72,79). Errors are JSON with plain-text messages (cli.py:101-103; door.py:82-86). No dry-run (submit always records a version, door.py:57), no typed client generation. 'evaluate' is declared changes: False but writes a measurement and an audit event (describe.py:37; door.py:214-216).",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "Introspection is complete for the CLI and validation errors are returned as a structured list."
+    },
+    "MAL-07": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No layout surface: output is JSON from the CLI (cli.py:104) and the routing reply is a code string (desk.py:107). DESIGN.md \u00a72 puts layouts out of scope.",
+      "confidence": "high"
+    },
+    "MAL-08": {
+      "status": "not_applicable",
+      "rationale": "focused-application exclusion; there is no UI.",
+      "if_applicable": 0
+    },
+    "MAL-09": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "UI strings (reply template desk.py:107, error messages in door.py and policy.py) are in code, English only, no locale or theme data. Answer texts are data but are the domain definitions themselves.",
+      "confidence": "medium"
+    },
+    "MAL-10": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Routing rules and answers are declarative keyword conditions with one action each (route to a team, give an answer), composed by the operator through 'propose', validated, and tested against the check suite before release (kinds.json:5-29; desk.py:27-40; door.py:113-118). Narrow in scope: one condition type, two actions, no entity-wide rules.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "The check suite acts as a test mode for every rule change (checks.py:16-27)."
+    },
+    "MAL-11": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "An events table is the audit trail (store.py:22-23, 149-161); the scheduler polls the store (scheduler.py:14-55). No subscriptions, webhooks or replay.",
+      "confidence": "medium"
+    },
+    "MAL-12": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Custom server-side logic means changing core code; no hook points in answerdesk/.",
+      "confidence": "high"
+    },
+    "MAL-13": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "One in-code extension point: App(drafter=...) accepts any Drafter (app.py:20-26; drafter.py:20-25). It cannot be selected from the CLI or configuration; no other plugin points.",
+      "confidence": "medium",
+      "alt_score": 2,
+      "alt_note": "The Drafter interface is a narrow code plugin point."
+    },
+    "MAL-14": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "A drafter runs in-process with full trust (app.py:26, 56); no isolation, allowlist or resource limit. Its output, not its code, is gated by the door.",
+      "confidence": "high"
+    },
+    "MAL-15": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Local development with stdlib only, a deterministic test suite and walkthrough, and README instructions (README.md:7-63; tests/helpers.py). No preview against a real installation or staged branches for extensions.",
+      "confidence": "medium"
+    },
+    "MAL-16": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No integrations or canonical model: answerdesk/ makes no outbound calls.",
+      "confidence": "high"
+    },
+    "MAL-17": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No connector definition or SDK in answerdesk/.",
+      "confidence": "high"
+    },
+    "MAL-18": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "The CLI contract is documented (README.md:28-53; describe) but unversioned beyond a constant VERSION (app.py:16); no deprecation policy, idempotency or conflict handling for clients.",
+      "confidence": "medium"
+    },
+    "MAL-19": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "'describe' is a machine-readable capability map generated from the same OPERATIONS table as the CLI (describe.py:9-84; cli.py:16-30), meant for agents (describe.py:1-6). It is not a typed tool surface (no MCP or equivalent) and has no scoped auth: '--as person:NAME' is taken on trust (cli.py:33-36; README.md:89).",
+      "confidence": "high",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "For AI agents: an introspectable CLI they can call (describe.py:9-84), no typed agent tools, no scoped auth.",
+        "confidence": "medium"
+      }
+    },
+    "MAL-20": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "The desk is a keyword FAQ bot: the answer with most keyword overlap, else a routing rule (desk.py:27-40, 72-108). No grounded conversation or natural-language authoring.",
+      "confidence": "high",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "No model ships (answerdesk/drafter.py:1-8; README.md:82,87). Keyword or FAQ bots count as 0.",
+        "confidence": "high"
+      }
+    },
+    "LRN-01": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Every question is written synchronously as a signal with the version that served it and its exposures (desk.py:72-108; store.py:164-174) and is read at once by product features: evaluate, tick and unmet (door.py:185-217; scheduler.py:14-55; desk.py:115-122).",
+      "confidence": "high",
+      "alt_score": 4,
+      "alt_note": "Per-definition and per-version instrumentation is added automatically for every candidate change (exposures, desk.py:87-96), although nothing streams."
+    },
+    "LRN-02": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Typed signals: helpful/unhelpful feedback and a staff correction ('expected') per question (store.py:193-197; cli.py:50-57); answers link to the definition version that served them (answer_change, desk.py:98-103); measurement results link to the change (door.py:213-216). Routed questions record only the team, not the rule or its version (store.py:166-167), except through exposures to candidates. Triage: flagged failures become proposed checks a person approves (scheduler.py:38-45).",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "For answers, signals are linked to definition and version, with a review workflow."
+    },
+    "LRN-03": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Failed outcomes are recorded and queryable with the area: unanswered questions with the team they went to, unhelpful feedback with the answer key and version (store.py:24-26, 164-174; cli.py:58-59). 'signals --unmet' groups unmet questions by exact text with counts (desk.py:115-122). Not 3: no issue objects, no affected-user counts, no friction patterns beyond a change's own measurement.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "Measurement detects a candidate change that worsens negative feedback against a control and raises it (door.py:185-217; scheduler.py:19-28), with frequency."
+    },
+    "LRN-04": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Usage, feedback and change history are joined inside the product for measurement and reversal (exposure_rows joins signals and exposures, store.py:203-208; evaluate, door.py:185-217; track_record from changes, door.py:257-260; wrong-pass events, scheduler.py:62-64). The operator queries them separately (signals, changes, audit: cli.py:58-59, 80-83); no joined queryable model.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "The joins used by measurement cover usage, feedback and change history."
+    },
+    "LRN-05": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "For a reversed change the product attaches the failing questions (exposure rows), the measured rates and the check versions that passed it (scheduler.py:58-64; door.py:185-202). Not 3: no likely cause is produced for failures of stable definitions; the flagged-failure check proposal (scheduler.py:38-45) is a case, not a diagnosis.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "For change-induced failures it produces a reproducible case (a check from the first failed question) linked to the responsible change, for a person to confirm (scheduler.py:65-73; tests/test_release.py:68).",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "No model ships (answerdesk/drafter.py:1-8; README.md:82,87). Rule-based grouping counts as 0.",
+        "confidence": "high"
+      }
+    },
+    "LRN-06": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Proposals for one area: checks from failures (scheduler.py:38-45, 65-73) and keep/revise/undo recommendations per change (door.py:197-212); answers for frequent unmet questions only at dial 5 (scheduler.py:47-54). Not ranked, no expected impact across the product.",
+      "confidence": "high",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "No model ships (answerdesk/drafter.py:1-8; README.md:82,87). Rule-based recommendations count as 0.",
+        "confidence": "high"
+      }
+    },
+    "LRN-07": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "On each 'tick' the scheduler turns recorded experience into candidate changes without a per-item request: flagged failures and reversed changes become proposed checks (scheduler.py:38-45, 58-73); at dial 5 frequent unmet questions become drafted answers (scheduler.py:47-54; tests/test_loop.py:91). 'draft' generates a candidate on request (app.py:53-62). Nothing runs 'tick' on a schedule: it is a command (cli.py:78-79; README.md:42 'the product's scheduler, once').",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "Run periodically, tick is a background review job that drafts changes unprompted.",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "No model ships (answerdesk/drafter.py:1-8; README.md:82,87). Heuristic tuning counts as 0.",
+        "confidence": "high"
+      }
+    },
+    "LRN-08": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Product- and drafter-made changes pass the same pre-apply evaluation as any change: validation, then every check run against today's definitions and with the change applied; a regression blocks it (door.py:98-119; checks.py:16-27), plus the policy in code (policy.py:38-61). Re-run on approval (door.py:61-68). Tested: tests/test_door.py:88,94,104,110; the walkthrough rejects the same AI draft after the new check (walkthrough.py:90-95; tests/test_platform.py:109). The baseline set is small (two seed checks plus those grown from failures). Not 4: no held-out data; results do not feed the policy directly.",
+      "confidence": "medium",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      },
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "No model ships (answerdesk/drafter.py:1-8; README.md:82,87). There are no model-made changes to evaluate; the checks that would apply are scored on the criterion.",
+        "confidence": "high"
+      }
+    },
+    "LRN-09": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Each release records baseline (from recent questions the change touches), target, window and tolerance (door.py:141-159; loop kinds door.py:167-173); evaluate compares candidate and control arms and records keep, revise, undo or waiting (door.py:185-217); the scheduler acts on it (scheduler.py:17-36). Tested: tests/test_release.py:36,43,68; tests/test_loop.py:73,81.",
+      "confidence": "high",
+      "alt_score": 4,
+      "alt_note": "Exposure instrumentation is created with each release and the policy's tolerance and the dial drive promote or reverse automatically; attribution limits are not recorded and loop changes are not reversed (DESIGN.md \u00a711)."
+    },
+    "LRN-10": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Checks and the policy are versioned kinds changed through the door (kinds.json:30-54). Results drive them: a reversal records a wrong_pass event against the check versions that passed the change and proposes a new check from the first failed question; flagged failures become proposed checks; a person approves at dial 3 (scheduler.py:38-45, 58-73; tests/test_release.py:68; tests/test_loop.py:10). The policy's raise rule reads the measured record and the product lowers a dial after reversals (policy.py:85-94; scheduler.py:75-87; tests/test_loop.py:46,54; tests/test_release.py:82). Not 4: check and policy changes are measured (door.py:203-212) but never reversed automatically (DESIGN.md \u00a711, line 120), and adding checks needs a person at the default dial.",
+      "confidence": "high"
+    },
+    "GOV-01": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No user interface, component kit or accessibility scan in examples/born-evolvable (CLI JSON only, cli.py:104).",
+      "confidence": "high"
+    },
+    "GOV-02": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "One audit table records proposals, policy decisions, checks, approvals, releases, switches, measurements, reversals and wrong passes with actor and time (store.py:149-161; door.py throughout), queryable by 'audit' (cli.py:82-83). Gaps: feedback, purge-signals, migrate, backup and restore are not audited (store.py:193-215; cli.py:86-91); no retention policy for events; rows are mutable.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "All definition changes and approvals are covered and an operator command queries them."
+    },
+    "GOV-03": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Signals only: emails and long numbers removed before storage, sessions hashed (desk.py:16-20, 74; tests/test_platform.py:56), retention via purge-signals (store.py:210-215; tests/test_platform.py:63). No field classification, no per-person export or erasure; free-text notes and event details are not redacted.",
+      "confidence": "medium"
+    },
+    "GOV-04": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Validation is generic and mandatory for every kind (kinds.py:20-70 via door.py:100) and an actor-type policy applies to every change (policy.py:38-61), but there is no authentication: the CLI takes '--as person:NAME' on trust and the author may approve their own change (cli.py:33-36; README.md:89). No SAST, dependency or secret scanning in scope.",
+      "confidence": "medium",
+      "alt_score": 2,
+      "alt_note": "A generic actor-type permission model and mandatory validation exist; only scanning and authentication are missing."
+    },
+    "GOV-05": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "All four surfaces are versioned (store.py:82-139): 'changes --kind --key' shows every version with author, note, provenance, status and the version it replaced (cli.py:80-81), and 'undo' rolls back one step for every kind, audited (door.py:236-254), tested for each (tests/test_door.py:42,53,60,66,77). Scored 2 because no surface shows diffs (only whole versions), the drafter's sources/ are not versioned in the product, and 'migrate --to 0' destroys every version without audit (store.py:29; cli.py:88-89).",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "History and rollback cover every customisation surface through a supported command; the versions are small JSON documents shown in full beside the one they replaced. Inventory levels are for this reading.",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      },
+      "inventory": {
+        "answers": 3,
+        "routing-rules": 3,
+        "checks": 3,
+        "policy": 3
+      }
+    },
+    "GOV-06": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "A change is a first-class row with body, note, provenance and status (store.py:16-20); people, the drafter and the product all propose (door.py:50-59); the check report previews outcomes with and without the change on a staged copy of the definitions (checks.py:16-27; door.py:113-118); a person approves, which re-runs policy and checks (door.py:61-68); release goes to a share first (door.py:128-134). Not 4: no preview on production-shaped data.",
+      "confidence": "medium"
+    },
+    "GOV-07": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Policy object per kind of change with dial, limits, protected keys and daily cap (seed/policy.json:3-11; policy.py:38-61); approvals recorded as events (door.py:67). The human boundary moves on a measured record: raising needs kept changes and a low reversal rate (policy.py:85-94) and repeated reversals lower the dial automatically (scheduler.py:75-87). Tested: tests/test_loop.py:30,38,46,54,61; tests/test_release.py:82.",
+      "confidence": "high",
+      "alt_score": 4,
+      "alt_note": "Reversals of changes that passed every check are verifier false passes, and the dial adapts to them; audit is not complete (GOV-02) and approver identity is unauthenticated."
+    },
+    "GOV-08": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Schema migrations run on open (app.py:22) but stored definitions are not re-validated or migrated when kinds.json changes; kinds.json is unversioned; restore refuses a store from another schema version rather than migrating it (store.py:240-241).",
+      "confidence": "low",
+      "alt_score": 2,
+      "alt_note": "Definitions are confined to a declared schema (kinds.json) that the door validates."
+    },
+    "GOV-09": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "Any machine client that can run the CLI and write the SQLite file can claim any person ('--as person:NAME', cli.py:33-36; README.md:89) and approve, undo or change the policy; 'draft' and 'tick' take no caller identity (cli.py:64-65, 78-79). No dry-run, no idempotency key (propose_check dedups, door.py:266-271), rate limit only on pre-approved changes (policy.py:58-60). Audit rows exist (store.py:149-154).",
+      "confidence": "medium",
+      "alt_score": 1,
+      "alt_note": "The product's own machine actors use fixed typed identities (app.py:55; scheduler.py:11) that the policy constrains, and file access acts as one shared credential.",
+      "ai": {
+        "status": "not_applicable",
+        "rationale": "ai_actions is false: no model acts in the product."
+      }
+    },
+    "GOV-10": {
+      "status": "assessed",
+      "score": 3,
+      "grade": "A",
+      "evidence": "Every self-change path goes through Door.submit and policy.decide in code: AI and the product may not remove definitions, change protected keys, or change or remove checks; actor kinds need a minimum dial; pre-approved changes have a daily cap; the policy can never ship without a person except a product change that only lowers dials; a new release reaches only initial_share; blocked changes are logged with the reason (policy.py:10-13, 38-61, 79-80; door.py:76-81, 101-102, 128-134). Tested: tests/test_door.py:104,110,116,123; tests/test_loop.py:38,61. Scheduler promote and reversal bypass decide but act only on person-approved candidates (scheduler.py:19-26).",
+      "confidence": "high",
+      "alt_score": 4,
+      "alt_note": "The scopes are a versioned, person-reviewed policy that the product tightens automatically after reversals (scheduler.py:75-87; tests/test_release.py:82), though only from dial 4.",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      },
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "No model ships (answerdesk/drafter.py:1-8; README.md:82,87). Missing AI behaviour scores 0; the bounds a model would meet are scored on the criterion.",
+        "confidence": "high"
+      }
+    },
+    "GOV-11": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Provenance on product- and drafter-made changes: question, drafter and source (app.py:59-62); signal or reversed change for proposed checks (scheduler.py:41-42, 70-71); reversed ids for a lowered dial (scheduler.py:84-85). Questions are redacted (desk.py:16-20) and treated as data by the rule drafter, which copies only local source text (drafter.py:7, 39-53). The 'staff only' expected outcome is not enforced (describe.py:17-18; cli.py:50-57). No injection scanning, no bulk revert by source.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "Untrusted input cannot alone apply a change at the default dials, and provenance covers every product-made change.",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "No model ships (answerdesk/drafter.py:1-8; README.md:82,87). No prompts exist; missing AI behaviour scores 0.",
+        "confidence": "high"
+      }
+    },
+    "EXP-01": {
+      "status": "not_applicable",
+      "rationale": "focused-application exclusion: the kernel is the help-desk domain (answers, routing, teams).",
+      "if_applicable": 1
+    },
+    "EXP-02": {
+      "status": "not_applicable",
+      "rationale": "focused-application exclusion; a new domain would need core changes (DESIGN.md \u00a72, line 22).",
+      "if_applicable": 1
+    },
+    "EXP-03": {
+      "status": "not_applicable",
+      "rationale": "focused-application exclusion; seed/ is a fixed starting set, not a bundle format.",
+      "if_applicable": 1
+    },
+    "EXP-04": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Unanswered questions are recorded and grouped with counts ('signals --unmet', desk.py:115-122; cli.py:58-59). Grouping is by exact normalised text; no themes, trends or segments (DESIGN.md \u00a711, line 121).",
+      "confidence": "high"
+    },
+    "EXP-05": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Raw demand only: the unmet list. Drafting an answer for a frequent unmet question (dial 5, scheduler.py:47-54) adds content within the current domain, not an adjacent capability, and carries no sizing or fit.",
+      "confidence": "medium",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "No model ships (answerdesk/drafter.py:1-8; README.md:82,87). No model proposes anything.",
+        "confidence": "high"
+      }
+    },
+    "EXP-06": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Anything new that reaches customers (an answer or routing rule) goes to a share of sessions with a target, window, recorded keep/undo decision and a removal path (door.py:128-159, 185-217, 236-254). There is no capability-level launch or review date.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "For new answers the cohort launch has a declared success metric, a removal path and a recorded keep-or-kill decision."
+    },
+    "AIR-03": {
+      "status": "not_applicable",
+      "rationale": "ai_data_access is false because ai_features is false."
+    },
+    "AIR-04": {
+      "status": "not_applicable",
+      "rationale": "ai_data_access is false because ai_features is false."
+    },
+    "AIR-05": {
+      "status": "not_applicable",
+      "rationale": "ai_features is false: RuleDrafter is not a model (drafter.py:1-8) and no model adapter ships."
+    },
+    "AIR-06": {
+      "status": "not_applicable",
+      "rationale": "ai_features is false: RuleDrafter is not a model (drafter.py:1-8) and no model adapter ships."
+    },
+    "AIR-07": {
+      "status": "not_applicable",
+      "rationale": "ai_features is false: RuleDrafter is not a model (drafter.py:1-8) and no model adapter ships."
+    },
+    "AIR-01": {
+      "status": "not_applicable",
+      "rationale": "ai_features is false: RuleDrafter is not a model (drafter.py:1-8) and no model adapter ships."
+    },
+    "AIR-02": {
+      "status": "not_applicable",
+      "rationale": "ai_features is false: RuleDrafter is not a model (drafter.py:1-8) and no model adapter ships."
+    },
+    "AIR-08": {
+      "status": "not_applicable",
+      "rationale": "ai_features is false: RuleDrafter is not a model (drafter.py:1-8) and no model adapter ships."
+    }
+  }
+}

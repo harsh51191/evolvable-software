@@ -27,7 +27,7 @@ One SQLite file. Schema changes are numbered migrations with up and down steps (
 
 - **`changes`**: every version of every definition. Columns: kind, key, version number, body (JSON, validated against `kinds.json`; empty means "remove"), author type (`person`, `ai`, `product`) and name, note, provenance (what it was drafted from), status, policy decision, share of traffic, the version it replaced, and the measurement record (baseline, target, window, tolerance, result).
 - **`live`**: for each definition, the stable version everyone sees and at most one candidate version being released.
-- **`events`**: the audit trail. Every proposal, policy decision, check result, approval, release, switch, measurement, reversal and wrong pass, with the actor and time.
+- **`events`**: the audit trail. Every proposal, policy decision, check result, approval, release, switch, measurement, reversal and wrong pass, with the actor and time. Feedback, signal purges, `migrate`, `backup` and `restore` are not audited yet, and events have no retention policy.
 - **`signals`**: one row per question: time, a hashed session id, the question with personal data removed, the answer or team it got, the version that served it, the feedback, and (for staff) the outcome it should have had.
 - **`exposures`**: which questions were exposed to which candidate change, and in which arm (candidate or control).
 
@@ -45,7 +45,7 @@ Every change goes through `Door.submit` (`answerdesk/door.py`), whoever makes it
 4. **Release.** Pre-approved changes are released at once; others wait for a person, and approval runs steps 2 and 3 again on the current state. Answers and routing rules go to the share of traffic the policy sets; checks and policy apply at once.
 5. **Measure** (§5) over a window, then **keep, revise or undo**.
 
-People use the command line (`propose`, `approve`, `keep`, `off`, `on`, `undo`). The AI drafter calls the door as `ai:rule-drafter`. The product's scheduler (`tick`) calls it as `product:scheduler`. There is no other write path, except `init`, which records the starting definitions as version 1 by `person:founder` before a policy exists.
+People use the command line (`propose`, `approve`, `keep`, `off`, `on`, `undo`). The AI drafter calls the door as `ai:rule-drafter`. The product's scheduler (`tick`) calls it as `product:scheduler`. There is no other path for changing definitions, except `init`, which records the starting definitions as version 1 by `person:founder` before a policy exists. Two gaps remain: `migrate --to N` changes the storage layout outside the door and is not audited (its down steps drop tables, so `migrate --to 0` deletes every definition), and the `Store` write methods are reachable by any code in the process.
 
 ## 5. Signals and measurement
 
@@ -80,7 +80,7 @@ The policy is one definition (`policy/main`), versioned like any other. For each
 **Invariants held in code** (`answerdesk/policy.py`), which no policy version can change:
 - AI and the product may not remove definitions, change protected keys, or change or remove a check (they may add checks).
 - The policy never ships without a person (its dial is capped at 3), except a change that only lowers dials, which the product may make.
-- A dial rises one step at a time, and only when the kind's record shows at least `min_kept` kept changes and at most `max_reversal_rate` undone. The rule in force decides, so a raise cannot loosen the rule in the same change.
+- A dial rises one step at a time, and only when the kind's record shows at least `min_kept` kept changes and at most `max_reversal_rate` undone. The rule in force decides, so a raise cannot loosen the rule in the same change. This record is required for the dial only: a person can loosen other limits (protected items, the daily cap, the starting share, the tolerance) without one, and those limits are not type-checked yet.
 - Undoing a policy change needs a person.
 
 **Starting dials:** answers 3, routing rules 3, checks 3, policy 1.
@@ -101,7 +101,7 @@ Checks and the policy are kinds of change, so they are versioned, proposed, chec
 
 ## 9. Self-description
 
-`describe` prints a capability map in JSON: the kinds of change with their fields, measures, dial, who may propose, limits and the number of definitions; the door's steps; the actors; the policy invariants; and every operation with its arguments. The operations table (`answerdesk/describe.py`) is the single definition the command-line parser is generated from, so the map cannot drift from what the product accepts.
+`describe` prints a capability map in JSON: the kinds of change with their fields, measures, dial, who may propose, limits and the number of definitions; the door's steps; the actors; the policy invariants; and every operation with its arguments. The operations table (`answerdesk/describe.py`) is the single definition the command-line parser is generated from, so the arguments in the map cannot drift from what the product accepts. One known mismatch: `evaluate` is marked as making no change, but it records a measurement and an audit event.
 
 ## 10. Recovery
 
