@@ -1115,12 +1115,12 @@ def ai_delivery_reading(data):
                 "Any self-evolution scored here is the product's own.")
     elif record["qualifies"]:
         text = ("Engineers build this product with AI coding agents or a delivery framework. AI-assisted "
-                "engineering is not the product evolving itself, but this setup meets scoring rule 12, so the "
-                "criteria may credit it as a first-party evolution system.")
+                "engineering is not the product evolving itself, but this setup is installed, enforced and limited "
+                "as part of the product, so the assessment may credit it as the product's own way of changing.")
     else:
         text = ("Engineers build this product with AI coding agents or a delivery framework. That is AI-assisted "
-                "engineering, not the product evolving itself, and it does not meet scoring rule 12, so it "
-                "earns no credit.")
+                "engineering, not the product evolving itself. It is not installed, enforced and limited as part "
+                "of the product, so it earns no credit.")
     return {"recorded": True, "present": record["present"], "qualifies": record["qualifies"],
             "evidence": record.get("evidence"), "note": record.get("note"), "text": text}
 

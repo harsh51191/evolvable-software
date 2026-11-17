@@ -5,8 +5,8 @@ This file gives every code used in an EVOLVE assessment a plain name and a plain
 ## Levels
 ### L0
 Name: Manual
-Product: Every change is made by engineers writing and releasing code.
-People: Every change is a request that waits for engineers and for the next release.
+Product: The changes that matter most are made by engineers writing and releasing code.
+People: Most changes are requests that wait for engineers and for the next release.
 ### L1
 Name: Configurable
 Product: The people running the product can make the changes they need most without engineers, and can undo them.

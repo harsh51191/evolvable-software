@@ -424,9 +424,9 @@ class AITests(unittest.TestCase):
         data = product(2)
         data["ai_delivery"] = {"present": True, "qualifies": False, "evidence": "AGENTS.md"}
         ai = text(build(data), "ai")
-        self.assertIn("not the product evolving itself, and it does not meet scoring rule 12", ai)
+        self.assertIn("not the product evolving itself. It is not installed, enforced and limited as part", ai)
         data["ai_delivery"]["qualifies"] = True
-        self.assertIn("meets scoring rule 12", text(build(data), "ai"))
+        self.assertIn("may credit it as the product's own way of changing", text(build(data), "ai"))
 
 
 class RecursionTests(unittest.TestCase):
@@ -494,7 +494,7 @@ class NextStepTests(unittest.TestCase):
     def test_challenge_words_are_made_plain(self):
         nxt = text(build(product(2)), "next")
         self.assertIn("customer organisations cannot reach each other's data", nxt)
-        self.assertIn("‘From request to release’", nxt)
+        self.assertIn("the request-to-release check", nxt)
         self.assertIn("in real use", text(build(level_four()), "next"))
         self.assertIn("is at the top level", text(build(product(4)), "next"))
 

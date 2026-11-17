@@ -663,7 +663,7 @@ class ChecklistTests(unittest.TestCase):
 
     def test_a_missing_challenge_is_a_model_error(self):
         with self.assertRaises(score.ModelError):
-            rubric_with('"expansion": "A new capability launches to a cohort', '"other": "A new capability launches to a cohort')
+            rubric_with('"expansion": "A new capability launches to a selected group', '"other": "A new capability launches to a selected group')
 
     def test_items_agree_with_the_scorer_progress_count(self):
         data = assessment(2)
@@ -1113,7 +1113,7 @@ class AIDeliveryTests(unittest.TestCase):
         data = assessment(2)
         data["ai_delivery"] = {"present": True, "qualifies": False, "evidence": "AGENTS.md"}
         code, out = run(data)
-        self.assertIn("not the product evolving itself, and it does not meet scoring rule 12", out)
+        self.assertIn("not the product evolving itself. It is not installed, enforced and limited as part", out)
 
 
 class ConfidenceTests(unittest.TestCase):

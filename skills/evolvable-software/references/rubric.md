@@ -351,29 +351,29 @@ A supporting reading, separate from SAL: **how safely can the product run AI in 
   ],
   "challenges": {
     "1": {
-      "request": "Take each main kind of change the assessment lists (an answer, a rule, a workflow step, a setting). The people who need it make one in the running product, with no engineer, code change or redeploy, then undo it.",
-      "fix": "Make the product fail the way a user would see it (a failed action, an error, negative feedback). The product records it where a person can query it, with the product area. An admin then changes the behaviour without engineering and can undo it.",
-      "expansion": "An admin adds support for a new kind of need, such as a new app, domain or bundle, without engineering, and can remove it again."
+      "request": "Take each main kind of change the assessment lists (an answer, a rule, a workflow step, a setting). The people who need it make one in the running product, with no engineer, code change or new release, then undo it.",
+      "fix": "Make the product fail the way a user would see it (a failed action, an error, negative feedback). The product records it where a person can look it up, with the part of the product involved. Someone running the product then changes the behaviour without engineers and can undo it.",
+      "expansion": "Someone running the product adds support for a new kind of need, such as a new app, business area or package, without engineers, and can remove it again."
     },
     "2": {
-      "request": "A user describes a change in plain words inside the product. The product captures it with structure (what, who, where) and drafts the change for a person to finish. Every change, drafted or not, passes automated checks before it lands.",
-      "fix": "Cause a real failure. The product explains why it happened and proposes what to change, with evidence, and drafts the change for a person to finish.",
-      "expansion": "The product shows needs it does not yet serve, such as failed searches or unsupported requests, and proposes a new capability with evidence."
+      "request": "A user describes a change in plain words inside the product. The product records it with structure (what, for whom, where) and drafts the change for a person to finish. Every change, drafted or not, passes automatic checks before it goes live, and a change that fails them is stopped.",
+      "fix": "Cause a real failure. The product explains why it happened, with evidence, proposes what to change, and drafts the change for a person to finish.",
+      "expansion": "The product shows needs it does not yet serve, such as failed searches or requests it could not handle, and proposes a new capability with evidence."
     },
     "3": {
-      "request": "A request goes in. The product writes a specification with acceptance criteria, impact and a risk class, builds the change with tests, and shows the evidence. A person approves it. It goes to a small group first, can be switched off, is measured against a baseline, and can be rolled back. Then run the safety drill: undo changes on every surface, restore a backup into a fresh copy with scheduled jobs held until checked, migrate a copy of production data online, show that tenants cannot reach each other (where there are tenants), show security checks blocking a bad change, and show the product's own changes staying inside declared limits.",
-      "fix": "Break something on purpose. Without being asked, the product raises it as an issue with the users affected and how often, diagnoses it, proposes a fix with evidence, and ships it after a person approves: staged, measured and reversible. The safety drill for Request → Release must also pass.",
-      "expansion": "From real usage, the product spots an unmet need, proposes a capability with evidence, and launches it to a selected group. The safety drill for Request → Release must also pass."
+      "request": "A request goes in. The product writes a clear plan for the change, with how to tell it worked, what it affects and how risky it is, then builds and tests the change and shows the evidence. A person only approves. The change goes to a small group of users first, can be switched off, is measured against how things were before, and can be undone. Then run the safety drill: undo changes everywhere people and AI can make them; restore a backup into a fresh copy, with scheduled jobs held until checked; change how data is stored on a copy of real data without stopping the service; show that customer organisations cannot reach each other's data (where there are several); show security checks stopping a bad change; and show the product's own changes staying inside written limits.",
+      "fix": "Break something on purpose. Without being asked, the product raises it as an issue with the users affected and how often, works out why, proposes a fix with evidence, and releases it after a person approves: to a small group first, measured, and with undo. The safety drill from the request-to-release check must also pass.",
+      "expansion": "From real use, the product spots an unmet need, proposes a capability with evidence, and launches it to a selected group of users. The safety drill from the request-to-release check must also pass."
     },
     "4": {
-      "request": "A low-risk change ships from request to production with no person involved, under a written policy for that kind of change. It is staged, measured, and rolled back automatically when its measure gets worse, and every automatic decision is recorded. Every architecture criterion holds, with tests.",
-      "fix": "A low-risk fix ships with no person involved, under the same policy, and is rolled back automatically if the issue does not improve or something else gets worse.",
-      "expansion": "A new capability launches to a cohort and is kept or killed on its measured results, with the decision recorded."
+      "request": "A low-risk change goes from request to live with no person involved, under written rules for that kind of change. It goes to a small group first, is measured, and is undone automatically when its measure gets worse, and every automatic decision is recorded. Every part of the technical foundation holds, with tests.",
+      "fix": "A low-risk fix goes live with no person involved, under the same written rules, and is undone automatically if the problem does not improve or something else gets worse.",
+      "expansion": "A new capability launches to a selected group of users and is kept or withdrawn on its measured results, with the decision recorded."
     },
     "5": {
-      "request": "Over a period of operation, the product starts changes itself across kinds of change, ships and measures them within policy, and rolls back automatically when they fail. When its own checks wrongly pass a change, it improves those checks and its policy, measures whether that helped, and reverses what did not. Records of this in a real deployment are a Proven reading, reported separately.",
-      "fix": "Over a period of operation, the product finds, prioritises, diagnoses and fixes issues itself, within policy, and the records show which kinds of fix worked.",
-      "expansion": "Over a period of operation, the product senses demand, proposes and launches capabilities, and keeps or kills them on measured results, within policy."
+      "request": "Over a period of use, the product starts changes itself across kinds of change, releases and measures them within written rules, and undoes them automatically when they fail. When its own checks let a bad change through, it improves those checks and its rules, measures whether that helped, and reverses what did not. Records of this in real use are a Proven reading, reported separately.",
+      "fix": "Over a period of use, the product finds, ranks, explains and fixes problems itself, within written rules, and the records show which kinds of fix worked.",
+      "expansion": "Over a period of use, the product notices demand, proposes and launches capabilities, and keeps or withdraws them on measured results, within written rules."
     }
   },
   "build_paths": {
