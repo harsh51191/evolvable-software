@@ -11,6 +11,7 @@ ROOT = os.path.dirname(HERE)
 REPO = os.path.dirname(os.path.dirname(ROOT))
 SKILL = os.path.join(REPO, "skills", "evolvable-software")
 SCORER = os.path.join(SKILL, "scripts", "score.py")
+REPORT = os.path.join(SKILL, "scripts", "report.py")
 sys.path.insert(0, os.path.join(SKILL, "scripts"))
 import score as evolve  # noqa: E402
 
@@ -40,6 +41,11 @@ def build(system, criteria, order, model):
             "## Limits", "", data.get("limits", ""), "", "---", ""]
     with open(os.path.join(folder, "scorecard.md"), "w") as h:
         h.write(("\n".join(head) + md.split("\n", 2)[2]).rstrip("\n") + "\n")
+    plain = subprocess.run([sys.executable, REPORT, path], capture_output=True, text=True)
+    if plain.returncode:
+        raise SystemExit(f"{system} report: {plain.stdout}{plain.stderr}")
+    with open(os.path.join(folder, "report.md"), "w") as h:
+        h.write(plain.stdout.rstrip("\n") + "\n")
     ev = [f"# {data['product']} evidence", "",
           f"Read at {data['source']} on {data['date']}. Grade A is code at the tip, B is in-repository documentation.", "",
           "## Scope facts", ""]
@@ -49,6 +55,20 @@ def build(system, criteria, order, model):
         if "available_value" in entry and entry["available_value"] != entry["value"]:
             value += f" by default, {'true' if entry['available_value'] else 'false'} with opt-in settings"
         ev.append(f"- **{fact}**: {value}. {entry['evidence']}")
+    ev += ["", "## Kinds of change", ""]
+    for kind in data["change_kinds"]:
+        conf = f", confidence {kind['confidence']}" if "confidence" in kind else ""
+        ev.append(f"- **{kind['name']}** (`{kind['id']}`, {'main' if kind['main'] else 'not main'}, made by {kind['who']}): "
+                  f"reach **{kind['reach']} {model['reach'][kind['reach']]}**{conf}. {kind['evidence']}")
+    ev += ["", "## AI delivery and proof", "", f"- **AI delivery**: {result['ai_delivery']['text']} {data.get('ai_delivery', {}).get('evidence', '')}".rstrip()]
+    for loop, name in model["loops"].items():
+        entry = data.get("proven", {}).get(loop, {})
+        if "level" in entry:
+            ev.append(f"- **Proven, {name}**: L{entry['level']}. {entry['evidence']}")
+        else:
+            ev.append(f"- **Proven, {name}**: not evidenced. Searched: {entry.get('searched', 'not recorded')}")
+    if data.get("confidence_note"):
+        ev += ["", data["confidence_note"]]
     cap, area = None, None
     for cid in order:
         if criteria[cid]["cap"] != cap:
@@ -76,7 +96,7 @@ def build(system, criteria, order, model):
 def describe(e):
     st = e["status"]
     if st == "assessed":
-        head_txt = f"**{e['score']}** (grade {e['grade']})"
+        head_txt = f"**{e['score']}** (grade {e['grade']}" + (f", confidence {e['confidence']})" if "confidence" in e else ")")
         if "available_score" in e:
             head_txt += f", **{e['available_score']}** with opt-in settings"
         if "facets" in e:
@@ -131,6 +151,17 @@ def main():
                  + " | ".join((f"L{lv[l]['level']} ({lv[l]['next_met']}/{lv[l]['next_total']})" if lv[l]["next_total"]
                                else f"L{lv[l]['level']}") + f", AI L{drv[l]['level']}" for l in loops)
                  + f" | {r['variants']['available']['sal']['headline']} | {r['variants']['high']['sal']['headline']} |")
+    L += ["", "## Kinds of change, recursion and proof", "",
+          "Level 1 needs every main kind of change to be self-serve. Recursion is whether the loop improves its own checks. "
+          "Proven is what operating records show, reported apart from what the product is built to do.", "",
+          "| System | Main kinds self-serve | Kinds (reach) | Recursion | Proven | AI delivery |", "|---|---|---|---|---|---|"]
+    for s in ranked:
+        d, r = rows[s]
+        k = r["kinds_summary"]
+        kinds = "; ".join(f"{c['name']} {c['reach']}" + ("" if c["main"] else " (not main)") for c in r["change_kinds"])
+        ad = r["ai_delivery"]
+        adc = "not recorded" if not ad["recorded"] else ("present, counts" if ad["qualifies"] else ("present, does not count" if ad["present"] else "none"))
+        L.append(f"| {d['product']} | {k['main_self_serve']} of {k['main']} | {kinds} | {r['recursion']['name']} | {r['proven']['text']} | {adc} |")
     L += ["", "## What AI drives", "",
           "Each loop's AI-performable stages, read only on what AI does there.", "",
           "| System | " + " | ".join(model["loops"][l] for l in loops) + " |", "|---|" + "---|" * len(loops)]

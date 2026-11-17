@@ -4,15 +4,17 @@
   "source": "github.com/danny-avila/LibreChat @ 14f7b2865692d27364c934ecb9912496371018bb (main)",
   "archetype": "focused-application",
   "framework": "EVOLVE",
-  "framework_version": "0.6.0",
+  "framework_version": "0.7.0",
+  "basis": "shipped",
+  "headline_text": "Built to SAL 0 (Manual) · Proven: not evidenced · AI-driven 0 · Request → Release L0 (AI L0) · Issue → Fix L0 (AI L0) · Opportunity → Expansion L0 (AI L0)",
   "scope_facts": {
     "persistent_data": true,
     "schema_changes": true,
-    "multi_tenant": true,
+    "multi_tenant": false,
     "hosted_service": true,
     "machine_actions": true,
-    "agent_mutations": false,
-    "evolution_auto_apply": false,
+    "agent_mutations": true,
+    "evolution_auto_apply": true,
     "definition_change_path": true,
     "code_release_path": false,
     "ai_features": true,
@@ -20,14 +22,15 @@
     "ai_actions": true
   },
   "coverage": {
-    "assessed": 63,
+    "assessed": 65,
     "not_evidenced": 0,
-    "not_applicable": 11
+    "not_applicable": 10
   },
   "grades": {
-    "A": 63,
+    "A": 65,
     "B": 0,
-    "C": 0
+    "C": 0,
+    "D": 0
   },
   "sal": {
     "headline": 0,
@@ -49,7 +52,7 @@
             "part": "spine",
             "stage": "Build",
             "needs": "people build path ≥ 2 or product build path ≥ 2",
-            "observed": "MAL 1.7; DEL-04 0",
+            "observed": "kinds 1 of 3 main self-serve; DEL-04 0",
             "control": null
           }
         ]
@@ -70,7 +73,7 @@
             "part": "spine",
             "stage": "Build",
             "needs": "people build path ≥ 2 or product build path ≥ 2",
-            "observed": "MAL 1.7; DEL-04 0, LRN-07 1",
+            "observed": "kinds 1 of 3 main self-serve; DEL-04 0, LRN-07 1",
             "control": null
           }
         ]
@@ -125,8 +128,8 @@
       {
         "control": "Tenant isolation",
         "needs": "ARC-05 ≥ 3",
-        "observed": "2",
-        "status": "fail"
+        "observed": "n/a",
+        "status": "n/a"
       },
       {
         "control": "Security as infrastructure",
@@ -136,9 +139,9 @@
       },
       {
         "control": "Bounded self-change",
-        "needs": "not applicable (agent_mutations and evolution_auto_apply false)",
-        "observed": "n/a",
-        "status": "n/a"
+        "needs": "GOV-10 ≥ 3 and LRN-08 ≥ 2",
+        "observed": "2; 2",
+        "status": "fail"
       }
     ],
     "ai_driven": {
@@ -157,7 +160,7 @@
               "part": "spine",
               "stage": "Build",
               "needs": "people build path ≥ 2 or product build path ≥ 2",
-              "observed": "MAL 1.7; DEL-04 0",
+              "observed": "kinds 1 of 3 main self-serve; DEL-04 0",
               "control": null
             }
           ]
@@ -168,15 +171,15 @@
           "stages": {
             "LRN-05": 0,
             "LRN-06": 0,
-            "LRN-07": 0,
-            "LRN-08": null
+            "LRN-07": 1,
+            "LRN-08": 2
           },
           "blockers": [
             {
               "part": "spine",
               "stage": "Build",
               "needs": "people build path ≥ 2 or product build path ≥ 2",
-              "observed": "MAL 1.7; DEL-04 0, LRN-07 0",
+              "observed": "kinds 1 of 3 main self-serve; DEL-04 0, LRN-07 1",
               "control": null
             }
           ]
@@ -200,10 +203,146 @@
       }
     }
   },
+  "change_kinds": [
+    {
+      "id": "models-config",
+      "name": "Which AI models and providers are offered, and app-wide settings",
+      "who": "administrators",
+      "main": true,
+      "reach": 0,
+      "evidence": "Endpoints, model specs and interface settings live in librechat.yaml and .env, edited on the server and read at start (librechat.example.yaml; packages/data-provider/src/config.ts). Per-principal overrides can be set through an admin API (api/server/routes/admin/config.js:38-46) with no admin screen in this repository and no history; deleting an override returns to the file, not to the earlier override.",
+      "confidence": "medium",
+      "reach_name": "Engineers only"
+    },
+    {
+      "id": "agents",
+      "name": "Agents: their instructions, tools and files",
+      "who": "users and administrators",
+      "main": true,
+      "reach": 1,
+      "evidence": "Built in the agent builder with no deploy; each save keeps a version (packages/data-schemas/src/schema/agent.ts:125) and an agent can be reverted to an earlier version (api/server/routes/agents/v1.js:154-168). No AI drafts agent changes (DEL-04 is 0).",
+      "confidence": "high",
+      "reach_name": "Self-serve"
+    },
+    {
+      "id": "tools-mcp",
+      "name": "Tools and connected services (MCP servers)",
+      "who": "administrators and users",
+      "main": true,
+      "reach": 0,
+      "evidence": "Servers in librechat.yaml need a server edit and restart; servers added in the UI (api/server/routes/mcp.js:1261-1287) can be removed but keep no history of earlier settings or credentials, so a change cannot be undone through the product. A path without undo is reach 0.",
+      "confidence": "medium",
+      "reach_name": "Engineers only"
+    },
+    {
+      "id": "prompts",
+      "name": "Saved prompts",
+      "who": "users",
+      "main": false,
+      "reach": 1,
+      "evidence": "Prompt groups keep versions and a chosen production version that can be switched back (packages/data-schemas/src/schema/promptGroup.ts:25).",
+      "confidence": "medium",
+      "reach_name": "Self-serve"
+    },
+    {
+      "id": "feature-access",
+      "name": "Who may use agents, prompts, skills and memories",
+      "who": "administrators",
+      "main": false,
+      "reach": 1,
+      "evidence": "Role permissions are toggled in the admin settings dialogs (client/src/components/ui/AdminSettingsDialog.tsx; api/server/routes/roles.js:160-172) with no deploy, and toggled back to undo.",
+      "confidence": "medium",
+      "reach_name": "Self-serve"
+    },
+    {
+      "id": "skills",
+      "name": "Skills that agents use",
+      "who": "users",
+      "main": false,
+      "reach": 0,
+      "evidence": "Written in the skill editor or by an agent (packages/api/src/agents/handlers.ts:3845-3905) and saved over the current file (packages/api/src/skills/save.ts:36-47); the skill keeps a version counter but no earlier content (packages/data-schemas/src/schema/skill.ts:176-180), so an edit cannot be undone. Agent writes apply directly rather than as drafts, and DEL-04 is 0, so this is not reach 2.",
+      "confidence": "medium",
+      "reach_name": "Engineers only"
+    }
+  ],
+  "kinds_summary": {
+    "value": 1,
+    "kinds": 6,
+    "self_serve": 3,
+    "main": 3,
+    "main_self_serve": 1,
+    "text": "1 of 3 main kinds are self-serve"
+  },
+  "proven": {
+    "headline": null,
+    "headline_name": null,
+    "text": "Proven: not evidenced",
+    "loops": {
+      "request": {
+        "status": "not_evidenced",
+        "level": null,
+        "built": 0,
+        "searched": "The repository at the pinned commit: agent and prompt version fields, audit-log schema (packages/data-schemas/src/types/auditLog.ts), UPGRADING.md and release workflows for LibreChat's own engineer-made releases. No operating records of real changes made through the product's request loop in a deployment."
+      },
+      "fix": {
+        "status": "not_evidenced",
+        "level": null,
+        "built": 0,
+        "searched": "The same sources plus message feedback (packages/data-schemas/src/schema/message.ts:103) and admin insights (packages/api/src/insights); no operating records of issues fixed through the product's loop."
+      },
+      "expansion": {
+        "status": "not_evidenced",
+        "level": null,
+        "built": 0,
+        "searched": "The same sources; no records of capabilities launched to a group and kept or killed."
+      }
+    }
+  },
+  "recursion": {
+    "criterion": "LRN-10",
+    "status": "assessed",
+    "score": 1,
+    "name": "By hand",
+    "text": "Recursion: 1 By hand (LRN-10 at 1)"
+  },
+  "ai_delivery": {
+    "recorded": true,
+    "present": true,
+    "qualifies": false,
+    "evidence": "AGENTS.md and CONTEXT.md (agent instructions), Claude Code skills (.claude/skills: codebase-design, improve-codebase-architecture), a .codex directory, and CI comments that record fixes made from Codex review findings (.github/workflows/backend-review.yml:37, 176-214).",
+    "note": "AI-assisted engineering and review, not LibreChat evolving itself. It does not meet rule 12: no installed delivery framework at a pinned version, no agent workflow in CI, and no enforced limits; the instruction files and skills are documentation.",
+    "text": "Engineers build this product with AI coding agents or a delivery framework. That is AI-assisted engineering, not the product evolving itself. It is not installed, enforced and limited as part of the product, so it earns no credit."
+  },
+  "confidence": {
+    "recorded": true,
+    "criteria": {
+      "high": 2,
+      "medium": 50,
+      "low": 13,
+      "none": 0
+    },
+    "ai_readings": {
+      "high": 0,
+      "medium": 11,
+      "low": 2,
+      "none": 0
+    },
+    "change_kinds": {
+      "high": 1,
+      "medium": 5,
+      "low": 0,
+      "none": 0
+    },
+    "check_first": []
+  },
   "sensitivity": {
     "raise_headline": [],
     "lower_headline": [],
-    "raise_loop": {},
+    "raise_loop": {
+      "fix": [
+        "LRN-07"
+      ]
+    },
     "lower_loop": {}
   },
   "ai_readiness": {
@@ -229,10 +368,13 @@
           }
         },
         "Governance": {
-          "level": 2,
+          "level": 1,
           "contributors": {
             "AIR-07": 2,
-            "GOV-09 (AI)": 2
+            "GOV-09 (AI)": 2,
+            "GOV-10 (AI)": 2,
+            "GOV-11 (AI)": 1,
+            "LRN-08 (AI)": 2
           }
         },
         "Operations": {
@@ -286,8 +428,8 @@
           "readings": {
             "LRN-05": 0,
             "LRN-06": 0,
-            "LRN-07": 0,
-            "LRN-08": null
+            "LRN-07": 1,
+            "LRN-08": 2
           }
         },
         "Expand": {
@@ -320,10 +462,13 @@
           }
         },
         "Governance": {
-          "level": 2,
+          "level": 1,
           "contributors": {
             "AIR-07": 2,
-            "GOV-09 (AI)": 2
+            "GOV-09 (AI)": 2,
+            "GOV-10 (AI)": 2,
+            "GOV-11 (AI)": 1,
+            "LRN-08 (AI)": 2
           }
         },
         "Operations": {
@@ -377,8 +522,8 @@
           "readings": {
             "LRN-05": 0,
             "LRN-06": 0,
-            "LRN-07": 0,
-            "LRN-08": null
+            "LRN-07": 1,
+            "LRN-08": 2
           }
         },
         "Expand": {
@@ -411,10 +556,13 @@
           }
         },
         "Governance": {
-          "level": 2,
+          "level": 1,
           "contributors": {
             "AIR-07": 2,
-            "GOV-09 (AI)": 2
+            "GOV-09 (AI)": 2,
+            "GOV-10 (AI)": 2,
+            "GOV-11 (AI)": 1,
+            "LRN-08 (AI)": 2
           }
         },
         "Operations": {
@@ -469,7 +617,7 @@
             "LRN-05": 0,
             "LRN-06": 0,
             "LRN-07": 3,
-            "LRN-08": null
+            "LRN-08": 2
           }
         },
         "Expand": {
@@ -484,31 +632,31 @@
   "capabilities": {
     "ARC": 1.4,
     "DEL": 1.1,
-    "MAL": 1.7,
-    "LRN": 0.8,
-    "GOV": 1.9,
+    "MAL": 1.9,
+    "LRN": 1.1,
+    "GOV": 1.8,
     "EXP": 1
   },
   "ranges": {
     "ARC": [
       1.4,
-      1.8
+      1.6
     ],
     "DEL": [
       1.1,
       1.2
     ],
     "MAL": [
-      1.7,
+      1.9,
       2.2
     ],
     "LRN": [
-      0.8,
-      0.9
+      1.1,
+      1.1
     ],
     "GOV": [
-      1.9,
-      2.4
+      1.8,
+      2.1
     ],
     "EXP": [
       1,
@@ -517,7 +665,7 @@
   },
   "area_means": {
     "ARC Data": 1.5,
-    "ARC Scale": 1.7,
+    "ARC Scale": 1.5,
     "ARC Capacity": 1.5,
     "ARC Resilience": 1,
     "DEL Intake": 0,
@@ -525,7 +673,7 @@
     "DEL Verify": 2,
     "DEL Release": 1,
     "MAL Data model": 1,
-    "MAL APIs": 1,
+    "MAL APIs": 2,
     "MAL Interface": 2,
     "MAL Behaviour": 2,
     "MAL Extensions": 2,
@@ -533,11 +681,11 @@
     "MAL Agent interface": 1.5,
     "LRN Sense": 1.8,
     "LRN Diagnose and propose": 0.5,
-    "LRN Learn from experience": 1,
-    "LRN Measure": 0,
+    "LRN Learn from experience": 1.5,
+    "LRN Measure": 0.5,
     "GOV Compliance and security": 2,
     "GOV Change control": 1.8,
-    "GOV AI and self-change safety": 2,
+    "GOV AI and self-change safety": 1.7,
     "EXP Discover": 0,
     "EXP Launch": 2
   },
@@ -547,7 +695,7 @@
     "ARC-02": 1,
     "ARC-03": 2,
     "ARC-04": 1,
-    "ARC-05": 2,
+    "ARC-05": null,
     "ARC-06": 2,
     "ARC-07": 1,
     "ARC-08": 2,
@@ -568,7 +716,7 @@
     "MAL-03": null,
     "MAL-04": null,
     "MAL-05": null,
-    "MAL-06": 1,
+    "MAL-06": 2,
     "MAL-07": 2,
     "MAL-08": null,
     "MAL-09": 2,
@@ -590,8 +738,9 @@
     "LRN-05": 1,
     "LRN-06": 0,
     "LRN-07": 1,
-    "LRN-08": 1,
+    "LRN-08": 2,
     "LRN-09": 0,
+    "LRN-10": 1,
     "GOV-01": 2,
     "GOV-02": 2,
     "GOV-03": 2,
@@ -601,8 +750,8 @@
     "GOV-07": 1,
     "GOV-08": 2,
     "GOV-09": 2,
-    "GOV-10": null,
-    "GOV-11": null,
+    "GOV-10": 2,
+    "GOV-11": 1,
     "EXP-01": null,
     "EXP-02": null,
     "EXP-03": null,
@@ -621,31 +770,31 @@
   "variants": {
     "high": {
       "capabilities": {
-        "ARC": 1.8,
+        "ARC": 1.6,
         "DEL": 1.2,
         "MAL": 2.2,
-        "LRN": 0.9,
-        "GOV": 2.4,
+        "LRN": 1.1,
+        "GOV": 2.1,
         "EXP": 1
       },
       "sal": {
-        "headline": 1,
-        "headline_name": "Configurable",
+        "headline": 0,
+        "headline_name": "Manual",
         "loops": {
           "request": {
-            "level": 1,
+            "level": 0,
             "parts": {
               "stages": 1,
-              "spine": 1,
+              "spine": 0,
               "architecture": 2,
               "governance": 2
             }
           },
           "fix": {
-            "level": 1,
+            "level": 0,
             "parts": {
               "stages": 1,
-              "spine": 1,
+              "spine": 0,
               "architecture": 2,
               "governance": 2
             }
@@ -674,9 +823,9 @@
       "capabilities": {
         "ARC": 1.4,
         "DEL": 1.1,
-        "MAL": 1.7,
-        "LRN": 1.1,
-        "GOV": 1.9,
+        "MAL": 1.9,
+        "LRN": 1.3,
+        "GOV": 1.8,
         "EXP": 1
       },
       "sal": {
@@ -693,10 +842,10 @@
             }
           },
           "fix": {
-            "level": 0,
+            "level": 1,
             "parts": {
               "stages": 1,
-              "spine": 0,
+              "spine": 2,
               "architecture": 1,
               "governance": 2
             }
@@ -725,9 +874,9 @@
       "capabilities": {
         "ARC": 1.4,
         "DEL": 1.1,
-        "MAL": 1.7,
-        "LRN": 0.8,
-        "GOV": 1.9,
+        "MAL": 1.9,
+        "LRN": 1.1,
+        "GOV": 1.8,
         "EXP": 1
       }
     },
@@ -736,11 +885,11 @@
         "ARC": 1.4,
         "DEL": 1.1,
         "MAL": 1.7,
-        "LRN": 0.8,
-        "GOV": 1.7,
+        "LRN": 1.1,
+        "GOV": 1.8,
         "EXP": 1.2
       }
     }
   },
-  "criteria_in_rubric": 74
+  "criteria_in_rubric": 75
 }
