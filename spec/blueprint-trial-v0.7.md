@@ -1,6 +1,8 @@
 # Blueprint trial: three products, three levels
 
-Status: a trial of the v0.7 evolution blueprint (`evolution-blueprint-v0.7.md`), written by hand to test whether it gives changes a team could act on. Each product was read again at the same commit as the September 2026 field test. File paths are at that commit. Advisory only; nothing here changes a score.
+**Status: superseded.** A v0.6-era trial, written before kinds of change, Designed/Built/Proven and Blueprint v2. Its format is superseded by spec §9 and `skills/evolvable-software/references/blueprint-template.md`; it orders safety first, which the review rejected. Kept as a record. The LibreChat section was corrected on 17 November 2026 (see its note).
+
+Original status: a trial of the v0.7 evolution blueprint (`evolution-blueprint-v0.7.md`), written by hand to test whether it gives changes a team could act on. Each product was read again at the same commit as the September 2026 field test. File paths are at that commit. Advisory only; nothing here changes a score.
 
 | Product | Today | Target | Route |
 |---|---|---|---|
@@ -28,9 +30,11 @@ python3 skills/evolvable-software/scripts/score.py <assessment>.json --checklist
 
 ## 1. LibreChat: SAL 0 → L1
 
-**What changes for users.** Today, changing which models people see, an interface option or a default means an engineer edits `librechat.yaml` and restarts the server. After L1, an admin makes those changes in the admin panel, sees who changed what, and undoes a bad change. A tested backup means a mistake is recoverable.
+*Correction (17 November 2026): an earlier version said that changing these settings needs an engineer to edit `librechat.yaml` and restart the server. That is wrong. LibreChat's admin API already lets admins change configuration overrides per user, group and role, stored in the database, without a restart. What is missing is history, undo and an audit trail for those changes.*
 
-**Why this is self-evolution.** At L0 only engineers can change LibreChat. At L1 the people running it can reshape it themselves, safely. Every higher level automates something people can already do safely at L1.
+**What changes for users.** Today an admin can already change which models people see, an interface option or a default for a user, group or role through the admin API, with no restart. But nobody can see who changed what, and a bad change cannot be undone except by hand. After L1, every such change is recorded, its earlier versions are kept, and an admin can undo a bad change. A tested backup means a mistake undo cannot reach is recoverable.
+
+**Why this is self-evolution.** Admins can already reshape LibreChat's configuration themselves, but without undo, which the v0.7 reach rules count as engineers only. At L1 the people running it reshape it safely: they can see and undo what they changed. Every higher level automates something people can already do safely at L1.
 
 **Why not higher yet.** L2 needs the product itself to take in requests and draft changes. LibreChat has no request object for its own changes (DEL-01 0) and no lane that drafts them (DEL-04 0). L2 also needs every architecture criterion at 1 or more, and backup is at 0.
 
@@ -446,6 +450,6 @@ Each needs its own prompt in the same form; they are left as a table here becaus
 1. **Exact recommendations are possible when they build on the product's own patterns.** Each step copies something the product already does: workflow history extended to credentials, the OpenAPI registry extended to every route, Version diffs gaining a revert. That makes the advice concrete, and credible to the product's own engineers.
 2. **The product's seams decide the route.** n8n can fix all four failing controls without touching existing tables, because it has event relays and a policy layer. A product without seams needs the incremental route for the same fixes.
 3. **Re-reading code catches scoring errors.** LibreChat has a generated, CI-checked OpenAPI spec for agents and skills, but the field test scored MAL-06 at 1 ("no published contract"). That reads as a 2. It doesn't change LibreChat's level, but it should be corrected.
-4. **The L1 rule can be met in a way that misses its intent.** LibreChat reaches L1 through an API contract, because L1 is an average of malleability criteria. The change that actually lets people reshape LibreChat without engineering is step 2 (configuration with history). This is worth a rubric review.
+4. **The L1 rule can be met in a way that misses its intent.** LibreChat reaches L1 through an API contract, because L1 is an average of malleability criteria. Admins already reshape LibreChat's configuration without engineering through the admin API; the change that makes that safe is step 2 (history, undo and audit for configuration overrides). This is worth a rubric review. (v0.7 adopted it: Level 1 now asks whether each main kind of change is self-serve with undo.)
 5. **Adding AI has consequences the plan must state.** Frappe's AI lane brings eight AI Readiness checks into scope.
 6. **Not verified.** Sizes, whether n8n's policy checks can tell AI callers apart today, how n8n restores active workflows, and whether LibreChat's validation errors are already structured. Each is marked where it matters. None of the prompts has been run yet.
