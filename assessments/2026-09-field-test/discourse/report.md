@@ -40,7 +40,7 @@ The changes the people running the product most often need, and how far each has
 | Categories and who can see or post in them | site admins and moderators | Self-serve. The people running the product make this kind of change themselves, without a release, and can undo it. | Yes |
 | Look and layout (themes and components) | site admins and designers | Self-serve. The people running the product make this kind of change themselves, without a release, and can undo it. | Yes |
 | Automatic rules (automations) | site admins | Self-serve. The people running the product make this kind of change themselves, without a release, and can undo it. | No |
-| New features from plugins | site owners | Engineers only. This kind of change needs engineers to change code, make a release or edit files by hand. | No |
+| New features from plugins | site owners | Engineers only. This kind of change needs engineers to change code, make a release or edit files by hand, or the people running the product can make it but cannot undo it. | No |
 
 3 of 3 main kinds are self-serve. Self-serve means: the people running the product make this kind of change themselves, without a release, and can undo it.
 

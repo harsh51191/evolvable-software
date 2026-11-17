@@ -108,7 +108,7 @@ All three raters are AI models. A human second rater is the next step.
 - **Corrections.**
   - n8n security (GOV-04) is now 2. Re-reading the code confirmed both raters: the pull-request security job runs only when GitHub workflow files change, and the container scan never fails a build.
   - OpenClaw scheduled-work restore (ARC-09) is being lowered to 2 in the v0.7 migration.
-- **Re-reading under the new definitions changed two scope facts.** n8n's team projects make it multi-tenant, and its agent builder writes code that runs, so tenant isolation and release rollback now apply to it. Its level did not change.
+- **Re-reading under the new definitions changed two scope facts.** n8n's team projects make it multi-tenant, so tenant isolation now applies to it. (Its AI-written code was first read as a code release; under the later rule on code inside definitions it is part of the workflow or agent, so release rollback does not apply.) Its level did not change.
 - **The study is now repeatable.** `evals/agreement.py` compares any two or more assessments of a product and reproduces every number above. `evals/disagreements.md` logs each disagreement and the rubric change it led to.
 
 ## Full blind second rating under v0.7 (November 2026)

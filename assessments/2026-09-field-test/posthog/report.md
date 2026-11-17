@@ -41,7 +41,7 @@ The changes the people running the product most often need, and how far each has
 | A/B tests and experiments | product teams | Drafted. The product drafts this kind of change, and a person completes and releases it. | No |
 | Where data is sent and how it is transformed | data and engineering teams | Drafted. The product drafts this kind of change, and a person completes and releases it. | No |
 | Surveys shown to users | product and research teams | Drafted. The product drafts this kind of change, and a person completes and releases it. | No |
-| New kinds of analysis and changes to PostHog's own screens | PostHog's users, through feature requests | Engineers only. This kind of change needs engineers to change code, make a release or edit files by hand. | No |
+| New kinds of analysis and changes to PostHog's own screens | PostHog's users, through feature requests | Engineers only. This kind of change needs engineers to change code, make a release or edit files by hand, or the people running the product can make it but cannot undo it. | No |
 
 2 of 2 main kinds are self-serve. Self-serve means: the people running the product make this kind of change themselves, without a release, and can undo it.
 

@@ -150,6 +150,7 @@ Scheduled work is now a fifth surface in the backup-and-restore inventory (ARC-0
 ```bash
 cd assessments/2026-09-field-test
 python3 tools/build.py
+python3 tools/recommendations.py
 git diff --exit-code .   # no differences means the committed outputs match the inputs
 ```
 

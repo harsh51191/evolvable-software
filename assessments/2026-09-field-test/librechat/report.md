@@ -38,10 +38,10 @@ The changes the people running the product most often need, and how far each has
 |---|---|---|---|
 | Which AI models and providers are offered, and app-wide settings | administrators | Self-serve. The people running the product make this kind of change themselves, without a release, and can undo it. | Yes |
 | Agents: their instructions, tools and files | users and administrators | Self-serve. The people running the product make this kind of change themselves, without a release, and can undo it. | Yes |
-| Tools and connected services (MCP servers) | administrators and users | Engineers only. This kind of change needs engineers to change code, make a release or edit files by hand. | Yes |
+| Tools and connected services (MCP servers) | administrators and users | Engineers only. This kind of change needs engineers to change code, make a release or edit files by hand, or the people running the product can make it but cannot undo it. | Yes |
 | Saved prompts | users | Self-serve. The people running the product make this kind of change themselves, without a release, and can undo it. | No |
 | Who may use agents, prompts, skills and memories | administrators | Self-serve. The people running the product make this kind of change themselves, without a release, and can undo it. | No |
-| Skills that agents use | users | Engineers only. This kind of change needs engineers to change code, make a release or edit files by hand. | No |
+| Skills that agents use | users | Engineers only. This kind of change needs engineers to change code, make a release or edit files by hand, or the people running the product can make it but cannot undo it. | No |
 
 2 of 3 main kinds are self-serve. Self-serve means: the people running the product make this kind of change themselves, without a release, and can undo it.
 

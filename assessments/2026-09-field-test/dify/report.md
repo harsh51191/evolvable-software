@@ -41,7 +41,7 @@ The changes the people running the product most often need, and how far each has
 | Knowledge the apps answer from | app builders and knowledge owners | Self-serve. The people running the product make this kind of change themselves, without a release, and can undo it. | Yes |
 | Which AI models and credentials are used | workspace admins | Self-serve. The people running the product make this kind of change themselves, without a release, and can undo it. | No |
 | Tools and plugins the apps can use | workspace admins | Self-serve. The people running the product make this kind of change themselves, without a release, and can undo it. | No |
-| New node types, screens and platform behaviour | Dify users, through feature requests | Engineers only. This kind of change needs engineers to change code, make a release or edit files by hand. | No |
+| New node types, screens and platform behaviour | Dify users, through feature requests | Engineers only. This kind of change needs engineers to change code, make a release or edit files by hand, or the people running the product can make it but cannot undo it. | No |
 
 3 of 3 main kinds are self-serve. Self-serve means: the people running the product make this kind of change themselves, without a release, and can undo it.
 

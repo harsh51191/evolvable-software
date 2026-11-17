@@ -25,6 +25,7 @@ Five questions the raters split on are now rules, so two raters reading the same
 
 ### Added
 
+- **The three next moves** (`recommend.py`) and **one approach** for existing and new products (`docs/approach.md`). Every product gets three moves: one for the people running it, one for the loop, one for safety. Each must ship on by default and names a measure to track in real use. The tool re-runs the scorer to say whether they reach the next level. Applied to all eleven field-test products (`assessments/2026-09-field-test/recommendations.md`): the three moves reach the next level for six of them.
 - **What evolvable software means.** The README opens with a plain definition, what it is not, why levels cannot be skipped, and what each level means for users.
 - **A definition of done for every level:** `score.py --checklist`, with a plain challenge per level and loop.
 - **Plain-language report** (`report.py`): twelve sections a business reader can follow, no criterion codes outside a section for engineers. Wording comes from `references/plain-language.md`, which gives every criterion a plain name and question.
@@ -38,7 +39,7 @@ Five questions the raters split on are now rules, so two raters reading the same
 
 - All eleven products brought to v0.7 at their pinned commits, with kinds of change, LRN-10, confidence and AI delivery records, and a plain-language `report.md` each. No product's level changed in the migration.
 - Corrections: n8n security scans to 2; OpenClaw scheduled-work restore to 2; LibreChat API contract to 2; Dify and Directus backup to 0 (no supported backup in the repository).
-- Re-reading under the tightened definitions changed scope facts for n8n (multi-tenant; its agent builder ships code), OpenClaw (activates agent-built plugins), LibreChat, OpenCode, OpenHands and Dify (their AI writes their own definitions), with the criteria that brought into scope.
+- Re-reading under the tightened definitions changed scope facts for n8n (multi-tenant), OpenClaw (activates agent-built plugins), LibreChat, OpenCode, OpenHands and Dify (their AI writes their own definitions), with the criteria that brought into scope.
 - Blind second ratings of every criterion for n8n, LibreChat and Frappe. 149 of 200 shared scores matched exactly (74%) and 196 (98%) were within one point; every Level 3 control failed under both raters. They led to three LibreChat corrections (its agent writing skills is an AI lane, DEL-04 0 to 2; a job queue exists, ARC-04 1 to 3; operators are told to back up, ARC-09 0 to 1). LibreChat stays at Level 0 under the rule below, because skills are not a main kind; Frappe stays at Level 1, because custom server logic is offered only to developers. Results in `second-rating/README.md`; open questions in `evals/disagreements.md`.
 - Answer Desk, the reference product, assessed blind: Built to and Designed for Level 1. Its published assessment and the corrections to its own documentation are in `examples/born-evolvable/`.
 

@@ -37,7 +37,7 @@ The changes the people running the product most often need, and how far each has
 | Kind of change | Who makes it | How far it has come | Main kind |
 |---|---|---|---|
 | What the agent knows how to do (skills) | the person running the agent | Drafted. The product drafts this kind of change, and a person completes and releases it. | Yes |
-| What the agent remembers and how it presents itself | the person running the agent | Engineers only. This kind of change needs engineers to change code, make a release or edit files by hand. | Yes |
+| What the agent remembers and how it presents itself | the person running the agent | Engineers only. This kind of change needs engineers to change code, make a release or edit files by hand, or the people running the product can make it but cannot undo it. | Yes |
 | Which models and providers it uses, and its settings | the person running the agent | Self-serve. The people running the product make this kind of change themselves, without a release, and can undo it. | Yes |
 | Scheduled and recurring tasks | the person running the agent | Self-serve. The people running the product make this kind of change themselves, without a release, and can undo it. | No |
 | Which tools it may use and what needs approval | the person running the agent | Self-serve. The people running the product make this kind of change themselves, without a release, and can undo it. | No |

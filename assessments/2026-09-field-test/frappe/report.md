@@ -40,7 +40,7 @@ The changes the people running the product most often need, and how far each has
 | Approval workflows, notifications and automation rules | system managers and process owners | Self-serve. The people running the product make this kind of change themselves, without a release, and can undo it. | Yes |
 | Who can see and change what (roles and permissions) | system managers | Self-serve. The people running the product make this kind of change themselves, without a release, and can undo it. | Yes |
 | Reports and printed documents | system managers and report users | Self-serve. The people running the product make this kind of change themselves, without a release, and can undo it. | Yes |
-| Custom server-side logic, integrations and new apps | system managers, with engineers | Engineers only. This kind of change needs engineers to change code, make a release or edit files by hand. | No |
+| Custom server-side logic, integrations and new apps | system managers, with engineers | Engineers only. This kind of change needs engineers to change code, make a release or edit files by hand, or the people running the product can make it but cannot undo it. | No |
 
 4 of 4 main kinds are self-serve. Self-serve means: the people running the product make this kind of change themselves, without a release, and can undo it.
 

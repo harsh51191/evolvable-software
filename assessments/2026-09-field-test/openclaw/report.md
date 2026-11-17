@@ -37,7 +37,7 @@ The changes the people running the product most often need, and how far each has
 | Kind of change | Who makes it | How far it has come | Main kind |
 |---|---|---|---|
 | What the assistant knows how to do (skills) | the person running the assistant | Drafted. The product drafts this kind of change, and a person completes and releases it. | Yes |
-| What the assistant remembers and how it presents itself | the person running the assistant | Engineers only. This kind of change needs engineers to change code, make a release or edit files by hand. | Yes |
+| What the assistant remembers and how it presents itself | the person running the assistant | Engineers only. This kind of change needs engineers to change code, make a release or edit files by hand, or the people running the product can make it but cannot undo it. | Yes |
 | Which models, providers and chat channels it uses | the person running the assistant | Drafted. The product drafts this kind of change, and a person completes and releases it. | Yes |
 | What the assistant may do and who may instruct it | the person running the assistant | Self-serve. The people running the product make this kind of change themselves, without a release, and can undo it. | No |
 | Scheduled and recurring tasks | the person running the assistant | Self-serve. The people running the product make this kind of change themselves, without a release, and can undo it. | No |

@@ -143,7 +143,15 @@ python3 <skill-dir>/scripts/score.py <file>.json --checklist 3
 
 For each loop it gives a challenge to run on the running product and every condition the next assessment must find, in the rubric's own words. Give it with any plan. A level is reached only when the challenge passes and a fresh assessment finds the evidence, never from a plan or a change request alone.
 
-When the user wants a plan, ask for their business goal in their own words, then print the blueprint skeleton and fill every `TODO(agent)` from the evidence you collected, following `references/blueprint-template.md`:
+When the user asks what to do next, give the three next moves first:
+
+```bash
+python3 <skill-dir>/scripts/recommend.py <file>.json
+```
+
+It gives exactly three moves: for the people running the product (the main kind of change furthest behind), for the loop, and for safety. It checks with the scorer whether they reach the next level, and lists the rest of the way if not. Add one or two sentences, from the evidence, on which move to start with and why. Every move must ship on by default and names a measure to track in real use. The method is in `docs/approach.md` at the repository root.
+
+When the user wants a plan over several levels, ask for their business goal in their own words, then print the blueprint skeleton and fill every `TODO(agent)` from the evidence you collected, following `references/blueprint-template.md`:
 
 ```bash
 python3 <skill-dir>/scripts/blueprint.py <file>.json --goal "<the owner's goal>" [--target 3] [--route overlay]
@@ -194,6 +202,7 @@ Never call a product "self-evolving" from a level alone: Built says what it can 
 - `scripts/init_scores.py`: input template generator.
 - `scripts/score.py`: validator, scorer, prescriber and definition-of-done checklist.
 - `scripts/report.py`: the plain-language report; wording from `references/plain-language.md`.
+- `scripts/recommend.py`: the three next moves, with the level they reach, checked by the scorer.
 - `scripts/blueprint.py`: the blueprint skeleton; format in `references/blueprint-template.md`.
 - `scripts/quick_scan.py`: a ten-minute, indicative quick scan; questions in `references/quick-scan.md`. Never published as a level.
 - Scorer tests and the 11-product field test: `tests/` and `assessments/` in the source repository.

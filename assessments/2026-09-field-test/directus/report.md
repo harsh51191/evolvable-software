@@ -36,12 +36,12 @@ The changes the people running the product most often need, and how far each has
 
 | Kind of change | Who makes it | How far it has come | Main kind |
 |---|---|---|---|
-| What data is kept (collections and fields) | project admins | Engineers only. This kind of change needs engineers to change code, make a release or edit files by hand. | Yes |
+| What data is kept (collections and fields) | project admins | Engineers only. This kind of change needs engineers to change code, make a release or edit files by hand, or the people running the product can make it but cannot undo it. | Yes |
 | Who can see and change what (roles, policies and permissions) | project admins | Self-serve. The people running the product make this kind of change themselves, without a release, and can undo it. | Yes |
 | Automations (flows) | project admins | Drafted. The product drafts this kind of change, and a person completes and releases it. | Yes |
 | Dashboards and how lists are laid out | project admins and editors | Self-serve. The people running the product make this kind of change themselves, without a release, and can undo it. | No |
 | Add-ons from the marketplace | project admins | Self-serve. The people running the product make this kind of change themselves, without a release, and can undo it. | No |
-| Custom screens, endpoints and hooks | developers for the project | Engineers only. This kind of change needs engineers to change code, make a release or edit files by hand. | No |
+| Custom screens, endpoints and hooks | developers for the project | Engineers only. This kind of change needs engineers to change code, make a release or edit files by hand, or the people running the product can make it but cannot undo it. | No |
 
 2 of 3 main kinds are self-serve. Self-serve means: the people running the product make this kind of change themselves, without a release, and can undo it.
 

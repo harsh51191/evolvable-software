@@ -21,6 +21,7 @@ jobs:
         run: |
           cd assessments/2026-09-field-test
           python tools/build.py > /dev/null
+          python tools/recommendations.py
           git status --porcelain .
           git diff --exit-code .
           test -z "$(git status --porcelain .)"

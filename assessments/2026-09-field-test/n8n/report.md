@@ -38,10 +38,10 @@ The changes the people running the product most often need, and how far each has
 |---|---|---|---|
 | Automations: workflows and their steps | workflow builders and instance admins | Drafted. The product drafts this kind of change, and a person completes and releases it. | Yes |
 | AI agents: their instructions, tools, skills and knowledge | project members who build agents | Drafted. The product drafts this kind of change, and a person completes and releases it. | No |
-| Connections to other services (credentials) | workflow builders and instance admins | Engineers only. This kind of change needs engineers to change code, make a release or edit files by hand. | Yes |
+| Connections to other services (credentials) | workflow builders and instance admins | Engineers only. This kind of change needs engineers to change code, make a release or edit files by hand, or the people running the product can make it but cannot undo it. | Yes |
 | Add, update or remove community integrations | instance owner | Self-serve. The people running the product make this kind of change themselves, without a release, and can undo it. | No |
-| Instance settings and shared variables | instance admins | Engineers only. This kind of change needs engineers to change code, make a release or edit files by hand. | No |
-| Data tables used by workflows | workflow builders | Engineers only. This kind of change needs engineers to change code, make a release or edit files by hand. | No |
+| Instance settings and shared variables | instance admins | Engineers only. This kind of change needs engineers to change code, make a release or edit files by hand, or the people running the product can make it but cannot undo it. | No |
+| Data tables used by workflows | workflow builders | Engineers only. This kind of change needs engineers to change code, make a release or edit files by hand, or the people running the product can make it but cannot undo it. | No |
 
 1 of 2 main kinds are self-serve. Self-serve means: the people running the product make this kind of change themselves, without a release, and can undo it.
 

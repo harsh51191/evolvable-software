@@ -33,9 +33,10 @@ A loop is done when its challenge passes and a fresh assessment finds every item
 | A quick, indicative reading | `scripts/quick_scan.py`: about twenty plain yes/no questions, a likely range per loop. Never published as a level. | Ten minutes |
 | A full assessment | The skill, in Claude Code, Codex or Gemini CLI, scores every criterion from the code and runs `scripts/score.py`. | Hours |
 | A report a business reader can follow | `scripts/report.py assessment.json`: plain words, codes only in a section for engineers. | Seconds |
-| A plan to move up | `scripts/blueprint.py assessment.json --goal "<your goal>"`: milestones led by what users gain, each with a check to run, a prompt for a coding agent and a "done when" list. | Minutes, plus the agent's writing |
+| What to do next | `scripts/recommend.py assessment.json`: three moves (for the people running it, for the loop, for safety), each with what users get, a measure to track, a prompt for a coding agent and a "done when" list. It checks with the scorer which level they reach. | Seconds |
+| A plan over several levels | `scripts/blueprint.py assessment.json --goal "<your goal>"`: milestones led by what users gain, each with a check to run, a prompt for a coding agent and a "done when" list. | Minutes, plus the agent's writing |
 
-**Starting a new product?** Read [Born evolvable](docs/born-evolvable.md): twelve foundations for a product designed for Level 5 from day one, and [Answer Desk](examples/born-evolvable/), a small working product that follows them.
+**The method, for existing and new products, is one page: [docs/approach.md](docs/approach.md).** Starting a new product? Read [Born evolvable](docs/born-evolvable.md): twelve foundations for a product designed for Level 5 from day one, and [Answer Desk](examples/born-evolvable/), a small working product that follows them.
 
 ## The three loops and six levels
 
@@ -111,6 +112,8 @@ EVOLVE was run on 11 open-source products from their public source code; each na
 | [Frappe](https://github.com/frappe/frappe) | configurable platform | **1** | L1 (AI L0) | L1 (AI L0) | L1 (AI L0) | 4 of 4 | By hand | no AI features |
 | [LibreChat](https://github.com/danny-avila/LibreChat) | focused application | **0** | L0 (AI L0) | L0 (AI L0) | L1 (AI L0) | 2 of 3 | By hand | L0 Foundational gap |
 | [OpenCode](https://github.com/anomalyco/opencode) | agent runtime | **0** | L0 (AI L0) | L0 (AI L0) | L0 (AI L0) | 2 of 3 | Fixed | L1 Experimental |
+
+**What each product should do next** is in [`recommendations.md`](assessments/2026-09-field-test/recommendations.md): three moves per product, checked with the scorer.
 
 Every product is built to the level shown and **not proven** in operation: a repository holds no operating records of a product's own loop. Each product folder has a plain-language `report.md`.
 

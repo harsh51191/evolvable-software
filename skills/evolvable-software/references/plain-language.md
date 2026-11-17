@@ -158,7 +158,7 @@ Name: Its AI can change data or settings, send messages outside the product or s
 ## Reach
 ### 0
 Name: Engineers only
-Meaning: This kind of change needs engineers to change code, make a release or edit files by hand.
+Meaning: This kind of change needs engineers to change code, make a release or edit files by hand, or the people running the product can make it but cannot undo it.
 ### 1
 Name: Self-serve
 Meaning: The people running the product make this kind of change themselves, without a release, and can undo it.

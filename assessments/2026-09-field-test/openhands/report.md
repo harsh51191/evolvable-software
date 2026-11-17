@@ -40,7 +40,7 @@ The changes the people running the product most often need, and how far each has
 | Skills, plugins and tool servers the agent uses | users | Self-serve. The people running the product make this kind of change themselves, without a release, and can undo it. | Yes |
 | Which models it uses and how the agent behaves | users | Self-serve. The people running the product make this kind of change themselves, without a release, and can undo it. | Yes |
 | Which agent actions need a person's approval | users | Self-serve. The people running the product make this kind of change themselves, without a release, and can undo it. | No |
-| Interface extensions and themes | users and organisation admins | Engineers only. This kind of change needs engineers to change code, make a release or edit files by hand. | No |
+| Interface extensions and themes | users and organisation admins | Engineers only. This kind of change needs engineers to change code, make a release or edit files by hand, or the people running the product can make it but cannot undo it. | No |
 
 3 of 3 main kinds are self-serve. Self-serve means: the people running the product make this kind of change themselves, without a release, and can undo it.
 

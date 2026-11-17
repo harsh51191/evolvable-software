@@ -36,11 +36,11 @@ The changes the people running the product most often need, and how far each has
 
 | Kind of change | Who makes it | How far it has come | Main kind |
 |---|---|---|---|
-| Custom agents and commands | the developer using OpenCode | Engineers only. This kind of change needs engineers to change code, make a release or edit files by hand. | Yes |
+| Custom agents and commands | the developer using OpenCode | Engineers only. This kind of change needs engineers to change code, make a release or edit files by hand, or the people running the product can make it but cannot undo it. | Yes |
 | Standing instructions for a project (AGENTS.md) | the developer using OpenCode | Self-serve. The people running the product make this kind of change themselves, without a release, and can undo it. | Yes |
 | Which models and providers it uses | the developer using OpenCode | Self-serve. The people running the product make this kind of change themselves, without a release, and can undo it. | Yes |
-| What the agent may do without asking | the developer using OpenCode | Engineers only. This kind of change needs engineers to change code, make a release or edit files by hand. | No |
-| Plugins, MCP servers and skills | the developer using OpenCode | Engineers only. This kind of change needs engineers to change code, make a release or edit files by hand. | No |
+| What the agent may do without asking | the developer using OpenCode | Engineers only. This kind of change needs engineers to change code, make a release or edit files by hand, or the people running the product can make it but cannot undo it. | No |
+| Plugins, MCP servers and skills | the developer using OpenCode | Engineers only. This kind of change needs engineers to change code, make a release or edit files by hand, or the people running the product can make it but cannot undo it. | No |
 
 2 of 3 main kinds are self-serve. Self-serve means: the people running the product make this kind of change themselves, without a release, and can undo it.
 
