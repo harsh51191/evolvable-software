@@ -57,7 +57,7 @@ The script prints the skeleton. It fills in everything that can be computed from
 | **People** | 7 | Who makes the change, who approves, who sets the rules for what ships without a person, what changes in roles |
 | **For engineers** | 8, 11 | Per item: code, title, building block, now → needed, which loop and stage need it, size, prerequisites, the move from `remediation.md`, the evidence the next assessment must find, depth and inventory notes, route flags; alternatives; the optional third loop |
 | **Prompt for a coding agent** | 8 | A self-contained prompt: files and patterns to follow, what to deliver, what must not change, the automated test that performs the check |
-| **Done when** | 8, 9, 10 | One box per gain and gate; the check passes on the running product; a named automated test performs it; a fresh assessment finds the evidence |
+| **Done when** | 8, 9, 10 | One box per gain and gate; the check passes on the running product; a named automated test performs it; a fresh assessment finds the evidence; the change is on in the standard installation, because a feature behind an optional setting counts only toward the opt-in reading, never the headline |
 
 ## How the skeleton is computed
 

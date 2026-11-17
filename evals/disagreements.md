@@ -32,6 +32,8 @@ All raters so far are AI models. "First" is the field-test rating (Claude, singl
 | 2026-11-17 | static-notes (eval case) | `definition_change_path`, `code_release_path` | expected true/false, rater false/true | A product whose every change is a code release by engineers: the rubric needs one change path to be true, and the case author and the rater chose different ones | Open: say what to declare when there is no evolution system |
 | 2026-11-17 | rules-desk, drafting-desk (eval cases) | MAL-20 | expected 1, rater 0 | Rater error: a keyword-matching help widget is the anchor for 1 ("FAQ or keyword bot") | None needed; the trap worked |
 
+| 2026-11-17 | Brand AI Apps (blind before and after) | Blueprint milestone 1 | default SAL 0 before and after; SAL 1 with opt-in | The blueprint's prompt did not say the feature must be on by default; the agent shipped it behind three optional settings, so it moves only the opt-in reading. The blind rater also listed four main kinds of change where the blueprint listed two | Blueprint template: "done when" now requires the change to be on in the standard installation |
+
 ## Status
 
 Three definitions were tightened in v0.7 because of the 14 October study: LRN-08 for products that produce no learned or AI-made changes, `multi_tenant`, and `code_release_path` with `agent_mutations`. The evaluation cases pin each of them: `static-notes` expects LRN-08 0 and `code_release_path` false for ordinary CI; `rules-desk` expects `multi_tenant` false for one company and records LRN-08 as a range of two readings; `drafting-desk` expects `agent_mutations` true for AI drafts awaiting approval, `code_release_path` false for AI-written rules, and `multi_tenant` true for several customer organisations.
