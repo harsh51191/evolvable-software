@@ -1,7 +1,7 @@
 {
   "name": "evolvable-software",
   "displayName": "EVOLVE: Self-Evolution Readiness",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "description": "Assess how ready a software product is to evolve itself safely, and how much of that AI drives: autonomy levels for request-to-release, issue-to-fix and opportunity-to-expansion, critical controls, what blocks the next level, and a fix-first plan, all from code evidence.",
   "author": {
     "name": "Vellanki Sriharsha",

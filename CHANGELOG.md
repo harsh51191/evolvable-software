@@ -1,11 +1,33 @@
 # Changelog
 
-## Unreleased
+## EVOLVE v0.7.0, November 2026
+
+A critical review found that the scoring engine was sound but the framework did not yet deliver its vision. v0.7 closes the gaps it found. The design is in `spec/evolve-v0.7.md`.
+
+### Changed how levels are read
+
+- **Kinds of change.** Level 1 now asks whether every main kind of change the people running the product need (an answer, a rule, a workflow…) can be made by them, with undo. Before, it averaged twenty malleability criteria, which measured how platform-like a product was. Each assessment lists its kinds of change with a reach from 0 (engineers only) to 5 (self-chosen), checked for consistency with the criteria.
+- **Designed for, Built to, Proven at.** Operating records no longer count towards what a product is built to do; they give a separate Proven reading. A design assessment (`--basis design`, evidence grade D) gives a Designed-for reading, so a new product can be designed for Level 5 from day one. A 3 or a 4 on a depth-capped criterion now needs tested evidence only.
+- **Recursion.** New criterion LRN-10, "the improvement loop improves itself", required at Levels 4 and 5, and a Recursion line in every result. The rubric now has 67 criteria and 8 AI Readiness checks.
+- **Confidence** on every score, with a "check these first" list of uncertain readings that decide a level.
+- **AI-assisted engineering** is recorded, and rule 12 now says when an installed delivery framework counts as the product's own way of changing.
+- **Three definitions tightened** after the second-rating study: LRN-08 for products with no learned changes, `multi_tenant`, and `code_release_path` with `agent_mutations`.
 
 ### Added
 
-- **What evolvable software means.** The README now opens with a plain definition: software that improves itself, safely, within limits people set, becoming recursive at the top levels. It says what it is not, why a product cannot jump levels, and what each level means for users and admins.
-- **A definition of done for every level.** `score.py --checklist LEVEL` prints, for each loop, a challenge to run on the running product and every condition the next assessment must find, quoted from the rubric's anchored levels. The challenges live in the rubric's scoring model, one per level and loop, and the scorer refuses a model without them. Scores and levels are unchanged.
+- **What evolvable software means.** The README opens with a plain definition, what it is not, why levels cannot be skipped, and what each level means for users.
+- **A definition of done for every level:** `score.py --checklist`, with a plain challenge per level and loop.
+- **Plain-language report** (`report.py`): twelve sections a business reader can follow, no criterion codes outside a section for engineers. Wording comes from `references/plain-language.md`, which gives every criterion a plain name and question.
+- **Blueprint v2** (`blueprint.py`, `references/blueprint-template.md`): starts from the owner's goal, leads with what users gain, attaches each safety gate to the first milestone that needs it, and gives each milestone a check, risks, people, a coding-agent prompt and a "done when" list.
+- **Quick scan** (`quick_scan.py`): a ten-minute, indicative range per loop. Never published as a level.
+- **Born evolvable** (`docs/born-evolvable.md`) and **Answer Desk** (`examples/born-evolvable/`), a small working product built on twelve day-0 foundations.
+- **An evaluation set for the framework itself** (`evals/`): test products with expected readings and traps, a runner, an agreement tool that reproduces the second-rating study, and a disagreement log.
+- **CONTRIBUTING.md.**
+
+### Field test
+
+- All eleven products brought to v0.7 at their pinned commits, with kinds of change, LRN-10, confidence and AI delivery records, and a plain-language `report.md` each.
+- Corrections: n8n security scans to 2; OpenClaw scheduled-work restore to 2; LibreChat API contract to 2.
 
 ## EVOLVE v0.6.1, 2026-10-03
 

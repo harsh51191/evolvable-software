@@ -26,6 +26,17 @@ python3 skills/evolvable-software/scripts/score.py assessment.json --checklist 2
 
 A loop is done when its challenge passes and a fresh assessment finds every item. A level is never claimed from a plan, a prompt or a pull request alone.
 
+## Four ways to use it
+
+| You want | Run | Time |
+|---|---|---|
+| A quick, indicative reading | `scripts/quick_scan.py`: about twenty plain yes/no questions, a likely range per loop. Never published as a level. | Ten minutes |
+| A full assessment | The skill, in Claude Code, Codex or Gemini CLI, scores every criterion from the code and runs `scripts/score.py`. | Hours |
+| A report a business reader can follow | `scripts/report.py assessment.json`: plain words, codes only in a section for engineers. | Seconds |
+| A plan to move up | `scripts/blueprint.py assessment.json --goal "<your goal>"`: milestones led by what users gain, each with a check to run, a prompt for a coding agent and a "done when" list. | Minutes, plus the agent's writing |
+
+**Starting a new product?** Read [Born evolvable](docs/born-evolvable.md): twelve foundations for a product designed for Level 5 from day one, and [Answer Desk](examples/born-evolvable/), a small working product that follows them.
+
 ## The three loops and six levels
 
 The question breaks into three loops:
@@ -40,16 +51,22 @@ Each loop gets a **Software Autonomy Level (SAL)** from L0 to L5, modelled on th
 
 | Level | Name | What the product can do | What users and admins experience |
 |---|---|---|---|
-| L0 | Manual | Every change is engineers writing and releasing code. | Every change is a ticket that waits for a release. |
-| L1 | Configurable | People make the change without bespoke engineering, and can roll it back. | An admin makes the change in the product and can undo it. |
+| L0 | Manual | The changes that matter most need engineers writing and releasing code. | Most changes are tickets that wait for a release. |
+| L1 | Configurable | People make the product's main kinds of change without bespoke engineering, and can undo them. | An admin makes the change in the product and can undo it. |
 | L2 | Assisted | The product structures the request, diagnoses the issue or drafts the proposal, and drafts the change. People build and release. | You describe the need in the product; it asks questions and drafts the change. It explains problems and proposes fixes. An admin finishes. |
 | L3 | Supervised | The product carries the loop end to end; a person approves each release. Every critical control passes. | The product builds and tests the change, releases it to a few users first and rolls it back if it is bad. It notices and diagnoses problems itself. A person only approves. |
 | L4 | Policy-bounded | Low-risk changes ship without a person, under policy, with staged exposure, measurement and automatic rollback. | Routine changes and fixes ship on their own, within rules the company set, and undo themselves when they make things worse. |
-| L5 | Self-directing | The product initiates, ships and measures change within policy, backed by operational evidence. | The product decides what to improve next, does it, and gets better at deciding, within policy. |
+| L5 | Self-directing | The product initiates, ships and measures change within policy, and improves its own checks and rules from the results. | The product decides what to improve next, does it, and gets better at deciding, within policy. |
+
+**Kinds of change.** Levels are judged on what the people running the product actually need to change: an answer, a rule, a workflow, a price list. Each assessment lists those kinds and how far each has come, from *engineers only* through *self-serve*, *drafted*, *carried* and *pre-approved* to *self-chosen*. Level 1 needs every main kind to be self-serve. A product does not need to be a generic platform to evolve itself.
+
+**Designed for, Built to, Proven at.** Three claims, never mixed. *Designed for* reads design documents, so a new product can be designed for Level 5 from day one. *Built to* reads what ships, with tests. *Proven at* reads operating records of real changes going through the loop. A product should run at the level it has proven, and raise autonomy as proof accumulates.
+
+**Recursion.** A separate line says whether the loop improves its own checks, evaluation sets, policies and prompts from results: *fixed*, *by hand*, *governed*, *results-driven* or *self-improving*.
 
 Beside each loop's level, EVOLVE reports how far **AI itself** carries that loop. Each loop is re-scored with its AI-performable stages (turning requests into specifications, building changes, diagnosing issues, proposing fixes, learning from experience, proposing new capabilities) read only on what AI does there. AI first drives a stage at L2, and never above the loop's own level; **AI L0** means AI drives no stage.
 
-The headline is the lower of the first two loops, with Expansion reported beside it, for example **SAL 2 · AI-driven 0 · Request → Release L2 (AI L2) · Issue → Fix L2 (AI L0) · Expansion L1 (AI L0)**. The first number says how far the product can evolve itself; the second, how much of that AI does. The scorer always names what blocks the next level, for the product and for its AI.
+The headline is the lower of the first two loops, with Expansion reported beside it, for example **Built to SAL 2 · Proven: not evidenced · AI-driven 0 · Request → Release L2 (AI L2) · Issue → Fix L2 (AI L0) · Expansion L1 (AI L0)**. The first number says how far the product can evolve itself; the second, how much of that AI does. The scorer always names what blocks the next level, for the product and for its AI.
 
 Behind the levels is the **EVOLVE profile**: six capabilities, each scored 0 to 4.
 
@@ -106,7 +123,8 @@ What stands out:
 
 ## What is included
 
-- 66 anchored criteria in six capabilities, each with a 0–4 ladder, plus eight AI Readiness checks (AIR) and AI-qualified readings of 13 existing criteria.
+- 67 anchored criteria in six capabilities, each with a 0–4 ladder, plus eight AI Readiness checks (AIR) and AI-qualified readings of 13 existing criteria. Every criterion also has a plain name and a plain question.
+- Kinds of change with a reach from 0 to 5, Designed/Built/Proven readings, a Recursion line, confidence on every score, and a record of AI-assisted engineering that says whether it counts.
 - An AI-driven level per loop: how far AI itself carries the loop, with what it needs for its next level.
 - Three loops, each scored by its weakest stage. A loop's level is the lowest of four parts: the loop's own stages, a shared release spine (build, verify, stage, release, observe, roll back), an architecture foundation and a governance ceiling.
 - Seven critical controls:
@@ -120,10 +138,12 @@ What stands out:
 
   A failed applicable control caps every loop at L2.
 - Twelve scope facts (nine for change, three for AI) that decide which criteria and controls apply, so a local tool is not failed on tenant isolation and a product that only changes through code is not failed on definition rollback.
-- Evidence grades, evidence facets (implemented, tested, operated) and a depth cap: architecture and control criteria need tested evidence for a 3 and operated evidence for a 4.
+- Evidence grades, evidence facets (implemented, tested, operated) and a depth cap: architecture and control criteria need tested evidence for a 3 or a 4. Operated evidence supports a Proven reading.
 - Scoring of the default configuration, with shipped opt-in settings and higher alternate readings reported separately.
 - Enforced archetype exclusions and an interpretation guide for agent runtimes and developer platforms.
-- A deterministic Python scorer with tests, and a remediation generator that orders work by prerequisites.
+- A deterministic Python scorer with tests, a plain-language report, a blueprint generator, a definition-of-done checklist and a quick scan.
+- An evaluation set for the framework itself (`evals/`): test products with expected readings and traps, a runner that scores a rater against them, an agreement tool for comparing raters, and a log of disagreements and the rubric changes they led to.
+- A guide and a working reference product for building a product that is evolvable from day one (`docs/born-evolvable.md`, `examples/born-evolvable/`).
 - A reusable agent skill (`skills/evolvable-software/`), packaged as a plugin for Claude Code and Codex.
 - A field test on 11 open-source systems in `assessments/2026-09-field-test/`, scored from public source code and not yet reviewed by their maintainers.
 
@@ -172,7 +192,7 @@ Restart or refresh the agent after installation. The skill can then be discovere
 
 - **Reads** only the repositories and documents you point it at. It asks before cloning or opening any new remote source, and never changes the repository it assesses.
 - **Writes** one assessment input file (JSON), at a path you choose outside the assessed repository, and the reports you ask for.
-- **Runs** two bundled Python scripts, `init_scores.py` and `score.py` in the skill's `scripts/` folder, which use the standard library only. They make no network calls and install nothing.
+- **Runs** bundled Python scripts in the skill's `scripts/` folder (`init_scores.py`, `score.py`, `report.py`, `blueprint.py`, `quick_scan.py`), which use the standard library only. They make no network calls and install nothing.
 - **Sends** nothing to any service. The plugin has no hooks, no MCP servers and no telemetry.
 
 ## Run the scorer directly
@@ -200,11 +220,14 @@ Complete the file using the skill's `references/rubric.md` and `references/evide
 python3 skills/evolvable-software/scripts/score.py ~/evolve/example-2026-10-01.json
 ```
 
-Generate a plan that starts with what blocks the next level:
+A report for business readers, and a plan from your goal:
 
 ```bash
-python3 skills/evolvable-software/scripts/score.py ~/evolve/example-2026-10-01.json --prescribe --target 3
+python3 skills/evolvable-software/scripts/report.py ~/evolve/example-2026-10-01.json
+python3 skills/evolvable-software/scripts/blueprint.py ~/evolve/example-2026-10-01.json --goal "More questions resolved without a person"
 ```
+
+The older criterion-by-criterion plan is still available with `score.py --prescribe --target 3`.
 
 ## Evidence states and fields
 
@@ -222,10 +245,14 @@ Optional fields:
 - `inventory`: a level per surface, for criteria that span several surfaces.
 - `if_applicable`: what an excluded criterion would score.
 - `ai`: an AI-qualified reading of the 13 criteria that AI Readiness reuses, scored only on AI-backed behaviour. Required when `ai_features` is true.
+- `confidence`: high, medium or low, on every assessed criterion, AI reading and kind of change.
+
+Top-level fields: `basis` (shipped or design), `change_kinds` (required), `proven`, `ai_delivery`.
 
 ## Important limits
 
-- Repository evidence establishes that a mechanism exists in the inspected source. It does not prove usability, adoption, hosted-edition parity, production reliability or business impact. The operated facet makes this limit visible.
+- Repository evidence establishes that a mechanism exists in the inspected source. It does not prove usability, adoption, hosted-edition parity, production reliability or business impact. That is why Proven is reported separately, and is usually not evidenced from a repository alone.
+- Every rating so far is by AI models. Rater agreement has been measured on a small sample and is moderate; see `evals/` and `assessments/2026-09-field-test/second-rating/`. A human second rating is the most valuable contribution anyone can make.
 - A Software Autonomy Level is a readiness reading, not a production certification.
 - Cross-product comparison is defensible only when scope, archetype, scope facts, evidence depth and applicability decisions are comparable.
 - Give maintainers an opportunity to correct factual evidence before publishing comparative scores.
@@ -246,9 +273,19 @@ skills/evolvable-software/            The skill, which is also the Claude plugin
   references/remediation.md           Level 3 and 4 improvement moves
   references/scorecard-template.md    Reporting structure
   scripts/init_scores.py              Input template generator
-  scripts/score.py                    Validator, scorer and prescriber
+  references/plain-language.md        Plain names and questions for every criterion and level
+  references/blueprint-template.md    The blueprint format
+  references/quick-scan.md            Quick-scan questions
+  scripts/score.py                    Validator, scorer, prescriber and checklist
+  scripts/report.py                   Plain-language report
+  scripts/blueprint.py                Blueprint skeleton
+  scripts/quick_scan.py               Quick scan
+docs/born-evolvable.md                Building a product evolvable from day one
+examples/born-evolvable/              Answer Desk, a working reference product
+evals/                                The framework's own evaluation set and agreement tool
 spec/                                 Design and decisions for each version
-tests/test_score.py                   Scorer tests (python3 -m unittest discover -s tests)
+tests/                                Tests (python3 -m unittest discover -s tests)
+CONTRIBUTING.md                       How to contribute
 assessments/                          Field-test results
 metadata.yaml                         Package metadata
 CHANGELOG.md                          Version history
@@ -256,7 +293,7 @@ CHANGELOG.md                          Version history
 
 ## Name and version
 
-EVOLVE v0.6.0, public beta 6, 2 October 2026. EVOLVE was previously the Malleability and Self-Evolution Readiness (MSR) framework; see `CHANGELOG.md` for what changed and why. "EVOLVE" and "Software Autonomy Level" are working names until a trademark and prior-use search is complete.
+EVOLVE v0.7.0, public beta 7, November 2026. EVOLVE was previously the Malleability and Self-Evolution Readiness (MSR) framework; see `CHANGELOG.md` for what changed and why. "EVOLVE" and "Software Autonomy Level" are working names until a trademark and prior-use search is complete.
 
 ## License
 

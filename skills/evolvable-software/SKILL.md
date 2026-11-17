@@ -4,11 +4,12 @@ description: >-
   Assess how ready a software product is to evolve itself safely, and how much
   of that AI drives, using the EVOLVE framework. Reports a Software Autonomy
   Level (L0 to L5) for three loops (request to release, issue to fix,
-  opportunity to expansion), how far AI itself carries each loop, the critical
-  controls that fail, exactly what blocks the next level, a six-capability
-  profile, AI Readiness for products with AI features, and a
-  prerequisite-ordered remediation plan, with every score tied to file-level
-  evidence. Works for platforms, focused applications, developer platforms and
+  opportunity to expansion), judged on the product's main kinds of change, with
+  Designed for, Built to and Proven kept apart; how far AI itself carries each
+  loop; whether the loop improves its own checks; the critical controls that
+  fail; and what blocks the next level. Gives a plain-language report for
+  business readers, a goal-led blueprint with prompts for coding agents and a
+  definition of done, and a ten-minute quick scan; every score cites files. Works for platforms, focused applications, developer platforms and
   agent runtimes. Use for self-evolution readiness, software autonomy levels,
   AI-driven or AI-built change, governed change, architecture readiness for
   autonomous change, or repeatable reassessment. Do not use as a security,
@@ -85,6 +86,14 @@ python3 <skill-dir>/scripts/init_scores.py --product "<software name>" --archety
 
 Set each of the twelve facts in `references/rubric.md` (persistent data, schema changes, multi-tenant, hosted service, machine actions, agent mutations, evolution auto-apply, definition change path, code release path, and the AI facts `ai_features`, `ai_data_access`, `ai_actions`) to true or false with evidence, for the default configuration. Where a shipped opt-in setting turns an AI fact on, record `available_value: true`. They decide which criteria and critical controls apply, including which rollback each change path needs. A wrongly declared fact is a finding, not a shortcut.
 
+### 3b. List the kinds of change
+
+List in `change_kinds` the 1 to 8 kinds of change the people running the product most often need (an answer, a rule, a workflow, a price list, a form…), from its documentation, admin surfaces and request history, including kinds they cannot make themselves. For each, record who makes it, whether it is a main kind, its `reach` from 0 (engineers only) to 5 (self-chosen) per `references/rubric.md`, and evidence. Reach 1 needs a supported path with no release and undo; a path without undo is reach 0. Level 1 needs every main kind at reach 1 or more, so leaving a kind out to raise the level is a rater error.
+
+Also record `ai_delivery` (whether engineers build the product with AI coding agents or a delivery framework, and whether that meets rule 12) and `proven` (per loop, operating records of real changes going through the loop, or `not_evidenced` with what you searched; from a repository alone it is usually not evidenced).
+
+For a product that is designed but not yet built, create the input with `--basis design` and cite design documents with evidence grade `D`. A design reading says "Designed for" and is never compared with a shipped one.
+
 ### 4. Gather evidence
 
 Follow `references/evidence-plan.md`. Read the target at the named branch or tip. For any product that claims to learn or self-improve, work through the self-modification checklist in `references/archetypes.md` before scoring the Learn and Vet criteria. For parallel exploration, give each explorer only the relevant capability, and require file paths, short evidence summaries, who can make the change, whether a deployment is required, and whether tests exercise the capability.
@@ -94,6 +103,9 @@ Evidence grades:
 - `A`: verified in code at the named tip.
 - `B`: verified in first-party documentation, audit material or configuration supplied for the assessment.
 - `C`: inferred from secondary material or product knowledge; scores are capped at 2.
+- `D`: a design document, cited by path and section; only in a design assessment.
+
+Record `confidence` (`high`, `medium` or `low`) on every assessed criterion, AI reading and kind of change: high when you read the code path and its tests, low when the reading is inferred from part of the evidence. The scorer lists low-confidence criteria that decide a level as "check these first".
 
 `not_evidenced` is uncertainty, not proof of absence. Record where the assessment searched.
 
@@ -103,7 +115,7 @@ Use the anchored levels in `references/rubric.md`. Between two levels, score the
 
 If `ai_features` is true in either reading, score the eight AIR checks and add an `ai` reading to each of the 13 reused criteria (MAL-19, MAL-20, DEL-01, DEL-04, LRN-05 to LRN-08, EXP-05, GOV-09 to GOV-11, ARC-08), scored only on AI-backed behaviour. Missing AI behaviour scores 0, not `not_applicable`.
 
-For architecture and critical-control criteria read at 3 or more, record `facets`: implemented, tested and operated. For ARC-08, ARC-09 and GOV-05 at 3 or more, record an `inventory` with a level per surface.
+Score LRN-10 (whether the improvement loop improves its own checks, evaluation sets, policies and prompts from measured results); it gives the Recursion line. For architecture and critical-control criteria read at 3 or more, record `facets`: implemented, tested and operated. A 3 or a 4 needs `tested`; `operated` supports a Proven reading and never changes a score. For ARC-08, ARC-09 and GOV-05 at 3 or more, record an `inventory` with a level per surface.
 
 ```bash
 python3 <skill-dir>/scripts/score.py <file>.json
@@ -131,11 +143,27 @@ python3 <skill-dir>/scripts/score.py <file>.json --checklist 3
 
 For each loop it gives a challenge to run on the running product and every condition the next assessment must find, in the rubric's own words. Give it with any plan. A level is reached only when the challenge passes and a fresh assessment finds the evidence, never from a plan or a change request alone.
 
+When the user wants a plan, ask for their business goal in their own words, then print the blueprint skeleton and fill every `TODO(agent)` from the evidence you collected, following `references/blueprint-template.md`:
+
+```bash
+python3 <skill-dir>/scripts/blueprint.py <file>.json --goal "<the owner's goal>" [--target 3] [--route overlay]
+```
+
+Value leads: milestones are ordered by what users gain, and each safety gate is attached to the first milestone that needs it. Every milestone has a check a person can run, risks, people, engineering notes, a prompt for a coding agent and a "done when" list. Never invent evidence; mark anything you cannot cite as a design question.
+
 ### 8. Report
 
-Use `references/scorecard-template.md`. Report:
+For business and product readers, lead with the plain-language report; it uses no criterion codes outside its "For engineers" section:
 
-- the headline SAL, each loop's level and the part that holds it there;
+```bash
+python3 <skill-dir>/scripts/report.py <file>.json
+```
+
+Add the product's story on top of it. For engineers, use `references/scorecard-template.md` and the scorer's markdown. Report:
+
+- the headline in the form Built to (or Designed for) SAL n, with Proven reported separately, each loop's level and the part that holds it there;
+- the kinds of change and how far each has come;
+- the Recursion line;
 - how far AI itself drives each loop (the AI-driven levels) and what AI needs for its next level;
 - critical controls and which fail;
 - what blocks the next level of each loop;
@@ -145,7 +173,7 @@ Use `references/scorecard-template.md`. Report:
 - repository and operational evidence limits;
 - the remediation sequence when requested.
 
-Never call a product "self-evolving" from a level alone; L3 and above are readiness readings that still need operational validation. For comparisons across products, show ranges and run a second independent pass on the Learn, Vet and Expand criteria.
+Never call a product "self-evolving" from a level alone: Built says what it can do, Proven says what it has been seen to do, and a product should run at the level it has proven. For comparisons across products, show ranges and run a second independent pass on the Learn, Vet and Expand criteria.
 
 ## Public-Use Guardrails
 
@@ -165,4 +193,7 @@ Never call a product "self-evolving" from a level alone; L3 and above are readin
 - Design and decisions for each version: `spec/` in the source repository, https://github.com/harsh51191/evolvable-software.
 - `scripts/init_scores.py`: input template generator.
 - `scripts/score.py`: validator, scorer, prescriber and definition-of-done checklist.
+- `scripts/report.py`: the plain-language report; wording from `references/plain-language.md`.
+- `scripts/blueprint.py`: the blueprint skeleton; format in `references/blueprint-template.md`.
+- `scripts/quick_scan.py`: a ten-minute, indicative quick scan; questions in `references/quick-scan.md`. Never published as a level.
 - Scorer tests and the 11-product field test: `tests/` and `assessments/` in the source repository.
