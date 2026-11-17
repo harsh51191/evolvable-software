@@ -101,3 +101,12 @@ Exact agreement between each pair of raters:
   - what counts as a code release path or an agent mutation.
 
 All three raters are AI models. A human second rater is the next step.
+
+## What changed as a result (EVOLVE v0.7)
+
+- **Definitions tightened.** The rubric now says when a product is multi-tenant (workspaces and projects with their own members count; one person's several workspaces do not), what counts as a code release path (code the product's own AI writes and activates), what counts as an agent mutation (including drafts stored awaiting approval), and how to read LRN-08 for products that make no learned or AI-made changes.
+- **Corrections.**
+  - n8n security (GOV-04) is now 2. Re-reading the code confirmed both raters: the pull-request security job runs only when GitHub workflow files change, and the container scan never fails a build.
+  - OpenClaw scheduled-work restore (ARC-09) is being lowered to 2 in the v0.7 migration.
+- **Re-reading under the new definitions changed two scope facts.** n8n's team projects make it multi-tenant, and its agent builder writes code that runs, so tenant isolation and release rollback now apply to it. Its level did not change.
+- **The study is now repeatable.** `evals/agreement.py` compares any two or more assessments of a product and reproduces every number above. `evals/disagreements.md` logs each disagreement and the rubric change it led to.
