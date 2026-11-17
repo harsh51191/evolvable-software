@@ -36,7 +36,8 @@
       "grade": "A",
       "evidence": "Typed gateway methods with JSON output modes and MCP JSON output (docs/cli/mcp/json-output.md); no OpenAPI or dry-run for gateway mutations.",
       "alt_score": 3,
-      "alt_note": "The gateway protocol is typed end to end."
+      "alt_note": "The gateway protocol is typed end to end.",
+      "confidence": "medium"
     },
     "MAL-07": {
       "status": "assessed",
@@ -44,7 +45,8 @@
       "grade": "A",
       "evidence": "Canvas serves agent-authored documents and widgets (src/canvas); Control UI layout is code.",
       "alt_score": 3,
-      "alt_note": "Canvas is AI-authored, validated UI as data."
+      "alt_note": "Canvas is AI-authored, validated UI as data.",
+      "confidence": "medium"
     },
     "MAL-08": {
       "status": "not_applicable",
@@ -55,7 +57,8 @@
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "278 locale files; themes are engineer-managed."
+      "evidence": "278 locale files; themes are engineer-managed.",
+      "confidence": "low"
     },
     "MAL-10": {
       "status": "assessed",
@@ -63,13 +66,15 @@
       "grade": "A",
       "evidence": "Cron jobs, hooks, routing bindings and auto-reply configuration are declared as data (docs/gateway/config-hooks.md, config-automation.md, src/routing, src/auto-reply); no general rules engine with a test mode.",
       "alt_score": 3,
-      "alt_note": "Routing and automation cover many entities through configuration."
+      "alt_note": "Routing and automation cover many entities through configuration.",
+      "confidence": "medium"
     },
     "MAL-11": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Inbound webhook hooks trigger agent runs; audit events record runs, messages and tool actions; no outbound subscriptions with retry."
+      "evidence": "Inbound webhook hooks trigger agent runs; audit events record runs, messages and tool actions; no outbound subscriptions with retry.",
+      "confidence": "low"
     },
     "MAL-12": {
       "status": "assessed",
@@ -77,13 +82,15 @@
       "grade": "A",
       "evidence": "Hook scripts run in the gateway process; agent tools for non-main sessions run in sandboxes governed by tool policy and elevated mode (docs/gateway/sandboxing.md, sandbox-vs-tool-policy-vs-elevated.md).",
       "alt_score": 3,
-      "alt_note": "Sandboxing with tool policy isolates agent-written code."
+      "alt_note": "Sandboxing with tool policy isolates agent-written code.",
+      "confidence": "medium"
     },
     "GOV-01": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "No automated accessibility scanning found for the Control UI or companion apps."
+      "evidence": "No automated accessibility scanning found for the Control UI or companion apps.",
+      "confidence": "low"
     },
     "GOV-02": {
       "status": "assessed",
@@ -91,13 +98,15 @@
       "grade": "A",
       "evidence": "Audit event store records agent runs, messages and tool actions with queries and configuration (src/audit/audit-event-types.ts, docs/gateway/audit.md); the Skill Workshop keeps an append-only proposal event ledger (docs/tools/skill-workshop/proposals.md). Configuration changes are not audit events.",
       "alt_score": 3,
-      "alt_note": "Skill definitions and their approvals are fully audited."
+      "alt_note": "Skill definitions and their approvals are fully audited.",
+      "confidence": "medium"
     },
     "GOV-03": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Local-first storage, trajectory export and cleanup (src/trajectory/export.ts, cleanup.ts), and redacted diagnostics export (docs/gateway/health.md:56); not driven by tags."
+      "evidence": "Local-first storage, trajectory export and cleanup (src/trajectory/export.ts, cleanup.ts), and redacted diagnostics export (docs/gateway/health.md:56); not driven by tags.",
+      "confidence": "high"
     },
     "GOV-04": {
       "status": "assessed",
@@ -108,7 +117,8 @@
         "implemented": true,
         "tested": true,
         "operated": false
-      }
+      },
+      "confidence": "high"
     },
     "GOV-05": {
       "status": "assessed",
@@ -118,7 +128,8 @@
       "inventory": {
         "skills": 3,
         "configuration": 2
-      }
+      },
+      "confidence": "medium"
     },
     "GOV-06": {
       "status": "assessed",
@@ -126,20 +137,23 @@
       "grade": "A",
       "evidence": "Skill changes are typed proposals (PROPOSAL.md with revision hashes) that the agent or a person creates; evaluations are stored on the exact revision and apply revalidates the evaluated tree (docs/tools/skill-workshop/proposals.md, src/skills/workshop/service-propose.ts, service-evaluation.ts); the system agent turns chat into proposals for configuration commands with approval classification (src/system-agent/approval-intent.ts).",
       "alt_score": 4,
-      "alt_note": "Evidence attaches automatically once an evaluator plugin is installed; none is bundled."
+      "alt_note": "Evidence attaches automatically once an evaluator plugin is installed; none is bundled.",
+      "confidence": "medium"
     },
     "GOV-07": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
       "evidence": "Defaults are autonomous.mode auto and approvalPolicy auto (src/skills/workshop/config.ts:15-20), so proposals apply without a person; evaluator block decisions only exist if an evaluator plugin is installed. Setting approvalPolicy to pending gives a per-class approval policy.",
-      "available_score": 3
+      "available_score": 3,
+      "confidence": "high"
     },
     "GOV-08": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Doctor repairs and migrates configuration (docs/gateway/doctor.md), a compatibility layer (src/compat) and a plugin activation boundary test (src/plugin-activation-boundary.test.ts) around a versioned plugin SDK (src/plugin-sdk)."
+      "evidence": "Doctor repairs and migrates configuration (docs/gateway/doctor.md), a compatibility layer (src/compat) and a plugin activation boundary test (src/plugin-activation-boundary.test.ts) around a versioned plugin SDK (src/plugin-sdk).",
+      "confidence": "high"
     },
     "ARC-01": {
       "status": "not_applicable",
@@ -160,19 +174,22 @@
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Gateway, Control UI and macOS, iOS and Android companion apps are separate deployables with their own release workflows (apps/, .github/workflows/android-release.yml, ios-release-e2e.yml)."
+      "evidence": "Gateway, Control UI and macOS, iOS and Android companion apps are separate deployables with their own release workflows (apps/, .github/workflows/android-release.yml, ios-release-e2e.yml).",
+      "confidence": "medium"
     },
     "DEL-03": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Separate TypeScript projects for core, extensions, UI and scripts (tsconfig.core.json, tsconfig.extensions.projects.json) and a plugin activation boundary test (src/plugin-activation-boundary.test.ts)."
+      "evidence": "Separate TypeScript projects for core, extensions, UI and scripts (tsconfig.core.json, tsconfig.extensions.projects.json) and a plugin activation boundary test (src/plugin-activation-boundary.test.ts).",
+      "confidence": "high"
     },
     "DEL-05": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "CI runs on pull requests with CodeQL, dependency audit, E2E and performance checks, but passive draft pull requests are isolated from the main slots (.github/workflows/ci.yml:82-93); no accessibility check."
+      "evidence": "CI runs on pull requests with CodeQL, dependency audit, E2E and performance checks, but passive draft pull requests are isolated from the main slots (.github/workflows/ci.yml:82-93); no accessibility check.",
+      "confidence": "high"
     },
     "MAL-13": {
       "status": "assessed",
@@ -180,7 +197,8 @@
       "grade": "A",
       "evidence": "Plugins and extensions for channels, providers, tools and memory through a plugin SDK, declarative skills, hooks and an MCP registry (docs/cli/mcp/registry.md); ClawHub is the skill and plugin registry.",
       "alt_score": 4,
-      "alt_note": "A versioned registry exists."
+      "alt_note": "A versioned registry exists.",
+      "confidence": "medium"
     },
     "MAL-14": {
       "status": "assessed",
@@ -188,13 +206,15 @@
       "grade": "A",
       "evidence": "Agent tools can run sandboxed under tool policy; plugins and hooks run in the gateway process with full trust.",
       "alt_score": 3,
-      "alt_note": "AI-written code runs sandboxed."
+      "alt_note": "AI-written code runs sandboxed.",
+      "confidence": "low"
     },
     "MAL-15": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Control UI, doctor, diagnostics export, logs and a QA lab (qa/) let developers validate against a live gateway."
+      "evidence": "Control UI, doctor, diagnostics export, logs and a QA lab (qa/) let developers validate against a live gateway.",
+      "confidence": "low"
     },
     "MAL-19": {
       "status": "assessed",
@@ -205,8 +225,10 @@
         "status": "assessed",
         "score": 3,
         "grade": "A",
-        "evidence": "MCP channel-bridge server and typed gateway protocol (src/mcp)."
-      }
+        "evidence": "MCP channel-bridge server and typed gateway protocol (src/mcp).",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "MAL-20": {
       "status": "assessed",
@@ -221,8 +243,10 @@
         "grade": "A",
         "evidence": "Model-backed conversation across channels; configuration by natural language.",
         "alt_score": 4,
-        "alt_note": "Broad coverage."
-      }
+        "alt_note": "Broad coverage.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "GOV-09": {
       "status": "assessed",
@@ -233,32 +257,38 @@
         "status": "assessed",
         "score": 3,
         "grade": "A",
-        "evidence": "Pairing identities, exec approvals with previews, tool policies and idempotency keys for agent actions."
-      }
+        "evidence": "Pairing identities, exec approvals with previews, tool policies and idempotency keys for agent actions.",
+        "confidence": "high"
+      },
+      "confidence": "high"
     },
     "MAL-16": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Channel plugins map WhatsApp, Telegram, Slack, Discord, Signal and others onto one canonical message model (src/channels); providers map onto one model interface."
+      "evidence": "Channel plugins map WhatsApp, Telegram, Slack, Discord, Signal and others onto one canonical message model (src/channels); providers map onto one model interface.",
+      "confidence": "medium"
     },
     "MAL-17": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "The plugin SDK covers channel auth and pairing, inbound and outbound sync and install and configure lifecycle (src/plugin-sdk, custodian-skills/configure-channel)."
+      "evidence": "The plugin SDK covers channel auth and pairing, inbound and outbound sync and install and configure lifecycle (src/plugin-sdk, custodian-skills/configure-channel).",
+      "confidence": "medium"
     },
     "MAL-18": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "A compatibility layer and doctor migrations keep older configuration working; no public deprecation windows."
+      "evidence": "A compatibility layer and doctor migrations keep older configuration working; no public deprecation windows.",
+      "confidence": "low"
     },
     "EXP-01": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Kernel of gateway sessions (conversation), channels (channel), pairing and auth (identity), tool policy (permission), cron, hooks and flows (workflow), and memory and files (content)."
+      "evidence": "Kernel of gateway sessions (conversation), channels (channel), pairing and auth (identity), tool policy (permission), cron, hooks and flows (workflow), and memory and files (content).",
+      "confidence": "low"
     },
     "EXP-02": {
       "status": "assessed",
@@ -266,19 +296,22 @@
       "grade": "A",
       "evidence": "About 50 domain skills ship as bundles on an unchanged kernel (skills/: notion, obsidian, github, trello, spotify-player and more), and the agent authors new ones. Scored at the lower reading under rule 11 because: If skills are judged too small to count as domains.",
       "alt_score": 4,
-      "alt_note": "The September v0.3 pass scored 4 on the evidence above."
+      "alt_note": "The September v0.3 pass scored 4 on the evidence above.",
+      "confidence": "low"
     },
     "EXP-03": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Skills are versioned, installable bundles installed through ClawHub and the CLI (skills/clawhub, src/cli/skills-cli.ts)."
+      "evidence": "Skills are versioned, installable bundles installed through ClawHub and the CLI (skills/clawhub, src/cli/skills-cli.ts).",
+      "confidence": "medium"
     },
     "LRN-01": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Audit events for runs, messages and tool actions are written as they happen and are queryable (src/audit/audit-event-queries.ts); a runtime trajectory store records sessions (src/trajectory/runtime-store.sqlite.test.ts)."
+      "evidence": "Audit events for runs, messages and tool actions are written as they happen and are queryable (src/audit/audit-event-queries.ts); a runtime trajectory store records sessions (src/trajectory/runtime-store.sqlite.test.ts).",
+      "confidence": "high"
     },
     "LRN-02": {
       "status": "assessed",
@@ -286,7 +319,8 @@
       "grade": "A",
       "evidence": "Experience-review observations and evaluation findings are stored on the proposal revision they concern and recorded in the append-only proposal event ledger (src/skills/workshop/experience-review*.ts, docs/tools/skill-workshop/proposals.md). Scored at the lower reading under rule 11 because: Observations come from sessions, not from users.",
       "alt_score": 3,
-      "alt_note": "The September v0.3 pass scored 3 on the evidence above."
+      "alt_note": "The September v0.3 pass scored 3 on the evidence above.",
+      "confidence": "medium"
     },
     "LRN-04": {
       "status": "assessed",
@@ -294,7 +328,8 @@
       "grade": "A",
       "evidence": "Trajectories export for offline analysis; no joined usage, support and delivery models.",
       "alt_score": 2,
-      "alt_note": "The experience review mines session history continuously."
+      "alt_note": "The experience review mines session history continuously.",
+      "confidence": "low"
     },
     "LRN-06": {
       "status": "assessed",
@@ -309,8 +344,10 @@
         "grade": "A",
         "evidence": "Experience review proposes skills from observed runs.",
         "alt_score": 3,
-        "alt_note": "Ranked when idle."
-      }
+        "alt_note": "Ranked when idle.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "DEL-04": {
       "status": "assessed",
@@ -325,8 +362,10 @@
         "grade": "A",
         "evidence": "Experience review drafts and applies skills.",
         "alt_score": 3,
-        "alt_note": "Autonomous by default."
-      }
+        "alt_note": "Autonomous by default.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "LRN-09": {
       "status": "assessed",
@@ -334,13 +373,24 @@
       "grade": "A",
       "evidence": "Evaluator hooks compare each candidate with the complete baseline skill and store metrics and a pass, revise or block decision on the exact revision (docs/tools/skill-workshop/proposals.md); no evaluator is bundled (none in extensions/) and nothing observes impact after apply.",
       "alt_score": 3,
-      "alt_note": "Baseline, metric and decision are recorded per proposal once an evaluator is installed."
+      "alt_note": "Baseline, metric and decision are recorded per proposal once an evaluator is installed.",
+      "confidence": "medium"
+    },
+    "LRN-10": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "alt_score": 1,
+      "alt_note": "Operators can tune the Workshop policy knobs and install an evaluator plugin with their own evaluation cases, by hand.",
+      "evidence": "The checks that govern self-change are code: the proposal scanner (src/skills/workshop/proposal-scan.ts, src/skills/security/scanner.ts), the Workshop policy (src/skills/workshop/policy.ts), the maintenance and /learn prompts (maintenance-prompt.ts, learn-prompt.ts) and dreaming's gates. Operators can change only a few settings (autonomous.mode, approvalPolicy, maxPending, maxSkillBytes in config.ts; dreaming thresholds) through unversioned configuration, and evaluation exists only as a hook for a plugin, with no evaluation set shipped (docs/tools/skill-workshop/proposals.md, \"Plugin evaluation and lifecycle hooks\"). Evaluator results are stored on the proposal revision, not against the check; nothing records a wrong pass or turns a failure into a new check. The maturity scorecard (docs/maturity/scorecard.md, .github/workflows/maturity-scorecard.yml) is the team's engineering tooling, not the product's governed path.",
+      "confidence": "medium"
     },
     "DEL-06": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Health monitor, status commands with JSON output, and a diagnostics export with sanitised status and health snapshots and the configuration shape (docs/gateway/health.md:13-65)."
+      "evidence": "Health monitor, status commands with JSON output, and a diagnostics export with sanitised status and health snapshots and the configuration shape (docs/gateway/health.md:13-65).",
+      "confidence": "high"
     },
     "DEL-07": {
       "status": "assessed",
@@ -348,13 +398,15 @@
       "grade": "A",
       "evidence": "Docker, Fly and Render deployment definitions (fly.toml, render.yaml, deploy/) and CI test boxes (.github/workflows/ci-check-testbox.yml); no per-change ephemeral environment with seeded data.",
       "alt_score": 3,
-      "alt_note": "CI test boxes are ephemeral per change."
+      "alt_note": "CI test boxes are ephemeral per change.",
+      "confidence": "medium"
     },
     "DEL-08": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Live and E2E checks across channels and apps (.github/workflows/openclaw-live-and-e2e-checks-reusable.yml), and a maturity scorecard generated from a taxonomy and QA evidence covering 280 capability areas (docs/maturity/scorecard.md, taxonomy.yaml, qa/)."
+      "evidence": "Live and E2E checks across channels and apps (.github/workflows/openclaw-live-and-e2e-checks-reusable.yml), and a maturity scorecard generated from a taxonomy and QA evidence covering 280 capability areas (docs/maturity/scorecard.md, taxonomy.yaml, qa/).",
+      "confidence": "medium"
     },
     "LRN-07": {
       "status": "assessed",
@@ -369,26 +421,37 @@
         "grade": "A",
         "evidence": "Model review of runs drafts skills unprompted by default.",
         "alt_score": 4,
-        "alt_note": "Autonomous mode."
-      }
+        "alt_note": "Autonomous mode.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "LRN-08": {
       "status": "assessed",
-      "score": 2,
+      "score": 1,
       "grade": "A",
-      "evidence": "Proposals are scanned before apply (src/skills/workshop/proposal-scan.ts), and evaluator hooks can compare against the baseline and block, but no evaluator ships (none in extensions/).",
+      "evidence": "Re-scored for v0.7 under the tightened boundary (changes the product or its AI makes to its own behaviour). By default (autonomous.mode auto, src/skills/workshop/config.ts:16-23) the experience review edits skill files directly with ls, read, write, edit, apply_patch and exec (src/skills/workshop/maintenance-prompt.ts:1-9, experience-review.ts:248-253, \"Direct edits have normal file-tool semantics\"), with no scan, lint or evaluation before they take effect; the model is only told to verify its own edits. Other AI-made changes are checked: Workshop proposals are scanned when drafted and before apply, and quarantined on failure (src/skills/workshop/proposal-draft.ts, apply-transition.ts:167-169); dreaming promotes memory only past score, recall and query gates, after removing untrusted or system provenance, and rejects rewrites that lose too many prior entries (docs/concepts/dreaming.md, \"Consolidation safety\"). No evaluator ships, so nothing compares a learned change with a baseline. Scored 1 because the main default learning path has no check; propose mode routes every learned skill change through the scanned proposal path (available 2). The second and third raters scored 0 and 1.",
       "ai": {
         "status": "assessed",
-        "score": 2,
+        "score": 1,
         "grade": "A",
-        "evidence": "AI-made proposals are scanned before apply; no evaluator ships."
-      }
+        "evidence": "Experience-review skill edits apply with no check by default; Workshop proposals are scanned and dreaming promotions gated (src/skills/workshop/experience-review.ts, proposal-scan.ts, docs/concepts/dreaming.md). Propose mode scans every learned skill change.",
+        "alt_score": 2,
+        "available_score": 2,
+        "alt_note": "Scans on Workshop proposals and dreaming's gates are automated checks on AI-made changes.",
+        "confidence": "high"
+      },
+      "alt_score": 2,
+      "available_score": 2,
+      "alt_note": "Workshop proposals (from /learn, the skill_workshop tool and propose mode) are scanned at draft and again before apply and quarantined on failure, and dreaming gates memory promotion by thresholds, a provenance taint gate and rewrite validation; if those paths are read as the learned-change path, 2.",
+      "confidence": "high"
     },
     "ARC-02": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "The workshop store has a versioned SQLite schema (src/skills/workshop/store-sqlite-schema.ts) and doctor migrates configuration; no down steps."
+      "evidence": "The workshop store has a versioned SQLite schema (src/skills/workshop/store-sqlite-schema.ts) and doctor migrates configuration; no down steps.",
+      "confidence": "medium"
     },
     "ARC-08": {
       "status": "assessed",
@@ -404,14 +467,16 @@
           "implemented": true,
           "tested": true,
           "operated": false
-        }
-      }
+        },
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "ARC-09": {
       "status": "assessed",
-      "score": 3,
+      "score": 2,
       "grade": "A",
-      "evidence": "Backup covers state, configuration, credentials, workspaces, agents and managed skills (src/commands/backup-shared.ts:76), with verification, scheduling and a restore test that round-trips into a fresh target with a matching inventory (src/commands/backup-restore.test.ts:176). Private captures are excluded by design. No recovery objectives are stated (level 4). Scheduled work: cron jobs live in the state database the backup covers; openclaw cron list shows each job's next run and agent (src/cli/cron-cli/shared.ts:498-503); jobs keep their owner and grant generation, and scheduled runs require account provenance to match the persisted owner, so jobs whose owner no longer resolves do not run (src/cron/scheduled-tool-policy.test.ts:44, service.unresolved-owner.test.ts, service.grant-generation.test.ts); interrupted recurring jobs are marked failed rather than replayed after a restart (service.restart-catchup.test.ts:168).",
+      "evidence": "Corrected for v0.7 from 3 to 2 (second-rating adjudication; both second raters agreed). Backup covers state, configuration, credentials, workspaces, agents and managed skills (src/commands/backup-shared.ts:76), with verification and a restore test that round-trips into a fresh target with a matching inventory (src/commands/backup-restore.test.ts:176), so data, definitions, files and secrets reach 3. Scheduled work reaches 2: cron jobs live in the state database the backup restores, and `openclaw cron list` shows each job's next run, agent and owner (src/cli/cron-cli/shared.ts:493-505); before a run, a job whose owning agent no longer resolves is skipped (src/cron/service.unresolved-owner.test.ts), and a scheduled tool cap is honoured only when its persisted owner session and account match the job's stored owner (src/cron/scheduled-tool-policy.ts:240-258, scheduled-tool-policy.test.ts:44). Those checks compare the job record with itself; nothing re-checks that the creator's current pairing, role or credentials still allow the job, and restore only warns operators to \"review pending approvals before resuming the Gateway\" (src/commands/backup-restore.ts:22), with no hold on restored jobs. Under the inventory rule the score is the lowest surface, 2.",
       "facets": {
         "implemented": true,
         "tested": true,
@@ -422,8 +487,9 @@
         "definitions": 3,
         "files": 3,
         "secrets": 3,
-        "schedules": 3
-      }
+        "schedules": 2
+      },
+      "confidence": "high"
     },
     "DEL-01": {
       "status": "assessed",
@@ -438,26 +504,31 @@
         "grade": "A",
         "evidence": "/learn turns a request into a pending skill proposal (src/skills/workshop/learn-prompt.ts).",
         "alt_score": 3,
-        "alt_note": "Close to a specification."
-      }
+        "alt_note": "Close to a specification.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "DEL-09": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "Skill proposals apply to the whole installation; there are no cohorts."
+      "evidence": "Skill proposals apply to the whole installation; there are no cohorts.",
+      "confidence": "low"
     },
     "DEL-10": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Autonomous mode and individual skills can be switched off in configuration at runtime (src/skills/workshop/config.ts)."
+      "evidence": "Autonomous mode and individual skills can be switched off in configuration at runtime (src/skills/workshop/config.ts).",
+      "confidence": "medium"
     },
     "LRN-03": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "The experience review observes failed runs and corrections (src/skills/workshop/experience-review.ts)."
+      "evidence": "The experience review observes failed runs and corrections (src/skills/workshop/experience-review.ts).",
+      "confidence": "medium"
     },
     "LRN-05": {
       "status": "assessed",
@@ -468,8 +539,10 @@
         "status": "assessed",
         "score": 1,
         "grade": "A",
-        "evidence": "The agent explains errors when asked; doctor checks are rule-based."
-      }
+        "evidence": "The agent explains errors when asked; doctor checks are rule-based.",
+        "confidence": "low"
+      },
+      "confidence": "low"
     },
     "GOV-10": {
       "status": "assessed",
@@ -480,8 +553,10 @@
         "status": "assessed",
         "score": 2,
         "grade": "A",
-        "evidence": "Proposal size and origin limits; no blast-radius limit."
-      }
+        "evidence": "Proposal size and origin limits; no blast-radius limit.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "GOV-11": {
       "status": "assessed",
@@ -496,14 +571,17 @@
         "grade": "A",
         "evidence": "Origin recorded and proposals scanned; auto-apply by default.",
         "alt_score": 3,
-        "alt_note": "Both present."
-      }
+        "alt_note": "Both present.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "EXP-04": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "Unserved requests stay in session history."
+      "evidence": "Unserved requests stay in session history.",
+      "confidence": "low"
     },
     "EXP-05": {
       "status": "assessed",
@@ -514,14 +592,17 @@
         "status": "assessed",
         "score": 1,
         "grade": "A",
-        "evidence": "Proposes skills for observed tasks only."
-      }
+        "evidence": "Proposes skills for observed tasks only.",
+        "confidence": "low"
+      },
+      "confidence": "low"
     },
     "EXP-06": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "New skills apply to the whole installation at once."
+      "evidence": "New skills apply to the whole installation at once.",
+      "confidence": "low"
     },
     "ARC-03": {
       "status": "not_applicable",
@@ -536,26 +617,39 @@
       "rationale": "Scope fact hosted_service is false: A personal gateway daemon, not a multi-user service."
     },
     "DEL-11": {
-      "status": "not_applicable",
-      "rationale": "Scope fact code_release_path is false: The self-improvement path changes skills, not OpenClaw code."
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "alt_score": 3,
+      "alt_note": "`openclaw update --tag <known-good>` is a previewable managed rollback that checks compatibility, and the updater keeps the previous package and recovers when post-install verification fails, with tests; held at 2 because data compatibility across a release is not ensured.",
+      "facets": {
+        "implemented": true,
+        "tested": true,
+        "operated": false
+      },
+      "evidence": "Applies from v0.7 because code_release_path is now true. Previous releases can be redeployed with `openclaw update --tag <known-good-version> [--dry-run]` (docs/install/updating/rollback-and-recovery.md:13-55), and the updater retains the previous package during activation (src/infra/package-update-activation-*.ts; src/entry.update-failure.process.test.ts, src/commands/backup-verify-manifest.update-recovery.test.ts; .github/workflows/update-migration.yml). But \"downgrading the package does not reverse config or database migrations\" (rollback-and-recovery.md:15-19), so data compatibility is not ensured, and an AI-activated plugin artifact is undone by plugin_uninstall, not by a versioned rollback to its previous archive (src/system-agent/plugin-artifact.ts). Agrees with the second rater (2, alternate 3).",
+      "confidence": "medium"
     },
     "AIR-01": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Model fallback with candidate generation and configured provider fallback, with tests (src/agents/model-fallback-attempt.ts, configured-provider-fallback.ts, configured-provider-fallback.test.ts)."
+      "evidence": "Model fallback with candidate generation and configured provider fallback, with tests (src/agents/model-fallback-attempt.ts, configured-provider-fallback.ts, configured-provider-fallback.test.ts).",
+      "confidence": "high"
     },
     "AIR-02": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Agent run usage is recorded (src/infra/agent-run-usage.ts); no spend limit per user."
+      "evidence": "Agent run usage is recorded (src/infra/agent-run-usage.ts); no spend limit per user.",
+      "confidence": "medium"
     },
     "AIR-03": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Memory host, context engine and session memory search assemble context automatically (src/memory, src/context-engine)."
+      "evidence": "Memory host, context engine and session memory search assemble context automatically (src/memory, src/context-engine).",
+      "confidence": "medium"
     },
     "AIR-04": {
       "status": "assessed",
@@ -566,19 +660,22 @@
         "implemented": true,
         "tested": true,
         "operated": false
-      }
+      },
+      "confidence": "high"
     },
     "AIR-05": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "Evaluator hooks exist for skill proposals but no evaluation set ships."
+      "evidence": "Evaluator hooks exist for skill proposals but no evaluation set ships.",
+      "confidence": "low"
     },
     "AIR-06": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "No evaluation gates in CI."
+      "evidence": "No evaluation gates in CI.",
+      "confidence": "low"
     },
     "AIR-07": {
       "status": "assessed",
@@ -589,17 +686,19 @@
         "implemented": true,
         "tested": true,
         "operated": false
-      }
+      },
+      "confidence": "high"
     },
     "AIR-08": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "Diagnostic events only; no quality or feedback monitoring."
+      "evidence": "Diagnostic events only; no quality or feedback monitoring.",
+      "confidence": "low"
     }
   },
   "limits": "Repository evidence only, main at the tip named above. ClawHub (registry and scanning) is a separate repository. No evaluator plugin is bundled, so measurement depends on third-party or user plugins. The experience review was read from code and tests, not run. Single rater.",
-  "framework_version": "0.5.1",
+  "framework_version": "0.7.0",
   "reading": "**SAL 2**, joint highest. /learn turns a request into a pending skill proposal (DEL-01 2), and the experience review drafts and applies skills from observed runs (LRN-07 3), so both core loops reach L2. Backup and restore are verified and tested across state, configuration, credentials and skills (ARC-09 3). **Blocks L3:** configuration has only rotating backups, not operator rollback (GOV-05 2, inventory); skill changes have no staged exposure (DEL-09 1); the default auto-apply has no declared blast-radius limit (GOV-10 2).",
   "framework": "EVOLVE",
   "scope_facts": {
@@ -613,7 +712,7 @@
     },
     "multi_tenant": {
       "value": false,
-      "evidence": "A personal assistant per installation; shared gateways carry several people but are not isolated tenants (VISION.md)."
+      "evidence": "Re-checked under the v0.7 definition: one gateway is one trust domain; session ownership and roles are \"collaboration guardrails inside the boundary, not isolation between adversaries\", and mutually untrusted people or organisations are told to run one gateway per tenant (docs/start/teams.md, \"One trust boundary\"). Agent workspaces belong to the same operator, so they are not self-administering groups."
     },
     "hosted_service": {
       "value": false,
@@ -625,7 +724,7 @@
     },
     "agent_mutations": {
       "value": true,
-      "evidence": "The experience review drafts and applies skill proposals (src/skills/workshop/experience-review.ts)."
+      "evidence": "The experience review writes skills after runs (src/skills/workshop/experience-review.ts:122-275); the weekly collection review edits the skill collection (src/cron/skill-collection-review-monitor.ts); dreaming promotes memory into MEMORY.md (docs/concepts/dreaming.md, on by default); the system agent proposes configuration and plugin changes (src/agents/tools/system-agent-tool.ts)."
     },
     "evolution_auto_apply": {
       "value": true,
@@ -636,8 +735,8 @@
       "evidence": "Skills, memory and configuration are its definitions."
     },
     "code_release_path": {
-      "value": false,
-      "evidence": "The self-improvement path changes skills, not OpenClaw code."
+      "value": true,
+      "evidence": "Changed to true for v0.7 (tightened definition: plugins or scripts the product's own AI writes and activates). The system agent activates task-authored plugin code packed with `openclaw plugins pack`: plugin_activate_artifact retains and reviews the exact archive and, on approval, installs its trusted backend code (src/system-agent/plugin-artifact.ts, src/system-agent/assistant-prompts.ts:159-160, src/agents/tools/system-agent-tool.ts). The September reading (skills only) predates this definition; the second rater counted the same path."
     },
     "ai_features": {
       "value": true,
@@ -651,5 +750,83 @@
       "value": true,
       "evidence": "Runs commands, sends channel messages and changes skills (src/agents, src/skills)."
     }
-  }
+  },
+  "basis": "shipped",
+  "change_kinds": [
+    {
+      "id": "skills",
+      "name": "What the assistant knows how to do (skills)",
+      "who": "the person running the assistant",
+      "main": true,
+      "reach": 2,
+      "evidence": "The product drafts skills: /learn stages a pending proposal for the person to apply (src/skills/workshop/learn-prompt.ts:23-34), and the experience review writes skills from observed runs (experience-review.ts). People also apply, reject or quarantine proposals (src/cli/skills-cli.ts:877-1135). Undo: skill collections are backed up and restored or rolled back by revision hash (src/skills/workshop/collection-backup.ts, collection-restore.ts, collection-rollback.ts). Reach 2, not 3: DEL-04 is 2, and nothing checks and stages a skill change end to end for approval by default.",
+      "confidence": "high"
+    },
+    {
+      "id": "memory-persona",
+      "name": "What the assistant remembers and how it presents itself",
+      "who": "the person running the assistant",
+      "main": true,
+      "reach": 0,
+      "evidence": "Memory and persona files (MEMORY.md, SOUL.md, AGENTS.md in the workspace) change in chat and through dreaming, which is on by default (docs/concepts/dreaming.md). No supported undo: the workspace is only `git init`-ed at creation and never committed (src/agents/workspace.ts:682-708); dreaming keeps MEMORY.md preimages in plugin state but offers no restore command; `memory forget` deletes by source session, it does not revert (docs/cli/memory.md). Reach 0 because the path has no undo. Undo rule used in this field test: a kind has undo when the product keeps the earlier version, or when the change is a selection, toggle or add-and-remove that the same supported path reverses exactly; free-text or multi-field edits with no kept version have none.",
+      "confidence": "medium"
+    },
+    {
+      "id": "models-channels",
+      "name": "Which models, providers and chat channels it uses",
+      "who": "the person running the assistant",
+      "main": true,
+      "reach": 2,
+      "evidence": "Models and providers are selected, and channels connected and disconnected, through onboarding, the Control UI and the validated `openclaw config set|unset` (src/cli/config-cli.ts:330-479). The system agent drafts each such change as a pending proposal that the person approves before it applies, then checks it with the config validator (src/system-agent/assistant-prompts.ts:159-161, src/agents/tools/system-agent-tool.ts). Undo: re-selecting the previous model or disconnecting the channel through the same path; wider configuration edits keep no operator-visible earlier version (five rotating backups serve only automatic recovery, src/config/backup-rotation.ts). Reach 2 rests on DEL-04 2. Undo rule used in this field test: a kind has undo when the product keeps the earlier version, or when the change is a selection, toggle or add-and-remove that the same supported path reverses exactly; free-text or multi-field edits with no kept version have none.",
+      "confidence": "medium"
+    },
+    {
+      "id": "tool-permissions",
+      "name": "What the assistant may do and who may instruct it",
+      "who": "the person running the assistant",
+      "main": false,
+      "reach": 1,
+      "evidence": "Exec allowlist entries are added and removed with `openclaw approvals` and exec policy commands (src/cli/exec-approvals-cli.ts, exec-policy-cli.ts), and senders are paired and revoked with `openclaw pairing` (src/pairing). Undo is removing the entry or revoking the pairing; there is no history of earlier policy versions (GOV-05 inventory: configuration 2). Undo rule used in this field test: a kind has undo when the product keeps the earlier version, or when the change is a selection, toggle or add-and-remove that the same supported path reverses exactly; free-text or multi-field edits with no kept version have none.",
+      "confidence": "medium"
+    },
+    {
+      "id": "scheduled-jobs",
+      "name": "Scheduled and recurring tasks",
+      "who": "the person running the assistant",
+      "main": false,
+      "reach": 1,
+      "evidence": "Jobs are created, edited, paused and removed through `openclaw automations add|edit|remove` and the agent's cron tool (docs/cli/cron.md, src/agents/tools/cron-tool.ts), with no deploy. Undo is by disabling or removing the job; edits keep no earlier version (src/cron/config-revision.ts is a concurrency token only), so an edit is undone only by editing it back.",
+      "confidence": "low"
+    },
+    {
+      "id": "plugins",
+      "name": "Add-ons for new channels, tools and providers",
+      "who": "the person running the assistant",
+      "main": false,
+      "reach": 2,
+      "evidence": "People install curated plugins from ClawHub, bundled or official sources and remove them with uninstall (docs/plugins/manage-plugins.md). The agent can write a plugin, pack it with `openclaw plugins pack`, and the system agent proposes activating that exact archive for the person to approve (src/system-agent/plugin-artifact.ts, src/agents/tools/system-agent-tool.ts). Undo is plugin_uninstall. Reach 2 rests on DEL-04 2.",
+      "confidence": "medium"
+    }
+  ],
+  "ai_delivery": {
+    "present": true,
+    "qualifies": false,
+    "evidence": "AGENTS.md (145 lines), .agents/skills (maintainer skills such as openclaw-pr-maintainer, autoreview, clawsweeper), .claude/settings.json, and Codex agent steps in CI (.github/workflows/docs-agent.yml:281, dated-todo-sweep.yml:55, maturity-scorecard.yml:596, release-validation-skill-runner.yml:91, openai/codex-action pinned by SHA).",
+    "note": "Engineers build OpenClaw with AI coding agents and run agents in CI for docs, sweeps and release validation. These are the team's engineering tooling: no installed delivery framework enforces authority and merge checks as required checks with GOV-10 limits on what the agents change, so under rule 12 they do not count as OpenClaw evolving itself."
+  },
+  "proven": {
+    "request": {
+      "status": "not_evidenced",
+      "searched": "Repository at the pinned commit: no operating records of /learn or Workshop proposals being applied in a real deployment (proposal ledgers live in each installation's state database, not in the repository); release notes describe product changes, not the loop."
+    },
+    "fix": {
+      "status": "not_evidenced",
+      "searched": "Repository at the pinned commit: no experience-review or proposal ledgers, audit exports or incident records from a real installation; QA and maturity evidence (qa/, docs/maturity) are test runs, not operating records."
+    },
+    "expansion": {
+      "status": "not_evidenced",
+      "searched": "Repository at the pinned commit: no records of new capabilities being proposed and launched to a cohort."
+    }
+  },
+  "confidence_note": "Confidence for criteria this migration did not change was assigned at migration to v0.7 from the recorded evidence (high where it names the code path and its tests or exact lines, medium where it names files but not every path, low where it rests on an absence claim or general description); criteria re-read for v0.7 carry the confidence of that re-reading."
 }

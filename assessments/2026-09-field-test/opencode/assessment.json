@@ -34,13 +34,15 @@
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "The HTTP API is generated from a typed specification into a TypeScript SDK (packages/httpapi-codegen, packages/sdk/js, .github/workflows/generate.yml); no dry-run."
+      "evidence": "The HTTP API is generated from a typed specification into a TypeScript SDK (packages/httpapi-codegen, packages/sdk/js, .github/workflows/generate.yml); no dry-run.",
+      "confidence": "medium"
     },
     "MAL-07": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "TUI, desktop and web layouts are code; keybinds are configuration."
+      "evidence": "TUI, desktop and web layouts are code; keybinds are configuration.",
+      "confidence": "low"
     },
     "MAL-08": {
       "status": "not_applicable",
@@ -51,49 +53,57 @@
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Themes are JSON files users can add and select in configuration (packages/opencode/src/config/config.ts); documentation is localised through a sync workflow (.github/workflows/docs-locale-sync.yml)."
+      "evidence": "Themes are JSON files users can add and select in configuration (packages/opencode/src/config/config.ts); documentation is localised through a sync workflow (.github/workflows/docs-locale-sync.yml).",
+      "confidence": "medium"
     },
     "MAL-10": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Custom commands and agents are markdown or JSON definitions (packages/opencode/src/config/command.ts, agent.ts); there is no condition and action engine."
+      "evidence": "Custom commands and agents are markdown or JSON definitions (packages/opencode/src/config/command.ts, agent.ts); there is no condition and action engine.",
+      "confidence": "medium"
     },
     "MAL-11": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "An internal event bus streams events to SDK clients over the server (packages/opencode/src/bus, packages/server/src/handlers/event.ts); no outbound webhooks with retry."
+      "evidence": "An internal event bus streams events to SDK clients over the server (packages/opencode/src/bus, packages/server/src/handlers/event.ts); no outbound webhooks with retry.",
+      "confidence": "medium"
     },
     "MAL-12": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Plugins register hooks such as tool.definition, permission.ask, shell.env and command.execute.before (packages/plugin/src/index.ts) and run in-process without a sandbox."
+      "evidence": "Plugins register hooks such as tool.definition, permission.ask, shell.env and command.execute.before (packages/plugin/src/index.ts) and run in-process without a sandbox.",
+      "confidence": "medium"
     },
     "GOV-01": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "Storybook exists for UI components (packages/storybook); no automated accessibility scanning found."
+      "evidence": "Storybook exists for UI components (packages/storybook); no automated accessibility scanning found.",
+      "confidence": "medium"
     },
     "GOV-02": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "Sessions and messages are stored locally; there is no audit store for configuration or permission decisions."
+      "evidence": "Sessions and messages are stored locally; there is no audit store for configuration or permission decisions.",
+      "confidence": "low"
     },
     "GOV-03": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Local-first storage, session export and removal of shared sessions (packages/opencode/src/share); not driven by tags."
+      "evidence": "Local-first storage, session export and removal of shared sessions (packages/opencode/src/share); not driven by tags.",
+      "confidence": "medium"
     },
     "GOV-04": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Permission rules with allow, ask and deny actions by tool and pattern (packages/opencode/src/permission/index.ts:33-80, evaluate.ts) and managed enterprise configuration (config/managed.ts); no security scanning in CI."
+      "evidence": "Permission rules with allow, ask and deny actions by tool and pattern (packages/opencode/src/permission/index.ts:33-80, evaluate.ts) and managed enterprise configuration (config/managed.ts); no security scanning in CI.",
+      "confidence": "high"
     },
     "GOV-05": {
       "status": "assessed",
@@ -101,13 +111,15 @@
       "grade": "A",
       "evidence": "Agents, commands, themes and configuration are files versioned only by the user's own git. Git snapshots with session revert roll back the agent's edits to the user's code (packages/opencode/src/snapshot, session/revert.ts), not OpenCode's own definitions.",
       "alt_score": 2,
-      "alt_note": "If the agent's work product counts as a customisation surface."
+      "alt_note": "If the agent's work product counts as a customisation surface.",
+      "confidence": "medium"
     },
     "GOV-06": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "No proposal object for changes to OpenCode's own definitions; its code changes go through pull requests."
+      "evidence": "No proposal object for changes to OpenCode's own definitions; its code changes go through pull requests.",
+      "confidence": "low"
     },
     "GOV-07": {
       "status": "assessed",
@@ -115,7 +127,8 @@
       "grade": "A",
       "evidence": "Permission rules decide per tool and pattern which agent actions run automatically and which ask a human (packages/opencode/src/permission/index.ts:33-80); the policy covers actions, not definition changes.",
       "alt_score": 3,
-      "alt_note": "Read as a change-control policy, the allow, ask and deny rules are a policy object per change class."
+      "alt_note": "Read as a change-control policy, the allow, ask and deny rules are a policy object per change class.",
+      "confidence": "medium"
     },
     "GOV-08": {
       "status": "assessed",
@@ -123,7 +136,8 @@
       "grade": "A",
       "evidence": "Configuration migrations and v2 compatibility (packages/opencode/src/config/tui-migrate.ts, v2-compat.ts); versioned protocol and schema packages (packages/protocol, packages/schema).",
       "alt_score": 3,
-      "alt_note": "Migrations run automatically and contracts are explicit packages."
+      "alt_note": "Migrations run automatically and contracts are explicit packages.",
+      "confidence": "medium"
     },
     "ARC-01": {
       "status": "not_applicable",
@@ -144,7 +158,8 @@
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Client and server architecture: server, TUI, desktop, web, console and cloud functions deploy separately (packages/server, packages/desktop, packages/function, .github/workflows/deploy.yml, containers.yml)."
+      "evidence": "Client and server architecture: server, TUI, desktop, web, console and cloud functions deploy separately (packages/server, packages/desktop, packages/function, .github/workflows/deploy.yml, containers.yml).",
+      "confidence": "medium"
     },
     "DEL-03": {
       "status": "assessed",
@@ -152,19 +167,22 @@
       "grade": "A",
       "evidence": "Monorepo packages with explicit protocol and schema packages as contracts (packages/protocol, packages/schema); no architectural lint.",
       "alt_score": 3,
-      "alt_note": "Explicit API contracts between modules."
+      "alt_note": "Explicit API contracts between modules.",
+      "confidence": "medium"
     },
     "DEL-05": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Tests and typecheck run on pull requests (.github/workflows/test.yml:7, typecheck.yml:6); no accessibility or security checks."
+      "evidence": "Tests and typecheck run on pull requests (.github/workflows/test.yml:7, typecheck.yml:6); no accessibility or security checks.",
+      "confidence": "high"
     },
     "MAL-13": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Plugins with hooks (packages/plugin), custom agents, commands, modes, themes, MCP servers, formatters, LSP servers and skills, both declarative and code."
+      "evidence": "Plugins with hooks (packages/plugin), custom agents, commands, modes, themes, MCP servers, formatters, LSP servers and skills, both declarative and code.",
+      "confidence": "medium"
     },
     "MAL-14": {
       "status": "assessed",
@@ -172,7 +190,8 @@
       "grade": "A",
       "evidence": "Plugins and local MCP servers run with full trust; permission rules limit agent tools, not plugin code.",
       "alt_score": 2,
-      "alt_note": "Permission rules act as an allowlist on agent-written commands."
+      "alt_note": "Permission rules act as an allowlist on agent-written commands.",
+      "confidence": "low"
     },
     "MAL-15": {
       "status": "assessed",
@@ -180,7 +199,8 @@
       "grade": "A",
       "evidence": "Plugins load from project directories on start and the SDK and server support local iteration; no validators or staged preview.",
       "alt_score": 3,
-      "alt_note": "The developer loop is live against the real project."
+      "alt_note": "The developer loop is live against the real project.",
+      "confidence": "low"
     },
     "MAL-19": {
       "status": "assessed",
@@ -191,8 +211,10 @@
         "status": "assessed",
         "score": 2,
         "grade": "A",
-        "evidence": "HTTP API, SDK and ACP; no MCP server for agents."
-      }
+        "evidence": "HTTP API, SDK and ACP; no MCP server for agents.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "MAL-20": {
       "status": "assessed",
@@ -207,8 +229,10 @@
         "grade": "A",
         "evidence": "Model-backed coding conversation; agents generated from descriptions.",
         "alt_score": 3,
-        "alt_note": "Broad coverage."
-      }
+        "alt_note": "Broad coverage.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "GOV-09": {
       "status": "assessed",
@@ -219,32 +243,38 @@
         "status": "assessed",
         "score": 2,
         "grade": "A",
-        "evidence": "Permission rules preview actions with ask prompts; commands run with the user's ambient authority."
-      }
+        "evidence": "Permission rules preview actions with ask prompts; commands run with the user's ambient authority.",
+        "confidence": "low"
+      },
+      "confidence": "low"
     },
     "MAL-16": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Providers map onto one model interface through a models catalogue snapshot (packages/opencode/src/provider, .github/workflows/models-snapshot.yml)."
+      "evidence": "Providers map onto one model interface through a models catalogue snapshot (packages/opencode/src/provider, .github/workflows/models-snapshot.yml).",
+      "confidence": "medium"
     },
     "MAL-17": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Providers, MCP servers and LSP servers are configured by users with auth flows (packages/opencode/src/auth, mcp, lsp)."
+      "evidence": "Providers, MCP servers and LSP servers are configured by users with auth flows (packages/opencode/src/auth, mcp, lsp).",
+      "confidence": "medium"
     },
     "MAL-18": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Versioned SDK and protocol packages; no deprecation windows."
+      "evidence": "Versioned SDK and protocol packages; no deprecation windows.",
+      "confidence": "low"
     },
     "EXP-01": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Kernel of sessions (conversation), agents, tools, permissions, projects and providers, served through TUI, desktop, web, ACP, Slack and GitHub clients (channels)."
+      "evidence": "Kernel of sessions (conversation), agents, tools, permissions, projects and providers, served through TUI, desktop, web, ACP, Slack and GitHub clients (channels).",
+      "confidence": "low"
     },
     "EXP-02": {
       "status": "assessed",
@@ -252,13 +282,15 @@
       "grade": "A",
       "evidence": "New uses are expressible as agents, commands, MCP servers and skills without kernel change; no domain bundles ship in the repository.",
       "alt_score": 3,
-      "alt_note": "Skill discovery installs remote skill bundles."
+      "alt_note": "Skill discovery installs remote skill bundles.",
+      "confidence": "low"
     },
     "EXP-03": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Agents and commands are shareable files; skills are fetched with a recorded version (packages/opencode/src/skill/discovery.ts:105)."
+      "evidence": "Agents and commands are shareable files; skills are fetched with a recorded version (packages/opencode/src/skill/discovery.ts:105).",
+      "confidence": "high"
     },
     "LRN-01": {
       "status": "assessed",
@@ -266,19 +298,22 @@
       "grade": "A",
       "evidence": "Sessions are stored locally and a stats package aggregates usage (packages/stats); no per-feature instrumentation consumed by the product.",
       "alt_score": 3,
-      "alt_note": "The event bus is near-real-time to every client."
+      "alt_note": "The event bus is near-real-time to every client.",
+      "confidence": "medium"
     },
     "LRN-02": {
       "status": "assessed",
       "score": 0,
       "grade": "A",
-      "evidence": "No feedback, rating or evaluation signals in the product."
+      "evidence": "No feedback, rating or evaluation signals in the product.",
+      "confidence": "low"
     },
     "LRN-04": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "Usage analysis happens outside the product."
+      "evidence": "Usage analysis happens outside the product.",
+      "confidence": "low"
     },
     "LRN-06": {
       "status": "assessed",
@@ -289,8 +324,10 @@
         "status": "assessed",
         "score": 0,
         "grade": "A",
-        "evidence": "No AI involvement in this behaviour."
-      }
+        "evidence": "No AI involvement in this behaviour.",
+        "confidence": "low"
+      },
+      "confidence": "low"
     },
     "DEL-04": {
       "status": "assessed",
@@ -305,14 +342,24 @@
         "grade": "A",
         "evidence": "The team's GitHub agent is not a first-party evolution system (rule 12).",
         "alt_score": 2,
-        "alt_note": "Narrow AI lane."
-      }
+        "alt_note": "Narrow AI lane.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "LRN-09": {
       "status": "assessed",
       "score": 0,
       "grade": "A",
-      "evidence": "No binding of changes to baselines or metrics."
+      "evidence": "No binding of changes to baselines or metrics.",
+      "confidence": "low"
+    },
+    "LRN-10": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "Nothing governs change to OpenCode's own definitions beyond the generator's schema and the permission rules, which are code defaults plus user configuration (packages/opencode/src/agent/agent.ts:119-136, permission/evaluate.ts). There are no evaluation sets in the repository (AIR-05 1) and no record of failures against checks; the team's tests and CI workflows change only when engineers edit them.",
+      "confidence": "medium"
     },
     "DEL-06": {
       "status": "assessed",
@@ -320,13 +367,15 @@
       "grade": "A",
       "evidence": "Server health handler and machine-readable agent, command, provider and model handlers (packages/server/src/handlers/health.ts and others); no build or version endpoint verified.",
       "alt_score": 3,
-      "alt_note": "The configuration handlers amount to a snapshot."
+      "alt_note": "The configuration handlers amount to a snapshot.",
+      "confidence": "medium"
     },
     "DEL-07": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Nix flake and container definitions reproduce environments (nix/, .github/workflows/nix-eval.yml, containers.yml); no per-change ephemeral environment."
+      "evidence": "Nix flake and container definitions reproduce environments (nix/, .github/workflows/nix-eval.yml, containers.yml); no per-change ephemeral environment.",
+      "confidence": "medium"
     },
     "DEL-08": {
       "status": "assessed",
@@ -334,7 +383,8 @@
       "grade": "A",
       "evidence": "Tests with recorded HTTP interactions for determinism (packages/http-recorder) and Storybook; no changed-path map or adoption instrumentation.",
       "alt_score": 3,
-      "alt_note": "Recorded interactions make journeys deterministic."
+      "alt_note": "Recorded interactions make journeys deterministic.",
+      "confidence": "medium"
     },
     "LRN-07": {
       "status": "assessed",
@@ -345,18 +395,28 @@
         "status": "assessed",
         "score": 0,
         "grade": "A",
-        "evidence": "No AI involvement in this behaviour."
-      }
+        "evidence": "No AI involvement in this behaviour.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "LRN-08": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "Changes to OpenCode's definitions are reviewed by people only.",
+      "evidence": "Re-checked for v0.7 under the tightened boundary. The product's AI makes two kinds of change to its own definitions, both on request: a generated agent is constrained to a schema of three fields, written only as a new file (it refuses to overwrite an existing one) and given permissions the person selects (packages/opencode/src/agent/agent.ts:58-62, 405-415; cli/cmd/agent.ts:140-212); /init edits AGENTS.md with no check, and the person sees the diff and can revert the session (packages/opencode/src/session/revert.ts). No scan, lint or evaluation runs on either.",
       "ai": {
-        "status": "not_applicable",
-        "rationale": "agent_mutations is false."
-      }
+        "status": "assessed",
+        "score": 1,
+        "grade": "A",
+        "alt_score": 2,
+        "alt_note": "Schema-constrained generation.",
+        "evidence": "Generated agents are schema-constrained and never overwrite; /init's AGENTS.md edits get only the person's review (packages/opencode/src/agent/agent.ts:58-62; command/template/initialize.txt).",
+        "confidence": "high"
+      },
+      "alt_score": 2,
+      "alt_note": "The schema on generated agents is an automated structural check on an AI-made change.",
+      "confidence": "high"
     },
     "ARC-02": {
       "status": "assessed",
@@ -364,7 +424,8 @@
       "grade": "A",
       "evidence": "Drizzle migrations for the session database (packages/opencode/migration); no down steps.",
       "alt_score": 2,
-      "alt_note": "Generated migrations with a migration table."
+      "alt_note": "Generated migrations with a migration table.",
+      "confidence": "medium"
     },
     "ARC-08": {
       "status": "assessed",
@@ -375,14 +436,17 @@
         "status": "assessed",
         "score": 2,
         "grade": "A",
-        "evidence": "Provider calls retried with back-off (packages/opencode/src/session/retry.ts)."
-      }
+        "evidence": "Provider calls retried with back-off (packages/opencode/src/session/retry.ts).",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "ARC-09": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "Sessions can be exported and imported one at a time (packages/opencode/src/cli/cmd/export.ts, import.ts); configuration lives in files."
+      "evidence": "Sessions can be exported and imported one at a time (packages/opencode/src/cli/cmd/export.ts, import.ts); configuration lives in files.",
+      "confidence": "medium"
     },
     "DEL-01": {
       "status": "assessed",
@@ -393,26 +457,31 @@
         "status": "assessed",
         "score": 0,
         "grade": "A",
-        "evidence": "AI works on users' code, not on OpenCode's own changes."
-      }
+        "evidence": "AI works on users' code, not on OpenCode's own changes.",
+        "confidence": "low"
+      },
+      "confidence": "low"
     },
     "DEL-09": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "Releases go to all users; no staged exposure."
+      "evidence": "Releases go to all users; no staged exposure.",
+      "confidence": "low"
     },
     "DEL-10": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "Features are switched in configuration files."
+      "evidence": "Features are switched in configuration files.",
+      "confidence": "low"
     },
     "LRN-03": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "Logs for engineers."
+      "evidence": "Logs for engineers.",
+      "confidence": "low"
     },
     "LRN-05": {
       "status": "assessed",
@@ -423,32 +492,45 @@
         "status": "assessed",
         "score": 0,
         "grade": "A",
-        "evidence": "No AI involvement in this behaviour."
-      }
+        "evidence": "No AI involvement in this behaviour.",
+        "confidence": "low"
+      },
+      "confidence": "low"
     },
     "GOV-10": {
-      "status": "not_applicable",
-      "rationale": "No self-change path.",
-      "if_applicable": 1,
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Applies from v0.7 because agent_mutations is now true. The agent generator is bounded in code: the model returns only an identifier, when-to-use text and a system prompt; the person picks permissions and mode, and an existing agent file is never overwritten (packages/opencode/src/agent/agent.ts:58-62; cli/cmd/agent.ts:140-212). /init and the build agent edit AGENTS.md and project .opencode files under the default permission rules, which allow edits inside the project and ask only outside it (packages/opencode/src/agent/agent.ts:119-136); there is no rate, scope or blast-radius limit on those paths.",
+      "confidence": "high",
       "ai": {
-        "status": "not_applicable",
-        "rationale": "GOV-10 is not applicable."
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "confidence": "high",
+        "evidence": "Generator output limited to three fields and new files in code; other AI edits to definitions bounded only by the general permission rules (packages/opencode/src/agent/agent.ts, cli/cmd/agent.ts)."
       }
     },
     "GOV-11": {
-      "status": "not_applicable",
-      "rationale": "No self-change path.",
-      "if_applicable": 1,
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Applies from v0.7 because agent_mutations is now true. /init reads repository files, including untrusted ones such as a cloned README, and writes AGENTS.md without provenance, fencing or injection scanning (packages/opencode/src/command/template/initialize.txt); the generated agent records no source. Inputs reach definitions only when a person runs one of these commands, never by themselves.",
+      "confidence": "medium",
       "ai": {
-        "status": "not_applicable",
-        "rationale": "GOV-11 is not applicable."
+        "status": "assessed",
+        "score": 1,
+        "grade": "A",
+        "confidence": "medium",
+        "evidence": "No provenance or injection scanning on content that /init turns into AGENTS.md; nothing triggers a change without a person."
       }
     },
     "EXP-04": {
       "status": "assessed",
       "score": 0,
       "grade": "A",
-      "evidence": "No record of unmet intents was found."
+      "evidence": "No record of unmet intents was found.",
+      "confidence": "low"
     },
     "EXP-05": {
       "status": "assessed",
@@ -459,14 +541,17 @@
         "status": "assessed",
         "score": 0,
         "grade": "A",
-        "evidence": "No AI involvement in this behaviour."
-      }
+        "evidence": "No AI involvement in this behaviour.",
+        "confidence": "low"
+      },
+      "confidence": "low"
     },
     "EXP-06": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "Plugins and agents apply to the whole installation."
+      "evidence": "Plugins and agents apply to the whole installation.",
+      "confidence": "low"
     },
     "ARC-03": {
       "status": "not_applicable",
@@ -488,19 +573,22 @@
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Many providers through models.dev, with model choice per agent in configuration; retries with back-off (packages/opencode/src/session/retry.ts), no declared fallback."
+      "evidence": "Many providers through models.dev, with model choice per agent in configuration; retries with back-off (packages/opencode/src/session/retry.ts), no declared fallback.",
+      "confidence": "medium"
     },
     "AIR-02": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Tokens and cost per session are recorded and shown by opencode stats (packages/opencode/src/cli/cmd/stats.ts); no spend limit."
+      "evidence": "Tokens and cost per session are recorded and shown by opencode stats (packages/opencode/src/cli/cmd/stats.ts); no spend limit.",
+      "confidence": "medium"
     },
     "AIR-03": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Read, grep, glob and LSP tools give live, attributed workspace context, plus AGENTS.md instructions."
+      "evidence": "Read, grep, glob and LSP tools give live, attributed workspace context, plus AGENTS.md instructions.",
+      "confidence": "medium"
     },
     "AIR-04": {
       "status": "assessed",
@@ -511,19 +599,22 @@
         "implemented": true,
         "tested": true,
         "operated": false
-      }
+      },
+      "confidence": "high"
     },
     "AIR-05": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "No evaluation harness in the repository."
+      "evidence": "No evaluation harness in the repository.",
+      "confidence": "low"
     },
     "AIR-06": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "No evaluation gates in CI."
+      "evidence": "No evaluation gates in CI.",
+      "confidence": "low"
     },
     "AIR-07": {
       "status": "assessed",
@@ -534,17 +625,19 @@
         "implemented": true,
         "tested": true,
         "operated": false
-      }
+      },
+      "confidence": "high"
     },
     "AIR-08": {
       "status": "assessed",
       "score": 0,
       "grade": "A",
-      "evidence": "No feedback or quality monitoring."
+      "evidence": "No feedback or quality monitoring.",
+      "confidence": "low"
     }
   },
   "limits": "Repository evidence only, dev branch at the tip named above. Enterprise and console behaviour was not traced in depth. Single rater.",
-  "framework_version": "0.5.1",
+  "framework_version": "0.7.0",
   "reading": "**SAL 0.** OpenCode's own agents, commands and configuration are files versioned only by the user's git (GOV-05 1), so no loop has a rollback path at L1. The team's use of OpenCode's GitHub agent on its own repository is not a first-party evolution system under rule 12 (DEL-04 1). **Next level:** versioned, validated configuration with rollback, and a learning path for agents and commands.",
   "framework": "EVOLVE",
   "scope_facts": {
@@ -558,7 +651,7 @@
     },
     "multi_tenant": {
       "value": false,
-      "evidence": "A local single-user tool."
+      "evidence": "Re-checked under the v0.7 definition: a local tool for one developer; projects and worktrees belong to the same person, so they are not self-administering groups. The console and cloud functions are outside this scope."
     },
     "hosted_service": {
       "value": false,
@@ -569,12 +662,12 @@
       "evidence": "The local server API and ACP let clients drive sessions and change files (packages/opencode/src/server, acp)."
     },
     "agent_mutations": {
-      "value": false,
-      "evidence": "No product feature lets the agent change OpenCode's own agents, commands or configuration."
+      "value": true,
+      "evidence": "Changed to true for v0.7 (tightened definition: the product's AI writes to its own definitions, including drafts). `opencode agent create` has the model generate an agent definition (identifier, when to use, system prompt) and writes it to .opencode/agents or the global config (packages/opencode/src/agent/agent.ts:368-420, packages/opencode/src/cli/cmd/agent.ts:132-216), and the built-in /init command has the agent create or update AGENTS.md, the instruction file OpenCode loads into every session (packages/opencode/src/command/template/initialize.txt, command/index.ts:47). The September reading missed both."
     },
     "evolution_auto_apply": {
       "value": false,
-      "evidence": "Nothing changes OpenCode's definitions automatically."
+      "evidence": "Re-checked for v0.7: no loop changes OpenCode's definitions on its own. Both AI paths above run only when a person invokes them, and the person chooses the generated agent's permissions and mode before it is written (packages/opencode/src/cli/cmd/agent.ts:140-200)."
     },
     "definition_change_path": {
       "value": true,
@@ -582,7 +675,7 @@
     },
     "code_release_path": {
       "value": false,
-      "evidence": "The GitHub agent the team runs on this repository is the product's general coding agent, not a first-party evolution system for OpenCode (rubric rule 12)."
+      "evidence": "Re-checked under the v0.7 definition: no product path has OpenCode's AI write and activate plugins, tools or scripts for OpenCode itself; plugins and custom tools are loaded from files people place in .opencode or the global config. The team's GitHub agent on this repository is the product's general coding agent, not a first-party evolution system (rule 12; see ai_delivery)."
     },
     "ai_features": {
       "value": true,
@@ -596,5 +689,74 @@
       "value": true,
       "evidence": "Edits files and runs shell commands (packages/opencode/src/tool)."
     }
-  }
+  },
+  "basis": "shipped",
+  "change_kinds": [
+    {
+      "id": "agents-commands",
+      "name": "Custom agents and commands",
+      "who": "the developer using OpenCode",
+      "main": true,
+      "reach": 0,
+      "evidence": "Markdown or JSON files in .opencode or the global config (packages/opencode/src/config/agent.ts, command.ts); `opencode agent create` drafts an agent with the model (cli/cmd/agent.ts). No supported undo: the files are versioned only by the user's own git (GOV-05 1), and the generator writes outside any session, so session revert does not cover it. Reach 0 because the path has no undo; the AI draft would otherwise read as reach 2, which DEL-04 1 would not support.",
+      "confidence": "high"
+    },
+    {
+      "id": "project-instructions",
+      "name": "Standing instructions for a project (AGENTS.md)",
+      "who": "the developer using OpenCode",
+      "main": true,
+      "reach": 1,
+      "evidence": "The built-in /init command has the agent create or update AGENTS.md (packages/opencode/src/command/template/initialize.txt), and people edit it in chat. Edits made in a session are snapshotted and the session can be reverted from the TUI or API (packages/opencode/src/session/revert.ts, snapshot/). Reach 1, not 2: the agent drafts the file, but DEL-04 is 1, so the criteria do not support reach 2.",
+      "confidence": "medium"
+    },
+    {
+      "id": "models-providers",
+      "name": "Which models and providers it uses",
+      "who": "the developer using OpenCode",
+      "main": true,
+      "reach": 1,
+      "evidence": "Providers are added and removed with `opencode auth login` and `opencode providers logout` (packages/opencode/src/cli/cmd/providers.ts:492-501), and the model is chosen in the model picker, which keeps recent choices (packages/opencode/src/provider/provider.ts:2035). Undo is selecting the previous model or logging out. Defaults set by editing opencode.json have no product history. Undo rule used in this field test: a kind has undo when the product keeps the earlier version, or when the change is a selection, toggle or add-and-remove that the same supported path reverses exactly; free-text or multi-field edits with no kept version have none.",
+      "confidence": "medium"
+    },
+    {
+      "id": "permissions",
+      "name": "What the agent may do without asking",
+      "who": "the developer using OpenCode",
+      "main": false,
+      "reach": 0,
+      "evidence": "Allow, ask and deny rules exist only in configuration files people edit by hand (packages/opencode/src/permission/index.ts:33-80); no in-product path or history. Reach 0.",
+      "confidence": "high"
+    },
+    {
+      "id": "plugins-mcp",
+      "name": "Plugins, MCP servers and skills",
+      "who": "the developer using OpenCode",
+      "main": false,
+      "reach": 0,
+      "evidence": "Configured as entries and files in opencode.json and .opencode that people edit by hand (packages/plugin, mcp/, skill/discovery.ts); no in-product path or history. Reach 0.",
+      "confidence": "medium"
+    }
+  ],
+  "ai_delivery": {
+    "present": true,
+    "qualifies": false,
+    "evidence": "AGENTS.md and a .opencode folder (agents, commands, skills, plugins) for working on this repository; OpenCode's own agent runs in CI on issues and pull requests (.github/workflows/opencode.yml:29 pinned by SHA, review.yml:35 and triage.yml:41 install the latest release with curl).",
+    "note": "The team builds OpenCode with OpenCode. Under rule 12 this is the product's general coding agent used by its team: review and triage runs install the latest release rather than a pinned version, and no authority or merge check enforces GOV-10 limits on what it changes. AI-assisted engineering, not OpenCode evolving itself."
+  },
+  "proven": {
+    "request": {
+      "status": "not_evidenced",
+      "searched": "Repository at the pinned commit: no product records of requests becoming changes to OpenCode's own definitions; the loop is built at L0."
+    },
+    "fix": {
+      "status": "not_evidenced",
+      "searched": "Repository at the pinned commit: no incident or fix records from the product's own loop; built at L0."
+    },
+    "expansion": {
+      "status": "not_evidenced",
+      "searched": "Repository at the pinned commit: no records of capabilities proposed or launched by the product; built at L0."
+    }
+  },
+  "confidence_note": "Confidence for criteria this migration did not change was assigned at migration to v0.7 from the recorded evidence (high where it names the code path and its tests or exact lines, medium where it names files but not every path, low where it rests on an absence claim or general description); criteria re-read for v0.7 carry the confidence of that re-reading."
 }

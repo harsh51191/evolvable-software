@@ -34,7 +34,8 @@
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Typed client for the Agent Server API (src/api/open-hands.types.ts); the contract itself belongs to the Agent Server."
+      "evidence": "Typed client for the Agent Server API (src/api/open-hands.types.ts); the contract itself belongs to the Agent Server.",
+      "confidence": "medium"
     },
     "MAL-07": {
       "status": "assessed",
@@ -42,7 +43,8 @@
       "grade": "A",
       "evidence": "Canvas extensions are specified to contribute routed pages, panels, renderers, slots and themes as installable packages (specs/canvas-extensions.md), partly shipped behind capability detection; core layout is code.",
       "alt_score": 3,
-      "alt_note": "Once shipped, extensions are validated, installable layout data."
+      "alt_note": "Once shipped, extensions are validated, installable layout data.",
+      "confidence": "medium"
     },
     "MAL-08": {
       "status": "not_applicable",
@@ -53,19 +55,22 @@
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Colour themes are palette definitions covering interface, code and terminal (src/themes/README.md); eight locale files."
+      "evidence": "Colour themes are palette definitions covering interface, code and terminal (src/themes/README.md); eight locale files.",
+      "confidence": "medium"
     },
     "MAL-10": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Automations with cron and event triggers, templates and git sync are defined in the UI (src/types/automation.ts:3-13, src/routes/automation-*.tsx); they run on a separate automation server."
+      "evidence": "Automations with cron and event triggers, templates and git sync are defined in the UI (src/types/automation.ts:3-13, src/routes/automation-*.tsx); they run on a separate automation server.",
+      "confidence": "high"
     },
     "MAL-11": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "The agent server posts events to configured webhooks with buffering and retries (openhands-agent-server/openhands/agent_server/config.py:73-104)."
+      "evidence": "The agent server posts events to configured webhooks with buffering and retries (openhands-agent-server/openhands/agent_server/config.py:73-104).",
+      "confidence": "high"
     },
     "MAL-12": {
       "status": "assessed",
@@ -73,7 +78,8 @@
       "grade": "A",
       "evidence": "Hooks run at defined points (openhands-sdk/openhands/sdk/hooks); agent actions run in Docker, Apptainer, cloud or remote workspaces (openhands-workspace/openhands/workspace), but hook isolation and egress control were not verified.",
       "alt_score": 3,
-      "alt_note": "If hooks execute inside the sandboxed workspace."
+      "alt_note": "If hooks execute inside the sandboxed workspace.",
+      "confidence": "medium"
     },
     "GOV-01": {
       "status": "assessed",
@@ -81,13 +87,15 @@
       "grade": "A",
       "evidence": "Component library with accessibility lint rules (eslint.config.js); no automated accessibility scans. Scored at the lower reading under rule 11 because: If lint rules without scans count as no automation.",
       "alt_score": 2,
-      "alt_note": "The September v0.3 pass scored 2 on the evidence above."
+      "alt_note": "The September v0.3 pass scored 2 on the evidence above.",
+      "confidence": "low"
     },
     "GOV-02": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "No audit store in the canvas; durable audit is documented only through an external DefenseClaw integration (docs/DefenseClaw.md)."
+      "evidence": "No audit store in the canvas; durable audit is documented only through an external DefenseClaw integration (docs/DefenseClaw.md).",
+      "confidence": "medium"
     },
     "GOV-03": {
       "status": "assessed",
@@ -95,37 +103,43 @@
       "grade": "A",
       "evidence": "Telemetry is consent-gated with opt-out (src/services/telemetry.ts:9-29); there is no data export or erasure feature in the canvas.",
       "alt_score": 2,
-      "alt_note": "Consent management is a privacy control, though not export or erasure."
+      "alt_note": "Consent management is a privacy control, though not export or erasure.",
+      "confidence": "medium"
     },
     "GOV-04": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "No security scanning in CI; runtime security is delegated to the Agent Server or external guardrails (docs/DefenseClaw.md)."
+      "evidence": "No security scanning in CI; runtime security is delegated to the Agent Server or external guardrails (docs/DefenseClaw.md).",
+      "confidence": "medium"
     },
     "GOV-05": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Automation definitions sync to git (src/routes/automation-git-sync.tsx); other settings are unversioned."
+      "evidence": "Automation definitions sync to git (src/routes/automation-git-sync.tsx); other settings are unversioned.",
+      "confidence": "medium"
     },
     "GOV-06": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "No proposal object for changes."
+      "evidence": "No proposal object for changes.",
+      "confidence": "low"
     },
     "GOV-07": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Confirmation policies (never, always, confirm risky) decide which agent actions need a person (openhands-sdk/openhands/sdk/security/confirmation_policy.py:27-43); they govern actions, not changes to the agent itself."
+      "evidence": "Confirmation policies (never, always, confirm risky) decide which agent actions need a person (openhands-sdk/openhands/sdk/security/confirmation_policy.py:27-43); they govern actions, not changes to the agent itself.",
+      "confidence": "high"
     },
     "GOV-08": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "CI checks REST API breakage, persisted-settings compatibility and deprecations on every change (software-agent-sdk .github/workflows/agent-server-rest-api-breakage.yml, persisted-settings-compat.yml, deprecation-check.yml)."
+      "evidence": "CI checks REST API breakage, persisted-settings compatibility and deprecations on every change (software-agent-sdk .github/workflows/agent-server-rest-api-breakage.yml, persisted-settings-compat.yml, deprecation-check.yml).",
+      "confidence": "medium"
     },
     "ARC-01": {
       "status": "not_applicable",
@@ -136,25 +150,29 @@
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Single user by default, with a Helm chart for team deployments (helm/agent-canvas)."
+      "evidence": "Single user by default, with a Helm chart for team deployments (helm/agent-canvas).",
+      "confidence": "medium"
     },
     "ARC-06": {
       "status": "assessed",
       "score": 0,
       "grade": "A",
-      "evidence": "No performance suite or documented limits (searched for benchmark, load test and perf)."
+      "evidence": "No performance suite or documented limits (searched for benchmark, load test and perf).",
+      "confidence": "low"
     },
     "DEL-02": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "The canvas deploys separately from the Agent Server and Automation Server behind an API contract, as an npm library, desktop app, container and Helm chart (docs/architecture.md, electron/, docker/, helm/)."
+      "evidence": "The canvas deploys separately from the Agent Server and Automation Server behind an API contract, as an npm library, desktop app, container and Helm chart (docs/architecture.md, electron/, docker/, helm/).",
+      "confidence": "medium"
     },
     "DEL-03": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Library entrypoints and lint configuration; no architectural boundary tests."
+      "evidence": "Library entrypoints and lint configuration; no architectural boundary tests.",
+      "confidence": "low"
     },
     "DEL-05": {
       "status": "assessed",
@@ -162,7 +180,8 @@
       "grade": "A",
       "evidence": "Lint, unit tests and builds on Ubuntu and Windows plus mocked-LLM Playwright E2E on pull requests (.github/workflows/ci.yml:4-66, mock-llm-e2e.yml); mutation testing (stryker.config.mjs); no accessibility or security checks.",
       "alt_score": 3,
-      "alt_note": "Coverage is broad, including mutation testing."
+      "alt_note": "Coverage is broad, including mutation testing.",
+      "confidence": "medium"
     },
     "MAL-13": {
       "status": "assessed",
@@ -170,19 +189,22 @@
       "grade": "A",
       "evidence": "Skills, plugins and MCP servers are configured through the canvas (src/routes/skills-plugins.tsx, mcp-settings.tsx); canvas extensions for UI are partly shipped.",
       "alt_score": 3,
-      "alt_note": "Once extensions ship, UI, layout and theme are all plugin points."
+      "alt_note": "Once extensions ship, UI, layout and theme are all plugin points.",
+      "confidence": "medium"
     },
     "MAL-14": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "No isolation model for canvas extensions is evidenced; agent code isolation is delegated to backends."
+      "evidence": "No isolation model for canvas extensions is evidenced; agent code isolation is delegated to backends.",
+      "confidence": "low"
     },
     "MAL-15": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Mocked-LLM development server and seed scripts (scripts/seed-automation-ux-data.mjs, docs/DEVELOPMENT.md)."
+      "evidence": "Mocked-LLM development server and seed scripts (scripts/seed-automation-ux-data.mjs, docs/DEVELOPMENT.md).",
+      "confidence": "medium"
     },
     "MAL-19": {
       "status": "assessed",
@@ -193,8 +215,10 @@
         "status": "assessed",
         "score": 2,
         "grade": "A",
-        "evidence": "A UI tool lets agents drive the canvas; no MCP server for it."
-      }
+        "evidence": "A UI tool lets agents drive the canvas; no MCP server for it.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "MAL-20": {
       "status": "assessed",
@@ -205,8 +229,10 @@
         "status": "assessed",
         "score": 2,
         "grade": "A",
-        "evidence": "Model-backed agent conversations through the canvas."
-      }
+        "evidence": "Model-backed agent conversations through the canvas.",
+        "confidence": "low"
+      },
+      "confidence": "low"
     },
     "GOV-09": {
       "status": "assessed",
@@ -219,14 +245,17 @@
         "score": 2,
         "grade": "A",
         "evidence": "Confirmation policy defaults to never; with ConfirmRisky, an LLM security analyser classifies actions (openhands-sdk/openhands/sdk/conversation/state.py:123).",
-        "available_score": 3
-      }
+        "available_score": 3,
+        "confidence": "high"
+      },
+      "confidence": "high"
     },
     "MAL-16": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "OpenHands, Claude Code, Codex, Gemini and other ACP agents map onto one agent protocol, so adding an agent is configuration (docs/ACP_AGENTS.md)."
+      "evidence": "OpenHands, Claude Code, Codex, Gemini and other ACP agents map onto one agent protocol, so adding an agent is configuration (docs/ACP_AGENTS.md).",
+      "confidence": "medium"
     },
     "MAL-17": {
       "status": "assessed",
@@ -234,13 +263,15 @@
       "grade": "A",
       "evidence": "Backends (local, Docker, VM, cloud) and ACP agents are configurable; no connector SDK with lifecycle.",
       "alt_score": 3,
-      "alt_note": "ACP is a standard connector definition."
+      "alt_note": "ACP is a standard connector definition.",
+      "confidence": "low"
     },
     "MAL-18": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Relies on the versioned Agent Server API and ACP; no deprecation windows in the canvas."
+      "evidence": "Relies on the versioned Agent Server API and ACP; no deprecation windows in the canvas.",
+      "confidence": "low"
     },
     "EXP-01": {
       "status": "assessed",
@@ -248,37 +279,43 @@
       "grade": "A",
       "evidence": "Kernel of conversations, backends, automations, profiles and skills with no business-domain nouns; channels exist only as automation outputs.",
       "alt_score": 3,
-      "alt_note": "Domain-neutral coding-agent console."
+      "alt_note": "Domain-neutral coding-agent console.",
+      "confidence": "low"
     },
     "EXP-02": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Automation templates cover new tasks without kernel change (src/routes/automation-templates.tsx)."
+      "evidence": "Automation templates cover new tasks without kernel change (src/routes/automation-templates.tsx).",
+      "confidence": "medium"
     },
     "EXP-03": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Automation templates and git sync; installable canvas extensions are partly shipped."
+      "evidence": "Automation templates and git sync; installable canvas extensions are partly shipped.",
+      "confidence": "low"
     },
     "LRN-01": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Consent-gated product analytics to PostHog (src/services/telemetry.ts); not available to product features."
+      "evidence": "Consent-gated product analytics to PostHog (src/services/telemetry.ts); not available to product features.",
+      "confidence": "medium"
     },
     "LRN-02": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "No typed feedback or learning signals in the canvas or the SDK."
+      "evidence": "No typed feedback or learning signals in the canvas or the SDK.",
+      "confidence": "low"
     },
     "LRN-04": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "No joined mining in the canvas."
+      "evidence": "No joined mining in the canvas.",
+      "confidence": "low"
     },
     "LRN-06": {
       "status": "assessed",
@@ -289,8 +326,10 @@
         "status": "assessed",
         "score": 0,
         "grade": "A",
-        "evidence": "No AI involvement in this behaviour."
-      }
+        "evidence": "No AI involvement in this behaviour.",
+        "confidence": "low"
+      },
+      "confidence": "low"
     },
     "DEL-04": {
       "status": "assessed",
@@ -305,8 +344,10 @@
         "grade": "A",
         "evidence": "Automations change users' repositories, not OpenHands itself.",
         "alt_score": 2,
-        "alt_note": "Operator-configured automations."
-      }
+        "alt_note": "Operator-configured automations.",
+        "confidence": "low"
+      },
+      "confidence": "low"
     },
     "LRN-09": {
       "status": "assessed",
@@ -314,19 +355,29 @@
       "grade": "A",
       "evidence": "Plugin automations tag each run with its experiment and variant (openhands/automation/presets/plugin/sdk_main.py:514-530), so variants can be compared by hand; nothing records a baseline or decision.",
       "alt_score": 2,
-      "alt_note": "Variant-tagged runs are telemetry bound to the change."
+      "alt_note": "Variant-tagged runs are telemetry bound to the change.",
+      "confidence": "medium"
+    },
+    "LRN-10": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "The checks that govern change are code maintained by engineers: confirmation policies and security analysers (software-agent-sdk openhands-sdk/openhands/sdk/security), critics (sdk/critic), the Automation API's validation and the unhealthy-automation rule (automation repository: tests/test_unhealthy_automations.py). Evaluation suites (SWE-bench runs, tests/integration; .github/workflows/run-eval.yml) are run and extended by the team on labelled pull requests; no failure is recorded against a check and nothing turns failures into new checks inside the product.",
+      "confidence": "medium"
     },
     "DEL-06": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Backend server_info with runtime services (docs/architecture.md) and container health in the entrypoint (docker/entrypoint.sh)."
+      "evidence": "Backend server_info with runtime services (docs/architecture.md) and container health in the entrypoint (docker/entrypoint.sh).",
+      "confidence": "medium"
     },
     "DEL-07": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Docker, Helm and desktop builds; mocked-LLM Docker E2E stands up an environment per run (.github/workflows/mock-llm-docker-e2e.yml)."
+      "evidence": "Docker, Helm and desktop builds; mocked-LLM Docker E2E stands up an environment per run (.github/workflows/mock-llm-docker-e2e.yml).",
+      "confidence": "medium"
     },
     "DEL-08": {
       "status": "assessed",
@@ -334,7 +385,8 @@
       "grade": "A",
       "evidence": "Playwright journeys with mocked and live configurations and a testing matrix (docs/TESTING_MATRIX.md); no changed-path map or adoption instrumentation.",
       "alt_score": 3,
-      "alt_note": "The testing matrix maps surfaces to journeys."
+      "alt_note": "The testing matrix maps surfaces to journeys.",
+      "confidence": "medium"
     },
     "LRN-07": {
       "status": "assessed",
@@ -345,18 +397,28 @@
         "status": "assessed",
         "score": 0,
         "grade": "A",
-        "evidence": "No AI involvement in this behaviour."
-      }
+        "evidence": "No AI involvement in this behaviour.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "LRN-08": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "Critics evaluate task output for iterative refinement (openhands-sdk/openhands/sdk/critic), not changes to the agent itself.",
+      "evidence": "Re-scored for v0.7 under the tightened boundary; score unchanged, reason changed. The AI-made change to OpenHands' own definitions is an automation the agent creates in chat. The Automation API validates the request schema, tarball path and agent profile (automation repository: openhands/automation/router.py:198-282; capabilities_router.py:251-300), but nothing scans or evaluates the automation's prompt or code against a baseline before it is enabled; the person who asked sees the result in the conversation. Critics score task output, not changes to the agent (software-agent-sdk openhands-sdk/openhands/sdk/critic).",
       "ai": {
-        "status": "not_applicable",
-        "rationale": "agent_mutations is false."
-      }
+        "status": "assessed",
+        "score": 1,
+        "grade": "A",
+        "alt_score": 2,
+        "alt_note": "API schema validation on agent-created automations.",
+        "evidence": "Agent-created automations pass only the Automation API's input validation (automation repository: router.py:198-282); no scan or evaluation.",
+        "confidence": "low"
+      },
+      "alt_score": 2,
+      "alt_note": "The Automation API validates every automation the agent creates (schema, trigger, tarball path, agent profile), an automated structural check on an AI-made change.",
+      "confidence": "low"
     },
     "ARC-02": {
       "status": "assessed",
@@ -369,13 +431,15 @@
         "implemented": true,
         "tested": true,
         "operated": false
-      }
+      },
+      "confidence": "medium"
     },
     "ARC-03": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "The Automation Service is a stateless FastAPI app over PostgreSQL and object storage; the canvas ships a Helm chart (helm/agent-canvas)."
+      "evidence": "The Automation Service is a stateless FastAPI app over PostgreSQL and object storage; the canvas ships a Helm chart (helm/agent-canvas).",
+      "confidence": "medium"
     },
     "ARC-04": {
       "status": "assessed",
@@ -388,7 +452,8 @@
         "implemented": true,
         "tested": true,
         "operated": false
-      }
+      },
+      "confidence": "medium"
     },
     "ARC-07": {
       "status": "assessed",
@@ -396,7 +461,8 @@
       "grade": "A",
       "evidence": "Telemetry for runs and the key-value store (openhands/automation/telemetry.py, kv_metrics.py); no objectives.",
       "alt_score": 2,
-      "alt_note": "Run metrics are exported."
+      "alt_note": "Run metrics are exported.",
+      "confidence": "medium"
     },
     "ARC-08": {
       "status": "assessed",
@@ -412,14 +478,17 @@
           "implemented": true,
           "tested": true,
           "operated": false
-        }
-      }
+        },
+        "confidence": "high"
+      },
+      "confidence": "medium"
     },
     "ARC-09": {
       "status": "assessed",
       "score": 0,
       "grade": "A",
-      "evidence": "No backup command or documented backup for the Automation Service database or storage."
+      "evidence": "No backup command or documented backup for the Automation Service database or storage.",
+      "confidence": "low"
     },
     "DEL-01": {
       "status": "assessed",
@@ -430,26 +499,31 @@
         "status": "assessed",
         "score": 0,
         "grade": "A",
-        "evidence": "No AI involvement in this behaviour."
-      }
+        "evidence": "No AI involvement in this behaviour.",
+        "confidence": "low"
+      },
+      "confidence": "low"
     },
     "DEL-09": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Plugin automations can split runs between weighted variants (openhands/automation/presets/plugin/sdk_main.py:349-373)."
+      "evidence": "Plugin automations can split runs between weighted variants (openhands/automation/presets/plugin/sdk_main.py:349-373).",
+      "confidence": "high"
     },
     "DEL-10": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Automations can be disabled at runtime, and unhealthy ones are disabled automatically (tests/test_unhealthy_automations.py)."
+      "evidence": "Automations can be disabled at runtime, and unhealthy ones are disabled automatically (tests/test_unhealthy_automations.py).",
+      "confidence": "high"
     },
     "LRN-03": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Runs record failure kinds and status details, and unhealthy automations are detected (openhands/automation/watchdog.py, migrations/versions/016_add_run_status_detail.py)."
+      "evidence": "Runs record failure kinds and status details, and unhealthy automations are detected (openhands/automation/watchdog.py, migrations/versions/016_add_run_status_detail.py).",
+      "confidence": "medium"
     },
     "LRN-05": {
       "status": "assessed",
@@ -460,32 +534,45 @@
         "status": "assessed",
         "score": 0,
         "grade": "A",
-        "evidence": "Run failure kinds are rule-based."
-      }
+        "evidence": "Run failure kinds are rule-based.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "GOV-10": {
-      "status": "not_applicable",
-      "rationale": "No self-change path.",
-      "if_applicable": 1,
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Applies from v0.7 because agent_mutations is now true. The agent creates automations with the user's own API key, scoped to that user's organisation (automation repository: openhands/automation/auth.py), and repeatedly failing automations are disabled (migrations/versions/020_add_automation_disabled_reason.py); what the agent may create, how many and how often is limited only by the skill's instructions. The default confirmation policy is NeverConfirm (software-agent-sdk openhands-sdk/openhands/sdk/conversation/state.py:123). No allow or deny list for self-change was found.",
+      "confidence": "low",
       "ai": {
-        "status": "not_applicable",
-        "rationale": "GOV-10 is not applicable."
+        "status": "assessed",
+        "score": 1,
+        "grade": "A",
+        "confidence": "low",
+        "evidence": "Agent-created automations bounded by the user's key and skill instructions only (automation repository: auth.py)."
       }
     },
     "GOV-11": {
-      "status": "not_applicable",
-      "rationale": "No self-change path.",
-      "if_applicable": 1,
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Applies from v0.7 because agent_mutations is now true. Automations record the creating user and organisation (automation repository: models and draft_router.py:131 _assert_draft_creator), but not which conversation content led the agent to create them; repository and web content in the conversation is not fenced or scanned before it shapes an automation. Nothing creates an automation without a person's request.",
+      "confidence": "low",
       "ai": {
-        "status": "not_applicable",
-        "rationale": "GOV-11 is not applicable."
+        "status": "assessed",
+        "score": 1,
+        "grade": "A",
+        "confidence": "low",
+        "evidence": "No provenance from conversation inputs to the automations the agent creates; no injection scan."
       }
     },
     "EXP-04": {
       "status": "assessed",
       "score": 0,
       "grade": "A",
-      "evidence": "No record of unmet intents was found."
+      "evidence": "No record of unmet intents was found.",
+      "confidence": "low"
     },
     "EXP-05": {
       "status": "assessed",
@@ -496,14 +583,17 @@
         "status": "assessed",
         "score": 0,
         "grade": "A",
-        "evidence": "No AI involvement in this behaviour."
-      }
+        "evidence": "No AI involvement in this behaviour.",
+        "confidence": "low"
+      },
+      "confidence": "low"
     },
     "EXP-06": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "Presets and plugins are available to every organisation."
+      "evidence": "Presets and plugins are available to every organisation.",
+      "confidence": "low"
     },
     "DEL-11": {
       "status": "not_applicable",
@@ -513,7 +603,8 @@
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "LLM fallback strategy on connection, rate-limit and server errors, plus routers (openhands-sdk/openhands/sdk/llm/fallback_strategy.py, router), with tests (tests/sdk/llm/test_llm_fallback.py)."
+      "evidence": "LLM fallback strategy on connection, rate-limit and server errors, plus routers (openhands-sdk/openhands/sdk/llm/fallback_strategy.py, router), with tests (tests/sdk/llm/test_llm_fallback.py).",
+      "confidence": "high"
     },
     "AIR-02": {
       "status": "assessed",
@@ -521,13 +612,15 @@
       "grade": "A",
       "evidence": "Conversation cost and budget-exceeded handling (fallback_strategy.py), and run cost recorded per automation (automation repository: migrations/versions/013_add_run_cost.py); no per-user budgets.",
       "alt_score": 3,
-      "alt_note": "A per-conversation budget limits spend."
+      "alt_note": "A per-conversation budget limits spend.",
+      "confidence": "medium"
     },
     "AIR-03": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Agents work in a sandboxed workspace with repository files, skills and microagents loaded automatically."
+      "evidence": "Agents work in a sandboxed workspace with repository files, skills and microagents loaded automatically.",
+      "confidence": "low"
     },
     "AIR-04": {
       "status": "assessed",
@@ -538,19 +631,22 @@
         "implemented": true,
         "tested": true,
         "operated": false
-      }
+      },
+      "confidence": "high"
     },
     "AIR-05": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Behaviour and integration test suites for agents (tests/integration) and SWE-bench evaluation runs (.github/workflows/run-eval.yml)."
+      "evidence": "Behaviour and integration test suites for agents (tests/integration) and SWE-bench evaluation runs (.github/workflows/run-eval.yml).",
+      "confidence": "high"
     },
     "AIR-06": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Integration tests and evaluations run on labelled pull requests and releases (.github/workflows/integration-runner.yml, run-eval.yml); not blocking by default."
+      "evidence": "Integration tests and evaluations run on labelled pull requests and releases (.github/workflows/integration-runner.yml, run-eval.yml); not blocking by default.",
+      "confidence": "high"
     },
     "AIR-07": {
       "status": "assessed",
@@ -561,17 +657,19 @@
         "implemented": true,
         "tested": true,
         "operated": false
-      }
+      },
+      "confidence": "high"
     },
     "AIR-08": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "Critics score task output during a run; no production quality monitoring."
+      "evidence": "Critics score task output during a run; no production quality monitoring.",
+      "confidence": "low"
     }
   },
   "limits": "Repository evidence only. The Automation Service was added for v0.4 after the inter-rater study found it missing; it is beta. No live runs. Single rater.",
-  "framework_version": "0.5.1",
+  "framework_version": "0.7.0",
   "reading": "**SAL 1.** With the Automation Service now in scope, OpenHands has a hosted, multi-organisation architecture, but no load suite (ARC-06 0) or backup (ARC-09 0), which caps the foundation at L1. Automations run coding agents on users' repositories, which the self rule excludes (DEL-04 1). Runs record failure kinds and unhealthy automations are disabled automatically (LRN-03 2, DEL-10 2). **Next level:** backup and capacity evidence for the Automation Service, and a lane that improves OpenHands' own skills and automations.",
   "framework": "EVOLVE",
   "scope_facts": {
@@ -585,7 +683,7 @@
     },
     "multi_tenant": {
       "value": true,
-      "evidence": "The Automation Service serves organisations with org-scoped data (migrations/versions/023_org_scoped_git_sync.py)."
+      "evidence": "Re-checked under the v0.7 definition: the Automation Service holds automations, runs, drafts and uploads per organisation and checks the caller's organisation and user on every route (automation repository: migrations/versions/023_org_scoped_git_sync.py; openhands/automation/auth.py; draft_router.py:99-140 _assert_org_automation_exists, _assert_draft_creator), so separate organisations with their own members share one deployment."
     },
     "hosted_service": {
       "value": true,
@@ -596,12 +694,12 @@
       "evidence": "The Agent Server and Automation Service APIs create and run automations with per-user API keys (automation repository: openhands/automation/auth.py)."
     },
     "agent_mutations": {
-      "value": false,
-      "evidence": "Agents change users' repositories, not OpenHands' own definitions."
+      "value": true,
+      "evidence": "Changed to true for v0.7 (tightened definition: the product's own AI writes to its definitions). The Agent Canvas offers \"Create an automation\" by launching a chat in which the agent sets up the automation: \"the agent handles the schedule and setup\" (OpenHands src/components/features/automations/create-instructions.tsx:58-61; src/i18n/translation.json, AUTOMATIONS$CREATE_INSTRUCTIONS_GUIDANCE), through the Automation Service API with the user's key (automation repository: openhands/automation/router.py:198-282) and the openhands-automation agent skill (docs/kv-store-design.md:887). The skill itself lives outside the three assessed repositories."
     },
     "evolution_auto_apply": {
       "value": false,
-      "evidence": "Nothing changes OpenHands' own definitions automatically."
+      "evidence": "Re-checked for v0.7: automations the agent creates are made at a person's request in that conversation; no learning loop or background lane changes OpenHands' definitions on its own."
     },
     "definition_change_path": {
       "value": true,
@@ -609,7 +707,7 @@
     },
     "code_release_path": {
       "value": false,
-      "evidence": "Automations act on users' repositories; no first-party lane ships OpenHands code changes."
+      "evidence": "Re-checked under the v0.7 definition: no assessed code has OpenHands' AI write and activate plugins, tools or scripts that run as part of OpenHands. Custom automations can carry an uploaded code tarball (automation repository: router.py validate_tarball_path), but whether the agent skill authors them is outside the assessed repositories. Automations otherwise act on users' repositories."
     },
     "ai_features": {
       "value": true,
@@ -623,5 +721,74 @@
       "value": true,
       "evidence": "Agents edit code, run commands and open pull requests; automations run them unattended."
     }
-  }
+  },
+  "basis": "shipped",
+  "change_kinds": [
+    {
+      "id": "automations",
+      "name": "Scheduled and event-driven automations",
+      "who": "users and organisation admins",
+      "main": true,
+      "reach": 1,
+      "evidence": "Created from templates or the setup UI, where drafts are validated and materialised disabled until a test run (OpenHands src/routes/automation-setup-route.tsx, automation-templates.tsx; automation repository: draft_router.py), or by the agent in chat (create-instructions.tsx:58-61). Changed, disabled and deleted through the API and UI (router.py PATCH and DELETE /{automation_id}, lines 325 and 481). Undo is disabling or deleting; edits keep no earlier version unless git sync is set up (src/routes/automation-git-sync.tsx). Reach 1, not 2: the agent drafts automations, but DEL-04 is 1 under the self rule, so the criteria do not support reach 2. Undo rule used in this field test: a kind has undo when the product keeps the earlier version, or when the change is a selection, toggle or add-and-remove that the same supported path reverses exactly; free-text or multi-field edits with no kept version have none.",
+      "confidence": "medium"
+    },
+    {
+      "id": "skills-plugins",
+      "name": "Skills, plugins and tool servers the agent uses",
+      "who": "users",
+      "main": true,
+      "reach": 1,
+      "evidence": "Plugins are installed, enabled, disabled and uninstalled, and MCP servers added, updated and deleted in the canvas (src/routes/skills-plugins.tsx:20-100; src/hooks/mutation/use-install-plugin.ts, use-set-plugin-enabled.ts, use-uninstall-plugin.ts, use-add-mcp-server.ts, use-delete-mcp-server.ts). Undo is the reverse toggle or removal. Undo rule used in this field test: a kind has undo when the product keeps the earlier version, or when the change is a selection, toggle or add-and-remove that the same supported path reverses exactly; free-text or multi-field edits with no kept version have none.",
+      "confidence": "medium"
+    },
+    {
+      "id": "models-settings",
+      "name": "Which models it uses and how the agent behaves",
+      "who": "users",
+      "main": true,
+      "reach": 1,
+      "evidence": "LLM, agent, agent-profile, condenser and verification settings are chosen in the canvas settings pages (src/routes/llm-settings.tsx, agent-settings.tsx, agent-profiles-settings.tsx, condenser-settings.tsx; src/hooks/mutation/use-save-settings.ts). Undo is selecting the previous value; settings keep no history (GOV-05 2). Undo rule used in this field test: a kind has undo when the product keeps the earlier version, or when the change is a selection, toggle or add-and-remove that the same supported path reverses exactly; free-text or multi-field edits with no kept version have none.",
+      "confidence": "low"
+    },
+    {
+      "id": "action-approval",
+      "name": "Which agent actions need a person's approval",
+      "who": "users",
+      "main": false,
+      "reach": 1,
+      "evidence": "Confirmation policies (never, always, confirm risky) are selectable settings (software-agent-sdk openhands-sdk/openhands/sdk/security/confirmation_policy.py:27-43). Undo is selecting the previous policy. Undo rule used in this field test: a kind has undo when the product keeps the earlier version, or when the change is a selection, toggle or add-and-remove that the same supported path reverses exactly; free-text or multi-field edits with no kept version have none.",
+      "confidence": "medium"
+    },
+    {
+      "id": "canvas-extensions",
+      "name": "Interface extensions and themes",
+      "who": "users and organisation admins",
+      "main": false,
+      "reach": 0,
+      "evidence": "Canvas extensions that contribute pages, panels and themes are specified and only partly shipped (specs/canvas-extensions.md); core layout is code. Reach 0 until extensions ship with an install and remove path.",
+      "confidence": "low"
+    }
+  ],
+  "ai_delivery": {
+    "present": true,
+    "qualifies": false,
+    "evidence": "AGENTS.md and .agents/skills in all three repositories; an OpenHands agent plugin runs in CI only for issue duplicate checking (OpenHands .github/workflows/issue-duplicate-checker.yml:67 and software-agent-sdk issue-duplicate-checker.yml:66, OpenHands/extensions pinned by SHA); software-agent-sdk requires review threads to be resolved (review-thread-gate.yml).",
+    "note": "Engineers build OpenHands with AI agents; the only agent workflow in CI triages issues and makes no changes, and nothing installs a delivery framework with enforced authority and GOV-10 limits. AI-assisted engineering, not OpenHands evolving itself."
+  },
+  "proven": {
+    "request": {
+      "status": "not_evidenced",
+      "searched": "All three repositories at the pinned commits: no operating records of requests becoming changes to OpenHands' own definitions in a real deployment (automation run history lives in each deployment's database)."
+    },
+    "fix": {
+      "status": "not_evidenced",
+      "searched": "All three repositories: no incident or fix records from the product's own loop; unhealthy-automation disabling is shown in tests (tests/test_unhealthy_automations.py), not operating records."
+    },
+    "expansion": {
+      "status": "not_evidenced",
+      "searched": "All three repositories: no records of capabilities proposed or launched to a cohort and kept or killed."
+    }
+  },
+  "confidence_note": "Confidence for criteria this migration did not change was assigned at migration to v0.7 from the recorded evidence (high where it names the code path and its tests or exact lines, medium where it names files but not every path, low where it rests on an absence claim or general description); criteria re-read for v0.7 carry the confidence of that re-reading."
 }
