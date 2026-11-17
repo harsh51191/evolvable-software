@@ -1,0 +1,605 @@
+{
+  "case": "static-notes",
+  "assessment": "/tmp/claude-0/-home-user-insight-canvas/041b1db5-929e-5c5d-bba1-ab8dfef472ae/scratchpad/v07/blind/eval-cases/static-notes.json",
+  "items": [
+    {
+      "section": "archetype",
+      "id": "archetype",
+      "expected": "focused-application",
+      "observed": "focused-application",
+      "met": true,
+      "trap": false,
+      "reason": "A single-purpose notes board for one team, not a platform.",
+      "files": [
+        "README.md"
+      ],
+      "evidence": ""
+    },
+    {
+      "section": "scope facts",
+      "id": "persistent_data",
+      "expected": "true",
+      "observed": "true",
+      "met": true,
+      "trap": false,
+      "reason": "Notes are stored in SQLite at /data/notes.db.",
+      "files": [
+        "db.py",
+        "settings.py"
+      ],
+      "evidence": "SQLite notes table holds the team's notes (schema.sql:3-9, db.py:7-40, deploy.sh:7 mounts notes-data:/data)."
+    },
+    {
+      "section": "scope facts",
+      "id": "schema_changes",
+      "expected": "true",
+      "observed": "true",
+      "met": true,
+      "trap": false,
+      "reason": "The notes table changes over time by hand-run ALTER TABLE statements.",
+      "files": [
+        "schema.sql",
+        "README.md"
+      ],
+      "evidence": "The evolution path changes the stored table by hand: README.md:30 and schema.sql:2 say edit schema.sql and ru…"
+    },
+    {
+      "section": "scope facts",
+      "id": "multi_tenant",
+      "expected": "false",
+      "observed": "false",
+      "met": true,
+      "trap": false,
+      "reason": "One team, no accounts: anyone on the VPN uses the same board.",
+      "files": [
+        "README.md"
+      ],
+      "evidence": "One support team on one host; no accounts or organisations (README.md:3-5, schema.sql:3-9 has no owner column…"
+    },
+    {
+      "section": "scope facts",
+      "id": "hosted_service",
+      "expected": "true",
+      "observed": "true",
+      "met": true,
+      "trap": false,
+      "reason": "A long-lived gunicorn web service in a container.",
+      "files": [
+        "Dockerfile",
+        "deploy.sh"
+      ],
+      "evidence": "Long-lived Flask app served by gunicorn in a container on a host behind the VPN (Dockerfile:6, deploy.sh:7, R…"
+    },
+    {
+      "section": "scope facts",
+      "id": "agent_mutations",
+      "expected": "false",
+      "observed": "false",
+      "met": true,
+      "trap": false,
+      "reason": "No AI or agent anywhere in the code.",
+      "files": [
+        "app.py"
+      ],
+      "evidence": "No agents or AI in the product (app.py, db.py, requirements.txt:1 is flask only)."
+    },
+    {
+      "section": "scope facts",
+      "id": "evolution_auto_apply",
+      "expected": "false",
+      "observed": "false",
+      "met": true,
+      "trap": false,
+      "reason": "There is no evolution loop at all.",
+      "files": [
+        "app.py"
+      ],
+      "evidence": "No evolution loop that applies changes; every change is a PR and a release (README.md:28, docs/change-request…"
+    },
+    {
+      "section": "scope facts",
+      "id": "definition_change_path",
+      "expected": "true",
+      "observed": "false",
+      "met": false,
+      "trap": false,
+      "reason": "The only configuration is environment variables read at start (page size, database path); with no evolution system this is the one change path the rubric allows.",
+      "files": [
+        "settings.py"
+      ],
+      "evidence": "README.md:22-26: everything about behaviour is in code (content.py:1 says changing it needs a release); setti…"
+    },
+    {
+      "section": "scope facts",
+      "id": "code_release_path",
+      "expected": "false",
+      "observed": "true",
+      "met": false,
+      "trap": false,
+      "reason": "Ordinary CI and a hand-run deploy script are not a first-party evolution system (rule 12), and no AI writes code.",
+      "files": [
+        ".github/workflows/release.yml",
+        "deploy.sh"
+      ],
+      "evidence": "The only change path is source changes through the product's own pipeline: PR, tag, release.yml:1-11 builds a…"
+    },
+    {
+      "section": "scope facts",
+      "id": "ai_features",
+      "expected": "false",
+      "observed": "false",
+      "met": true,
+      "trap": false,
+      "reason": "No model calls; search is a SQL LIKE.",
+      "files": [
+        "db.py"
+      ],
+      "evidence": "No model calls anywhere: app.py, db.py, content.py; requirements.txt:1 lists only flask."
+    },
+    {
+      "section": "scope facts",
+      "id": "ai_data_access",
+      "expected": "false",
+      "observed": "false",
+      "met": true,
+      "trap": false,
+      "reason": "No AI features.",
+      "files": [
+        "app.py"
+      ],
+      "evidence": "No AI features."
+    },
+    {
+      "section": "scope facts",
+      "id": "ai_actions",
+      "expected": "false",
+      "observed": "false",
+      "met": true,
+      "trap": false,
+      "reason": "No AI features.",
+      "files": [
+        "app.py"
+      ],
+      "evidence": "No AI features."
+    },
+    {
+      "section": "criteria",
+      "id": "MAL-02",
+      "expected": "0 to 1",
+      "observed": "1",
+      "met": true,
+      "trap": false,
+      "reason": "Fields are columns in schema.sql; adding one is a code change.",
+      "files": [
+        "schema.sql"
+      ],
+      "evidence": "Fields are fixed columns in schema.sql:3-9; adding a field ('pinned', docs/change-requests.md:10) is code plu…"
+    },
+    {
+      "section": "criteria",
+      "id": "MAL-07",
+      "expected": "0 to 1",
+      "observed": "1",
+      "met": true,
+      "trap": false,
+      "reason": "The page layout is a template string in app.py.",
+      "files": [
+        "app.py"
+      ],
+      "evidence": "Page layout is an inline Jinja template in code (app.py:13-25)."
+    },
+    {
+      "section": "criteria",
+      "id": "MAL-09",
+      "expected": "0 to 1",
+      "observed": "1",
+      "met": true,
+      "trap": false,
+      "reason": "Title and help text are Python constants.",
+      "files": [
+        "content.py"
+      ],
+      "evidence": "Title, help text and categories are Python constants (content.py:3-10); markup has no theme tokens (app.py:13…"
+    },
+    {
+      "section": "criteria",
+      "id": "MAL-10",
+      "expected": "0 to 1",
+      "observed": "1",
+      "met": true,
+      "trap": false,
+      "reason": "No rules engine; the only behaviour is coded routes.",
+      "files": [
+        "app.py"
+      ],
+      "evidence": "No rules engine; the only behaviour rule (category must be known) is coded (app.py:42)."
+    },
+    {
+      "section": "criteria",
+      "id": "MAL-20",
+      "expected": "0",
+      "observed": "0",
+      "met": true,
+      "trap": false,
+      "reason": "No conversational surface of any kind.",
+      "files": [
+        "app.py"
+      ],
+      "evidence": "No conversational surface."
+    },
+    {
+      "section": "criteria",
+      "id": "DEL-01",
+      "expected": "0",
+      "observed": "0",
+      "met": true,
+      "trap": false,
+      "reason": "Requests live in a chat channel outside the product.",
+      "files": [
+        "README.md",
+        "docs/change-requests.md"
+      ],
+      "evidence": "Requests live in the #notes-team chat channel (README.md:32, docs/change-requests.md:3); no request object in…"
+    },
+    {
+      "section": "criteria",
+      "id": "DEL-04",
+      "expected": "0",
+      "observed": "0",
+      "met": true,
+      "trap": false,
+      "reason": "No AI implementation lane.",
+      "files": [
+        "app.py"
+      ],
+      "evidence": "No AI implementation lane; every change is a hand-made PR (README.md:28)."
+    },
+    {
+      "section": "criteria",
+      "id": "DEL-05",
+      "expected": "2",
+      "observed": "2",
+      "met": true,
+      "trap": false,
+      "reason": "Tests run on pull requests but draft pull requests are skipped.",
+      "files": [
+        ".github/workflows/ci.yml"
+      ],
+      "evidence": "CI runs pytest on PRs but skips draft PRs (.github/workflows/ci.yml:3-7); schema changes are applied by hand …"
+    },
+    {
+      "section": "criteria",
+      "id": "DEL-06",
+      "expected": "2",
+      "observed": "2",
+      "met": true,
+      "trap": false,
+      "reason": "A health endpoint with no version or configuration snapshot.",
+      "files": [
+        "app.py"
+      ],
+      "evidence": "/health returns status only (app.py:68-70); no version endpoint or config snapshot."
+    },
+    {
+      "section": "criteria",
+      "id": "DEL-10",
+      "expected": "0 to 1",
+      "observed": "0",
+      "met": true,
+      "trap": false,
+      "reason": "Nothing can be switched off without a release; at most an engineer edits an environment variable and restarts.",
+      "files": [
+        "settings.py",
+        "deploy.sh"
+      ],
+      "evidence": "No runtime switches; disabling anything needs a code change and release (content.py:1, README.md:22-28)."
+    },
+    {
+      "section": "criteria",
+      "id": "DEL-11",
+      "expected": "not applicable",
+      "observed": "1",
+      "met": false,
+      "trap": false,
+      "reason": "code_release_path is false: no evolution system ships code.",
+      "files": [
+        "deploy.sh"
+      ],
+      "evidence": "No rollback tooling built as a first-party evolution system; deploy.sh:4-7 takes any tag, so an engineer can …"
+    },
+    {
+      "section": "criteria",
+      "id": "ARC-02",
+      "expected": "0",
+      "observed": "0",
+      "met": true,
+      "trap": false,
+      "reason": "Schema changes are hand-run SQL, the anchor for 0.",
+      "files": [
+        "schema.sql"
+      ],
+      "evidence": "Schema changes are manual SQL on the host: schema.sql:1-2, README.md:30, db.py:1 'The table is created by han…"
+    },
+    {
+      "section": "criteria",
+      "id": "ARC-03",
+      "expected": "0",
+      "observed": "0",
+      "met": true,
+      "trap": false,
+      "reason": "One process with its state in SQLite on local disk.",
+      "files": [
+        "settings.py",
+        "deploy.sh"
+      ],
+      "evidence": "Single container with SQLite on a local volume (deploy.sh:6-7, settings.py:4); gunicorn default single worker…"
+    },
+    {
+      "section": "criteria",
+      "id": "ARC-05",
+      "expected": "not applicable",
+      "observed": "not applicable",
+      "met": true,
+      "trap": false,
+      "reason": "multi_tenant is false: one team, no accounts.",
+      "files": [
+        "README.md"
+      ],
+      "evidence": "multi_tenant is false: one team, one host (README.md:3-5)."
+    },
+    {
+      "section": "criteria",
+      "id": "ARC-09",
+      "expected": "0 to 1",
+      "observed": "0",
+      "met": true,
+      "trap": true,
+      "reason": "The only backup is a Makefile target that prints TODO; nothing copies or restores data.",
+      "files": [
+        "Makefile"
+      ],
+      "evidence": "Makefile:7-8 'backup' only echoes 'TODO: copy /data/notes.db somewhere safe'; README.md:34-36 points to it. N…"
+    },
+    {
+      "section": "criteria",
+      "id": "LRN-02",
+      "expected": "0",
+      "observed": "0",
+      "met": true,
+      "trap": false,
+      "reason": "No feedback, rating or usage signal is recorded.",
+      "files": [
+        "app.py",
+        "db.py"
+      ],
+      "evidence": "No feedback, rating or usage signal objects (schema.sql:3-9 is the only table)."
+    },
+    {
+      "section": "criteria",
+      "id": "LRN-03",
+      "expected": "1",
+      "observed": "1",
+      "met": true,
+      "trap": false,
+      "reason": "Unhandled errors are logged for engineers; nothing user-facing is recorded in the product.",
+      "files": [
+        "app.py"
+      ],
+      "evidence": "Server-side error logging for engineers (app.py:73-76). README.md:18 claims zero-result searches are tracked,…"
+    },
+    {
+      "section": "criteria",
+      "id": "LRN-08",
+      "expected": "0",
+      "observed": "0",
+      "met": true,
+      "trap": false,
+      "reason": "The product produces no learned or AI-made changes and no check would apply to one (rubric LRN-08 boundary).",
+      "files": [
+        "app.py"
+      ],
+      "evidence": "The product produces no learned or AI-made changes and nothing would check one; hand-made PR checks are score…"
+    },
+    {
+      "section": "criteria",
+      "id": "LRN-10",
+      "expected": "0",
+      "observed": "0",
+      "met": true,
+      "trap": false,
+      "reason": "The only checks are tests in code, changed only when engineers edit them.",
+      "files": [
+        "tests/test_app.py",
+        ".github/workflows/ci.yml"
+      ],
+      "evidence": "Checks are fixed in code (tests/test_app.py, .github/workflows/ci.yml) and change only when engineers edit th…"
+    },
+    {
+      "section": "criteria",
+      "id": "GOV-02",
+      "expected": "0 to 1",
+      "observed": "1",
+      "met": true,
+      "trap": false,
+      "reason": "At most a log line when a note is deleted; no audit store.",
+      "files": [
+        "app.py"
+      ],
+      "evidence": "Only a per-feature log line on delete (app.py:59); no audit store; anyone on the VPN can post and delete (REA…"
+    },
+    {
+      "section": "criteria",
+      "id": "GOV-04",
+      "expected": "0 to 1",
+      "observed": "1",
+      "met": true,
+      "trap": true,
+      "reason": "No permission model; the dependency scan runs only when started by hand and gates nothing.",
+      "files": [
+        ".github/workflows/security.yml",
+        "README.md"
+      ],
+      "evidence": "No permission model at all (README.md:5); per-route input checks (app.py:40-43); pip-audit only on manual dis…"
+    },
+    {
+      "section": "criteria",
+      "id": "GOV-05",
+      "expected": "1",
+      "observed": "not applicable",
+      "met": false,
+      "trap": false,
+      "reason": "Configuration and text are versioned only in git, for engineers.",
+      "files": [
+        "content.py",
+        "settings.py"
+      ],
+      "evidence": "definition_change_path is false: behaviour lives in code (README.md:22-26, content.py:1)."
+    },
+    {
+      "section": "criteria",
+      "id": "GOV-06",
+      "expected": "1",
+      "observed": "1",
+      "met": true,
+      "trap": false,
+      "reason": "Pull requests for code are the only proposal path.",
+      "files": [
+        "README.md"
+      ],
+      "evidence": "Changes are pull requests for code (README.md:28); no proposal object."
+    },
+    {
+      "section": "criteria",
+      "id": "EXP-04",
+      "expected": "0",
+      "observed": "0",
+      "met": true,
+      "trap": true,
+      "reason": "The README claims failed searches are tracked, but search records nothing.",
+      "files": [
+        "app.py",
+        "db.py",
+        "README.md"
+      ],
+      "evidence": "Unmet demand is not recorded in the product: README.md:18 claims zero-result searches are tracked, but search…"
+    },
+    {
+      "section": "kinds",
+      "id": "main kinds",
+      "expected": "1 to 2",
+      "observed": "2",
+      "met": true,
+      "trap": false,
+      "reason": "Categories and help text are most of the requests.",
+      "files": [
+        "docs/change-requests.md"
+      ],
+      "evidence": "categories, help-text"
+    },
+    {
+      "section": "kinds",
+      "id": "reach of every kind",
+      "expected": "0",
+      "observed": "categories 0, help-text 0, page-size 0, note-fields 0",
+      "met": true,
+      "trap": false,
+      "reason": "Every kind of change is a pull request and a release.",
+      "files": [
+        "README.md"
+      ],
+      "evidence": ""
+    },
+    {
+      "section": "kinds",
+      "id": "categories: reach",
+      "expected": "0",
+      "observed": "categories 0",
+      "met": true,
+      "trap": true,
+      "reason": "Categories are a Python list; the README's settings page does not exist.",
+      "files": [
+        "content.py",
+        "app.py",
+        "README.md"
+      ],
+      "evidence": "content.py:5 hard-codes CATEGORIES; app.py:42 validates against it. README.md:17 claims admins rename categor…"
+    },
+    {
+      "section": "kinds",
+      "id": "categories: main",
+      "expected": "true",
+      "observed": "categories true",
+      "met": true,
+      "trap": true,
+      "reason": "Categories are a Python list; the README's settings page does not exist.",
+      "files": [
+        "content.py",
+        "app.py",
+        "README.md"
+      ],
+      "evidence": ""
+    },
+    {
+      "section": "kinds",
+      "id": "help text: reach",
+      "expected": "0",
+      "observed": "help-text 0",
+      "met": true,
+      "trap": false,
+      "reason": "Help text is a Python constant.",
+      "files": [
+        "content.py"
+      ],
+      "evidence": "content.py:7-10 HELP_TEXT in code, content.py:1 'needs a release'; docs/change-requests.md:8: 3 requests."
+    },
+    {
+      "section": "loops",
+      "id": "Request → Release",
+      "expected": "0",
+      "observed": "L0",
+      "met": true,
+      "trap": false,
+      "reason": "No main kind is self-serve and there is no AI lane.",
+      "files": [
+        "content.py"
+      ],
+      "evidence": ""
+    },
+    {
+      "section": "loops",
+      "id": "Issue → Fix",
+      "expected": "0",
+      "observed": "L0",
+      "met": true,
+      "trap": false,
+      "reason": "Same build path, and no user-facing issue detection.",
+      "files": [
+        "app.py"
+      ],
+      "evidence": ""
+    },
+    {
+      "section": "loops",
+      "id": "Opportunity → Expansion",
+      "expected": "0",
+      "observed": "L0",
+      "met": true,
+      "trap": false,
+      "reason": "No expansion path; EXP-02 is excluded for a focused application and DEL-04 is 0.",
+      "files": [
+        "app.py"
+      ],
+      "evidence": ""
+    }
+  ],
+  "met": 40,
+  "counted": 44,
+  "share": 0.909,
+  "traps_met": 5,
+  "traps": 5,
+  "trap_share": 1.0,
+  "unavailable": 0,
+  "levels_unavailable_because": null,
+  "min": 0.0,
+  "passed": true
+}

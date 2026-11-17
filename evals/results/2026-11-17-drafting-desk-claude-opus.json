@@ -1,0 +1,807 @@
+{
+  "product": "Drafting Desk",
+  "date": "2026-11-17",
+  "source": "/home/user/malleablesoftware/evals/cases/drafting-desk/repo @ f7b1b77 (repo/ contents read at earlier tips 003399f and 68571ac; same files and line counts, no working-tree changes to repo/ at f7b1b77)",
+  "archetype": "focused-application",
+  "framework": "EVOLVE",
+  "framework_version": "0.7.0",
+  "basis": "shipped",
+  "scope_facts": {
+    "persistent_data": {
+      "value": true,
+      "evidence": "PostgreSQL holds organisations, users, versioned definitions, settings, failed lookups, requests, drafts and jobs (migrations/001_init.sql, 002_requests_and_drafts.sql)."
+    },
+    "schema_changes": {
+      "value": true,
+      "evidence": "Versioned SQL migrations applied by deskctl.py migrate at start (deskctl.py:14-21, Dockerfile:7)."
+    },
+    "multi_tenant": {
+      "value": true,
+      "evidence": "One deployment serves several customer organisations, each with its own leads, data and widget key (README.md:3; org_id on every table, migrations/001_init.sql; desk/store.py:1)."
+    },
+    "hosted_service": {
+      "value": true,
+      "evidence": "Gunicorn web service plus a drafting worker process (README.md:40, Dockerfile:7, desk/drafter.py:67-81)."
+    },
+    "machine_actions": {
+      "value": true,
+      "evidence": "Token-authenticated JSON API changes definitions, settings, requests and drafts (desk/app.py:28-36,69-150); the drafting worker writes drafts to the database (desk/drafter.py:61-64)."
+    },
+    "agent_mutations": {
+      "value": true,
+      "evidence": "The product's AI writes routing-rule drafts it stores awaiting a lead's review (desk/drafter.py:55-64, migrations/002_requests_and_drafts.sql:8-17)."
+    },
+    "evolution_auto_apply": {
+      "value": false,
+      "evidence": "Drafts stay awaiting_review until a lead publishes (desk/drafter.py:1-4, desk/app.py:136-150); tests/test_drafter.py:15-24 asserts nothing becomes live."
+    },
+    "definition_change_path": {
+      "value": true,
+      "evidence": "Leads change answers, rules and settings through /admin with no deploy (desk/app.py:56-94, desk/templates/admin.html)."
+    },
+    "code_release_path": {
+      "value": false,
+      "evidence": "The AI writes JSON rule definitions, not code (desk/drafter.py:18,59); queues are engineer releases (README.md:12), not an evolution-system code path."
+    },
+    "ai_features": {
+      "value": true,
+      "evidence": "The drafter calls a language model at LLM_API_URL (desk/drafter.py:26-36)."
+    },
+    "ai_data_access": {
+      "value": true,
+      "evidence": "The prompt includes the organisation's failed questions or change-request text (desk/drafter.py:47-58)."
+    },
+    "ai_actions": {
+      "value": false,
+      "evidence": "The AI only writes draft rows awaiting review; it cannot make a definition live, send messages out or spend beyond its own call (desk/drafter.py:1-4,61-64; desk/app.py:136-150). Drafts are counted under agent_mutations instead.",
+      "available_value": false
+    }
+  },
+  "change_kinds": [
+    {
+      "id": "routing-rules",
+      "name": "Add or change a routing rule",
+      "who": "organisation leads",
+      "main": true,
+      "reach": 2,
+      "evidence": "Leads save rules through checks (desk/app.py:62-72, desk/checks.py:15-48) with versions and undo (desk/store.py:15-32); the AI lane drafts rules from failure groups or requests and a lead edits and publishes (desk/app.py:118-150, desk/drafter.py:55-64, tests/test_drafter.py:15-24). Undo refuses a first version (desk/store.py:30-31). docs/change-requests.md:7: 164 requests, 71 from AI drafts.",
+      "confidence": "medium"
+    },
+    {
+      "id": "answers",
+      "name": "Add or edit an answer the widget gives",
+      "who": "organisation leads",
+      "main": true,
+      "reach": 1,
+      "evidence": "PUT /admin/answers/<key> through checks with versions, history and undo (desk/app.py:69-84, desk/checks.py:23-33, desk/store.py:15-32); a first version cannot be undone or deleted (desk/store.py:30-31). The AI lane is limited to rules (desk/drafter.py:18). docs/change-requests.md:8: 139 requests.",
+      "confidence": "medium"
+    },
+    {
+      "id": "greeting-hours",
+      "name": "Greeting and opening hours",
+      "who": "organisation leads",
+      "main": false,
+      "reach": 0,
+      "evidence": "PUT /admin/settings/<name> upserts with no version or undo (desk/app.py:87-94, migrations/001_init.sql:21-22); supported path without undo is reach 0. docs/change-requests.md:9: 9 requests.",
+      "confidence": "high"
+    },
+    {
+      "id": "queues",
+      "name": "Add a support queue",
+      "who": "engineers",
+      "main": false,
+      "reach": 0,
+      "evidence": "config/queues.yaml:1-6 and a release (README.md:12, docs/change-requests.md:10); also hard-coded in the prompt (prompts/draft_rule.txt:5).",
+      "confidence": "high"
+    }
+  ],
+  "proven": {
+    "request": {
+      "level": 2,
+      "evidence": "docs/change-requests.md:3-8: July to September 2026, counted from /admin/requests, 164 rule changes by leads of which 71 started as AI drafts, and 139 answer changes on the admin page (a first-party summary, not raw draft or version records).",
+      "note": "Summary document; drafts table rows are not in the repository."
+    },
+    "fix": {
+      "status": "not_evidenced",
+      "searched": "docs/change-requests.md does not separate drafts from failure groups (fix loop) from drafts from requests; docs/operations.md has no fix records."
+    },
+    "expansion": {
+      "status": "not_evidenced",
+      "searched": "README.md, docs/; no records of new capabilities launched."
+    }
+  },
+  "ai_delivery": {
+    "present": false,
+    "qualifies": false,
+    "evidence": "Searched the repo/ folder: no agent instruction files or agent workflows; ci.yml:1-28 runs pytest, pip-audit and a prompt lint. The drafter is the product's own AI, not AI-assisted engineering."
+  },
+  "scores": {
+    "ARC-01": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Hand-written SQL per feature on PostgreSQL (desk/store.py:9-83) using UNIQUE (org_id, kind, key, version) (migrations/001_init.sql:19) and failed_lookups_org_normalised index (001_init.sql:30); no caching.",
+      "confidence": "high",
+      "ai": null
+    },
+    "ARC-02": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Forward-only migration files applied by deskctl.py migrate (deskctl.py:14-21); no down steps, no online strategy, no migration tests beyond fresh-schema setup (tests/conftest.py:15-16).",
+      "confidence": "high",
+      "ai": null
+    },
+    "ARC-03": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Web instances keep no local state and several can run behind a load balancer (docs/operations.md:3, desk/app.py:15-18); caveat: run one drafting worker, two never tried (docs/operations.md:3). No manifests or tests exercise scale-out.",
+      "confidence": "medium",
+      "ai": null
+    },
+    "ARC-04": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "jobs table with FOR UPDATE SKIP LOCKED claim and up to three attempts, then failed with last_error (desk/store.py:73-83, desk/drafter.py:67-77); no back-off between job attempts, no idempotency key, no view of jobs.",
+      "confidence": "high",
+      "ai": null
+    },
+    "ARC-05": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Every query scoped by org_id (desk/store.py:1-83) with isolation tests (tests/test_isolation.py:5-25) and per-organisation quotas of 500 rules and 1,000 answers (desk/checks.py:7,18-19); no noisy-neighbour detection or request rate limits. Incident: June 2026, one organisation with 2,000 rules made /ask slow for everyone (docs/operations.md:5, desk/checks.py:7).",
+      "confidence": "medium",
+      "incident": true,
+      "ai": null
+    },
+    "ARC-06": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "B",
+      "evidence": "The only limit was discovered in the June 2026 incident; 'No other limit has been measured' (docs/operations.md:5). No performance suite.",
+      "confidence": "high",
+      "ai": null
+    },
+    "ARC-07": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "B",
+      "evidence": "An external uptime monitor calls /health every minute; 'There are no other metrics or alerts' (docs/operations.md:7, desk/app.py:153-155).",
+      "confidence": "high",
+      "ai": null
+    },
+    "ARC-08": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Model calls have a 20-second timeout and three attempts with back-off (desk/drafter.py:26-36); answering and routing do not use the model and keep working when it is down (docs/operations.md:11, desk/app.py:39-48). No circuit breakers, no DB timeouts, no fallback tests.",
+      "confidence": "medium",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Timeouts and retries on model calls (desk/drafter.py:26-36); failure confined to drafting jobs (desk/drafter.py:76-77, docs/operations.md:11); no breaker or tested fallback.",
+        "confidence": "medium"
+      }
+    },
+    "ARC-09": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "deskctl.py backup runs pg_dump of the whole database (deskctl.py:24-29); restore is manual pg_restore and 'has not been rehearsed' (docs/operations.md:9); tests/test_backup.py:4-8 mocks pg_dump, so README.md:46 'Backups are tested in CI' does not test restore.",
+      "confidence": "high",
+      "ai": null
+    },
+    "DEL-01": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "POST /requests captures area, what, examples and rule_keys from agents and leads in the product (desk/app.py:97-103, desk/store.py:53-57, migrations/002:1-7); leads list open requests (desk/app.py:106-109). No specification, acceptance criteria or risk class.",
+      "confidence": "high",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "No model in intake: requests are a validated form (desk/app.py:97-103).",
+        "confidence": "high"
+      }
+    },
+    "DEL-02": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "One image runs web and worker (Dockerfile:1-7, README.md:40); no build or deploy automation in the repository.",
+      "confidence": "low",
+      "alt_score": 1,
+      "alt_note": "Releases are numbered (desk/app.py:10) and may be built automatically outside the repository.",
+      "ai": null
+    },
+    "DEL-03": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Package split by convention (desk/app.py, store.py, checks.py, drafter.py); no enforced boundaries.",
+      "confidence": "high",
+      "ai": null
+    },
+    "DEL-04": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "An AI lane drafts routing rules on a lead's request from a failure group or change request (desk/app.py:118-127, desk/drafter.py:55-64); drafts carry check results, source, model and prompt version; a lead edits and publishes (desk/app.py:136-150). Narrow: rules only (desk/drafter.py:18). Changes the product's own configured definitions.",
+      "confidence": "high",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Same lane: model-drafted routing rules a person finishes (desk/drafter.py:55-64, desk/app.py:136-150).",
+        "confidence": "high"
+      }
+    },
+    "DEL-05": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "CI on every PR and push runs pytest against PostgreSQL and pip-audit (.github/workflows/ci.yml:2-23); answer and rule saves and AI drafts pass desk/checks.py (desk/app.py:62-66, desk/drafter.py:60); settings are unchecked (desk/app.py:87-94) and prompt-check only greps the file (ci.yml:24-28).",
+      "confidence": "high",
+      "ai": null
+    },
+    "DEL-06": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "/health returns status and version (desk/app.py:153-155); no config snapshot.",
+      "confidence": "high",
+      "ai": null
+    },
+    "DEL-07": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Manual local setup (README.md:36-40); CI uses a throwaway PostgreSQL service for tests (ci.yml:9-15) but no per-change instance of the product.",
+      "confidence": "low",
+      "alt_score": 2,
+      "alt_note": "The image migrates and starts itself from a build (Dockerfile:7), close to a scripted instance.",
+      "ai": null
+    },
+    "DEL-08": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Unit and API tests only (tests/test_isolation.py, test_drafter.py, test_backup.py); no journeys.",
+      "confidence": "high",
+      "ai": null
+    },
+    "DEL-09": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "A published rule or answer is live for the organisation's whole widget at once (desk/app.py:62-66); code releases reach all organisations; no flags or cohorts.",
+      "confidence": "medium",
+      "ai": null
+    },
+    "DEL-10": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No runtime switch for shipped changes; undo writes a new version (desk/store.py:28-32).",
+      "confidence": "medium",
+      "alt_score": 1,
+      "alt_note": "An engineer can stop the drafting worker to switch the AI lane off.",
+      "ai": null
+    },
+    "DEL-11": {
+      "status": "not_applicable",
+      "rationale": "code_release_path is false: the AI lane writes definitions, not code.",
+      "if_applicable": 0,
+      "ai": null
+    },
+    "MAL-01": {
+      "status": "not_applicable",
+      "rationale": "focused-application: Drafting Desk answers help-widget questions and routes the rest (README.md:3).",
+      "if_applicable": 1,
+      "ai": null
+    },
+    "MAL-02": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Answer and rule bodies have fixed fields validated in code (desk/checks.py:23-48); adding a field is code.",
+      "confidence": "high",
+      "ai": null
+    },
+    "MAL-03": {
+      "status": "not_applicable",
+      "rationale": "focused-application: Drafting Desk answers help-widget questions and routes the rest (README.md:3).",
+      "if_applicable": 1,
+      "ai": null
+    },
+    "MAL-04": {
+      "status": "not_applicable",
+      "rationale": "focused-application: Drafting Desk answers help-widget questions and routes the rest (README.md:3).",
+      "if_applicable": 2,
+      "ai": null
+    },
+    "MAL-05": {
+      "status": "not_applicable",
+      "rationale": "focused-application: Drafting Desk answers help-widget questions and routes the rest (README.md:3).",
+      "if_applicable": 1,
+      "ai": null
+    },
+    "MAL-06": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Endpoints described only in README.md; structured 422 error lists (desk/app.py:64-65,100-102); no introspection or OpenAPI.",
+      "confidence": "medium",
+      "ai": null
+    },
+    "MAL-07": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Admin page is a static template in code (desk/templates/admin.html).",
+      "confidence": "high",
+      "ai": null
+    },
+    "MAL-08": {
+      "status": "not_applicable",
+      "rationale": "focused-application: Drafting Desk answers help-widget questions and routes the rest (README.md:3).",
+      "if_applicable": 1,
+      "ai": null
+    },
+    "MAL-09": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Greeting and opening hours are per-organisation stored text (desk/app.py:11,87-94, migrations/001_init.sql:21-22); no theme tokens or locales.",
+      "confidence": "medium",
+      "ai": null
+    },
+    "MAL-10": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Declarative routing rules (pattern, queue, priority; desk/matching.py:19-23) per organisation; narrow scope (question to queue); no test mode.",
+      "confidence": "high",
+      "ai": null
+    },
+    "MAL-11": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No events, webhooks or subscriptions.",
+      "confidence": "high",
+      "ai": null
+    },
+    "MAL-12": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "No hook points; custom logic is core code.",
+      "confidence": "medium",
+      "ai": null
+    },
+    "MAL-13": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "No plugin points; extension is editing the repository.",
+      "confidence": "medium",
+      "ai": null
+    },
+    "MAL-14": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No plugin runtime or isolation; all code runs with full trust.",
+      "confidence": "medium",
+      "ai": null
+    },
+    "MAL-15": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "No extension developer loop; product developers follow README.md:34-40.",
+      "confidence": "low",
+      "alt_score": 2,
+      "alt_note": "Local development is documented (README.md:34-40).",
+      "ai": null
+    },
+    "MAL-16": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No integration mapping layer.",
+      "confidence": "high",
+      "ai": null
+    },
+    "MAL-17": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Queue inboxes are wired by engineers at release time (config/queues.yaml:1-6).",
+      "confidence": "medium",
+      "ai": null
+    },
+    "MAL-18": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Admin and request API undocumented beyond README prose; no versioning (desk/app.py:56-150).",
+      "confidence": "medium",
+      "ai": null
+    },
+    "MAL-19": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Only README prose about the endpoints (README.md:18,22); no typed tool surface or capability map.",
+      "confidence": "medium",
+      "ai": {
+        "status": "assessed",
+        "score": 1,
+        "grade": "A",
+        "evidence": "No typed tool surface for AI agents; an external agent could only work from README prose about the token API.",
+        "confidence": "low"
+      }
+    },
+    "MAL-20": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No conversational surface; the widget is keyword lookup (desk/matching.py:12-16).",
+      "confidence": "high",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "No model-backed conversation; answering does not use the model (docs/operations.md:11, desk/matching.py).",
+        "confidence": "high"
+      }
+    },
+    "LRN-01": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Failed lookups are written on each /ask (desk/app.py:45-46) and read straight away by failure groups and the drafter (desk/store.py:42-50, desk/drafter.py:47-50); no wider usage telemetry.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "These events reach a platform feature (the AI drafter) within minutes.",
+      "ai": null
+    },
+    "LRN-02": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Failed lookups are typed (area, channel, rules_version; migrations/001_init.sql:23-29) and triaged through failure groups and drafts; rules_version is the organisation's latest version id (desk/store.py:36-37), not the definition the question concerns.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "Signals carry the rules version in force and flow into a review workflow (failure group to draft to publish).",
+      "ai": null
+    },
+    "LRN-03": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Failed lookups recorded with area, channel and rules version and grouped with counts, areas, first and last seen (desk/store.py:35-50, desk/app.py:112-115). Not raised as issues; no affected-user counts.",
+      "confidence": "high",
+      "alt_score": 3,
+      "alt_note": "Failure groups give frequency and product area for repeated failures.",
+      "ai": null
+    },
+    "LRN-04": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Failure groups join failed lookups with the rules version history (desk/store.py:42-50); requests and drafts are separate tables, not joined.",
+      "confidence": "medium",
+      "ai": null
+    },
+    "LRN-05": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Failures are grouped with sample questions, areas and the rules versions in force (desk/store.py:42-50).",
+      "confidence": "high",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "Grouping is rule-based SQL (desk/store.py:42-50); no model explains failures.",
+        "confidence": "high"
+      }
+    },
+    "LRN-06": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Proposals for one area: AI rule drafts from a failure group or request, stored with source and check results (desk/drafter.py:55-64); not ranked, no expected impact.",
+      "confidence": "high",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "The model drafts routing-rule proposals for one area, tied to their source failure group or request (desk/drafter.py:47-64, migrations/002:13).",
+        "confidence": "medium"
+      }
+    },
+    "LRN-07": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "The product captures failed lookups and generates candidate rules when a lead asks (desk/app.py:118-127, desk/drafter.py:55-64); nothing runs unprompted.",
+      "confidence": "high",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "A model drafts candidate rules from captured failures on request (desk/drafter.py:47-64).",
+        "confidence": "high"
+      }
+    },
+    "LRN-08": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "AI drafts pass a scope check (desk/drafter.py:39-44, tests/test_drafter.py:8-12) and the same rule checks as hand edits (desk/drafter.py:60), stored with check_errors; no baseline evaluation before publish.",
+      "confidence": "high",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Automated scope and schema checks on AI drafts (desk/drafter.py:39-44,60); no baseline evaluation.",
+        "confidence": "high"
+      }
+    },
+    "LRN-09": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Failed lookups carry the rules version in force (desk/store.py:35-39) so before-and-after is possible, but no published rule records a baseline, target, window or keep/rollback decision.",
+      "confidence": "medium",
+      "ai": null
+    },
+    "LRN-10": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "Checks (desk/checks.py), scope limits (desk/drafter.py:18-19) and the prompt (prompts/draft_rule.txt, PROMPT_VERSION in desk/drafter.py:16) change only when engineers edit code; nothing links them to results.",
+      "confidence": "high",
+      "ai": null
+    },
+    "GOV-01": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No component kit or accessibility scans; raw admin HTML (desk/templates/admin.html).",
+      "confidence": "high",
+      "ai": null
+    },
+    "GOV-02": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Definition versions record author and note, including 'from AI draft N' on publish (desk/store.py:15-25, desk/app.py:147); settings, user and organisation changes are unrecorded (desk/app.py:87-94, deskctl.py:32-40). README.md:28 claims blocked drafts go to 'the audit log', but there is none: they become a job's last_error (desk/drafter.py:76-77).",
+      "confidence": "medium",
+      "alt_score": 2,
+      "alt_note": "definition_versions with drafts status acts as a generic change store for definitions and approvals.",
+      "ai": null
+    },
+    "GOV-03": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "Customer questions and requests are kept with no classification, export, erasure or retention.",
+      "confidence": "high",
+      "ai": null
+    },
+    "GOV-04": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Role model (agent/lead) and organisation scoping on every route (desk/app.py:28-36), validation on definitions (desk/checks.py); pip-audit on every PR (ci.yml:23) but no SAST and no evidence it is required; authorisation not generated per type.",
+      "confidence": "medium",
+      "ai": null
+    },
+    "GOV-05": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Answers and rules versioned with history and undo (desk/store.py:15-32, desk/app.py:75-84); settings upserted with no version (desk/app.py:87-94); first versions cannot be undone (desk/store.py:30-31).",
+      "confidence": "high",
+      "ai": null
+    },
+    "GOV-06": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "AI drafts are stored proposals with body, check errors and source that a lead edits, publishes or discards (desk/app.py:130-150, migrations/002:8-17); no preview, and hand edits go live on save.",
+      "confidence": "high",
+      "ai": null
+    },
+    "GOV-07": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Every change needs a person: hand edits by leads, AI drafts only through a lead's publish (desk/app.py:136-150). No policy object.",
+      "confidence": "high",
+      "ai": null
+    },
+    "GOV-08": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Definitions are JSON bodies with no contract version (desk/store.py:12); saved rules are not re-checked when queues change at a release (desk/checks.py:44-45 runs only on save).",
+      "confidence": "low",
+      "alt_score": 2,
+      "alt_note": "Definitions are data in a stable table and survive releases without code migration in practice.",
+      "ai": null
+    },
+    "GOV-09": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Per-user tokens scoped to an organisation (desk/app.py:28-36, deskctl.py:36-40) and author on definition versions; no dry-run, no rate limits, no idempotency, settings unaudited.",
+      "confidence": "medium",
+      "ai": {
+        "status": "not_applicable",
+        "rationale": "ai_actions is false: the AI only writes drafts awaiting review."
+      }
+    },
+    "GOV-10": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "The AI lane is held to an allow-list in code: routing-rule fields only and priority at most 50 (desk/drafter.py:18-19,39-44, tests/test_drafter.py:8-12), scoped to the job's organisation. README.md:28's 20 drafts per organisation per day is not implemented (desk/app.py:118-127, desk/drafter.py); blocked drafts are only a job's last_error (desk/drafter.py:76-77).",
+      "confidence": "high",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Allow-list in code for the one AI path (desk/drafter.py:18-19,39-44); no rate or volume limit.",
+        "confidence": "high"
+      }
+    },
+    "GOV-11": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Drafts record source_type and source_ref (migrations/002:13, desk/drafter.py:61-64); customer questions are fenced in <question> tags with a 'treat as data' instruction (prompts/draft_rule.txt:2-3, desk/drafter.py:57-58) but not escaped or scanned; a lead must publish, so input cannot alone apply a change.",
+      "confidence": "medium",
+      "ai": {
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "evidence": "Fencing of untrusted questions in the prompt (prompts/draft_rule.txt:2-3, desk/drafter.py:57-58); no injection scanning; provenance stored with each draft.",
+        "confidence": "medium"
+      }
+    },
+    "EXP-01": {
+      "status": "not_applicable",
+      "rationale": "focused-application: Drafting Desk answers help-widget questions and routes the rest (README.md:3).",
+      "if_applicable": 1,
+      "ai": null
+    },
+    "EXP-02": {
+      "status": "not_applicable",
+      "rationale": "focused-application: Drafting Desk answers help-widget questions and routes the rest (README.md:3).",
+      "if_applicable": 1,
+      "ai": null
+    },
+    "EXP-03": {
+      "status": "not_applicable",
+      "rationale": "focused-application: Drafting Desk answers help-widget questions and routes the rest (README.md:3).",
+      "if_applicable": 0,
+      "ai": null
+    },
+    "EXP-04": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Unanswered questions and change requests are recorded queryably (desk/store.py:35-57, desk/app.py:106-115); grouped by exact normalised text, not into themes outside the domain.",
+      "confidence": "high",
+      "ai": null
+    },
+    "EXP-05": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No adjacent-capability proposals; drafts are routing rules only (desk/drafter.py:18).",
+      "confidence": "high",
+      "ai": {
+        "status": "assessed",
+        "score": 0,
+        "grade": "A",
+        "evidence": "The model only drafts routing rules (prompts/draft_rule.txt:1-6).",
+        "confidence": "high"
+      }
+    },
+    "EXP-06": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No cohort enablement of new capabilities.",
+      "confidence": "high",
+      "ai": null
+    },
+    "AIR-03": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Context assembled in code for the one feature: failure-group samples or request text (desk/drafter.py:47-58).",
+      "confidence": "high",
+      "ai": null
+    },
+    "AIR-04": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "The worker uses a service database connection (desk/drafter.py:81) but every read for the AI is scoped to the job's organisation (desk/drafter.py:47-52, desk/store.py:42-66), and only a lead of that organisation can queue a job (desk/app.py:118-127). No test tries to obtain another organisation's data through the AI (tests/test_drafter.py, test_isolation.py cover publish, not drafting input).",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "Organisation scoping is enforced in code on every AI read.",
+      "facets": {
+        "implemented": true,
+        "tested": false,
+        "operated": false
+      },
+      "ai": null
+    },
+    "AIR-05": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No evaluation sets or harness; tests mock the model (tests/test_drafter.py:17-18).",
+      "confidence": "high",
+      "ai": null
+    },
+    "AIR-06": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "The CI prompt-check only tests the prompt file is non-empty and contains '{questions}' (.github/workflows/ci.yml:24-28); no evaluation gates prompt or model changes, despite README.md:28.",
+      "confidence": "medium",
+      "alt_score": 1,
+      "alt_note": "Prompt changes go through PRs and CI, where people may review them.",
+      "ai": null
+    },
+    "AIR-07": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Each draft stores source, model, prompt version, output body and check errors (desk/drafter.py:61-64, migrations/002:9-17); not who asked for it, nor the prompt inputs or raw response; only awaiting drafts are listed (desk/app.py:130-133).",
+      "confidence": "medium",
+      "ai": null
+    },
+    "AIR-01": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Model and endpoint set by environment (desk/drafter.py:17,30, README.md:37); retries then failed jobs; no provider abstraction or per-feature model choice.",
+      "confidence": "high",
+      "ai": null
+    },
+    "AIR-02": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No token or cost records and no quotas; README.md:28's limit of 20 drafts per organisation per day is not in code (desk/app.py:118-127, desk/drafter.py:67-77).",
+      "confidence": "high",
+      "ai": null
+    },
+    "AIR-08": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Publish and discard outcomes per draft are stored with model and prompt version (desk/app.py:143-150, migrations/002:14-15) but not analysed or shown.",
+      "confidence": "low",
+      "alt_score": 2,
+      "alt_note": "Outcomes are recorded per model and prompt version and queryable in the database.",
+      "ai": null
+    }
+  }
+}

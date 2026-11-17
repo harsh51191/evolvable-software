@@ -1,0 +1,607 @@
+{
+  "product": "Static Notes",
+  "date": "2026-11-17",
+  "source": "/home/user/malleablesoftware/evals/cases/static-notes/repo @ f7b1b77 (repo/ contents read at earlier tips 003399f and 68571ac; same files and line counts, no working-tree changes to repo/ at f7b1b77)",
+  "archetype": "focused-application",
+  "framework": "EVOLVE",
+  "framework_version": "0.7.0",
+  "basis": "shipped",
+  "scope_facts": {
+    "persistent_data": {
+      "value": true,
+      "evidence": "SQLite notes table holds the team's notes (schema.sql:3-9, db.py:7-40, deploy.sh:7 mounts notes-data:/data)."
+    },
+    "schema_changes": {
+      "value": true,
+      "evidence": "The evolution path changes the stored table by hand: README.md:30 and schema.sql:2 say edit schema.sql and run ALTER TABLE on the host; docs/change-requests.md:10 records a new 'pinned' field request."
+    },
+    "multi_tenant": {
+      "value": false,
+      "evidence": "One support team on one host; no accounts or organisations (README.md:3-5, schema.sql:3-9 has no owner column)."
+    },
+    "hosted_service": {
+      "value": true,
+      "evidence": "Long-lived Flask app served by gunicorn in a container on a host behind the VPN (Dockerfile:6, deploy.sh:7, README.md:5)."
+    },
+    "machine_actions": {
+      "value": false,
+      "evidence": "No API or tool surface for agents or automated clients: HTML form posts only (app.py:38-60), the one JSON route is read-only (app.py:48-53), no tokens or API docs. The unauthenticated form endpoints could be scripted, but nothing is offered for machine use."
+    },
+    "agent_mutations": {
+      "value": false,
+      "evidence": "No agents or AI in the product (app.py, db.py, requirements.txt:1 is flask only)."
+    },
+    "evolution_auto_apply": {
+      "value": false,
+      "evidence": "No evolution loop that applies changes; every change is a PR and a release (README.md:28, docs/change-requests.md:3)."
+    },
+    "definition_change_path": {
+      "value": false,
+      "evidence": "README.md:22-26: everything about behaviour is in code (content.py:1 says changing it needs a release); settings.py:4-5 env vars are read at start but deploy.sh:7 passes none, so changes go through a PR."
+    },
+    "code_release_path": {
+      "value": true,
+      "evidence": "The only change path is source changes through the product's own pipeline: PR, tag, release.yml:1-11 builds and pushes the image, deploy.sh:1-7 runs it (README.md:28). Declared true because it is the only path by which behaviour changes."
+    },
+    "ai_features": {
+      "value": false,
+      "evidence": "No model calls anywhere: app.py, db.py, content.py; requirements.txt:1 lists only flask.",
+      "available_value": false
+    },
+    "ai_data_access": {
+      "value": false,
+      "evidence": "No AI features.",
+      "available_value": false
+    },
+    "ai_actions": {
+      "value": false,
+      "evidence": "No AI features.",
+      "available_value": false
+    }
+  },
+  "change_kinds": [
+    {
+      "id": "categories",
+      "name": "Add or rename a note category",
+      "who": "support team admins",
+      "main": true,
+      "reach": 0,
+      "evidence": "content.py:5 hard-codes CATEGORIES; app.py:42 validates against it. README.md:17 claims admins rename categories from a settings page, but no settings route exists (app.py:33-76). docs/change-requests.md:7: 4 requests, all PRs and releases.",
+      "confidence": "high"
+    },
+    {
+      "id": "help-text",
+      "name": "Wording of the help text on each page",
+      "who": "support team",
+      "main": true,
+      "reach": 0,
+      "evidence": "content.py:7-10 HELP_TEXT in code, content.py:1 'needs a release'; docs/change-requests.md:8: 3 requests.",
+      "confidence": "high"
+    },
+    {
+      "id": "page-size",
+      "name": "How many notes a page shows",
+      "who": "support team",
+      "main": false,
+      "reach": 0,
+      "evidence": "settings.py:5 env var read at start; deploy.sh:7 sets no env, README.md:25-28 says change by PR and release; docs/change-requests.md:9: 1 request.",
+      "confidence": "high"
+    },
+    {
+      "id": "note-fields",
+      "name": "A new field on notes (for example 'pinned')",
+      "who": "support team",
+      "main": false,
+      "reach": 0,
+      "evidence": "schema.sql:2-9 and README.md:30: edit schema.sql, run ALTER TABLE by hand, change code and release; docs/change-requests.md:10.",
+      "confidence": "high"
+    }
+  ],
+  "proven": {
+    "request": {
+      "level": 0,
+      "evidence": "docs/change-requests.md:3-10: nine requests July to September 2026, 'every one was a pull request and a release' (a first-party summary count, not raw release records).",
+      "note": "Proven only at L0 (manual)."
+    },
+    "fix": {
+      "status": "not_evidenced",
+      "searched": "README.md, docs/change-requests.md, app.py logging (app.py:59,75); no incident or fix records in the repository."
+    },
+    "expansion": {
+      "status": "not_evidenced",
+      "searched": "README.md, docs/; no records of new capabilities launched."
+    }
+  },
+  "ai_delivery": {
+    "present": false,
+    "qualifies": false,
+    "evidence": "Searched the whole repo/ folder: no AGENTS.md, CLAUDE.md or other agent instruction files; workflows (.github/workflows/ci.yml, release.yml, security.yml) run pytest, docker build and pip-audit only."
+  },
+  "scores": {
+    "ARC-01": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "db.py:13-25: list by category and LIKE '%text%' search are scans; schema.sql:3-9 declares no secondary index; only get-by-id uses the primary key (db.py:28-30). No caching.",
+      "confidence": "high",
+      "alt_score": 1,
+      "alt_note": "Queries are plain relational SQL written per feature, and list/get-by-id ride the primary key."
+    },
+    "ARC-02": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "Schema changes are manual SQL on the host: schema.sql:1-2, README.md:30, db.py:1 'The table is created by hand'. No migration framework.",
+      "confidence": "high"
+    },
+    "ARC-03": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "Single container with SQLite on a local volume (deploy.sh:6-7, settings.py:4); gunicorn default single worker (Dockerfile:6). No scale-out path.",
+      "confidence": "high"
+    },
+    "ARC-04": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No queue or background mechanism; all work runs in request handlers (app.py:33-70). No requirements beyond flask (requirements.txt:1).",
+      "confidence": "high"
+    },
+    "ARC-05": {
+      "status": "not_applicable",
+      "rationale": "multi_tenant is false: one team, one host (README.md:3-5)."
+    },
+    "ARC-06": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No load or performance tests (tests/test_app.py:20-35 are functional), no documented limits in README.md.",
+      "confidence": "high"
+    },
+    "ARC-07": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "Only /health returning ok (app.py:68-70); no monitor, metrics or objectives documented or configured in the repo.",
+      "confidence": "medium",
+      "alt_score": 1,
+      "alt_note": "The health endpoint exists for an uptime check, though nothing in scope shows one configured."
+    },
+    "ARC-08": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Errors caught locally by a 500 handler that logs (app.py:73-76); the only dependency is local SQLite with no timeouts (db.py:7-10). No connectors, plugins or AI providers.",
+      "confidence": "medium"
+    },
+    "ARC-09": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "Makefile:7-8 'backup' only echoes 'TODO: copy /data/notes.db somewhere safe'; README.md:34-36 points to it. No backup or restore command.",
+      "confidence": "high",
+      "alt_score": 1,
+      "alt_note": "The TODO text amounts to telling the operator to copy the database file by hand."
+    },
+    "DEL-01": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "Requests live in the #notes-team chat channel (README.md:32, docs/change-requests.md:3); no request object in the product.",
+      "confidence": "high"
+    },
+    "DEL-02": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "One artifact; image built by release.yml:1-11 on tag, but deployed by an engineer running deploy.sh on the host (deploy.sh:2, README.md:28).",
+      "confidence": "medium",
+      "alt_score": 1,
+      "alt_note": "Build is automated on tag and deploy is a one-command script."
+    },
+    "DEL-03": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Module split by convention only (app.py, db.py, content.py, settings.py); no dependency rules or architecture tests.",
+      "confidence": "high"
+    },
+    "DEL-04": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No AI implementation lane; every change is a hand-made PR (README.md:28).",
+      "confidence": "high"
+    },
+    "DEL-05": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "CI runs pytest on PRs but skips draft PRs (.github/workflows/ci.yml:3-7); schema changes are applied by hand and unchecked (README.md:30); security scan is manual (security.yml:2-3).",
+      "confidence": "high"
+    },
+    "DEL-06": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "/health returns status only (app.py:68-70); no version endpoint or config snapshot.",
+      "confidence": "high"
+    },
+    "DEL-07": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "One long-lived production host (README.md:5, deploy.sh:5-7); local setup is manual (README.md:9-11 incl. sqlite3 by hand). No per-change environments.",
+      "confidence": "low",
+      "alt_score": 2,
+      "alt_note": "deploy.sh starts an instance from a tagged image, a scripted build from a build id, though the schema still needs a manual step."
+    },
+    "DEL-08": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Flask test-client tests only (tests/test_app.py:20-35); no end-to-end journeys or adoption instrumentation.",
+      "confidence": "high"
+    },
+    "DEL-09": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "Every release replaces the single container for everyone (deploy.sh:6-7); no flags or cohorts.",
+      "confidence": "high"
+    },
+    "DEL-10": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No runtime switches; disabling anything needs a code change and release (content.py:1, README.md:22-28).",
+      "confidence": "high"
+    },
+    "DEL-11": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "No rollback tooling built as a first-party evolution system; deploy.sh:4-7 takes any tag, so an engineer can re-run an older image, but under scoring rule 12 a team script does not earn credit, and hand-applied ALTER TABLE changes (README.md:30) are not kept compatible.",
+      "confidence": "low",
+      "alt_score": 2,
+      "alt_note": "Previous image tags are in the registry and deploy.sh redeploys any of them in one step; data compatibility is not ensured."
+    },
+    "MAL-01": {
+      "status": "not_applicable",
+      "rationale": "focused-application: Static Notes is a narrow notes board for one support team (README.md:3). Note is the only entity.",
+      "if_applicable": 1
+    },
+    "MAL-02": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Fields are fixed columns in schema.sql:3-9; adding a field ('pinned', docs/change-requests.md:10) is code plus a hand-run ALTER TABLE (README.md:30). Validation is per-route code (app.py:40-43).",
+      "confidence": "high"
+    },
+    "MAL-03": {
+      "status": "not_applicable",
+      "rationale": "focused-application: Static Notes is a narrow notes board for one support team (README.md:3).",
+      "if_applicable": 1
+    },
+    "MAL-04": {
+      "status": "not_applicable",
+      "rationale": "focused-application: Static Notes is a narrow notes board for one support team (README.md:3).",
+      "if_applicable": 1
+    },
+    "MAL-05": {
+      "status": "not_applicable",
+      "rationale": "focused-application: Static Notes is a narrow notes board for one support team (README.md:3).",
+      "if_applicable": 1
+    },
+    "MAL-06": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No API contract, OpenAPI or documentation of endpoints; one read-only JSON route (app.py:48-53); errors are bare 400/404 (app.py:43,52).",
+      "confidence": "high"
+    },
+    "MAL-07": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Page layout is an inline Jinja template in code (app.py:13-25).",
+      "confidence": "high"
+    },
+    "MAL-08": {
+      "status": "not_applicable",
+      "rationale": "focused-application: Static Notes is a narrow notes board for one support team (README.md:3).",
+      "if_applicable": 1
+    },
+    "MAL-09": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Title, help text and categories are Python constants (content.py:3-10); markup has no theme tokens (app.py:13-25).",
+      "confidence": "high"
+    },
+    "MAL-10": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "No rules engine; the only behaviour rule (category must be known) is coded (app.py:42).",
+      "confidence": "high"
+    },
+    "MAL-11": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No event model, listeners or webhooks; delete only writes a log line (app.py:56-60).",
+      "confidence": "high"
+    },
+    "MAL-12": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "No hook points; custom server logic means editing core code (app.py).",
+      "confidence": "medium"
+    },
+    "MAL-13": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "No plugin points; extension means changing the repository code.",
+      "confidence": "medium"
+    },
+    "MAL-14": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No isolation for extension code; there is no plugin runtime at all and the app runs with full trust (Dockerfile:1-6).",
+      "confidence": "medium"
+    },
+    "MAL-15": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "No extension developer loop; product developers run locally from README.md:7-11 and test via pytest (Makefile:4-5).",
+      "confidence": "low",
+      "alt_score": 2,
+      "alt_note": "Local development is possible and documented (README.md:7-11)."
+    },
+    "MAL-16": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No integrations or mapping layer in the code.",
+      "confidence": "high"
+    },
+    "MAL-17": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No connectors or SDK.",
+      "confidence": "high"
+    },
+    "MAL-18": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No documented or versioned API contract (README.md has none; app.py routes only).",
+      "confidence": "high"
+    },
+    "MAL-19": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No agent tool surface or machine-readable capability map.",
+      "confidence": "high"
+    },
+    "MAL-20": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No conversational surface.",
+      "confidence": "high"
+    },
+    "LRN-01": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Only Python logging of deletes and errors (app.py:11,59,75); no telemetry consumed by the product.",
+      "confidence": "high"
+    },
+    "LRN-02": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No feedback, rating or usage signal objects (schema.sql:3-9 is the only table).",
+      "confidence": "high"
+    },
+    "LRN-03": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Server-side error logging for engineers (app.py:73-76). README.md:18 claims zero-result searches are tracked, but search() (app.py:63-65) and db.search_notes (db.py:21-25) record nothing.",
+      "confidence": "high"
+    },
+    "LRN-04": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Analysis happens outside the product: docs/change-requests.md counts chat requests by hand.",
+      "confidence": "medium"
+    },
+    "LRN-05": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Engineers read logged exceptions (app.py:75); no grouping or context.",
+      "confidence": "high"
+    },
+    "LRN-06": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No dashboards, recommendations or proposals in the product.",
+      "confidence": "high"
+    },
+    "LRN-07": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "People turn experience into changes by hand: chat requests become PRs (README.md:28,32, docs/change-requests.md:3).",
+      "confidence": "high"
+    },
+    "LRN-08": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "The product produces no learned or AI-made changes and nothing would check one; hand-made PR checks are scored under DEL-05.",
+      "confidence": "high"
+    },
+    "LRN-09": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No post-change measurement; no telemetry bound to releases.",
+      "confidence": "high"
+    },
+    "LRN-10": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "Checks are fixed in code (tests/test_app.py, .github/workflows/ci.yml) and change only when engineers edit them; no record of improvements after incidents.",
+      "confidence": "high"
+    },
+    "GOV-01": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No component kit or accessibility scanning; raw HTML template with unlabeled inputs (app.py:13-25).",
+      "confidence": "high"
+    },
+    "GOV-02": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Only a per-feature log line on delete (app.py:59); no audit store; anyone on the VPN can post and delete (README.md:5).",
+      "confidence": "high"
+    },
+    "GOV-03": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No privacy classification, export, erasure or retention.",
+      "confidence": "high"
+    },
+    "GOV-04": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "No permission model at all (README.md:5); per-route input checks (app.py:40-43); pip-audit only on manual dispatch (.github/workflows/security.yml:2-3), not gating.",
+      "confidence": "high"
+    },
+    "GOV-05": {
+      "status": "not_applicable",
+      "rationale": "definition_change_path is false: behaviour lives in code (README.md:22-26, content.py:1).",
+      "if_applicable": 1
+    },
+    "GOV-06": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Changes are pull requests for code (README.md:28); no proposal object.",
+      "confidence": "high"
+    },
+    "GOV-07": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Every change is a human PR, tag and manual deploy (README.md:28, deploy.sh:2).",
+      "confidence": "high"
+    },
+    "GOV-08": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "No customisation layer; data survives releases only if an engineer runs the matching ALTER TABLE by hand on the host (README.md:30, schema.sql:2).",
+      "confidence": "low"
+    },
+    "GOV-09": {
+      "status": "not_applicable",
+      "rationale": "machine_actions is false: no API or tool surface for agents or automated clients (app.py:33-70)."
+    },
+    "GOV-10": {
+      "status": "not_applicable",
+      "rationale": "agent_mutations and evolution_auto_apply are false: no AI or self-change."
+    },
+    "GOV-11": {
+      "status": "not_applicable",
+      "rationale": "agent_mutations and evolution_auto_apply are false: no AI or learning inputs drive change."
+    },
+    "EXP-01": {
+      "status": "not_applicable",
+      "rationale": "focused-application: Static Notes is a narrow notes board for one support team (README.md:3).",
+      "if_applicable": 1
+    },
+    "EXP-02": {
+      "status": "not_applicable",
+      "rationale": "focused-application: Static Notes is a narrow notes board for one support team (README.md:3).",
+      "if_applicable": 1
+    },
+    "EXP-03": {
+      "status": "not_applicable",
+      "rationale": "focused-application: Static Notes is a narrow notes board for one support team (README.md:3).",
+      "if_applicable": 0
+    },
+    "EXP-04": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "Unmet demand is not recorded in the product: README.md:18 claims zero-result searches are tracked, but search (app.py:63-65, db.py:21-25) stores nothing; requests live in chat (README.md:32).",
+      "confidence": "high"
+    },
+    "EXP-05": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No opportunity proposals.",
+      "confidence": "high"
+    },
+    "EXP-06": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No cohort enablement; one container for everyone (deploy.sh:6-7).",
+      "confidence": "high"
+    },
+    "AIR-03": {
+      "status": "not_applicable",
+      "rationale": "ai_features is false (default and opt-in): no model calls in app.py, db.py; requirements.txt:1 is flask only."
+    },
+    "AIR-04": {
+      "status": "not_applicable",
+      "rationale": "ai_features is false (default and opt-in): no model calls in app.py, db.py; requirements.txt:1 is flask only."
+    },
+    "AIR-05": {
+      "status": "not_applicable",
+      "rationale": "ai_features is false (default and opt-in): no model calls in app.py, db.py; requirements.txt:1 is flask only."
+    },
+    "AIR-06": {
+      "status": "not_applicable",
+      "rationale": "ai_features is false (default and opt-in): no model calls in app.py, db.py; requirements.txt:1 is flask only."
+    },
+    "AIR-07": {
+      "status": "not_applicable",
+      "rationale": "ai_features is false (default and opt-in): no model calls in app.py, db.py; requirements.txt:1 is flask only."
+    },
+    "AIR-01": {
+      "status": "not_applicable",
+      "rationale": "ai_features is false (default and opt-in): no model calls in app.py, db.py; requirements.txt:1 is flask only."
+    },
+    "AIR-02": {
+      "status": "not_applicable",
+      "rationale": "ai_features is false (default and opt-in): no model calls in app.py, db.py; requirements.txt:1 is flask only."
+    },
+    "AIR-08": {
+      "status": "not_applicable",
+      "rationale": "ai_features is false (default and opt-in): no model calls in app.py, db.py; requirements.txt:1 is flask only."
+    }
+  }
+}

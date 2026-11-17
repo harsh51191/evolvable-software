@@ -1,0 +1,623 @@
+{
+  "product": "Rules Desk",
+  "date": "2026-11-17",
+  "source": "/home/user/malleablesoftware/evals/cases/rules-desk/repo @ f7b1b77 (repo/ contents read at earlier tips 003399f and 68571ac; same files and line counts, no working-tree changes to repo/ at f7b1b77)",
+  "archetype": "focused-application",
+  "framework": "EVOLVE",
+  "framework_version": "0.7.0",
+  "basis": "shipped",
+  "scope_facts": {
+    "persistent_data": {
+      "value": true,
+      "evidence": "SQLite database of users, versioned answers and rules, settings and failed lookups (migrations/001_init.sql:1-21, migrations/002_failed_lookups.sql:1-9, desk/app.py:16)."
+    },
+    "schema_changes": {
+      "value": true,
+      "evidence": "Versioned SQL migrations applied by deskctl.py migrate (deskctl.py:12-21, migrations/001-002), run at container start (Dockerfile:6)."
+    },
+    "multi_tenant": {
+      "value": false,
+      "evidence": "'One company runs one Rules Desk' (README.md:3); no organisation column in any table (migrations/001_init.sql)."
+    },
+    "hosted_service": {
+      "value": true,
+      "evidence": "Long-lived Flask service under gunicorn answering the help widget (Dockerfile:6, desk/app.py:39-45)."
+    },
+    "machine_actions": {
+      "value": true,
+      "evidence": "A token-authenticated JSON API changes definitions and settings: PUT /admin/<kind>s/<key>, POST .../undo, PUT /admin/settings/<name> with X-Desk-Token (desk/app.py:28-36,64-112); any script holding a lead token can call it."
+    },
+    "agent_mutations": {
+      "value": false,
+      "evidence": "No AI or agents in the product; 'smart matching' is keyword overlap and regex (desk/matching.py:1-23)."
+    },
+    "evolution_auto_apply": {
+      "value": false,
+      "evidence": "No evolution loop; lead edits go live on save, but they are made by people (desk/app.py:64-70)."
+    },
+    "definition_change_path": {
+      "value": true,
+      "evidence": "Leads change answers, routing rules and settings through /admin with no deploy (desk/app.py:53-112, desk/templates/admin.html:1-32, README.md:7-11)."
+    },
+    "code_release_path": {
+      "value": false,
+      "evidence": "No evolution system or AI produces code; new queues and widget changes are hand-made engineering releases (README.md:12-13, config/queues.yaml:1). Ordinary engineering releases are not an evolution-system code path."
+    },
+    "ai_features": {
+      "value": false,
+      "evidence": "No model calls: matching is keyword counting and regex (desk/matching.py:12-23); requirements.txt:1-2 list flask and PyYAML only. README.md:21 'smart matching' is not ML.",
+      "available_value": false
+    },
+    "ai_data_access": {
+      "value": false,
+      "evidence": "No AI features.",
+      "available_value": false
+    },
+    "ai_actions": {
+      "value": false,
+      "evidence": "No AI features.",
+      "available_value": false
+    }
+  },
+  "change_kinds": [
+    {
+      "id": "answers",
+      "name": "Add or edit an answer the widget gives",
+      "who": "support leads",
+      "main": true,
+      "reach": 1,
+      "evidence": "PUT /admin/answers/<key> checked by desk/checks.py:20-30, saved as a version with author (desk/store.py:19-25), history and undo (desk/app.py:73-85, desk/store.py:34-38, tests/test_versions.py:4-9); admin page buttons (desk/templates/admin.html:11-12). Gap: undo refuses when only one version exists (desk/store.py:36-37) and there is no delete, so a brand-new answer can be corrected but not withdrawn. docs/change-requests.md:7: 112 requests.",
+      "confidence": "medium"
+    },
+    {
+      "id": "routing-rules",
+      "name": "Add or change a routing rule",
+      "who": "support leads",
+      "main": true,
+      "reach": 1,
+      "evidence": "PUT /admin/rules/<key> checked by desk/checks.py:33-45 (tests/test_checks.py), versioned with undo (desk/store.py:19-38); same first-version undo gap (desk/store.py:36-37). docs/change-requests.md:8: 41 requests.",
+      "confidence": "medium"
+    },
+    {
+      "id": "greeting-hours",
+      "name": "Greeting and opening hours",
+      "who": "support leads",
+      "main": false,
+      "reach": 0,
+      "evidence": "PUT /admin/settings/<name> overwrites with INSERT OR REPLACE (desk/app.py:105-112); no version, history or undo, despite README.md:15 'Every admin change can be undone'. Supported path without undo is reach 0. docs/change-requests.md:9: 6 requests.",
+      "confidence": "high"
+    },
+    {
+      "id": "queues",
+      "name": "Add a support queue",
+      "who": "engineers",
+      "main": false,
+      "reach": 0,
+      "evidence": "config/queues.yaml:1-6 edited by engineers and released (README.md:12, docs/change-requests.md:10).",
+      "confidence": "high"
+    },
+    {
+      "id": "widget-look",
+      "name": "Widget look and text",
+      "who": "engineers",
+      "main": false,
+      "reach": 0,
+      "evidence": "Front-end code and a release (README.md:13, docs/change-requests.md:11); not in this repository.",
+      "confidence": "medium"
+    }
+  ],
+  "proven": {
+    "request": {
+      "level": 1,
+      "evidence": "docs/change-requests.md:5-9: July to September 2026, 112 answer and 41 rule changes made by support leads on the admin page, with no release (a first-party summary counted from the request inbox, not raw version records).",
+      "note": "Summary document, not the definition_versions table itself."
+    },
+    "fix": {
+      "status": "not_evidenced",
+      "searched": "README.md:23-25 describes a weekly failed-lookup review, but no records of fixes made from failed lookups are in the repository (docs/, tests/)."
+    },
+    "expansion": {
+      "status": "not_evidenced",
+      "searched": "README.md, docs/change-requests.md; no records of new capabilities launched."
+    }
+  },
+  "ai_delivery": {
+    "present": false,
+    "qualifies": false,
+    "evidence": "Searched the repo/ folder: no agent instruction files, no agent workflows; .github/workflows/ci.yml:1-16 runs pytest and pip-audit only."
+  },
+  "scores": {
+    "ARC-01": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Hand-written SQL per feature on SQLite (desk/store.py:11-51); UNIQUE (kind, key, version) index (migrations/001_init.sql:17) and failed_lookups_area index (migrations/002_failed_lookups.sql:9); no caching, all_current re-queried per /ask (desk/app.py:42-45).",
+      "confidence": "high"
+    },
+    "ARC-02": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Versioned forward-only migration files applied by deskctl.py migrate (deskctl.py:12-21); no down steps or online strategy.",
+      "confidence": "high"
+    },
+    "ARC-03": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "State in a SQLite file on local disk (desk/app.py:16, README.md:34); one container. No shared store, no scale-out guidance.",
+      "confidence": "high"
+    },
+    "ARC-04": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No queue or background work; everything, including failed-lookup writes, runs in the request (desk/app.py:39-45).",
+      "confidence": "high"
+    },
+    "ARC-05": {
+      "status": "not_applicable",
+      "rationale": "multi_tenant is false: one company per deployment (README.md:3)."
+    },
+    "ARC-06": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No load tests or documented limits (tests/ are functional; README.md has none).",
+      "confidence": "high"
+    },
+    "ARC-07": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "/health returns status and version (desk/app.py:115-117); no monitor, metrics or objectives in scope.",
+      "confidence": "medium",
+      "alt_score": 1,
+      "alt_note": "The health endpoint is ready for an uptime check, though none is configured in scope."
+    },
+    "ARC-08": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "No outbound dependencies besides local SQLite and the queues file (desk/checks.py:9-11); errors surface per request via Flask defaults; no timeouts or isolation policy.",
+      "confidence": "medium"
+    },
+    "ARC-09": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "deskctl.py backup copies the whole SQLite DB, which holds data, definitions, settings and user tokens (deskctl.py:24-32); no restore command; tests/test_backup.py:6-8 only checks the file is non-empty, so README.md:38 'Backups are tested in CI' does not mean restore is tested.",
+      "confidence": "high"
+    },
+    "DEL-01": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "Change requests arrive by email outside the product (docs/change-requests.md:3); no request object.",
+      "confidence": "high"
+    },
+    "DEL-02": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "One image (Dockerfile:1-6); no build or deploy automation in the repository (ci.yml only tests).",
+      "confidence": "low",
+      "alt_score": 1,
+      "alt_note": "Releases are numbered (desk/app.py:9, docs/change-requests.md:10) and may be built automatically outside the repository."
+    },
+    "DEL-03": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Package split by convention (desk/app.py, store.py, checks.py, matching.py); no enforced boundaries.",
+      "confidence": "high"
+    },
+    "DEL-04": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No AI implementation lane; leads and engineers make every change by hand.",
+      "confidence": "high"
+    },
+    "DEL-05": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "CI on every PR and push runs pytest and pip-audit (.github/workflows/ci.yml:2-16); answer and rule saves pass desk/checks.py before landing (desk/app.py:67-69); settings saves are unchecked (desk/app.py:105-112) and queues.yaml changes have no validation test.",
+      "confidence": "high"
+    },
+    "DEL-06": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "/health returns status and version (desk/app.py:115-117); no config snapshot.",
+      "confidence": "high"
+    },
+    "DEL-07": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Documented manual local setup (README.md:29-32); no scripted or per-change instances.",
+      "confidence": "low",
+      "alt_score": 2,
+      "alt_note": "The image migrates and starts itself from a build (Dockerfile:6), close to a scripted instance."
+    },
+    "DEL-08": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Unit tests only (tests/test_checks.py, test_versions.py, test_backup.py); no journeys.",
+      "confidence": "high"
+    },
+    "DEL-09": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "A saved answer or rule is live for every widget user at once (desk/templates/admin.html:5, desk/app.py:64-70); no flags or cohorts.",
+      "confidence": "high"
+    },
+    "DEL-10": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No runtime switch to turn a change off; undo creates a new version (desk/store.py:34-38) and settings have none.",
+      "confidence": "medium"
+    },
+    "DEL-11": {
+      "status": "not_applicable",
+      "rationale": "code_release_path is false: no evolution system or AI ships code.",
+      "if_applicable": 0
+    },
+    "MAL-01": {
+      "status": "not_applicable",
+      "rationale": "focused-application: Rules Desk answers help-widget questions and routes the rest (README.md:3).",
+      "if_applicable": 1
+    },
+    "MAL-02": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Answer and rule bodies have fixed fields validated in code (desk/checks.py:20-45); adding a field is code.",
+      "confidence": "high"
+    },
+    "MAL-03": {
+      "status": "not_applicable",
+      "rationale": "focused-application: Rules Desk answers help-widget questions and routes the rest (README.md:3).",
+      "if_applicable": 1
+    },
+    "MAL-04": {
+      "status": "not_applicable",
+      "rationale": "focused-application: Rules Desk answers help-widget questions and routes the rest (README.md:3).",
+      "if_applicable": 2
+    },
+    "MAL-05": {
+      "status": "not_applicable",
+      "rationale": "focused-application: Rules Desk answers help-widget questions and routes the rest (README.md:3).",
+      "if_applicable": 1
+    },
+    "MAL-06": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Endpoints described only in README.md:9-25; structured 422 error lists (desk/app.py:68-69) but no introspection or OpenAPI.",
+      "confidence": "medium"
+    },
+    "MAL-07": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Admin page and widget layout are code (desk/templates/admin.html; README.md:13 widget changes need a release).",
+      "confidence": "high"
+    },
+    "MAL-08": {
+      "status": "not_applicable",
+      "rationale": "focused-application: Rules Desk answers help-widget questions and routes the rest (README.md:3).",
+      "if_applicable": 1
+    },
+    "MAL-09": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Greeting and opening hours are stored text the lead edits (desk/app.py:10,105-112, desk/app.py:48-50 serves them); widget look and other text are code (README.md:13); no tokens or locales.",
+      "confidence": "medium"
+    },
+    "MAL-10": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Routing rules are declarative (pattern, queue, priority) evaluated by desk/matching.py:19-23, composed by leads; narrow scope (question to queue only); a try endpoint exists only in the API (desk/app.py:88-96), not on the admin page.",
+      "confidence": "medium",
+      "alt_score": 3,
+      "alt_note": "Leads compose rules through a supported path with a test mode (POST /admin/rules/try)."
+    },
+    "MAL-11": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No events, webhooks or subscriptions.",
+      "confidence": "high"
+    },
+    "MAL-12": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "No hook points; custom logic is core code.",
+      "confidence": "medium"
+    },
+    "MAL-13": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "No plugin points; extension is editing the repository.",
+      "confidence": "medium"
+    },
+    "MAL-14": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No plugin runtime or isolation; all code runs with full trust.",
+      "confidence": "medium"
+    },
+    "MAL-15": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "No extension developer loop; product developers follow README.md:27-32.",
+      "confidence": "low",
+      "alt_score": 2,
+      "alt_note": "Local development is documented (README.md:27-32)."
+    },
+    "MAL-16": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No integration mapping layer.",
+      "confidence": "high"
+    },
+    "MAL-17": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Queue inboxes are wired by engineers in config and at release time (config/queues.yaml:1-6).",
+      "confidence": "medium"
+    },
+    "MAL-18": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Admin API undocumented beyond README.md table; no versioning (routes at desk/app.py:58-112).",
+      "confidence": "medium"
+    },
+    "MAL-19": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Only README prose about the admin endpoints; no typed tool surface or capability map.",
+      "confidence": "medium"
+    },
+    "MAL-20": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No conversational surface; the widget is keyword lookup (desk/matching.py:12-16).",
+      "confidence": "high"
+    },
+    "LRN-01": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "No usage telemetry beyond failed-lookup rows, which no platform feature consumes (desk/store.py:41-51).",
+      "confidence": "medium",
+      "alt_score": 2,
+      "alt_note": "Failed lookups are queryable structured records as soon as they happen."
+    },
+    "LRN-02": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Failed lookups are typed signals (question, normalised, area, channel; migrations/002_failed_lookups.sql:1-8) but not linked to any definition or version.",
+      "confidence": "high"
+    },
+    "LRN-03": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Each unanswered question is stored with area and channel (desk/app.py:43-44, desk/store.py:41-44) and queryable by area (desk/app.py:99-102, desk/store.py:47-51, tests/test_versions.py:12-15). No friction detection or issue objects.",
+      "confidence": "high"
+    },
+    "LRN-04": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "No joined sources; request counting is done outside the product (docs/change-requests.md:3).",
+      "confidence": "medium"
+    },
+    "LRN-05": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Leads read a raw list of failed questions (desk/store.py:47-51); no grouping or context.",
+      "confidence": "medium"
+    },
+    "LRN-06": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "A failed-lookup list by area is the only report (desk/app.py:99-102); no recommendations.",
+      "confidence": "medium"
+    },
+    "LRN-07": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Leads review failed lookups weekly and write answers by hand (README.md:25).",
+      "confidence": "high"
+    },
+    "LRN-08": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "The product produces no learned or AI-made changes and nothing would check one; checks on human edits are scored under DEL-05.",
+      "confidence": "high"
+    },
+    "LRN-09": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "No post-change measurement; failed lookups carry only a timestamp, so before-and-after comparison is ad hoc.",
+      "confidence": "low",
+      "alt_score": 2,
+      "alt_note": "Failed-lookup records are relevant telemetry, though not bound to a version or decision."
+    },
+    "LRN-10": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "Checks are fixed in desk/checks.py and change only when engineers edit code.",
+      "confidence": "high"
+    },
+    "GOV-01": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No component kit or accessibility scans; raw admin HTML (desk/templates/admin.html).",
+      "confidence": "high"
+    },
+    "GOV-02": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Definition versions record author and note (desk/store.py:19-31) per answer and rule key; settings changes and user creation are not recorded (desk/app.py:105-112, deskctl.py:35-39); no audit view beyond per-key history.",
+      "confidence": "medium",
+      "alt_score": 2,
+      "alt_note": "definition_versions acts as a generic change store for definitions with author."
+    },
+    "GOV-03": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "Customer questions are kept with no classification, export, erasure or retention (desk/store.py:41-51).",
+      "confidence": "high"
+    },
+    "GOV-04": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Simple role model (agent/lead) checked on every admin route (desk/app.py:28-36, migrations/001_init.sql:3), validation on definitions (desk/checks.py); pip-audit on every PR (ci.yml:16) but no SAST and no evidence it is a required check; authorisation not generated per type.",
+      "confidence": "medium"
+    },
+    "GOV-05": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Answers and rules are versioned with history and undo (desk/store.py:19-38, desk/app.py:73-85, tests/test_versions.py:4-9); settings are overwritten with no version (desk/app.py:105-112), and a first version cannot be undone (desk/store.py:36-37).",
+      "confidence": "high"
+    },
+    "GOV-06": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Changes go live on save (desk/templates/admin.html:5); no proposal or review object; rule preview only through the try API (desk/app.py:88-96).",
+      "confidence": "medium"
+    },
+    "GOV-07": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Every change is made by a person; no policy object.",
+      "confidence": "high"
+    },
+    "GOV-08": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "evidence": "Definitions are JSON bodies with no contract version (desk/store.py:16); nothing re-checks saved rules when queues.yaml changes at a release (desk/checks.py:41-42 runs only on save).",
+      "confidence": "low",
+      "alt_score": 2,
+      "alt_note": "Definitions are data in a stable table and survive releases without code migration in practice."
+    },
+    "GOV-09": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Per-user tokens (deskctl.py:35-39, desk/app.py:28-36) and author on definition versions; no dry-run for answers or settings (rule try only, desk/app.py:88-96), no rate limits or idempotency, settings unaudited.",
+      "confidence": "medium"
+    },
+    "GOV-10": {
+      "status": "not_applicable",
+      "rationale": "agent_mutations and evolution_auto_apply are false: no AI or self-change."
+    },
+    "GOV-11": {
+      "status": "not_applicable",
+      "rationale": "agent_mutations and evolution_auto_apply are false: inputs never drive automatic change."
+    },
+    "EXP-01": {
+      "status": "not_applicable",
+      "rationale": "focused-application: Rules Desk answers help-widget questions and routes the rest (README.md:3).",
+      "if_applicable": 1
+    },
+    "EXP-02": {
+      "status": "not_applicable",
+      "rationale": "focused-application: Rules Desk answers help-widget questions and routes the rest (README.md:3).",
+      "if_applicable": 1
+    },
+    "EXP-03": {
+      "status": "not_applicable",
+      "rationale": "focused-application: Rules Desk answers help-widget questions and routes the rest (README.md:3).",
+      "if_applicable": 0
+    },
+    "EXP-04": {
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "evidence": "Unanswered questions are recorded queryably with area and channel (desk/store.py:41-51, desk/app.py:99-102); not clustered into themes.",
+      "confidence": "high"
+    },
+    "EXP-05": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No opportunity proposals.",
+      "confidence": "high"
+    },
+    "EXP-06": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "evidence": "No cohort enablement of new capabilities.",
+      "confidence": "high"
+    },
+    "AIR-03": {
+      "status": "not_applicable",
+      "rationale": "ai_features is false (default and opt-in): matching is keyword overlap and regex (desk/matching.py:12-23); no model client in requirements.txt."
+    },
+    "AIR-04": {
+      "status": "not_applicable",
+      "rationale": "ai_features is false (default and opt-in): matching is keyword overlap and regex (desk/matching.py:12-23); no model client in requirements.txt."
+    },
+    "AIR-05": {
+      "status": "not_applicable",
+      "rationale": "ai_features is false (default and opt-in): matching is keyword overlap and regex (desk/matching.py:12-23); no model client in requirements.txt."
+    },
+    "AIR-06": {
+      "status": "not_applicable",
+      "rationale": "ai_features is false (default and opt-in): matching is keyword overlap and regex (desk/matching.py:12-23); no model client in requirements.txt."
+    },
+    "AIR-07": {
+      "status": "not_applicable",
+      "rationale": "ai_features is false (default and opt-in): matching is keyword overlap and regex (desk/matching.py:12-23); no model client in requirements.txt."
+    },
+    "AIR-01": {
+      "status": "not_applicable",
+      "rationale": "ai_features is false (default and opt-in): matching is keyword overlap and regex (desk/matching.py:12-23); no model client in requirements.txt."
+    },
+    "AIR-02": {
+      "status": "not_applicable",
+      "rationale": "ai_features is false (default and opt-in): matching is keyword overlap and regex (desk/matching.py:12-23); no model client in requirements.txt."
+    },
+    "AIR-08": {
+      "status": "not_applicable",
+      "rationale": "ai_features is false (default and opt-in): matching is keyword overlap and regex (desk/matching.py:12-23); no model client in requirements.txt."
+    }
+  }
+}

@@ -1,0 +1,771 @@
+{
+  "case": "drafting-desk",
+  "assessment": "/tmp/claude-0/-home-user-insight-canvas/041b1db5-929e-5c5d-bba1-ab8dfef472ae/scratchpad/v07/blind/eval-cases/drafting-desk.json",
+  "items": [
+    {
+      "section": "archetype",
+      "id": "archetype",
+      "expected": "focused-application",
+      "observed": "focused-application",
+      "met": true,
+      "trap": false,
+      "reason": "A help desk product, not a platform for building others.",
+      "files": [
+        "README.md"
+      ],
+      "evidence": ""
+    },
+    {
+      "section": "scope facts",
+      "id": "persistent_data",
+      "expected": "true",
+      "observed": "true",
+      "met": true,
+      "trap": false,
+      "reason": "PostgreSQL holds every organisation's data.",
+      "files": [
+        "migrations/001_init.sql"
+      ],
+      "evidence": "PostgreSQL holds organisations, users, versioned definitions, settings, failed lookups, requests, drafts and …"
+    },
+    {
+      "section": "scope facts",
+      "id": "schema_changes",
+      "expected": "true",
+      "observed": "true",
+      "met": true,
+      "trap": false,
+      "reason": "Numbered migrations.",
+      "files": [
+        "deskctl.py",
+        "migrations/002_requests_and_drafts.sql"
+      ],
+      "evidence": "Versioned SQL migrations applied by deskctl.py migrate at start (deskctl.py:14-21, Dockerfile:7)."
+    },
+    {
+      "section": "scope facts",
+      "id": "multi_tenant",
+      "expected": "true",
+      "observed": "true",
+      "met": true,
+      "trap": false,
+      "reason": "Several customer organisations, each with its own leads, agents and data.",
+      "files": [
+        "migrations/001_init.sql",
+        "README.md",
+        "tests/test_isolation.py"
+      ],
+      "evidence": "One deployment serves several customer organisations, each with its own leads, data and widget key (README.md…"
+    },
+    {
+      "section": "scope facts",
+      "id": "hosted_service",
+      "expected": "true",
+      "observed": "true",
+      "met": true,
+      "trap": false,
+      "reason": "A web service and a drafting worker.",
+      "files": [
+        "Dockerfile",
+        "desk/drafter.py"
+      ],
+      "evidence": "Gunicorn web service plus a drafting worker process (README.md:40, Dockerfile:7, desk/drafter.py:67-81)."
+    },
+    {
+      "section": "scope facts",
+      "id": "machine_actions",
+      "expected": "true",
+      "observed": "true",
+      "met": true,
+      "trap": false,
+      "reason": "A token-authenticated JSON API changes answers, rules, settings and drafts.",
+      "files": [
+        "desk/app.py"
+      ],
+      "evidence": "Token-authenticated JSON API changes definitions, settings, requests and drafts (desk/app.py:28-36,69-150); t…"
+    },
+    {
+      "section": "scope facts",
+      "id": "agent_mutations",
+      "expected": "true",
+      "observed": "true",
+      "met": true,
+      "trap": false,
+      "reason": "The AI writes drafts stored awaiting approval, which count as agent mutations.",
+      "files": [
+        "desk/drafter.py",
+        "migrations/002_requests_and_drafts.sql"
+      ],
+      "evidence": "The product's AI writes routing-rule drafts it stores awaiting a lead's review (desk/drafter.py:55-64, migrat…"
+    },
+    {
+      "section": "scope facts",
+      "id": "evolution_auto_apply",
+      "expected": "false",
+      "observed": "false",
+      "met": true,
+      "trap": false,
+      "reason": "A draft goes live only when a lead publishes it.",
+      "files": [
+        "desk/app.py"
+      ],
+      "evidence": "Drafts stay awaiting_review until a lead publishes (desk/drafter.py:1-4, desk/app.py:136-150); tests/test_dra…"
+    },
+    {
+      "section": "scope facts",
+      "id": "definition_change_path",
+      "expected": "true",
+      "observed": "true",
+      "met": true,
+      "trap": false,
+      "reason": "Answers and rules are versioned definitions changed at runtime.",
+      "files": [
+        "desk/store.py"
+      ],
+      "evidence": "Leads change answers, rules and settings through /admin with no deploy (desk/app.py:56-94, desk/templates/adm…"
+    },
+    {
+      "section": "scope facts",
+      "id": "code_release_path",
+      "expected": "false",
+      "observed": "false",
+      "met": true,
+      "trap": false,
+      "reason": "The AI writes routing rules, which are declarative data, not code.",
+      "files": [
+        "desk/drafter.py",
+        "prompts/draft_rule.txt"
+      ],
+      "evidence": "The AI writes JSON rule definitions, not code (desk/drafter.py:18,59); queues are engineer releases (README.m…"
+    },
+    {
+      "section": "scope facts",
+      "id": "ai_features",
+      "expected": "true",
+      "observed": "true",
+      "met": true,
+      "trap": false,
+      "reason": "The drafting worker calls a language model.",
+      "files": [
+        "desk/drafter.py"
+      ],
+      "evidence": "The drafter calls a language model at LLM_API_URL (desk/drafter.py:26-36)."
+    },
+    {
+      "section": "scope facts",
+      "id": "ai_data_access",
+      "expected": "true",
+      "observed": "true",
+      "met": true,
+      "trap": false,
+      "reason": "The model receives failed questions and request text from the product's data.",
+      "files": [
+        "desk/drafter.py"
+      ],
+      "evidence": "The prompt includes the organisation's failed questions or change-request text (desk/drafter.py:47-58)."
+    },
+    {
+      "section": "criteria",
+      "id": "DEL-01",
+      "expected": "2",
+      "observed": "2",
+      "met": true,
+      "trap": false,
+      "reason": "Requests are captured in the product with area, requester, examples and the rules involved; no specification or risk class.",
+      "files": [
+        "desk/app.py",
+        "migrations/002_requests_and_drafts.sql"
+      ],
+      "evidence": "POST /requests captures area, what, examples and rule_keys from agents and leads in the product (desk/app.py:…"
+    },
+    {
+      "section": "criteria",
+      "id": "DEL-04",
+      "expected": "2",
+      "observed": "2",
+      "met": true,
+      "trap": false,
+      "reason": "An AI lane drafts routing rules on request; a lead finishes and publishes them.",
+      "files": [
+        "desk/drafter.py",
+        "desk/app.py"
+      ],
+      "evidence": "An AI lane drafts routing rules on a lead's request from a failure group or change request (desk/app.py:118-1…"
+    },
+    {
+      "section": "criteria",
+      "id": "DEL-05",
+      "expected": "2 to 3",
+      "observed": "2",
+      "met": true,
+      "trap": false,
+      "reason": "CI on every pull request and checks on every answer, rule and AI draft; settings changes are unchecked.",
+      "files": [
+        ".github/workflows/ci.yml",
+        "desk/checks.py"
+      ],
+      "evidence": "CI on every PR and push runs pytest against PostgreSQL and pip-audit (.github/workflows/ci.yml:2-23); answer …"
+    },
+    {
+      "section": "criteria",
+      "id": "ARC-01",
+      "expected": "1",
+      "observed": "1",
+      "met": true,
+      "trap": false,
+      "reason": "Relational queries with hand-made indexes; no search index.",
+      "files": [
+        "migrations/001_init.sql",
+        "desk/store.py"
+      ],
+      "evidence": "Hand-written SQL per feature on PostgreSQL (desk/store.py:9-83) using UNIQUE (org_id, kind, key, version) (mi…"
+    },
+    {
+      "section": "criteria",
+      "id": "ARC-02",
+      "expected": "1",
+      "observed": "1",
+      "met": true,
+      "trap": false,
+      "reason": "Numbered forward-only migrations applied by a command; no down steps. At 1 it keeps every architecture criterion at 1 or more for Level 2.",
+      "files": [
+        "deskctl.py",
+        "migrations/001_init.sql"
+      ],
+      "evidence": "Forward-only migration files applied by deskctl.py migrate (deskctl.py:14-21); no down steps, no online strat…"
+    },
+    {
+      "section": "criteria",
+      "id": "ARC-03",
+      "expected": "2",
+      "observed": "2",
+      "met": true,
+      "trap": false,
+      "reason": "Web instances are stateless with a documented caveat (one worker); scale-out is not exercised by tests or manifests.",
+      "files": [
+        "docs/operations.md"
+      ],
+      "evidence": "Web instances keep no local state and several can run behind a load balancer (docs/operations.md:3, desk/app.…"
+    },
+    {
+      "section": "criteria",
+      "id": "ARC-04",
+      "expected": "2",
+      "observed": "2",
+      "met": true,
+      "trap": false,
+      "reason": "A jobs table with row locks and up to three attempts; no back-off between jobs, idempotency or dead-letter view.",
+      "files": [
+        "desk/store.py",
+        "desk/drafter.py"
+      ],
+      "evidence": "jobs table with FOR UPDATE SKIP LOCKED claim and up to three attempts, then failed with last_error (desk/stor…"
+    },
+    {
+      "section": "criteria",
+      "id": "ARC-05",
+      "expected": "2",
+      "observed": "2",
+      "met": true,
+      "trap": true,
+      "reason": "Data isolation is tested and per-organisation quotas exist, but there is no noisy-neighbour detection, so not 3.",
+      "files": [
+        "tests/test_isolation.py",
+        "desk/checks.py"
+      ],
+      "evidence": "Every query scoped by org_id (desk/store.py:1-83) with isolation tests (tests/test_isolation.py:5-25) and per…"
+    },
+    {
+      "section": "criteria",
+      "id": "ARC-06",
+      "expected": "1",
+      "observed": "1",
+      "met": true,
+      "trap": false,
+      "reason": "The only limit was found in an incident.",
+      "files": [
+        "docs/operations.md"
+      ],
+      "evidence": "The only limit was discovered in the June 2026 incident; 'No other limit has been measured' (docs/operations.…"
+    },
+    {
+      "section": "criteria",
+      "id": "ARC-07",
+      "expected": "1",
+      "observed": "1",
+      "met": true,
+      "trap": false,
+      "reason": "Uptime checks only.",
+      "files": [
+        "docs/operations.md"
+      ],
+      "evidence": "An external uptime monitor calls /health every minute; 'There are no other metrics or alerts' (docs/operation…"
+    },
+    {
+      "section": "criteria",
+      "id": "ARC-08",
+      "expected": "1 to 2",
+      "observed": "2",
+      "met": true,
+      "trap": false,
+      "reason": "Model calls have timeouts and retries and answering does not depend on the model; other surfaces have no isolation.",
+      "files": [
+        "desk/drafter.py",
+        "docs/operations.md"
+      ],
+      "evidence": "Model calls have a 20-second timeout and three attempts with back-off (desk/drafter.py:26-36); answering and …"
+    },
+    {
+      "section": "criteria",
+      "id": "ARC-09",
+      "expected": "2",
+      "observed": "2",
+      "met": true,
+      "trap": true,
+      "reason": "A pg_dump backup command; the test only checks pg_dump is called, and restore is manual and never rehearsed.",
+      "files": [
+        "deskctl.py",
+        "tests/test_backup.py",
+        "docs/operations.md"
+      ],
+      "evidence": "deskctl.py backup runs pg_dump of the whole database (deskctl.py:24-29); restore is manual pg_restore and 'ha…"
+    },
+    {
+      "section": "criteria",
+      "id": "LRN-03",
+      "expected": "2",
+      "observed": "2",
+      "met": true,
+      "trap": false,
+      "reason": "Failed lookups recorded with area, channel and rules version, queryable.",
+      "files": [
+        "desk/store.py"
+      ],
+      "evidence": "Failed lookups recorded with area, channel and rules version and grouped with counts, areas, first and last s…"
+    },
+    {
+      "section": "criteria",
+      "id": "LRN-05",
+      "expected": "2",
+      "observed": "2",
+      "met": true,
+      "trap": false,
+      "reason": "Failed lookups grouped with samples, areas and the rules versions in force; no reproducible case or likely cause.",
+      "files": [
+        "desk/store.py"
+      ],
+      "evidence": "Failures are grouped with sample questions, areas and the rules versions in force (desk/store.py:42-50)."
+    },
+    {
+      "section": "criteria",
+      "id": "LRN-06",
+      "expected": "2",
+      "observed": "2",
+      "met": true,
+      "trap": false,
+      "reason": "Drafts for one area (routing rules) from a failure group or request; not ranked across the product.",
+      "files": [
+        "desk/drafter.py"
+      ],
+      "evidence": "Proposals for one area: AI rule drafts from a failure group or request, stored with source and check results …"
+    },
+    {
+      "section": "criteria",
+      "id": "LRN-07",
+      "expected": "2",
+      "observed": "2",
+      "met": true,
+      "trap": false,
+      "reason": "Experience is captured and candidate rules are generated when a lead asks, not continuously.",
+      "files": [
+        "desk/app.py",
+        "desk/drafter.py"
+      ],
+      "evidence": "The product captures failed lookups and generates candidate rules when a lead asks (desk/app.py:118-127, desk…"
+    },
+    {
+      "section": "criteria",
+      "id": "LRN-08",
+      "expected": "2",
+      "observed": "2",
+      "met": true,
+      "trap": false,
+      "reason": "AI drafts pass the same automated checks before a lead can publish; no evaluation against a baseline.",
+      "files": [
+        "desk/drafter.py",
+        "desk/checks.py"
+      ],
+      "evidence": "AI drafts pass a scope check (desk/drafter.py:39-44, tests/test_drafter.py:8-12) and the same rule checks as …"
+    },
+    {
+      "section": "criteria",
+      "id": "LRN-10",
+      "expected": "0 to 1",
+      "observed": "0",
+      "met": true,
+      "trap": false,
+      "reason": "Checks and the prompt are files changed only by engineers.",
+      "files": [
+        "desk/checks.py",
+        "prompts/draft_rule.txt"
+      ],
+      "evidence": "Checks (desk/checks.py), scope limits (desk/drafter.py:18-19) and the prompt (prompts/draft_rule.txt, PROMPT_…"
+    },
+    {
+      "section": "criteria",
+      "id": "GOV-05",
+      "expected": "2",
+      "observed": "2",
+      "met": true,
+      "trap": false,
+      "reason": "History and undo for answers and rules; settings have none.",
+      "files": [
+        "desk/app.py"
+      ],
+      "evidence": "Answers and rules versioned with history and undo (desk/store.py:15-32, desk/app.py:75-84); settings upserted…"
+    },
+    {
+      "section": "criteria",
+      "id": "GOV-10",
+      "expected": "2",
+      "observed": "2",
+      "met": true,
+      "trap": true,
+      "reason": "An allow-list and priority cap enforced in code; the README's daily limit and audit log of blocked drafts do not exist.",
+      "files": [
+        "desk/drafter.py",
+        "README.md"
+      ],
+      "evidence": "The AI lane is held to an allow-list in code: routing-rule fields only and priority at most 50 (desk/drafter.…"
+    },
+    {
+      "section": "criteria",
+      "id": "MAL-20",
+      "expected": "1",
+      "observed": "0",
+      "met": false,
+      "trap": true,
+      "reason": "The widget is still a keyword bot; the model only drafts rules.",
+      "files": [
+        "desk/matching.py",
+        "desk/app.py"
+      ],
+      "evidence": "No conversational surface; the widget is keyword lookup (desk/matching.py:12-16)."
+    },
+    {
+      "section": "criteria",
+      "id": "AIR-01",
+      "expected": "1",
+      "observed": "1",
+      "met": true,
+      "trap": false,
+      "reason": "One provider endpoint; the model is chosen by environment variable.",
+      "files": [
+        "desk/drafter.py"
+      ],
+      "evidence": "Model and endpoint set by environment (desk/drafter.py:17,30, README.md:37); retries then failed jobs; no pro…"
+    },
+    {
+      "section": "criteria",
+      "id": "AIR-06",
+      "expected": "0 to 1",
+      "observed": "0",
+      "met": true,
+      "trap": true,
+      "reason": "No evaluation runs before a prompt or model change; the prompt-check job only checks the file exists and has a placeholder.",
+      "files": [
+        ".github/workflows/ci.yml"
+      ],
+      "evidence": "The CI prompt-check only tests the prompt file is non-empty and contains '{questions}' (.github/workflows/ci.…"
+    },
+    {
+      "section": "criteria",
+      "id": "EXP-04",
+      "expected": "2",
+      "observed": "2",
+      "met": true,
+      "trap": false,
+      "reason": "Unanswered questions are recorded and grouped in queryable form; no themes outside the domain.",
+      "files": [
+        "desk/store.py"
+      ],
+      "evidence": "Unanswered questions and change requests are recorded queryably (desk/store.py:35-57, desk/app.py:106-115); g…"
+    },
+    {
+      "section": "AI readings",
+      "id": "DEL-01",
+      "expected": "0 to 1",
+      "observed": "0",
+      "met": true,
+      "trap": false,
+      "reason": "Intake is a form; the model does not summarise or structure requests.",
+      "files": [
+        "desk/app.py"
+      ],
+      "evidence": "No model in intake: requests are a validated form (desk/app.py:97-103)."
+    },
+    {
+      "section": "AI readings",
+      "id": "DEL-04",
+      "expected": "2",
+      "observed": "2",
+      "met": true,
+      "trap": false,
+      "reason": "The model drafts rule changes on request; a lead finishes them.",
+      "files": [
+        "desk/drafter.py"
+      ],
+      "evidence": "Same lane: model-drafted routing rules a person finishes (desk/drafter.py:55-64, desk/app.py:136-150)."
+    },
+    {
+      "section": "AI readings",
+      "id": "LRN-05",
+      "expected": "0",
+      "observed": "0",
+      "met": true,
+      "trap": true,
+      "reason": "Grouping is rule-based SQL; rule-based grouping counts as 0 for the AI reading.",
+      "files": [
+        "desk/store.py"
+      ],
+      "evidence": "Grouping is rule-based SQL (desk/store.py:42-50); no model explains failures."
+    },
+    {
+      "section": "AI readings",
+      "id": "LRN-06",
+      "expected": "2",
+      "observed": "2",
+      "met": true,
+      "trap": false,
+      "reason": "The model drafts proposals for one area, citing the failed questions.",
+      "files": [
+        "desk/drafter.py"
+      ],
+      "evidence": "The model drafts routing-rule proposals for one area, tied to their source failure group or request (desk/dra…"
+    },
+    {
+      "section": "AI readings",
+      "id": "LRN-07",
+      "expected": "2",
+      "observed": "2",
+      "met": true,
+      "trap": false,
+      "reason": "The model drafts candidate changes from experience on request.",
+      "files": [
+        "desk/drafter.py"
+      ],
+      "evidence": "A model drafts candidate rules from captured failures on request (desk/drafter.py:47-64)."
+    },
+    {
+      "section": "AI readings",
+      "id": "LRN-08",
+      "expected": "2",
+      "observed": "2",
+      "met": true,
+      "trap": false,
+      "reason": "Automated checks on AI-made changes; no baseline evaluation.",
+      "files": [
+        "desk/drafter.py"
+      ],
+      "evidence": "Automated scope and schema checks on AI drafts (desk/drafter.py:39-44,60); no baseline evaluation."
+    },
+    {
+      "section": "AI readings",
+      "id": "GOV-10",
+      "expected": "2",
+      "observed": "2",
+      "met": true,
+      "trap": false,
+      "reason": "An allow-list in code for the one AI path; no blast-radius or rate limit.",
+      "files": [
+        "desk/drafter.py"
+      ],
+      "evidence": "Allow-list in code for the one AI path (desk/drafter.py:18-19,39-44); no rate or volume limit."
+    },
+    {
+      "section": "AI readings",
+      "id": "MAL-20",
+      "expected": "0",
+      "observed": "0",
+      "met": true,
+      "trap": true,
+      "reason": "No model-backed conversation; the widget matches keywords.",
+      "files": [
+        "desk/matching.py"
+      ],
+      "evidence": "No model-backed conversation; answering does not use the model (docs/operations.md:11, desk/matching.py)."
+    },
+    {
+      "section": "kinds",
+      "id": "main kinds",
+      "expected": "2",
+      "observed": "2",
+      "met": true,
+      "trap": false,
+      "reason": "Routing rules (164) and answers (139) are nearly all requests.",
+      "files": [
+        "docs/change-requests.md"
+      ],
+      "evidence": "routing-rules, answers"
+    },
+    {
+      "section": "kinds",
+      "id": "routing rules: reach",
+      "expected": "2",
+      "observed": "routing-rules 2",
+      "met": true,
+      "trap": false,
+      "reason": "The AI drafts rules and a lead completes and publishes them: Drafted.",
+      "files": [
+        "desk/drafter.py",
+        "desk/app.py"
+      ],
+      "evidence": "Leads save rules through checks (desk/app.py:62-72, desk/checks.py:15-48) with versions and undo (desk/store.…"
+    },
+    {
+      "section": "kinds",
+      "id": "routing rules: main",
+      "expected": "true",
+      "observed": "routing-rules true",
+      "met": true,
+      "trap": false,
+      "reason": "The AI drafts rules and a lead completes and publishes them: Drafted.",
+      "files": [
+        "desk/drafter.py",
+        "desk/app.py"
+      ],
+      "evidence": ""
+    },
+    {
+      "section": "kinds",
+      "id": "answers: reach",
+      "expected": "1",
+      "observed": "answers 1",
+      "met": true,
+      "trap": false,
+      "reason": "Leads change answers with checks, history and undo; the AI does not draft answers.",
+      "files": [
+        "desk/app.py",
+        "prompts/draft_rule.txt"
+      ],
+      "evidence": "PUT /admin/answers/<key> through checks with versions, history and undo (desk/app.py:69-84, desk/checks.py:23…"
+    },
+    {
+      "section": "kinds",
+      "id": "answers: main",
+      "expected": "true",
+      "observed": "answers true",
+      "met": true,
+      "trap": false,
+      "reason": "Leads change answers with checks, history and undo; the AI does not draft answers.",
+      "files": [
+        "desk/app.py",
+        "prompts/draft_rule.txt"
+      ],
+      "evidence": ""
+    },
+    {
+      "section": "kinds",
+      "id": "greeting and opening hours: reach",
+      "expected": "0",
+      "observed": "greeting-hours 0",
+      "met": true,
+      "trap": true,
+      "reason": "Self-serve but with no undo, so reach 0.",
+      "files": [
+        "desk/app.py"
+      ],
+      "evidence": "PUT /admin/settings/<name> upserts with no version or undo (desk/app.py:87-94, migrations/001_init.sql:21-22)…"
+    },
+    {
+      "section": "kinds",
+      "id": "greeting and opening hours: main",
+      "expected": "false",
+      "observed": "greeting-hours false",
+      "met": true,
+      "trap": true,
+      "reason": "Self-serve but with no undo, so reach 0.",
+      "files": [
+        "desk/app.py"
+      ],
+      "evidence": ""
+    },
+    {
+      "section": "kinds",
+      "id": "queues: reach",
+      "expected": "0",
+      "observed": "queues 0",
+      "met": true,
+      "trap": false,
+      "reason": "A new queue is a config file edit and a release.",
+      "files": [
+        "config/queues.yaml"
+      ],
+      "evidence": "config/queues.yaml:1-6 and a release (README.md:12, docs/change-requests.md:10); also hard-coded in the promp…"
+    },
+    {
+      "section": "kinds",
+      "id": "queues: main",
+      "expected": "false",
+      "observed": "queues false",
+      "met": true,
+      "trap": false,
+      "reason": "A new queue is a config file edit and a release.",
+      "files": [
+        "config/queues.yaml"
+      ],
+      "evidence": ""
+    },
+    {
+      "section": "loops",
+      "id": "Request → Release",
+      "expected": "2",
+      "observed": "L2",
+      "met": true,
+      "trap": false,
+      "reason": "AI lane (DEL-04 2), structured intake (DEL-01 2), checks (DEL-05 2) and every architecture criterion at 1 or more; L3 fails on rollback and controls.",
+      "files": [
+        "desk/drafter.py",
+        "desk/app.py"
+      ],
+      "evidence": ""
+    },
+    {
+      "section": "loops",
+      "id": "Issue → Fix",
+      "expected": "2",
+      "observed": "L2",
+      "met": true,
+      "trap": false,
+      "reason": "Grouped failures (LRN-05 2) and drafted proposals (LRN-06 2) on top of the L1 conditions.",
+      "files": [
+        "desk/store.py",
+        "desk/drafter.py"
+      ],
+      "evidence": ""
+    },
+    {
+      "section": "loops",
+      "id": "Opportunity → Expansion",
+      "expected": "1",
+      "observed": "L1",
+      "met": true,
+      "trap": false,
+      "reason": "DEL-04 2 gives a build path; no adjacent-capability proposals (EXP-05) for L2.",
+      "files": [
+        "desk/drafter.py"
+      ],
+      "evidence": ""
+    }
+  ],
+  "met": 55,
+  "counted": 56,
+  "share": 0.982,
+  "traps_met": 8,
+  "traps": 9,
+  "trap_share": 0.889,
+  "unavailable": 0,
+  "levels_unavailable_because": null,
+  "min": 0.0,
+  "passed": true
+}

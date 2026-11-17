@@ -1,0 +1,645 @@
+{
+  "case": "rules-desk",
+  "assessment": "/tmp/claude-0/-home-user-insight-canvas/041b1db5-929e-5c5d-bba1-ab8dfef472ae/scratchpad/v07/blind/eval-cases/rules-desk.json",
+  "items": [
+    {
+      "section": "archetype",
+      "id": "archetype",
+      "expected": "focused-application",
+      "observed": "focused-application",
+      "met": true,
+      "trap": false,
+      "reason": "A help desk for one company, not a platform for building others.",
+      "files": [
+        "README.md"
+      ],
+      "evidence": ""
+    },
+    {
+      "section": "scope facts",
+      "id": "persistent_data",
+      "expected": "true",
+      "observed": "true",
+      "met": true,
+      "trap": false,
+      "reason": "SQLite database of users, definitions, settings and failed lookups.",
+      "files": [
+        "migrations/001_init.sql"
+      ],
+      "evidence": "SQLite database of users, versioned answers and rules, settings and failed lookups (migrations/001_init.sql:1…"
+    },
+    {
+      "section": "scope facts",
+      "id": "schema_changes",
+      "expected": "true",
+      "observed": "true",
+      "met": true,
+      "trap": false,
+      "reason": "Numbered migrations change the schema.",
+      "files": [
+        "deskctl.py",
+        "migrations/002_failed_lookups.sql"
+      ],
+      "evidence": "Versioned SQL migrations applied by deskctl.py migrate (deskctl.py:12-21, migrations/001-002), run at contain…"
+    },
+    {
+      "section": "scope facts",
+      "id": "multi_tenant",
+      "expected": "false",
+      "observed": "false",
+      "met": true,
+      "trap": false,
+      "reason": "One company runs one Rules Desk; no organisation or workspace in the data model.",
+      "files": [
+        "README.md",
+        "migrations/001_init.sql"
+      ],
+      "evidence": "'One company runs one Rules Desk' (README.md:3); no organisation column in any table (migrations/001_init.sql…"
+    },
+    {
+      "section": "scope facts",
+      "id": "hosted_service",
+      "expected": "true",
+      "observed": "true",
+      "met": true,
+      "trap": false,
+      "reason": "A long-lived web service.",
+      "files": [
+        "Dockerfile",
+        "desk/app.py"
+      ],
+      "evidence": "Long-lived Flask service under gunicorn answering the help widget (Dockerfile:6, desk/app.py:39-45)."
+    },
+    {
+      "section": "scope facts",
+      "id": "machine_actions",
+      "expected": "true",
+      "observed": "true",
+      "met": true,
+      "trap": false,
+      "reason": "A token-authenticated JSON admin API changes answers, rules and settings.",
+      "files": [
+        "desk/app.py"
+      ],
+      "evidence": "A token-authenticated JSON API changes definitions and settings: PUT /admin/<kind>s/<key>, POST .../undo, PUT…"
+    },
+    {
+      "section": "scope facts",
+      "id": "agent_mutations",
+      "expected": "false",
+      "observed": "false",
+      "met": true,
+      "trap": false,
+      "reason": "No AI or agent.",
+      "files": [
+        "desk/matching.py"
+      ],
+      "evidence": "No AI or agents in the product; 'smart matching' is keyword overlap and regex (desk/matching.py:1-23)."
+    },
+    {
+      "section": "scope facts",
+      "id": "evolution_auto_apply",
+      "expected": "false",
+      "observed": "false",
+      "met": true,
+      "trap": false,
+      "reason": "No evolution loop; people make every change.",
+      "files": [
+        "desk/app.py"
+      ],
+      "evidence": "No evolution loop; lead edits go live on save, but they are made by people (desk/app.py:64-70)."
+    },
+    {
+      "section": "scope facts",
+      "id": "definition_change_path",
+      "expected": "true",
+      "observed": "true",
+      "met": true,
+      "trap": false,
+      "reason": "Answers and rules are versioned definitions changed at runtime.",
+      "files": [
+        "desk/store.py"
+      ],
+      "evidence": "Leads change answers, routing rules and settings through /admin with no deploy (desk/app.py:53-112, desk/temp…"
+    },
+    {
+      "section": "scope facts",
+      "id": "code_release_path",
+      "expected": "false",
+      "observed": "false",
+      "met": true,
+      "trap": false,
+      "reason": "No evolution system or AI writes code.",
+      "files": [
+        "desk/app.py"
+      ],
+      "evidence": "No evolution system or AI produces code; new queues and widget changes are hand-made engineering releases (RE…"
+    },
+    {
+      "section": "scope facts",
+      "id": "ai_features",
+      "expected": "false",
+      "observed": "false",
+      "met": true,
+      "trap": true,
+      "reason": "'Smart matching' is keyword overlap and regular expressions, not a model.",
+      "files": [
+        "desk/matching.py",
+        "README.md"
+      ],
+      "evidence": "No model calls: matching is keyword counting and regex (desk/matching.py:12-23); requirements.txt:1-2 list fl…"
+    },
+    {
+      "section": "scope facts",
+      "id": "ai_data_access",
+      "expected": "false",
+      "observed": "false",
+      "met": true,
+      "trap": false,
+      "reason": "No AI features.",
+      "files": [
+        "desk/matching.py"
+      ],
+      "evidence": "No AI features."
+    },
+    {
+      "section": "scope facts",
+      "id": "ai_actions",
+      "expected": "false",
+      "observed": "false",
+      "met": true,
+      "trap": false,
+      "reason": "No AI features.",
+      "files": [
+        "desk/matching.py"
+      ],
+      "evidence": "No AI features."
+    },
+    {
+      "section": "criteria",
+      "id": "MAL-10",
+      "expected": "2 to 3",
+      "observed": "2",
+      "met": true,
+      "trap": false,
+      "reason": "Routing rules are data (pattern, queue, priority) composed by leads with a try mode; narrow in scope, so 2 or 3.",
+      "files": [
+        "desk/app.py",
+        "desk/matching.py"
+      ],
+      "evidence": "Routing rules are declarative (pattern, queue, priority) evaluated by desk/matching.py:19-23, composed by lea…"
+    },
+    {
+      "section": "criteria",
+      "id": "MAL-20",
+      "expected": "1",
+      "observed": "0",
+      "met": false,
+      "trap": true,
+      "reason": "The help widget is a keyword bot, the anchor for 1.",
+      "files": [
+        "desk/matching.py"
+      ],
+      "evidence": "No conversational surface; the widget is keyword lookup (desk/matching.py:12-16)."
+    },
+    {
+      "section": "criteria",
+      "id": "DEL-01",
+      "expected": "0",
+      "observed": "0",
+      "met": true,
+      "trap": false,
+      "reason": "Change requests arrive by email outside the product.",
+      "files": [
+        "docs/change-requests.md"
+      ],
+      "evidence": "Change requests arrive by email outside the product (docs/change-requests.md:3); no request object."
+    },
+    {
+      "section": "criteria",
+      "id": "DEL-04",
+      "expected": "0",
+      "observed": "0",
+      "met": true,
+      "trap": false,
+      "reason": "No AI implementation lane.",
+      "files": [
+        "desk/app.py"
+      ],
+      "evidence": "No AI implementation lane; leads and engineers make every change by hand."
+    },
+    {
+      "section": "criteria",
+      "id": "DEL-05",
+      "expected": "2 to 3",
+      "observed": "2",
+      "met": true,
+      "trap": false,
+      "reason": "CI runs on every pull request and answers and rules are checked before going live, but settings changes have no check.",
+      "files": [
+        ".github/workflows/ci.yml",
+        "desk/checks.py",
+        "desk/app.py"
+      ],
+      "evidence": "CI on every PR and push runs pytest and pip-audit (.github/workflows/ci.yml:2-16); answer and rule saves pass…"
+    },
+    {
+      "section": "criteria",
+      "id": "DEL-06",
+      "expected": "2",
+      "observed": "2",
+      "met": true,
+      "trap": false,
+      "reason": "Health endpoint with a version; no configuration snapshot.",
+      "files": [
+        "desk/app.py"
+      ],
+      "evidence": "/health returns status and version (desk/app.py:115-117); no config snapshot."
+    },
+    {
+      "section": "criteria",
+      "id": "DEL-11",
+      "expected": "not applicable",
+      "observed": "not applicable",
+      "met": true,
+      "trap": false,
+      "reason": "code_release_path is false.",
+      "files": [
+        "desk/app.py"
+      ],
+      "evidence": "code_release_path is false: no evolution system or AI ships code."
+    },
+    {
+      "section": "criteria",
+      "id": "ARC-02",
+      "expected": "1",
+      "observed": "1",
+      "met": true,
+      "trap": false,
+      "reason": "Numbered forward-only migrations applied by a command; no down steps.",
+      "files": [
+        "deskctl.py",
+        "migrations/001_init.sql"
+      ],
+      "evidence": "Versioned forward-only migration files applied by deskctl.py migrate (deskctl.py:12-21); no down steps or onl…"
+    },
+    {
+      "section": "criteria",
+      "id": "ARC-05",
+      "expected": "not applicable",
+      "observed": "not applicable",
+      "met": true,
+      "trap": false,
+      "reason": "multi_tenant is false.",
+      "files": [
+        "README.md"
+      ],
+      "evidence": "multi_tenant is false: one company per deployment (README.md:3)."
+    },
+    {
+      "section": "criteria",
+      "id": "ARC-09",
+      "expected": "2",
+      "observed": "2",
+      "met": true,
+      "trap": true,
+      "reason": "A documented backup command; the only test checks that a file is written, and no restore exists or is tested.",
+      "files": [
+        "deskctl.py",
+        "tests/test_backup.py",
+        "README.md"
+      ],
+      "evidence": "deskctl.py backup copies the whole SQLite DB, which holds data, definitions, settings and user tokens (deskct…"
+    },
+    {
+      "section": "criteria",
+      "id": "LRN-02",
+      "expected": "1 to 2",
+      "observed": "2",
+      "met": true,
+      "trap": false,
+      "reason": "Failed lookups are typed records but not linked to the definition and version they concern.",
+      "files": [
+        "migrations/002_failed_lookups.sql"
+      ],
+      "evidence": "Failed lookups are typed signals (question, normalised, area, channel; migrations/002_failed_lookups.sql:1-8)…"
+    },
+    {
+      "section": "criteria",
+      "id": "LRN-03",
+      "expected": "2",
+      "observed": "2",
+      "met": true,
+      "trap": false,
+      "reason": "Failed lookups are recorded with area and channel and queryable by area.",
+      "files": [
+        "desk/store.py",
+        "desk/app.py"
+      ],
+      "evidence": "Each unanswered question is stored with area and channel (desk/app.py:43-44, desk/store.py:41-44) and queryab…"
+    },
+    {
+      "section": "criteria",
+      "id": "LRN-05",
+      "expected": "0 to 1",
+      "observed": "1",
+      "met": true,
+      "trap": false,
+      "reason": "No grouping or diagnosis; leads read a raw list.",
+      "files": [
+        "desk/store.py"
+      ],
+      "evidence": "Leads read a raw list of failed questions (desk/store.py:47-51); no grouping or context."
+    },
+    {
+      "section": "criteria",
+      "id": "LRN-07",
+      "expected": "0 to 1",
+      "observed": "1",
+      "met": true,
+      "trap": false,
+      "reason": "Leads turn failed lookups into answers by hand at most.",
+      "files": [
+        "README.md"
+      ],
+      "evidence": "Leads review failed lookups weekly and write answers by hand (README.md:25)."
+    },
+    {
+      "section": "criteria",
+      "id": "LRN-08",
+      "expected": "0 to 2",
+      "observed": "0",
+      "met": true,
+      "trap": false,
+      "reason": "No learned or AI-made changes; a rater may score 0, or 2 for the checks any rule change would pass. Two readings under the boundary.",
+      "files": [
+        "desk/checks.py"
+      ],
+      "evidence": "The product produces no learned or AI-made changes and nothing would check one; checks on human edits are sco…"
+    },
+    {
+      "section": "criteria",
+      "id": "LRN-10",
+      "expected": "0 to 1",
+      "observed": "0",
+      "met": true,
+      "trap": false,
+      "reason": "Checks are fixed in code and change only when engineers edit them.",
+      "files": [
+        "desk/checks.py"
+      ],
+      "evidence": "Checks are fixed in desk/checks.py and change only when engineers edit code."
+    },
+    {
+      "section": "criteria",
+      "id": "EXP-04",
+      "expected": "2",
+      "observed": "2",
+      "met": true,
+      "trap": false,
+      "reason": "Unanswered questions are recorded in queryable form, the anchor for 2.",
+      "files": [
+        "desk/store.py",
+        "migrations/002_failed_lookups.sql"
+      ],
+      "evidence": "Unanswered questions are recorded queryably with area and channel (desk/store.py:41-51, desk/app.py:99-102); …"
+    },
+    {
+      "section": "criteria",
+      "id": "GOV-02",
+      "expected": "1 to 2",
+      "observed": "1",
+      "met": true,
+      "trap": false,
+      "reason": "Definition versions record the author; settings and other changes are not audited.",
+      "files": [
+        "desk/store.py",
+        "desk/app.py"
+      ],
+      "evidence": "Definition versions record author and note (desk/store.py:19-31) per answer and rule key; settings changes an…"
+    },
+    {
+      "section": "criteria",
+      "id": "GOV-05",
+      "expected": "2",
+      "observed": "2",
+      "met": true,
+      "trap": true,
+      "reason": "Answers and rules have history and undo, but greeting and opening hours are overwritten with no history, despite the README's 'every admin change can be undone'.",
+      "files": [
+        "desk/app.py",
+        "README.md"
+      ],
+      "evidence": "Answers and rules are versioned with history and undo (desk/store.py:19-38, desk/app.py:73-85, tests/test_ver…"
+    },
+    {
+      "section": "criteria",
+      "id": "GOV-06",
+      "expected": "1",
+      "observed": "1",
+      "met": true,
+      "trap": false,
+      "reason": "Changes go live on save; the only proposal path is code pull requests. The try endpoint tests a rule but is not a reviewed proposal.",
+      "files": [
+        "desk/app.py"
+      ],
+      "evidence": "Changes go live on save (desk/templates/admin.html:5); no proposal or review object; rule preview only throug…"
+    },
+    {
+      "section": "criteria",
+      "id": "GOV-10",
+      "expected": "not applicable",
+      "observed": "not applicable",
+      "met": true,
+      "trap": false,
+      "reason": "agent_mutations and evolution_auto_apply are false.",
+      "files": [
+        "desk/matching.py"
+      ],
+      "evidence": "agent_mutations and evolution_auto_apply are false: no AI or self-change."
+    },
+    {
+      "section": "criteria",
+      "id": "AIR-06",
+      "expected": "not applicable",
+      "observed": "not applicable",
+      "met": true,
+      "trap": false,
+      "reason": "ai_features is false.",
+      "files": [
+        "desk/matching.py"
+      ],
+      "evidence": "ai_features is false (default and opt-in): matching is keyword overlap and regex (desk/matching.py:12-23); no…"
+    },
+    {
+      "section": "kinds",
+      "id": "main kinds",
+      "expected": "2",
+      "observed": "2",
+      "met": true,
+      "trap": false,
+      "reason": "Answers (112) and routing rules (41) are nearly all requests.",
+      "files": [
+        "docs/change-requests.md"
+      ],
+      "evidence": "answers, routing-rules"
+    },
+    {
+      "section": "kinds",
+      "id": "routing rules: reach",
+      "expected": "1",
+      "observed": "routing-rules 1",
+      "met": true,
+      "trap": false,
+      "reason": "Leads change rules in the admin page, with checks, history and undo.",
+      "files": [
+        "desk/app.py",
+        "desk/store.py"
+      ],
+      "evidence": "PUT /admin/rules/<key> checked by desk/checks.py:33-45 (tests/test_checks.py), versioned with undo (desk/stor…"
+    },
+    {
+      "section": "kinds",
+      "id": "routing rules: main",
+      "expected": "true",
+      "observed": "routing-rules true",
+      "met": true,
+      "trap": false,
+      "reason": "Leads change rules in the admin page, with checks, history and undo.",
+      "files": [
+        "desk/app.py",
+        "desk/store.py"
+      ],
+      "evidence": ""
+    },
+    {
+      "section": "kinds",
+      "id": "answers: reach",
+      "expected": "1",
+      "observed": "answers 1",
+      "met": true,
+      "trap": false,
+      "reason": "Leads change answers in the admin page, with checks, history and undo.",
+      "files": [
+        "desk/app.py",
+        "desk/store.py"
+      ],
+      "evidence": "PUT /admin/answers/<key> checked by desk/checks.py:20-30, saved as a version with author (desk/store.py:19-25…"
+    },
+    {
+      "section": "kinds",
+      "id": "answers: main",
+      "expected": "true",
+      "observed": "answers true",
+      "met": true,
+      "trap": false,
+      "reason": "Leads change answers in the admin page, with checks, history and undo.",
+      "files": [
+        "desk/app.py",
+        "desk/store.py"
+      ],
+      "evidence": ""
+    },
+    {
+      "section": "kinds",
+      "id": "greeting and opening hours: reach",
+      "expected": "0",
+      "observed": "greeting-hours 0",
+      "met": true,
+      "trap": true,
+      "reason": "Leads change them in the admin page but cannot undo: a path with no undo is reach 0.",
+      "files": [
+        "desk/app.py"
+      ],
+      "evidence": "PUT /admin/settings/<name> overwrites with INSERT OR REPLACE (desk/app.py:105-112); no version, history or un…"
+    },
+    {
+      "section": "kinds",
+      "id": "greeting and opening hours: main",
+      "expected": "false",
+      "observed": "greeting-hours false",
+      "met": true,
+      "trap": true,
+      "reason": "Leads change them in the admin page but cannot undo: a path with no undo is reach 0.",
+      "files": [
+        "desk/app.py"
+      ],
+      "evidence": ""
+    },
+    {
+      "section": "kinds",
+      "id": "queues: reach",
+      "expected": "0",
+      "observed": "queues 0",
+      "met": true,
+      "trap": false,
+      "reason": "A new queue is a config file edit and a release.",
+      "files": [
+        "config/queues.yaml"
+      ],
+      "evidence": "config/queues.yaml:1-6 edited by engineers and released (README.md:12, docs/change-requests.md:10)."
+    },
+    {
+      "section": "kinds",
+      "id": "queues: main",
+      "expected": "false",
+      "observed": "queues false",
+      "met": true,
+      "trap": false,
+      "reason": "A new queue is a config file edit and a release.",
+      "files": [
+        "config/queues.yaml"
+      ],
+      "evidence": ""
+    },
+    {
+      "section": "loops",
+      "id": "Request → Release",
+      "expected": "1",
+      "observed": "L1",
+      "met": true,
+      "trap": false,
+      "reason": "Both main kinds are self-serve with undo and GOV-05 is 2; no AI lane or intake for L2.",
+      "files": [
+        "desk/app.py"
+      ],
+      "evidence": ""
+    },
+    {
+      "section": "loops",
+      "id": "Issue → Fix",
+      "expected": "1",
+      "observed": "L1",
+      "met": true,
+      "trap": false,
+      "reason": "Self-serve main kinds, rollback at 2 and failed lookups recorded (LRN-03 2); no diagnosis or product build path for L2.",
+      "files": [
+        "desk/store.py"
+      ],
+      "evidence": ""
+    },
+    {
+      "section": "loops",
+      "id": "Opportunity → Expansion",
+      "expected": "0",
+      "observed": "L0",
+      "met": true,
+      "trap": false,
+      "reason": "EXP-02 is excluded for a focused application and DEL-04 is 0, so no build path.",
+      "files": [
+        "desk/app.py"
+      ],
+      "evidence": ""
+    }
+  ],
+  "met": 46,
+  "counted": 47,
+  "share": 0.979,
+  "traps_met": 5,
+  "traps": 6,
+  "trap_share": 0.833,
+  "unavailable": 0,
+  "levels_unavailable_because": null,
+  "min": 0.0,
+  "passed": true
+}
