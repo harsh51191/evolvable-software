@@ -3,6 +3,7 @@
   "date": "2026-09-30",
   "source": "github.com/PostHog/posthog @ 645e1a78140757ea1bb9ddeb0ff9d3915c60b6f6 (master)",
   "archetype": "focused-application",
+  "basis": "shipped",
   "scope_line": "Scope: the posthog monorepo (Django app, products/, ee/, Node CDP services, Rust services, MCP service, CI). PostHog Cloud operations and separate SDK repositories are out of scope. Many products here run PostHog's evolve loop for customers' software; see the construct note in the reading.",
   "scores": {
     "MAL-01": {
@@ -14,7 +15,8 @@
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Event and person property definitions carry a validated property_type and format editable in Data management and read by queries and the UI (products/event_definitions/backend/models/property_definition.py:73-152). v0.3 moved the privacy tag to GOV-03."
+      "evidence": "Event and person property definitions carry a validated property_type and format editable in Data management and read by queries and the UI (products/event_definitions/backend/models/property_definition.py:73-152). v0.3 moved the privacy tag to GOV-03.",
+      "confidence": "high"
     },
     "MAL-03": {
       "status": "not_applicable",
@@ -35,7 +37,8 @@
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "OpenAPI schema generated from the Django API and used to generate typed TypeScript for the frontend and MCP service (services/mcp/src/api/generated.ts); structured validation errors. No mutation dry-run, so not 4."
+      "evidence": "OpenAPI schema generated from the Django API and used to generate typed TypeScript for the frontend and MCP service (services/mcp/src/api/generated.ts); structured validation errors. No mutation dry-run, so not 4.",
+      "confidence": "medium"
     },
     "MAL-07": {
       "status": "assessed",
@@ -43,7 +46,8 @@
       "grade": "A",
       "evidence": "Dashboards store tile layouts as JSON per dashboard with templates (products/dashboards/backend/models); insight definitions are schema-validated queries (posthog/schema.py) edited with live preview by project members. Scored at the lower reading under rule 11 because: Only dashboards are layout-as-data; product pages are code.",
       "alt_score": 3,
-      "alt_note": "The September v0.3 pass scored 3 on the evidence above."
+      "alt_note": "The September v0.3 pass scored 3 on the evidence above.",
+      "confidence": "medium"
     },
     "MAL-08": {
       "status": "not_applicable",
@@ -56,7 +60,8 @@
       "grade": "A",
       "evidence": "No UI localisation (no locale files in the tree); light and dark themes from design-system tokens (packages/quill) that tenants cannot override.",
       "alt_score": 2,
-      "alt_note": "Tokens are externalised in a design system, engineer-managed."
+      "alt_note": "Tokens are externalised in a design system, engineer-managed.",
+      "confidence": "medium"
     },
     "MAL-10": {
       "status": "assessed",
@@ -64,7 +69,8 @@
       "grade": "A",
       "evidence": "Actions, cohorts, feature-flag release conditions, insight alerts and CDP functions with filters are defined as data in the UI across all event and person data; functions can be test-invoked before saving (nodejs/src/cdp/cdp-api.ts:280-281).",
       "alt_score": 4,
-      "alt_note": "Functions are machine-readable and testable against real events; versioning and AI authoring are not verified."
+      "alt_note": "Functions are machine-readable and testable against real events; versioning and AI authoring are not verified.",
+      "confidence": "medium"
     },
     "MAL-11": {
       "status": "assessed",
@@ -72,7 +78,8 @@
       "grade": "A",
       "evidence": "Events feed CDP destinations with per-function logs and metrics and scheduled invocations (nodejs/src/cdp); batch exports to warehouses support backfills, which amounts to replay (products/batch_exports).",
       "alt_score": 4,
-      "alt_note": "Replay and per-project streams exist; event schemas are described, not generated, from definitions."
+      "alt_note": "Replay and per-project streams exist; event schemas are described, not generated, from definitions.",
+      "confidence": "medium"
     },
     "MAL-12": {
       "status": "assessed",
@@ -80,7 +87,8 @@
       "grade": "A",
       "evidence": "Hog functions run in the HogVM with a memory cap (DEFAULT_MAX_MEMORY 64 MB, common/hogvm) and a closed built-in function set, triggered by events and incoming webhooks, with per-function logs. No outbound egress guard was found in nodejs/src/cdp.",
       "alt_score": 3,
-      "alt_note": "If Hog's closed function set counts as an allowlist and egress control exists outside the paths searched."
+      "alt_note": "If Hog's closed function set counts as an allowlist and egress control exists outside the paths searched.",
+      "confidence": "medium"
     },
     "GOV-01": {
       "status": "assessed",
@@ -88,7 +96,8 @@
       "grade": "A",
       "evidence": "Design system with tokens (packages/quill) and Storybook visual tests (.github/workflows/ci-storybook.yml); no automated accessibility scanning (the Playwright audit workflow audits flakes).",
       "alt_score": 2,
-      "alt_note": "Kit and tokens exist; the anchors bundle kit and scans."
+      "alt_note": "Kit and tokens exist; the anchors bundle kit and scans.",
+      "confidence": "medium"
     },
     "GOV-02": {
       "status": "assessed",
@@ -96,7 +105,8 @@
       "grade": "A",
       "evidence": "Activity logging on most models with an activity page (posthog/models/activity_logging), retention by entitlement (retention.py:71), and recorded approval decisions on change requests (products/approvals/backend/models.py:112-140). Scored at the lower reading under rule 11 because: Activity logging covers most, not all, models.",
       "alt_score": 3,
-      "alt_note": "The September v0.3 pass scored 3 on the evidence above."
+      "alt_note": "The September v0.3 pass scored 3 on the evidence above.",
+      "confidence": "medium"
     },
     "GOV-03": {
       "status": "assessed",
@@ -104,7 +114,8 @@
       "grade": "A",
       "evidence": "Data deletion requests and async deletion remove a person's data across products (posthog/api/data_deletion_request.py, posthog/models/async_deletion); not driven by field-level privacy tags.",
       "alt_score": 3,
-      "alt_note": "Admin-triggered erasure is generic across products; only tag-driven coverage is missing."
+      "alt_note": "Admin-triggered erasure is generic across products; only tag-driven coverage is missing.",
+      "confidence": "medium"
     },
     "GOV-04": {
       "status": "assessed",
@@ -115,7 +126,8 @@
         "implemented": true,
         "tested": true,
         "operated": false
-      }
+      },
+      "confidence": "high"
     },
     "GOV-05": {
       "status": "assessed",
@@ -126,7 +138,8 @@
         "implemented": true,
         "tested": true,
         "operated": false
-      }
+      },
+      "confidence": "high"
     },
     "GOV-06": {
       "status": "assessed",
@@ -134,19 +147,22 @@
       "grade": "A",
       "evidence": "Change requests carry the intended change, a validation status and a policy snapshot, and are reviewed and then applied (products/approvals/backend/models.py:15-65); scheduled changes for flags (products/approvals/backend/scheduled_changes.py). No staging-data preview.",
       "alt_score": 3,
-      "alt_note": "A first-class proposal and review object exists; only preview on staging data is missing."
+      "alt_note": "A first-class proposal and review object exists; only preview on staging data is missing.",
+      "confidence": "medium"
     },
     "GOV-07": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Approval policies per registered action class with conditions evaluated on the change intent, named approvers, bypass roles and recorded Approval decisions (products/approvals/backend/policies.py:37-147, actions/registry.py, models.py:112-140)."
+      "evidence": "Approval policies per registered action class with conditions evaluated on the change intent, named approvers, bypass roles and recorded Approval decisions (products/approvals/backend/policies.py:37-147, actions/registry.py, models.py:112-140).",
+      "confidence": "high"
     },
     "GOV-08": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Customer definitions (insights, flags, functions) are data carried forward by Django migrations; no automated compatibility check or versioned extension contract was found."
+      "evidence": "Customer definitions (insights, flags, functions) are data carried forward by Django migrations; no automated compatibility check or versioned extension contract was found.",
+      "confidence": "medium"
     },
     "ARC-01": {
       "status": "assessed",
@@ -159,7 +175,8 @@
         "implemented": true,
         "tested": true,
         "operated": false
-      }
+      },
+      "confidence": "medium"
     },
     "ARC-05": {
       "status": "assessed",
@@ -172,25 +189,29 @@
         "implemented": true,
         "tested": true,
         "operated": false
-      }
+      },
+      "confidence": "medium"
     },
     "ARC-06": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Performance suites exist (services/mcp/vitest.perf.config.mts and service benchmarks); no documented per-surface limits."
+      "evidence": "Performance suites exist (services/mcp/vitest.perf.config.mts and service benchmarks); no documented per-surface limits.",
+      "confidence": "medium"
     },
     "DEL-02": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Independently deployable services with their own images: Django web, Node CDP and ingestion, Rust capture and flag services, and an MCP worker on Cloudflare (25 Dockerfiles; rust/, nodejs/, services/mcp/wrangler.jsonc)."
+      "evidence": "Independently deployable services with their own images: Django web, Node CDP and ingestion, Rust capture and flag services, and an MCP worker on Cloudflare (25 Dockerfiles; rust/, nodejs/, services/mcp/wrangler.jsonc).",
+      "confidence": "medium"
     },
     "DEL-03": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "tach enforces module boundaries and interfaces in CI (tach.toml, .github/workflows/ci-backend.yml) with isolation baselines for product modules (products/isolation_baseline.txt)."
+      "evidence": "tach enforces module boundaries and interfaces in CI (tach.toml, .github/workflows/ci-backend.yml) with isolation baselines for product modules (products/isolation_baseline.txt).",
+      "confidence": "medium"
     },
     "DEL-05": {
       "status": "assessed",
@@ -198,7 +219,8 @@
       "grade": "A",
       "evidence": "Backend, frontend, Rust, Playwright, Storybook, migration and semgrep checks run on pull requests with impacted-target selection from the import map (.github/scripts/tach_map.py); no accessibility check.",
       "alt_score": 3,
-      "alt_note": "Every class except accessibility is covered."
+      "alt_note": "Every class except accessibility is covered.",
+      "confidence": "medium"
     },
     "MAL-13": {
       "status": "assessed",
@@ -206,7 +228,8 @@
       "grade": "A",
       "evidence": "Hog function templates for sources, transformations and destinations, site apps, dashboard templates and per-product MCP tool definitions; no plugin points for PostHog's own UI, theme or text.",
       "alt_score": 3,
-      "alt_note": "Declarative and code extension exists for server and layout surfaces."
+      "alt_note": "Declarative and code extension exists for server and layout surfaces.",
+      "confidence": "medium"
     },
     "MAL-14": {
       "status": "assessed",
@@ -214,13 +237,15 @@
       "grade": "A",
       "evidence": "User code runs in the HogVM with memory limits and a closed function set; egress control was not evidenced.",
       "alt_score": 3,
-      "alt_note": "Same egress question as MAL-12."
+      "alt_note": "Same egress question as MAL-12.",
+      "confidence": "medium"
     },
     "MAL-15": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Functions are test-invoked with logs and metrics before saving (nodejs/src/cdp/cdp-api.ts:280); per-PR Hogbox preview environments for PostHog's own developers (.github/workflows/hogbox-preview-env.yml)."
+      "evidence": "Functions are test-invoked with logs and metrics before saving (nodejs/src/cdp/cdp-api.ts:280); per-PR Hogbox preview environments for PostHog's own developers (.github/workflows/hogbox-preview-env.yml).",
+      "confidence": "high"
     },
     "MAL-19": {
       "status": "assessed",
@@ -233,8 +258,10 @@
         "status": "assessed",
         "score": 3,
         "grade": "A",
-        "evidence": "MCP service with typed tools per product and scoped keys (services/mcp)."
-      }
+        "evidence": "MCP service with typed tools per product and scoped keys (services/mcp).",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "MAL-20": {
       "status": "assessed",
@@ -247,8 +274,10 @@
         "status": "assessed",
         "score": 3,
         "grade": "A",
-        "evidence": "A grounded assistant that answers and creates objects (ee/hogai)."
-      }
+        "evidence": "A grounded assistant that answers and creates objects (ee/hogai).",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "GOV-09": {
       "status": "assessed",
@@ -263,8 +292,10 @@
         "grade": "A",
         "evidence": "AI acts within the user's team with access control and approval policies; idempotency only on some writes.",
         "alt_score": 3,
-        "alt_note": "Approval policies may meet level 3."
-      }
+        "alt_note": "Approval policies may meet level 3.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "MAL-16": {
       "status": "assessed",
@@ -272,13 +303,15 @@
       "grade": "A",
       "evidence": "Revenue analytics maps Stripe and event-based sources onto one canonical set of revenue views (products/revenue_analytics/backend/views/sources); warehouse sources share one import framework (products/warehouse_sources). Scored at the lower reading under rule 11 because: The canonical model covers one domain (revenue).",
       "alt_score": 3,
-      "alt_note": "The September v0.3 pass scored 3 on the evidence above."
+      "alt_note": "The September v0.3 pass scored 3 on the evidence above.",
+      "confidence": "medium"
     },
     "MAL-17": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Warehouse source definitions and CDP destination templates follow shared interfaces covering auth, sync schedules, incremental sync and delivery; admins install and configure them in the UI."
+      "evidence": "Warehouse source definitions and CDP destination templates follow shared interfaces covering auth, sync schedules, incremental sync and delivery; admins install and configure them in the UI.",
+      "confidence": "medium"
     },
     "MAL-18": {
       "status": "assessed",
@@ -286,7 +319,8 @@
       "grade": "A",
       "evidence": "API paths are unversioned; incremental warehouse sync merges by primary key; no public deprecation windows.",
       "alt_score": 2,
-      "alt_note": "The API is documented and sync is idempotent."
+      "alt_note": "The API is documented and sync is idempotent.",
+      "confidence": "medium"
     },
     "EXP-01": {
       "status": "not_applicable",
@@ -309,7 +343,8 @@
       "grade": "A",
       "evidence": "Events stream into ClickHouse within seconds and feed product features; PostHog instruments its own product with the same SDKs.",
       "alt_score": 4,
-      "alt_note": "Autocapture adds instrumentation automatically; whether that counts for PostHog's own evolution is the construct question."
+      "alt_note": "Autocapture adds instrumentation automatically; whether that counts for PostHog's own evolution is the construct question.",
+      "confidence": "medium"
     },
     "LRN-02": {
       "status": "assessed",
@@ -317,7 +352,8 @@
       "grade": "A",
       "evidence": "Under the self rule, surveys and Signals concern customers' products and are not counted; no typed signals about PostHog's own configured definitions were found (searched products/signals, products/surveys, ee/hogai).",
       "alt_score": 2,
-      "alt_note": "PostHog AI may record typed feedback on its answers."
+      "alt_note": "PostHog AI may record typed feedback on its answers.",
+      "confidence": "medium"
     },
     "LRN-04": {
       "status": "assessed",
@@ -325,7 +361,8 @@
       "grade": "A",
       "evidence": "Under the self rule, Signals (which mines customers' products) is not counted; PostHog analyses its own query logs to decide what to materialise (ee/clickhouse/materialized_columns/analyze.py:89).",
       "alt_score": 3,
-      "alt_note": "If Signals run on PostHog's own product counts."
+      "alt_note": "If Signals run on PostHog's own product counts.",
+      "confidence": "medium"
     },
     "LRN-06": {
       "status": "assessed",
@@ -338,8 +375,10 @@
         "status": "assessed",
         "score": 0,
         "grade": "A",
-        "evidence": "Materialisation recommendations are rule-based."
-      }
+        "evidence": "Materialisation recommendations are rule-based.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "DEL-04": {
       "status": "assessed",
@@ -354,8 +393,10 @@
         "grade": "A",
         "evidence": "PostHog AI builds insights and dashboards on request.",
         "alt_score": 3,
-        "alt_note": "Broad object coverage."
-      }
+        "alt_note": "Broad object coverage.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "LRN-09": {
       "status": "assessed",
@@ -363,7 +404,15 @@
       "grade": "A",
       "evidence": "Report metrics re-run stored queries over trailing windows to track a report's impact (products/signals/backend/report_metrics.py); experiments compare variants against control. Neither binds the applied change's version to a keep, revise or rollback decision.",
       "alt_score": 3,
-      "alt_note": "Experiments record baseline, metric, window and conclusion for flag-gated changes."
+      "alt_note": "Experiments record baseline, metric, window and conclusion for flag-gated changes.",
+      "confidence": "medium"
+    },
+    "LRN-10": {
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "confidence": "medium",
+      "evidence": "The checks that govern change are code: CI tests, serializer and schema validation, and PostHog AI's evaluation suites and prompts (ee/hogai/eval/ci/*.py, ee/hogai/chat_agent/prompts). PostHog's own team curates PostHog AI's offline evaluation datasets by hand from production traces (ee/hogai/eval/README.md, 'continuously review traces and curate your datasets'), which is level 1: improvement by people, outside the shipped product's change path. Approval policies are admin-editable data (products/approvals/backend/models.py:149-181, api.py:179-260) but are not versioned or activity-logged and are not linked to measured results. The PostHog team also measured its AI pull-request reviewer, ReviewHog, against 35 real production incidents mapped to the PRs that caused them (products/review_hog/eval/experiments/2026-09-incident-golden-set/FINAL_REPORT.md, JUDGE_RUBRIC.md): a by-hand experiment by engineers on the checks for PostHog's own code, outside the shipped product's change path and not a first-party evolution system under rule 12. Nothing in the product records a failure or wrong pass against the check that missed it or turns it into a proposed change to that check."
     },
     "DEL-06": {
       "status": "assessed",
@@ -371,13 +420,15 @@
       "grade": "A",
       "evidence": "_health, livez and _readyz endpoints (posthog/urls.py:125-133); no machine-readable deployed-configuration snapshot evidenced.",
       "alt_score": 3,
-      "alt_note": "Instance status APIs may expose configuration."
+      "alt_note": "Instance status APIs may expose configuration.",
+      "confidence": "medium"
     },
     "DEL-07": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Optional per-pull-request Hogbox environments restore a migrated, demo-seeded database, apply the PR's migrations, hibernate to save cost and are cleaned up (.github/workflows/hogbox-preview-env.yml, hogbox-preview-cleanup.yml)."
+      "evidence": "Optional per-pull-request Hogbox environments restore a migrated, demo-seeded database, apply the PR's migrations, hibernate to save cost and are cleaned up (.github/workflows/hogbox-preview-env.yml, hogbox-preview-cleanup.yml).",
+      "confidence": "medium"
     },
     "DEL-08": {
       "status": "assessed",
@@ -385,7 +436,8 @@
       "grade": "A",
       "evidence": "Playwright journeys, Storybook visual tests and impacted-target selection that maps changed files to affected tests through tach's import map (.github/scripts/tach_map.py); features are instrumented with PostHog's own events. Scored at the lower reading under rule 11 because: Coverage across roles and devices was not verified.",
       "alt_score": 3,
-      "alt_note": "The September v0.3 pass scored 3 on the evidence above."
+      "alt_note": "The September v0.3 pass scored 3 on the evidence above.",
+      "confidence": "low"
     },
     "LRN-07": {
       "status": "assessed",
@@ -398,22 +450,26 @@
         "status": "assessed",
         "score": 0,
         "grade": "A",
-        "evidence": "Column materialisation is heuristic tuning."
-      }
+        "evidence": "Column materialisation is heuristic tuning.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "LRN-08": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "No evaluation of materialisation changes against a baseline was found.",
+      "evidence": "Under the v0.7 boundary this scores checks on changes the product or its AI makes to its own behaviour. PostHog AI's changes go through the same validated paths as people's: flags through the validating facade (products/feature_flags/backend/max_tools.py:340-350), insights through query-schema validation (ee/hogai/tools/upsert_dashboard/tool.py:273), and approval policies where configured. The learned change (weekly property materialisation, posthog/tasks/scheduled.py:927) applies with no check or baseline evaluation. Lower reading across the two, 1.",
       "alt_score": 2,
-      "alt_note": "Materialisation may be checked in code not read.",
+      "alt_note": "AI-made changes alone pass automated schema validation, which is level 2.",
       "ai": {
         "status": "assessed",
-        "score": 1,
+        "score": 2,
         "grade": "A",
-        "evidence": "AI-made changes pass approval policies; no evaluation before apply."
-      }
+        "evidence": "AI-made flags, insights and dashboards pass automated schema and serializer validation before they are saved (products/feature_flags/backend/max_tools.py:340-350; ee/hogai/tools/upsert_dashboard/tool.py:273), and destructive dashboard updates need confirmation (:125-139); no baseline evaluation.",
+        "confidence": "high"
+      },
+      "confidence": "medium"
     },
     "ARC-02": {
       "status": "assessed",
@@ -424,7 +480,8 @@
         "implemented": true,
         "tested": true,
         "operated": false
-      }
+      },
+      "confidence": "high"
     },
     "ARC-03": {
       "status": "assessed",
@@ -437,7 +494,8 @@
         "implemented": true,
         "tested": false,
         "operated": false
-      }
+      },
+      "confidence": "medium"
     },
     "ARC-04": {
       "status": "assessed",
@@ -448,13 +506,15 @@
         "implemented": true,
         "tested": true,
         "operated": false
-      }
+      },
+      "confidence": "high"
     },
     "ARC-07": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Prometheus metrics across services (for example services/llm-gateway/src/llm_gateway/metrics/prometheus.py); no published objectives in the repository."
+      "evidence": "Prometheus metrics across services (for example services/llm-gateway/src/llm_gateway/metrics/prometheus.py); no published objectives in the repository.",
+      "confidence": "medium"
     },
     "ARC-08": {
       "status": "assessed",
@@ -470,14 +530,17 @@
           "implemented": true,
           "tested": true,
           "operated": false
-        }
-      }
+        },
+        "confidence": "high"
+      },
+      "confidence": "medium"
     },
     "ARC-09": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "No backup command in the repository; self-hosted backup is left to the operator."
+      "evidence": "No backup command or restore path in the product. The hobby upgrade script tells operators to back up the whole installation, containers and volumes, before upgrading (bin/upgrade-hobby:44-45), and takes a pg_dumpall only during its PostgreSQL version upgrade (bin/upgrade-hobby:239-242); routine backup and restore of ClickHouse, PostgreSQL and object storage are left to the operator. Evidence corrected at the v0.7 migration; score unchanged.",
+      "confidence": "high"
     },
     "DEL-01": {
       "status": "assessed",
@@ -488,8 +551,10 @@
         "status": "assessed",
         "score": 2,
         "grade": "A",
-        "evidence": "Plan mode before acting (ee/hogai/chat_agent/prompts/plan.py)."
-      }
+        "evidence": "Plan mode before acting (ee/hogai/chat_agent/prompts/plan.py).",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "DEL-09": {
       "status": "assessed",
@@ -497,7 +562,8 @@
       "grade": "A",
       "evidence": "PostHog ships its own code behind its own feature flags with percentage and cohort rollouts (products/feature_flags); definition changes and materialisations are not staged.",
       "alt_score": 3,
-      "alt_note": "Flags cover most code changes."
+      "alt_note": "Flags cover most code changes.",
+      "confidence": "medium"
     },
     "DEL-10": {
       "status": "assessed",
@@ -505,13 +571,15 @@
       "grade": "A",
       "evidence": "Feature flags switch code features off at runtime; there is no kill switch for AI-made or materialised changes.",
       "alt_score": 3,
-      "alt_note": "Flags act as a runtime kill switch for most features."
+      "alt_note": "Flags act as a runtime kill switch for most features.",
+      "confidence": "medium"
     },
     "LRN-03": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "The app captures its own exceptions into PostHog's error tracking (frontend/src/lib/colors.ts:80, products/error_tracking); friction detection for customers' products (products/signals) is excluded under the self rule."
+      "evidence": "The app captures its own exceptions into PostHog's error tracking (frontend/src/lib/colors.ts:80, products/error_tracking); friction detection for customers' products (products/signals) is excluded under the self rule.",
+      "confidence": "high"
     },
     "LRN-05": {
       "status": "assessed",
@@ -524,8 +592,10 @@
         "status": "assessed",
         "score": 0,
         "grade": "A",
-        "evidence": "Diagnosis of PostHog's own issues is not model-backed."
-      }
+        "evidence": "Diagnosis of PostHog's own issues is not model-backed.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "GOV-10": {
       "status": "assessed",
@@ -536,8 +606,10 @@
         "status": "assessed",
         "score": 2,
         "grade": "A",
-        "evidence": "A fixed tool set and approval policies; no blast-radius limit."
-      }
+        "evidence": "A fixed tool set and approval policies; no blast-radius limit.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "GOV-11": {
       "status": "assessed",
@@ -552,14 +624,17 @@
         "grade": "A",
         "evidence": "Session-derived content is fenced as data (ee/hogai/utils/untrusted.py).",
         "alt_score": 3,
-        "alt_note": "Systematic fencing."
-      }
+        "alt_note": "Systematic fencing.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "EXP-04": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "No unmet-demand signals about PostHog itself beyond free-text requests."
+      "evidence": "No unmet-demand signals about PostHog itself beyond free-text requests.",
+      "confidence": "medium"
     },
     "EXP-05": {
       "status": "assessed",
@@ -570,8 +645,10 @@
         "status": "assessed",
         "score": 0,
         "grade": "A",
-        "evidence": "No AI involvement in this behaviour."
-      }
+        "evidence": "No AI involvement in this behaviour.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "EXP-06": {
       "status": "assessed",
@@ -579,7 +656,8 @@
       "grade": "A",
       "evidence": "Early access features let users opt into new products and betas (products/early_access_features); no success metric or keep-or-kill record.",
       "alt_score": 3,
-      "alt_note": "Stage-based releases approach a cohort launch."
+      "alt_note": "Stage-based releases approach a cohort launch.",
+      "confidence": "medium"
     },
     "DEL-11": {
       "status": "not_applicable",
@@ -589,19 +667,22 @@
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "The LLM gateway routes across providers with Cloudflare, Modal and Bedrock fallbacks and a circuit breaker (services/llm-gateway/src/llm_gateway/baseten.py:34, circuit_breaker.py), with tests (tests/test_circuit_breaker.py)."
+      "evidence": "The LLM gateway routes across providers with Cloudflare, Modal and Bedrock fallbacks and a circuit breaker (services/llm-gateway/src/llm_gateway/baseten.py:34, circuit_breaker.py), with tests (tests/test_circuit_breaker.py).",
+      "confidence": "high"
     },
     "AIR-02": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Generations are marked billable for AI credits in the usage report and rate-limited (ee/hogai/llm.py:129-167, 282); credits are enforced per organisation through billing."
+      "evidence": "Generations are marked billable for AI credits in the usage report and rate-limited (ee/hogai/llm.py:129-167, 282); credits are enforced per organisation through billing.",
+      "confidence": "high"
     },
     "AIR-03": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "PostHog AI gets taxonomy, schema and entity context through tools over the team's live data (ee/hogai/context, tools)."
+      "evidence": "PostHog AI gets taxonomy, schema and entity context through tools over the team's live data (ee/hogai/context, tools).",
+      "confidence": "medium"
     },
     "AIR-04": {
       "status": "assessed",
@@ -612,19 +693,22 @@
         "implemented": true,
         "tested": true,
         "operated": false
-      }
+      },
+      "confidence": "high"
     },
     "AIR-05": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Maintained offline and CI evaluation suites per capability with scored metrics (ee/hogai/eval/ci: funnel, retention, insight search, memory, root; eval/offline)."
+      "evidence": "Maintained offline and CI evaluation suites per capability with scored metrics (ee/hogai/eval/ci: funnel, retention, insight search, memory, root; eval/offline).",
+      "confidence": "medium"
     },
     "AIR-06": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "LLM evals run on pull requests labelled evals-ready (.github/workflows/ci-ai.yml:2-20); they are not automatic for every AI change and no blocking threshold was found."
+      "evidence": "LLM evals run on pull requests labelled evals-ready (.github/workflows/ci-ai.yml:2-20); they are not automatic for every AI change and no blocking threshold was found.",
+      "confidence": "high"
     },
     "AIR-07": {
       "status": "assessed",
@@ -635,7 +719,8 @@
         "implemented": true,
         "tested": true,
         "operated": false
-      }
+      },
+      "confidence": "high"
     },
     "AIR-08": {
       "status": "assessed",
@@ -643,11 +728,12 @@
       "grade": "A",
       "evidence": "Generations, traces and user feedback on PostHog AI are recorded and summarised (ee/hogai/llm_traces_summaries, chat_agent/slash_commands/commands/feedback); no drift alerts found.",
       "alt_score": 3,
-      "alt_note": "LLM analytics dashboards per model may act as continuous monitoring."
+      "alt_note": "LLM analytics dashboards per model may act as continuous monitoring.",
+      "confidence": "medium"
     }
   },
   "limits": "Repository evidence only, master at the tip named above. The repository is very large (about 55,000 files); only the areas cited were read, so some capabilities are likely under-scored (for example versioning and rollback). Cloud operations, dogfooding practice and incident history are invisible here. Egress controls for Hog functions were searched for and not found; they may exist in infrastructure code outside the paths read. Single rater. Under the v0.3 self rule, Signals, Tasks and experiments on customers' products are excluded from scoring.",
-  "framework_version": "0.5.1",
+  "framework_version": "0.7.0",
   "reading": "**SAL 1.** Request → Release reaches L2: PostHog AI plans before acting and builds insights and dashboards (DEL-01 2, DEL-04 2). Issue → Fix stops at L1 because nothing diagnoses PostHog's own issues (LRN-05 1); its Signals product does this for customers' products and is excluded under the self rule. **Strengths:** migration risk analysis in CI (ARC-02 3), Temporal and Celery work (ARC-04 3), and feature flags on its own code (DEL-09 2). **Blocks L3:** no backup in the repository (ARC-09 1), and definition rollback covers only some surfaces (GOV-05 2).",
   "framework": "EVOLVE",
   "scope_facts": {
@@ -661,7 +747,7 @@
     },
     "multi_tenant": {
       "value": true,
-      "evidence": "Organisations and projects share one deployment with access control and quotas."
+      "evidence": "Organisations and projects with their own members, roles and access control share one deployment, with quotas (products/access_control); these are separately administered groups, not one person's workspaces."
     },
     "hosted_service": {
       "value": true,
@@ -673,7 +759,7 @@
     },
     "agent_mutations": {
       "value": true,
-      "evidence": "PostHog AI creates and edits insights, dashboards and other configured objects (ee/hogai)."
+      "evidence": "PostHog AI creates and edits insights, dashboards, feature flags, experiments and surveys (ee/hogai/tools, products/*/backend/max_tools.py)."
     },
     "evolution_auto_apply": {
       "value": false,
@@ -685,7 +771,7 @@
     },
     "code_release_path": {
       "value": false,
-      "evidence": "Tasks and Stamphog act on customers' repositories (products/stamphog); no first-party lane ships PostHog code changes."
+      "evidence": "False under the v0.7 definition. PostHog AI drafts Hog transformation code into the editor (products/cdp/backend/max_tools.py:51), but a person saves and enables it and it is versioned and restored with the function definition (products/cdp/backend/api/hog_function.py:1677); the AI does not activate code. Tasks and Stamphog act on repositories (products/stamphog); no first-party lane ships PostHog's own code changes."
     },
     "ai_features": {
       "value": true,
@@ -699,5 +785,82 @@
       "value": true,
       "evidence": "PostHog AI creates and edits insights, dashboards and other objects (ee/hogai/tools)."
     }
-  }
+  },
+  "change_kinds": [
+    {
+      "id": "dashboards-insights",
+      "name": "Charts, reports and dashboards",
+      "who": "product and growth teams in a project",
+      "main": true,
+      "reach": 2,
+      "confidence": "medium",
+      "evidence": "Members build insights and dashboards in the UI with live preview; PostHog AI drafts them on request (ee/hogai/tools/create_insight.py; ee/hogai/tools/upsert_dashboard/tool.py:116, with a confirmation preview for updates that remove insights at :125-139) and the member keeps or edits the result. Undo: a deleted dashboard and its tiles are restored through undo-delete (products/dashboards/backend/api/dashboard.py:2424, :2747; posthog/api/file_system/deletion.py), and edits are recorded in the activity log with before and after values; there is no one-step revert to an earlier version of a dashboard or insight, so undoing an edit means editing it back from the logged values. Reach 2 rests on DEL-04 2."
+    },
+    {
+      "id": "feature-flags",
+      "name": "Who sees which feature (feature flags)",
+      "who": "engineers and product managers in a project",
+      "main": true,
+      "reach": 2,
+      "confidence": "medium",
+      "evidence": "Flags are created and edited in the UI and API with validated release conditions; PostHog AI creates flags on request through the same validated facade (products/feature_flags/backend/max_tools.py:211, create_flag with validation errors returned at :340-350). Undo: switch the flag off, restore a deleted or archived flag, and read any earlier version reconstructed from history (products/feature_flags/backend/version_history.py; versions endpoint api/feature_flag.py:4780); restoring an earlier version is done by editing it back, not by a revert button. Approval policies can require a reviewer for flag changes (products/approvals/backend/policies.py)."
+    },
+    {
+      "id": "experiments",
+      "name": "A/B tests and experiments",
+      "who": "product teams",
+      "main": false,
+      "reach": 2,
+      "confidence": "medium",
+      "evidence": "Experiments are set up and launched in the UI; PostHog AI creates them in draft for a person to configure and launch (products/experiments/backend/max_tools.py:97, :158). Undo: reset an experiment to draft or archive it (products/experiments/backend/experiment_service.py:1963, :2996)."
+    },
+    {
+      "id": "data-pipelines",
+      "name": "Where data is sent and how it is transformed",
+      "who": "data and engineering teams",
+      "main": false,
+      "reach": 2,
+      "confidence": "high",
+      "evidence": "Destinations, transformations and sources are configured from templates in the UI and test-invoked before saving (nodejs/src/cdp/cdp-api.ts:280); PostHog AI drafts transformation code, filters and inputs into the editor for a person to save (products/cdp/backend/max_tools.py:51, :153, :236). Undo: every live change is a numbered revision that can be restored (products/cdp/backend/api/hog_function.py:1395-1414, revisions restore at :1677-1708)."
+    },
+    {
+      "id": "surveys",
+      "name": "Surveys shown to users",
+      "who": "product and research teams",
+      "main": false,
+      "reach": 2,
+      "confidence": "medium",
+      "evidence": "Surveys are built and launched in the UI; PostHog AI drafts a survey and launches it only with explicit confirmation (products/surveys/backend/max_tools.py:291-305, is_dangerous_operation at :298). Undo: stop a survey by ending it or archive it (end_date and archived fields, products/surveys/backend/api/survey.py:939-940); edits have no version history."
+    },
+    {
+      "id": "product-features",
+      "name": "New kinds of analysis and changes to PostHog's own screens",
+      "who": "PostHog's users, through feature requests",
+      "main": false,
+      "reach": 0,
+      "confidence": "high",
+      "evidence": "New analysis types, product screens and behaviour are PostHog code in this monorepo, changed by pull request and release; no first-party lane builds PostHog's own code from users' requests (code_release_path false; Tasks and Stamphog act on repositories, not on a running PostHog). Engineers only."
+    }
+  ],
+  "ai_delivery": {
+    "present": true,
+    "qualifies": false,
+    "evidence": "AGENTS.md, CLAUDE.md, AI_POLICY.md, .agents/skills, .claude (agents, commands, hooks, skills), .codex, .cursorrules; agent workflows in CI: pr-autoresolve-conflicts.yml runs openai/codex-action pinned by SHA to resolve merge conflicts (manual dispatch only), review-hog.yml triggers an AI review service on labelled PRs, and stamphog[bot] posts AI approvals on this repository's PRs (products/stamphog/README.md).",
+    "note": "AI-assisted engineering, not PostHog evolving itself. It does not meet rule 12: the agent workflows review, approve or resolve conflicts on PRs that people write; no agent lane builds PostHog changes from its users' requests or issues, and whether Stamphog approvals are required checks is set in branch protection outside the repository."
+  },
+  "proven": {
+    "request": {
+      "status": "not_evidenced",
+      "searched": "Repository at the pinned commit: CHANGELOG.md (points to the public changelog of engineering releases), activity-log and change-request models, .github workflows. No operating records of real changes going through PostHog's own Request → Release loop in a deployment are in the repository."
+    },
+    "fix": {
+      "status": "not_evidenced",
+      "searched": "Repository at the pinned commit: CHANGELOG.md (points to the public changelog of engineering releases), activity-log and change-request models, .github workflows. No operating records of real changes going through PostHog's own Issue → Fix loop in a deployment are in the repository."
+    },
+    "expansion": {
+      "status": "not_evidenced",
+      "searched": "Repository at the pinned commit: CHANGELOG.md (points to the public changelog of engineering releases), activity-log and change-request models, .github workflows. No operating records of real changes going through PostHog's own Opportunity → Expansion loop in a deployment are in the repository."
+    }
+  },
+  "confidence_note": "Confidence for criteria whose score did not change in the v0.7 migration was assigned at migration from the recorded evidence; confidence for new and changed readings (kinds of change, LRN-10 and every re-read criterion) comes from re-reading the source at the pinned commit."
 }

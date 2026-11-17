@@ -3,6 +3,7 @@
   "date": "2026-09-30",
   "source": "github.com/discourse/discourse @ 2590ea9db1b7c38dcf80298aefd3e7cb3afe1f2b (main)",
   "archetype": "focused-application",
+  "basis": "shipped",
   "scope_line": "Scope: the discourse repository including the plugins bundled in plugins/ (automation, discourse-ai, discourse-workflows, data explorer, chat and others) and the core MCP server. Several of these ship disabled by default as betas. Hosted Discourse and the separate theme CLI and Docker repositories are out of scope.",
   "scores": {
     "MAL-01": {
@@ -15,7 +16,8 @@
       "score": 3,
       "grade": "A",
       "single_entity": true,
-      "evidence": "Admins define typed user fields (text, confirm, dropdown, multiselect) with required, editable and visibility flags (app/models/user_field.rb); only the user entity family has them, so the single-entity cap applies."
+      "evidence": "Admins define typed user fields (text, confirm, dropdown, multiselect) with required, editable and visibility flags (app/models/user_field.rb); only the user entity family has them, so the single-entity cap applies.",
+      "confidence": "medium"
     },
     "MAL-03": {
       "status": "not_applicable",
@@ -36,7 +38,8 @@
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "OpenAPI documentation generated from request specs (lib/tasks/api_docs.rake); MCP tools declare output schemas (lib/discourse_mcp/output_schema.rb). No typed client generation or dry-run."
+      "evidence": "OpenAPI documentation generated from request specs (lib/tasks/api_docs.rake); MCP tools declare output schemas (lib/discourse_mcp/output_schema.rb). No typed client generation or dry-run.",
+      "confidence": "medium"
     },
     "MAL-07": {
       "status": "assessed",
@@ -44,7 +47,8 @@
       "grade": "A",
       "evidence": "Themes and components are installed and configured by admins with typed, schema-validated settings and settings migrations (app/models/theme_setting.rb, theme_settings_migration.rb) and can be previewed on the live site before activation (app/controllers/admin/themes_controller.rb:12-16); page layout itself is theme code, not data.",
       "alt_score": 3,
-      "alt_note": "Admins do override and preview presentation per site; only the 'layout as data' clause fails."
+      "alt_note": "Admins do override and preview presentation per site; only the 'layout as data' clause fails.",
+      "confidence": "medium"
     },
     "MAL-08": {
       "status": "not_applicable",
@@ -55,14 +59,16 @@
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Admin colour-scheme editor (app/models/color_scheme.rb), per-site overrides for every UI string (app/models/translation_override.rb, theme_translation_override.rb), and a translation pipeline covering thousands of locale files (translator.yml)."
+      "evidence": "Admin colour-scheme editor (app/models/color_scheme.rb), per-site overrides for every UI string (app/models/translation_override.rb, theme_translation_override.rb), and a translation pipeline covering thousands of locale files (translator.yml).",
+      "confidence": "medium"
     },
     "MAL-10": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
       "evidence": "By default: the automation plugin and watched words with a test mode (plugins/automation, app/models/watched_word.rb). The workflows plugin with versions, validators and test sessions is an off-by-default beta (plugins/discourse-workflows/config/settings.yml:4-11).",
-      "available_score": 3
+      "available_score": 3,
+      "confidence": "high"
     },
     "MAL-11": {
       "status": "assessed",
@@ -70,14 +76,16 @@
       "grade": "A",
       "evidence": "Admin webhooks with typed event subscriptions, delivery logs (app/models/web_hook_event.rb), automatic retries (MAX_RETRY_COUNT 4, app/jobs/regular/emit_web_hook_event.rb:8) and redelivery (app/models/redelivering_webhook_event.rb).",
       "alt_score": 4,
-      "alt_note": "Replay exists; event schemas are not generated from definitions."
+      "alt_note": "Replay exists; event schemas are not generated from definitions.",
+      "confidence": "medium"
     },
     "MAL-12": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
       "evidence": "By default, sandboxed code runs only as discourse-ai tool scripts with timeouts (plugins/discourse-ai/lib/agents/tool_runner.rb:44-58), and discourse-ai is off by default; the beta workflows Code node adds a sandbox with a resource budget (js_sandbox.rb, sandbox_budget.rb).",
-      "available_score": 3
+      "available_score": 3,
+      "confidence": "high"
     },
     "GOV-01": {
       "status": "assessed",
@@ -85,7 +93,8 @@
       "grade": "A",
       "evidence": "An accessibility service and dialog components exist (frontend/discourse/tests/helpers/qunit-helpers.js:102 imports discourse/services/a11y); no automated accessibility scanning in CI.",
       "alt_score": 2,
-      "alt_note": "Kit-level accessibility utilities exist; the anchors bundle kit and scans."
+      "alt_note": "Kit-level accessibility utilities exist; the anchors bundle kit and scans.",
+      "confidence": "medium"
     },
     "GOV-02": {
       "status": "assessed",
@@ -93,7 +102,8 @@
       "grade": "A",
       "evidence": "Staff action logs record admin actions including site-setting changes with old and new values (app/services/staff_action_logger.rb) with an admin UI; post revisions and reviewable history; an MCP audit log with retention (config/site_settings.yml:4535). Ordinary entity mutations are not all audited.",
       "alt_score": 3,
-      "alt_note": "Configuration changes, approvals in the review queue and admin UI are covered; only entity-wide coverage fails."
+      "alt_note": "Configuration changes, approvals in the review queue and admin UI are covered; only entity-wide coverage fails.",
+      "confidence": "medium"
     },
     "GOV-03": {
       "status": "assessed",
@@ -101,26 +111,30 @@
       "grade": "A",
       "evidence": "User archive export (app/jobs/regular/export_user_archive.rb), anonymisation and deletion (app/services/user_anonymizer.rb, user_destroyer.rb) and purge settings; coded for the user family, not driven by field tags.",
       "alt_score": 3,
-      "alt_note": "Admin-triggered export and erasure exist across the user's content; only tag-driven coverage is missing."
+      "alt_note": "Admin-triggered export and erasure exist across the user's content; only tag-driven coverage is missing.",
+      "confidence": "medium"
     },
     "GOV-04": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Central Guardian permission model with group and category permissions and scoped API keys (app/models/api_key_scope.rb); Dependabot configured (.github/dependabot.yml); no SAST in CI."
+      "evidence": "Central Guardian permission model with group and category permissions and scoped API keys (app/models/api_key_scope.rb); Dependabot configured (.github/dependabot.yml); no SAST in CI.",
+      "confidence": "medium"
     },
     "GOV-05": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Site-setting history in staff logs, revertible post revisions, versioned published workflows (workflow_snapshot.rb) and git-backed remote themes; no admin rollback for settings or themes."
+      "evidence": "Site-setting history in staff logs, revertible post revisions, versioned published workflows (workflow_snapshot.rb) and git-backed remote themes; no admin rollback for settings or themes.",
+      "confidence": "medium"
     },
     "GOV-06": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
       "evidence": "By default, admins change settings and themes directly. With the beta workflows plugin on, an AI author writes risk-rated draft proposals that are validated and applied by an admin (plugins/discourse-workflows/lib/discourse_workflows/ai_workflow_author.rb:39-67).",
-      "available_score": 2
+      "available_score": 2,
+      "confidence": "high"
     },
     "GOV-07": {
       "status": "assessed",
@@ -128,19 +142,22 @@
       "grade": "A",
       "evidence": "Admins apply changes directly; the upcoming-changes framework controls rollout of Discourse's own features by status and group (lib/upcoming_changes, plugins/discourse-workflows/config/settings.yml:4-11).",
       "alt_score": 2,
-      "alt_note": "Upcoming changes is a narrow policy for feature rollout."
+      "alt_note": "Upcoming changes is a narrow policy for feature rollout.",
+      "confidence": "medium"
     },
     "GOV-08": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Plugins and themes pin compatible commits per core version (lib/version_compatibility.rb, lib/tasks/compatibility.rake); a structured deprecation API with since and drop_from (lib/discourse.rb:1185-1189); theme settings migrations (app/models/theme_settings_migration.rb)."
+      "evidence": "Plugins and themes pin compatible commits per core version (lib/version_compatibility.rb, lib/tasks/compatibility.rake); a structured deprecation API with since and drop_from (lib/discourse.rb:1185-1189); theme settings migrations (app/models/theme_settings_migration.rb).",
+      "confidence": "high"
     },
     "ARC-01": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "PostgreSQL full-text search (lib/search.rb) and hand-tuned list queries; custom fields are not filterable at scale."
+      "evidence": "PostgreSQL full-text search (lib/search.rb) and hand-tuned list queries; custom fields are not filterable at scale.",
+      "confidence": "medium"
     },
     "ARC-05": {
       "status": "assessed",
@@ -153,25 +170,29 @@
         "implemented": true,
         "tested": true,
         "operated": false
-      }
+      },
+      "confidence": "medium"
     },
     "ARC-06": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Benchmark script (script/bench.rb); no documented per-surface limits or CI budgets."
+      "evidence": "Benchmark script (script/bench.rb); no documented per-surface limits or CI budgets.",
+      "confidence": "medium"
     },
     "DEL-02": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "Rails and Ember monolith deployed as one application; container tooling lives in a separate repository."
+      "evidence": "Rails and Ember monolith deployed as one application; container tooling lives in a separate repository.",
+      "confidence": "medium"
     },
     "DEL-03": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "Plugin API is a contract, but internal module boundaries are convention; no architectural lint."
+      "evidence": "Plugin API is a contract, but internal module boundaries are convention; no architectural lint.",
+      "confidence": "medium"
     },
     "DEL-05": {
       "status": "assessed",
@@ -179,19 +200,22 @@
       "grade": "A",
       "evidence": "Tests, linting and migration tests run on every pull request with no draft filter (.github/workflows/tests.yml:3-26, linting.yml, migration-tests.yml); no accessibility or security scan in CI.",
       "alt_score": 3,
-      "alt_note": "Every code change class except accessibility and SAST is checked."
+      "alt_note": "Every code change class except accessibility and SAST is checked.",
+      "confidence": "medium"
     },
     "MAL-13": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Ruby and JavaScript plugins through a versioned plugin API, theme components with typed settings, site settings, text overrides, watched words, automations, SQL badges, user fields and custom sidebar sections."
+      "evidence": "Ruby and JavaScript plugins through a versioned plugin API, theme components with typed settings, site settings, text overrides, watched words, automations, SQL badges, user fields and custom sidebar sections.",
+      "confidence": "medium"
     },
     "MAL-14": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Themes run under a Content Security Policy; AI tool scripts and beta workflow code nodes are sandboxed; plugins run in-process with full trust."
+      "evidence": "Themes run under a Content Security Policy; AI tool scripts and beta workflow code nodes are sandboxed; plugins run in-process with full trust.",
+      "confidence": "medium"
     },
     "MAL-15": {
       "status": "assessed",
@@ -199,7 +223,8 @@
       "grade": "A",
       "evidence": "Theme preview on the live site, the /logs viewer for admins and a Docker development environment (bin/docker/boot_dev); the theme CLI that syncs to a live site is in another repository.",
       "alt_score": 3,
-      "alt_note": "Preview against the real site and logs are already available to theme developers."
+      "alt_note": "Preview against the real site and logs are already available to theme developers.",
+      "confidence": "medium"
     },
     "MAL-19": {
       "status": "assessed",
@@ -210,8 +235,10 @@
         "status": "assessed",
         "score": 3,
         "grade": "A",
-        "evidence": "Core MCP server with typed tools and scopes (lib/discourse_mcp)."
-      }
+        "evidence": "Core MCP server with typed tools and scopes (lib/discourse_mcp).",
+        "confidence": "medium"
+      },
+      "confidence": "high"
     },
     "MAL-20": {
       "status": "assessed",
@@ -224,8 +251,10 @@
         "score": 0,
         "grade": "A",
         "evidence": "Off by default.",
-        "available_score": 3
-      }
+        "available_score": 3,
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "GOV-09": {
       "status": "assessed",
@@ -239,20 +268,24 @@
         "score": 0,
         "grade": "A",
         "evidence": "Off by default.",
-        "available_score": 3
-      }
+        "available_score": 3,
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "MAL-16": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "Integrations are bespoke plugins (discourse-zendesk-plugin, discourse-github, import scripts); no canonical integration model."
+      "evidence": "Integrations are bespoke plugins (discourse-zendesk-plugin, discourse-github, import scripts); no canonical integration model.",
+      "confidence": "medium"
     },
     "MAL-17": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Chat integration has a provider framework (plugins/discourse-chat-integration/lib/discourse_chat_integration/provider) and beta workflows have typed credential definitions (credential_types); no general connector SDK with lifecycle."
+      "evidence": "Chat integration has a provider framework (plugins/discourse-chat-integration/lib/discourse_chat_integration/provider) and beta workflows have typed credential definitions (credential_types); no general connector SDK with lifecycle.",
+      "confidence": "medium"
     },
     "MAL-18": {
       "status": "assessed",
@@ -260,7 +293,8 @@
       "grade": "A",
       "evidence": "No path versioning; plugin-API deprecations are structured, but the HTTP API has no deprecation windows.",
       "alt_score": 2,
-      "alt_note": "The API is documented through generated OpenAPI docs."
+      "alt_note": "The API is documented through generated OpenAPI docs.",
+      "confidence": "medium"
     },
     "EXP-01": {
       "status": "not_applicable",
@@ -283,13 +317,15 @@
       "grade": "A",
       "evidence": "User actions, visits, post timings and search logs are recorded as they happen and feed product features such as top topics and admin reports. Scored at the lower reading under rule 11 because: Engagement tables, not a per-feature event stream.",
       "alt_score": 3,
-      "alt_note": "The September v0.3 pass scored 3 on the evidence above."
+      "alt_note": "The September v0.3 pass scored 3 on the evidence above.",
+      "confidence": "medium"
     },
     "LRN-02": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Typed flags feed a review queue with triage (app/models/reviewable.rb); they concern content, not the product's definitions and versions."
+      "evidence": "Typed flags feed a review queue with triage (app/models/reviewable.rb); they concern content, not the product's definitions and versions.",
+      "confidence": "medium"
     },
     "LRN-04": {
       "status": "assessed",
@@ -297,7 +333,8 @@
       "grade": "A",
       "evidence": "Data Explorer runs saved SQL over the whole site database including usage, moderation and support data (plugins/discourse-data-explorer); no continuous mining.",
       "alt_score": 3,
-      "alt_note": "Usage and support data are already joinable and queryable inside the product."
+      "alt_note": "Usage and support data are already joinable and queryable inside the product.",
+      "confidence": "medium"
     },
     "LRN-06": {
       "status": "assessed",
@@ -308,8 +345,10 @@
         "status": "assessed",
         "score": 0,
         "grade": "A",
-        "evidence": "Problem checks are rules."
-      }
+        "evidence": "Problem checks are rules.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "DEL-04": {
       "status": "assessed",
@@ -322,20 +361,31 @@
         "score": 0,
         "grade": "A",
         "evidence": "Off by default.",
-        "available_score": 2
-      }
+        "available_score": 2,
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "LRN-09": {
       "status": "assessed",
       "score": 0,
       "grade": "A",
-      "evidence": "No binding of changes to baselines or metrics."
+      "evidence": "No binding of changes to baselines or metrics.",
+      "confidence": "medium"
+    },
+    "LRN-10": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "confidence": "medium",
+      "evidence": "The checks that govern change are code: setting type validators, SafeMigrate and the deferred droppers (lib/migration/safe_migrate.rb), and CI (.github/workflows/tests.yml). There is no change policy object (GOV-07 1). With discourse-ai on, its evaluation harness and judge are code with datasets outside the repository (plugins/discourse-ai/evals/lib/eval.rb, judge.rb) and are not run in CI. Model accuracy against moderator decisions (app/models/model_accuracy.rb) measures moderation classifiers, not the checks that govern changes to Discourse. Nothing links a failure to the check that missed it."
     },
     "DEL-06": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Health endpoint /srv/status (config/routes.rb:135) and version through the about endpoint; no deployed-configuration snapshot."
+      "evidence": "Health endpoint /srv/status (config/routes.rb:135) and version through the about endpoint; no deployed-configuration snapshot.",
+      "confidence": "high"
     },
     "DEL-07": {
       "status": "assessed",
@@ -343,13 +393,15 @@
       "grade": "A",
       "evidence": "Scripted Docker development environment (bin/docker/boot_dev), test database setup, and upcoming-change flags that ship features off by default; no per-change ephemeral environment in the repository.",
       "alt_score": 3,
-      "alt_note": "Flags-off-first is present; ephemeral environments may exist in private infrastructure."
+      "alt_note": "Flags-off-first is present; ephemeral environments may exist in private infrastructure.",
+      "confidence": "medium"
     },
     "DEL-08": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "System specs drive browser journeys (spec/system) alongside QUnit tests; no changed-path to journey map or adoption instrumentation at ship."
+      "evidence": "System specs drive browser journeys (spec/system) alongside QUnit tests; no changed-path to journey map or adoption instrumentation at ship.",
+      "confidence": "medium"
     },
     "LRN-07": {
       "status": "assessed",
@@ -360,19 +412,22 @@
         "status": "assessed",
         "score": 0,
         "grade": "A",
-        "evidence": "No AI involvement in this behaviour."
-      }
+        "evidence": "No AI involvement in this behaviour.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "LRN-08": {
       "status": "assessed",
-      "score": 1,
+      "score": 0,
       "grade": "A",
-      "evidence": "By default, changes are reviewed by people. With the workflows beta, AI proposals are validated with workflow_validate_patch before an admin applies them.",
-      "available_score": 2,
+      "evidence": "Re-scored 1 to 0 under the v0.7 boundary. By default Discourse produces no learned or AI-made changes: discourse-ai and the workflows AI author are off (plugins/discourse-ai/config/settings.yml:2-3, plugins/discourse-workflows/config/settings.yml:2-14), and problem checks are rule-based notices that admins act on by hand, whose checks are DEL-05. Nothing specific to learned or AI-made changes would apply. With the workflows beta on, AI proposals are validated with workflow_validate_patch before an admin applies them (plugins/discourse-workflows/lib/discourse_workflows/ai_workflow_author.rb:39-67), which is the opt-in 2.",
       "ai": {
         "status": "not_applicable",
         "rationale": "agent_mutations is false."
-      }
+      },
+      "available_score": 2,
+      "confidence": "medium"
     },
     "ARC-02": {
       "status": "assessed",
@@ -383,7 +438,8 @@
         "implemented": true,
         "tested": true,
         "operated": false
-      }
+      },
+      "confidence": "high"
     },
     "ARC-03": {
       "status": "assessed",
@@ -396,7 +452,8 @@
         "implemented": true,
         "tested": false,
         "operated": false
-      }
+      },
+      "confidence": "medium"
     },
     "ARC-04": {
       "status": "assessed",
@@ -409,13 +466,15 @@
         "implemented": true,
         "tested": true,
         "operated": false
-      }
+      },
+      "confidence": "medium"
     },
     "ARC-07": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "No published objectives in this repository; the prometheus exporter is a separate plugin not bundled here."
+      "evidence": "No published objectives in this repository; the prometheus exporter is a separate plugin not bundled here.",
+      "confidence": "medium"
     },
     "ARC-08": {
       "status": "assessed",
@@ -427,8 +486,10 @@
         "score": 0,
         "grade": "A",
         "evidence": "Off by default.",
-        "available_score": 2
-      }
+        "available_score": 2,
+        "confidence": "medium"
+      },
+      "confidence": "high"
     },
     "ARC-09": {
       "status": "assessed",
@@ -446,7 +507,8 @@
         "files": 3,
         "secrets": "n/a",
         "schedules": 2
-      }
+      },
+      "confidence": "high"
     },
     "DEL-01": {
       "status": "assessed",
@@ -459,8 +521,10 @@
         "status": "assessed",
         "score": 0,
         "grade": "A",
-        "evidence": "No AI involvement in this behaviour."
-      }
+        "evidence": "No AI involvement in this behaviour.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "DEL-09": {
       "status": "assessed",
@@ -468,19 +532,22 @@
       "grade": "A",
       "evidence": "The upcoming-changes framework releases Discourse's own features to opted-in groups first (lib/upcoming_changes); site setting changes are not staged.",
       "alt_score": 3,
-      "alt_note": "Group-based rollout covers code changes by default."
+      "alt_note": "Group-based rollout covers code changes by default.",
+      "confidence": "medium"
     },
     "DEL-10": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Site settings switch features and plugins off at runtime, and safe mode disables customisations per session (config/routes.rb:2036-2037)."
+      "evidence": "Site settings switch features and plugins off at runtime, and safe mode disables customisations per session (config/routes.rb:2036-2037).",
+      "confidence": "high"
     },
     "LRN-03": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Logster records server and browser errors in an admin UI (Gemfile:220); problem checks raise configuration issues (app/services/problem_check)."
+      "evidence": "Logster records server and browser errors in an admin UI (Gemfile:220); problem checks raise configuration issues (app/services/problem_check).",
+      "confidence": "high"
     },
     "LRN-05": {
       "status": "assessed",
@@ -491,8 +558,10 @@
         "status": "assessed",
         "score": 0,
         "grade": "A",
-        "evidence": "Logster grouping is rule-based."
-      }
+        "evidence": "Logster grouping is rule-based.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "GOV-10": {
       "status": "not_applicable",
@@ -516,7 +585,8 @@
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Search logs record terms and whether a result was clicked, with an admin report of searches without results (app/models/search_log.rb)."
+      "evidence": "Search logs record terms and whether a result was clicked, with an admin report of searches without results (app/models/search_log.rb).",
+      "confidence": "medium"
     },
     "EXP-05": {
       "status": "assessed",
@@ -527,14 +597,17 @@
         "status": "assessed",
         "score": 0,
         "grade": "A",
-        "evidence": "No AI involvement in this behaviour."
-      }
+        "evidence": "No AI involvement in this behaviour.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "EXP-06": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Features and plugins can be enabled for selected groups, for example through upcoming changes and group settings (lib/upcoming_changes); there is no success metric or keep-or-kill record."
+      "evidence": "Features and plugins can be enabled for selected groups, for example through upcoming changes and group settings (lib/upcoming_changes); there is no success metric or keep-or-kill record.",
+      "confidence": "medium"
     },
     "DEL-11": {
       "status": "not_applicable",
@@ -544,19 +617,22 @@
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Admins configure LLM models per provider and assign them per agent and feature (app/models/llm_model.rb); no fallback when a model fails. Scored as shipped, with discourse-ai enabled."
+      "evidence": "Admins configure LLM models per provider and assign them per agent and feature (app/models/llm_model.rb); no fallback when a model fails. Scored as shipped, with discourse-ai enabled.",
+      "confidence": "medium"
     },
     "AIR-02": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Per-group LLM quotas on tokens and usages per period, credit allocations and daily usage (app/models/llm_quota.rb, llm_credit_allocation.rb, llm_credit_daily_usage.rb), with admin screens."
+      "evidence": "Per-group LLM quotas on tokens and usages per period, credit allocations and daily usage (app/models/llm_quota.rb, llm_credit_allocation.rb, llm_credit_daily_usage.rb), with admin screens.",
+      "confidence": "medium"
     },
     "AIR-03": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Embeddings, semantic search and RAG fragments kept up to date by jobs (app/models/rag_document_fragment.rb, embedding_definition.rb); agents search and read topics with citations."
+      "evidence": "Embeddings, semantic search and RAG fragments kept up to date by jobs (app/models/rag_document_fragment.rb, embedding_definition.rb); agents search and read topics with citations.",
+      "confidence": "medium"
     },
     "AIR-04": {
       "status": "assessed",
@@ -567,19 +643,22 @@
         "implemented": true,
         "tested": true,
         "operated": false
-      }
+      },
+      "confidence": "high"
     },
     "AIR-05": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "An evaluation harness with an LLM judge (plugins/discourse-ai/evals/lib/eval.rb, judge.rb) run from the command line; datasets live outside this repository."
+      "evidence": "An evaluation harness with an LLM judge (plugins/discourse-ai/evals/lib/eval.rb, judge.rb) run from the command line; datasets live outside this repository.",
+      "confidence": "medium"
     },
     "AIR-06": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "Evaluations are not run in CI; prompt and model changes are reviewed manually."
+      "evidence": "Evaluations are not run in CI; prompt and model changes are reviewed manually.",
+      "confidence": "medium"
     },
     "AIR-07": {
       "status": "assessed",
@@ -590,17 +669,19 @@
         "implemented": true,
         "tested": true,
         "operated": false
-      }
+      },
+      "confidence": "high"
     },
     "AIR-08": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Accuracy of AI triage against moderator decisions and spam logs are recorded per model and feature (app/models/model_accuracy.rb, ai_spam_log.rb); no drift alerts."
+      "evidence": "Accuracy of AI triage against moderator decisions and spam logs are recorded per model and feature (app/models/model_accuracy.rb, ai_spam_log.rb); no drift alerts.",
+      "confidence": "medium"
     }
   },
   "limits": "Repository evidence only, main branch at the tip named above. discourse-ai, discourse-workflows and parts of the MCP surface ship disabled by default as betas; they were scored as shipped, and the alternates show the effect of discounting them. Hosted Discourse operations (incidents, ephemeral environments, telemetry pipelines) are invisible here. Single rater.",
-  "framework_version": "0.5.1",
+  "framework_version": "0.7.0",
   "reading": "**SAL 1.** Admins configure Discourse without code, and it passes two critical controls that most systems fail: SafeMigrate and deferred column drops enforce expand-and-contract (ARC-02 3), and backup and restore of the database and uploads are tested (ARC-09 3). There is no AI lane by default (DEL-04 0), and as a focused application with adjacent-domain criteria excluded, Opportunity → Expansion stays at L0. **Learn:** search logs already record searches without results (EXP-04 2), the raw material for unmet-demand sensing. **Next level:** turn on and productise the workflows AI author, and cluster search misses and topic votes into proposals.",
   "framework": "EVOLVE",
   "scope_facts": {
@@ -614,7 +695,7 @@
     },
     "multi_tenant": {
       "value": true,
-      "evidence": "Multisite hosting serves several forums from one deployment, each with its own database."
+      "evidence": "Multisite hosting serves several forums from one deployment, each with its own database, admins and members (RailsMultisite; config/multisite.yml.production-sample), with restore specs covering multisite. Groups and private categories inside one site do not count."
     },
     "hosted_service": {
       "value": true,
@@ -626,7 +707,7 @@
     },
     "agent_mutations": {
       "value": false,
-      "evidence": "By default no AI changes Discourse definitions: discourse-ai and the workflows AI author are off by default."
+      "evidence": "False by default under the v0.7 definition: no AI writes or drafts changes to settings, categories, themes or automations unless discourse-ai (default false, plugins/discourse-ai/config/settings.yml:2-3) or the workflows AI author (beta, default false) is switched on."
     },
     "evolution_auto_apply": {
       "value": false,
@@ -638,7 +719,7 @@
     },
     "code_release_path": {
       "value": false,
-      "evidence": "No first-party evolution system ships code changes."
+      "evidence": "No first-party evolution system or AI writes and activates code; theme and plugin code is written by people."
     },
     "ai_features": {
       "value": false,
@@ -655,5 +736,73 @@
       "evidence": "Off by default; when enabled, agent tools edit posts, change categories and site settings (plugins/discourse-ai/lib/agents/tools).",
       "available_value": true
     }
-  }
+  },
+  "change_kinds": [
+    {
+      "id": "site-settings",
+      "name": "How the forum behaves and what it says (settings and wording)",
+      "who": "site admins",
+      "main": true,
+      "reach": 1,
+      "confidence": "medium",
+      "evidence": "Admins change typed, validated site settings and override any interface text in the admin UI with no deploy. Undo: every setting change is logged with its previous and new value (app/services/staff_action_logger.rb:280-296), a setting can be reset to its default, and text overrides log old and new text (:513) and can be reverted to the default; there is no one-step revert to an earlier value, so undo is setting the logged value back."
+    },
+    {
+      "id": "categories-permissions",
+      "name": "Categories and who can see or post in them",
+      "who": "site admins and moderators",
+      "main": true,
+      "reach": 1,
+      "confidence": "medium",
+      "evidence": "Admins create categories and set group permissions in the UI under the Guardian model. Undo: each changed category attribute, custom field and permission set is logged with previous and new values (app/services/staff_action_logger.rb:741-776), and creation and deletion are logged (:778-815); undo is editing back from the log, not a revert action."
+    },
+    {
+      "id": "themes-components",
+      "name": "Look and layout (themes and components)",
+      "who": "site admins and designers",
+      "main": true,
+      "reach": 1,
+      "confidence": "medium",
+      "evidence": "Admins install themes and components, configure typed settings and preview a theme on the live site before activating it (app/controllers/admin/themes_controller.rb:12-16). Undo: switch the default theme back or disable a component (logged, staff_action_logger.rb:464-482); setting changes are logged with previous values (:484-511) and theme edits store the old theme JSON with field values (:440-452); remote themes come from git. There is no revert button for local theme edits."
+    },
+    {
+      "id": "automations",
+      "name": "Automatic rules (automations)",
+      "who": "site admins",
+      "main": false,
+      "reach": 1,
+      "confidence": "low",
+      "evidence": "The bundled automation plugin is switched on by a site setting (plugins/automation/config/settings.yml:2-3, default false) and admins then define scripts and triggers in the UI. Undo: an automation can be disabled (enabled flag, plugins/automation/app/models/discourse_automation/automation.rb:151, :261) or deleted; edits keep no history."
+    },
+    {
+      "id": "plugins",
+      "name": "New features from plugins",
+      "who": "site owners",
+      "main": false,
+      "reach": 0,
+      "confidence": "high",
+      "evidence": "Bundled plugins are switched on by site settings, but adding a plugin means editing the container definition and rebuilding (docs/INSTALL-cloud.md:204-220, 'Install Plugins' link at :340): a deploy run by whoever operates the server. Engineers only."
+    }
+  ],
+  "ai_delivery": {
+    "present": true,
+    "qualifies": false,
+    "evidence": "AGENTS.md, AI-AGENTS.md, CLAUDE.md, .agents/skills, .claude/skills, .cursor and .github/instructions/copilot.instructions.md. No agent workflow in CI (searched .github/workflows for claude, codex, copilot, anthropic and openai).",
+    "note": "AI-assisted engineering, not Discourse evolving itself. Instruction and skill files alone are documentation and do not meet rule 12."
+  },
+  "proven": {
+    "request": {
+      "status": "not_evidenced",
+      "searched": "Repository at the pinned commit: release-notes and release workflows, staff action log and backup code, docs/. Operating records of real changes going through a Discourse site's Request → Release loop live in running sites (staff action logs), not in the repository."
+    },
+    "fix": {
+      "status": "not_evidenced",
+      "searched": "Repository at the pinned commit: release-notes and release workflows, staff action log and backup code, docs/. Operating records of real changes going through a Discourse site's Issue → Fix loop live in running sites (staff action logs), not in the repository."
+    },
+    "expansion": {
+      "status": "not_evidenced",
+      "searched": "Repository at the pinned commit: release-notes and release workflows, staff action log and backup code, docs/. Operating records of real changes going through a Discourse site's Opportunity → Expansion loop live in running sites (staff action logs), not in the repository."
+    }
+  },
+  "confidence_note": "Confidence for criteria whose score did not change in the v0.7 migration was assigned at migration from the recorded evidence; confidence for new and changed readings (kinds of change, LRN-10 and every re-read criterion) comes from re-reading the source at the pinned commit."
 }

@@ -3,6 +3,7 @@
   "date": "2026-09-30",
   "source": "github.com/directus/directus @ 2878b4ef8ea9c1d09201debe89b3a5dc1d0bf93a (main)",
   "archetype": "configurable-application-platform",
+  "basis": "shipped",
   "scope_line": "Scope: the directus monorepo (API, Data Studio app, SDK, CLI, extensions SDK and registry, AI assistant and MCP server). Directus Cloud, the hosted marketplace catalogue and templates published in other repositories are out of scope.",
   "scores": {
     "MAL-01": {
@@ -11,7 +12,8 @@
       "grade": "A",
       "evidence": "Admins create collections in the Data Model UI and the API creates real tables with no migration or deploy (api/src/services/collections.ts); the AI assistant can also author collections through zod-validated tools behind an approval gate (api/src/ai/tools/collections/index.ts:20-66, api/src/ai/tools/registry.ts:198-214). No dry-run, so not 4.",
       "alt_score": 4,
-      "alt_note": "AI authoring through a gate already exists; only dry-run and versioned definitions are missing."
+      "alt_note": "AI authoring through a gate already exists; only dry-run and versioned definitions are missing.",
+      "confidence": "medium"
     },
     "MAL-02": {
       "status": "assessed",
@@ -19,7 +21,8 @@
       "grade": "A",
       "evidence": "Typed fields with validation rules, conditions, required, unique and is_indexed are created in the UI and read by forms and the generated APIs (api/services/fields.ts:62, 1008-1012). v0.3 moved the privacy tag to GOV-03. Scored at the lower reading under rule 11 because: Validation rules are partial for some field types.",
       "alt_score": 3,
-      "alt_note": "The September v0.3 pass scored 3 on the evidence above."
+      "alt_note": "The September v0.3 pass scored 3 on the evidence above.",
+      "confidence": "medium"
     },
     "MAL-03": {
       "status": "assessed",
@@ -27,7 +30,8 @@
       "grade": "A",
       "evidence": "M2O, O2M, M2M and M2A relations are declared in the UI with database-level referential actions; lifecycle states are not a feature, and v0.3 accepts either at level 3. Scored at the lower reading under rule 11 because: If lifecycle states are considered central for this product.",
       "alt_score": 3,
-      "alt_note": "The September v0.3 pass scored 3 on the evidence above."
+      "alt_note": "The September v0.3 pass scored 3 on the evidence above.",
+      "confidence": "medium"
     },
     "MAL-04": {
       "status": "assessed",
@@ -35,19 +39,22 @@
       "grade": "A",
       "evidence": "Generic REST (/items/:collection) and a GraphQL schema generated at runtime from the data model per role (api/src/services/graphql/index.ts:23-89): typed, with field selection, deep filters and permission and field validation from the definition. Scored at the lower reading under rule 11 because: If 'typed projections' requires per-type client types rather than runtime GraphQL types.",
       "alt_score": 4,
-      "alt_note": "The September v0.3 pass scored 4 on the evidence above."
+      "alt_note": "The September v0.3 pass scored 4 on the evidence above.",
+      "confidence": "medium"
     },
     "MAL-05": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Schema changes invalidate the cached schema so REST and GraphQL reflect them live. No per-consumer schema versions or dry-run."
+      "evidence": "Schema changes invalidate the cached schema so REST and GraphQL reflect them live. No per-consumer schema versions or dry-run.",
+      "confidence": "medium"
     },
     "MAL-06": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "/server/specs/oas and /server/specs/graphql are generated from the live schema (api/src/controllers/server.ts:21-37); typed SDK (sdk/); structured error codes (packages/errors). No mutation dry-run, so not 4."
+      "evidence": "/server/specs/oas and /server/specs/graphql are generated from the live schema (api/src/controllers/server.ts:21-37); typed SDK (sdk/); structured error codes (packages/errors). No mutation dry-run, so not 4.",
+      "confidence": "high"
     },
     "MAL-07": {
       "status": "assessed",
@@ -55,19 +62,22 @@
       "grade": "A",
       "evidence": "Collection layouts (table, cards, calendar, kanban, map), form widths, groups and interface options are stored as presets and field meta and edited in the Data Studio per role (app/src/layouts); Insights dashboards; visual editing of connected frontends (packages/visual-editing). One project per instance, so per-tenant reads as per project. Scored at the lower reading under rule 11 because: No schema validation of layout props and no preview of layout changes before they apply.",
       "alt_score": 3,
-      "alt_note": "The September v0.3 pass scored 3 on the evidence above."
+      "alt_note": "The September v0.3 pass scored 3 on the evidence above.",
+      "confidence": "medium"
     },
     "MAL-08": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Every collection renders generic list layouts, item detail and create forms from field meta and interfaces (app/src/layouts, app/src/interfaces); admins configure presets."
+      "evidence": "Every collection renders generic list layouts, item detail and create forms from field meta and interfaces (app/src/layouts, app/src/interfaces); admins configure presets.",
+      "confidence": "medium"
     },
     "MAL-09": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Admin appearance settings with light and dark theme overrides and custom CSS (api/src/database/seeds/13-settings.yaml, packages/themes), custom translation strings, and 93 locale files maintained through Crowdin (crowdin.yml)."
+      "evidence": "Admin appearance settings with light and dark theme overrides and custom CSS (api/src/database/seeds/13-settings.yaml, packages/themes), custom translation strings, and 93 locale files maintained through Crowdin (crowdin.yml).",
+      "confidence": "medium"
     },
     "MAL-10": {
       "status": "assessed",
@@ -75,7 +85,8 @@
       "grade": "A",
       "evidence": "Flows compose triggers (event, schedule, webhook, manual, another flow) and operations (condition, exec, item CRUD, request, notification, mail, transform, trigger) across any collection in the admin UI (api/src/operations, api/src/flows.ts). No test or simulation mode.",
       "alt_score": 3,
-      "alt_note": "Everything in level 3 except a test mode."
+      "alt_note": "Everything in level 3 except a test mode.",
+      "confidence": "medium"
     },
     "MAL-11": {
       "status": "assessed",
@@ -83,13 +94,15 @@
       "grade": "A",
       "evidence": "Action and filter events fire for every collection including user-defined ones (api/src/emitter.ts); outbound webhooks are Flow request operations with flow logs. No retry or replay in api/src/flows.ts.",
       "alt_score": 3,
-      "alt_note": "Admin subscriptions with delivery logs exist; only retry is missing."
+      "alt_note": "Admin subscriptions with delivery logs exist; only retry is missing.",
+      "confidence": "medium"
     },
     "MAL-12": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "The exec operation and sandboxed API extensions run in isolated-vm with memory and time limits (FLOWS_RUN_SCRIPT_MAX_MEMORY 32, FLOWS_RUN_SCRIPT_TIMEOUT 10000, packages/env/src/constants/defaults.ts:213-214) and requested scopes including a request URL allowlist (packages/extensions/src/shared/schemas/options.ts:14-27); triggered by events and requests."
+      "evidence": "The exec operation and sandboxed API extensions run in isolated-vm with memory and time limits (FLOWS_RUN_SCRIPT_MAX_MEMORY 32, FLOWS_RUN_SCRIPT_TIMEOUT 10000, packages/env/src/constants/defaults.ts:213-214) and requested scopes including a request URL allowlist (packages/extensions/src/shared/schemas/options.ts:14-27); triggered by events and requests.",
+      "confidence": "high"
     },
     "GOV-01": {
       "status": "assessed",
@@ -97,7 +110,8 @@
       "grade": "A",
       "evidence": "Component library and theme tokens exist (packages/themes, app/src/components); no automated accessibility scanning in CI or tests.",
       "alt_score": 2,
-      "alt_note": "Kit and tokens are present; the anchors bundle kit and scans."
+      "alt_note": "Kit and tokens are present; the anchors bundle kit and scans.",
+      "confidence": "medium"
     },
     "GOV-02": {
       "status": "assessed",
@@ -105,7 +119,8 @@
       "grade": "A",
       "evidence": "Activity and revisions record every item mutation including system collections (schema, permissions, settings, flows), with an admin Activity module and retention (ACTIVITY_RETENTION and REVISIONS_RETENTION, packages/env/src/constants/defaults.ts:167-172). There is no approval object, so approvals are not covered.",
       "alt_score": 3,
-      "alt_note": "All other level-3 clauses are met."
+      "alt_note": "All other level-3 clauses are met.",
+      "confidence": "medium"
     },
     "GOV-03": {
       "status": "assessed",
@@ -113,7 +128,8 @@
       "grade": "A",
       "evidence": "No data-subject export or erasure features and no privacy tags (searched for gdpr, erasure, anonymisation and personal data); admins can export collections and delete items by hand. Scored at the lower reading under rule 11 because: If manual export and deletion do not count as a mechanism.",
       "alt_score": 1,
-      "alt_note": "The September v0.3 pass scored 1 on the evidence above."
+      "alt_note": "The September v0.3 pass scored 1 on the evidence above.",
+      "confidence": "medium"
     },
     "GOV-04": {
       "status": "assessed",
@@ -126,7 +142,8 @@
         "implemented": true,
         "tested": true,
         "operated": false
-      }
+      },
+      "confidence": "medium"
     },
     "GOV-05": {
       "status": "assessed",
@@ -137,7 +154,8 @@
         "implemented": true,
         "tested": true,
         "operated": false
-      }
+      },
+      "confidence": "high"
     },
     "GOV-06": {
       "status": "assessed",
@@ -145,7 +163,8 @@
       "grade": "A",
       "evidence": "Content Versioning stages item changes for compare and promote (api/src/services/versions.ts:436-521); definitions and configuration move between projects through schema snapshot, diff and apply (api/src/controllers/schema.ts) and CLI sync pull, diff and push (packages/cli/src/commands/sync), which is an engineer flow.",
       "alt_score": 3,
-      "alt_note": "Versions with compare-and-promote already form a proposal, review and apply flow, but for content only."
+      "alt_note": "Versions with compare-and-promote already form a proposal, review and apply flow, but for content only.",
+      "confidence": "medium"
     },
     "GOV-07": {
       "status": "assessed",
@@ -153,13 +172,15 @@
       "grade": "A",
       "evidence": "Mutating AI tool calls require approval unless the user set that tool to always-allow (api/src/ai/tools/registry.ts:198-214, app/src/ai/stores/use-ai.ts:179-185); deletes can be disabled wholesale (allowDeletes). Approvals are not recorded as audit objects.",
       "alt_score": 3,
-      "alt_note": "Per-tool approval modes are a policy per change class; only recorded approvals are missing."
+      "alt_note": "Per-tool approval modes are a policy per change class; only recorded approvals are missing.",
+      "confidence": "medium"
     },
     "GOV-08": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Extension SDK and types are versioned packages (packages/extensions-sdk, packages/extensions); system migrations run automatically; schema snapshots apply through diff. No automated compatibility check of extensions against a new release was found."
+      "evidence": "Extension SDK and types are versioned packages (packages/extensions-sdk, packages/extensions); system migrations run automatically; schema snapshots apply through diff. No automated compatibility check of extensions against a new release was found.",
+      "confidence": "medium"
     },
     "ARC-01": {
       "status": "assessed",
@@ -170,7 +191,8 @@
         "implemented": true,
         "tested": true,
         "operated": false
-      }
+      },
+      "confidence": "high"
     },
     "ARC-05": {
       "status": "not_applicable",
@@ -181,7 +203,8 @@
       "status": "assessed",
       "score": 0,
       "grade": "A",
-      "evidence": "No load or performance suite in the repository and no documented per-surface limits (searched for k6, locust, artillery, benchmark and load test)."
+      "evidence": "No load or performance suite in the repository and no documented per-surface limits (searched for k6, locust, artillery, benchmark and load test).",
+      "confidence": "medium"
     },
     "DEL-02": {
       "status": "assessed",
@@ -189,19 +212,22 @@
       "grade": "A",
       "evidence": "API and Data Studio ship as one Node process and one container image (Dockerfile); packages are separate but deployed together.",
       "alt_score": 2,
-      "alt_note": "The anchors do not separate 'one artifact' (0) from 'monolith, manual' (1) from a containerised monolith."
+      "alt_note": "The anchors do not separate 'one artifact' (0) from 'monolith, manual' (1) from a containerised monolith.",
+      "confidence": "medium"
     },
     "DEL-03": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "pnpm workspace packages with declared dependencies (pnpm-workspace.yaml); no architectural lint."
+      "evidence": "pnpm workspace packages with declared dependencies (pnpm-workspace.yaml); no architectural lint.",
+      "confidence": "medium"
     },
     "DEL-05": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Lint and tests run on pull requests including drafts (.github/workflows/check.yml:3-12), but a Skip Checks label bypasses them (check.yml:30), E2E runs only when labelled (e2e-pr.yml:15) and CodeQL is scheduled."
+      "evidence": "Lint and tests run on pull requests including drafts (.github/workflows/check.yml:3-12), but a Skip Checks label bypasses them (check.yml:30), E2E runs only when labelled (e2e-pr.yml:15) and CodeQL is scheduled.",
+      "confidence": "high"
     },
     "MAL-13": {
       "status": "assessed",
@@ -209,19 +235,22 @@
       "grade": "A",
       "evidence": "Interfaces, displays, layouts, modules, panels, themes, endpoints, hooks, operations and bundles as code extensions (packages/extensions), plus declarative Flows, presets, translations and theme overrides; in-app marketplace backed by packages/extensions-registry.",
       "alt_score": 4,
-      "alt_note": "A registry and marketplace exist; plugin points are not generated from definitions."
+      "alt_note": "A registry and marketplace exist; plugin points are not generated from definitions.",
+      "confidence": "medium"
     },
     "MAL-14": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Sandboxed API extensions run in isolated-vm with memory and time limits and a request URL allowlist; marketplace installs default to sandbox trust (MARKETPLACE_TRUST sandbox, packages/env/src/constants/defaults.ts:124). Local non-sandboxed extensions keep full trust."
+      "evidence": "Sandboxed API extensions run in isolated-vm with memory and time limits and a request URL allowlist; marketplace installs default to sandbox trust (MARKETPLACE_TRUST sandbox, packages/env/src/constants/defaults.ts:124). Local non-sandboxed extensions keep full trust.",
+      "confidence": "high"
     },
     "MAL-15": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Extensions SDK with create, build and dev commands (packages/create-directus-extension, packages/extensions-sdk) and Docker Compose for local development; no preview against a remote project or staged branches."
+      "evidence": "Extensions SDK with create, build and dev commands (packages/create-directus-extension, packages/extensions-sdk) and Docker Compose for local development; no preview against a remote project or staged branches.",
+      "confidence": "medium"
     },
     "MAL-19": {
       "status": "assessed",
@@ -234,8 +263,10 @@
         "status": "assessed",
         "score": 3,
         "grade": "A",
-        "evidence": "MCP server over the AI tool registry with OAuth scopes (api/src/ai/mcp/server.ts)."
-      }
+        "evidence": "MCP server over the AI tool registry with OAuth scopes (api/src/ai/mcp/server.ts).",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "MAL-20": {
       "status": "assessed",
@@ -248,8 +279,10 @@
         "status": "assessed",
         "score": 2,
         "grade": "A",
-        "evidence": "A grounded model-backed assistant for operators (api/src/ai/chat)."
-      }
+        "evidence": "A grounded model-backed assistant for operators (api/src/ai/chat).",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "GOV-09": {
       "status": "assessed",
@@ -262,14 +295,17 @@
         "status": "assessed",
         "score": 2,
         "grade": "A",
-        "evidence": "AI acts with the user's accountability and mutations need approval; no idempotency or dry-run."
-      }
+        "evidence": "AI acts with the user's accountability and mutations need approval; no idempotency or dry-run.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "MAL-16": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "No canonical integration model; integrations are Flow request operations or custom extensions."
+      "evidence": "No canonical integration model; integrations are Flow request operations or custom extensions.",
+      "confidence": "medium"
     },
     "MAL-17": {
       "status": "assessed",
@@ -277,7 +313,8 @@
       "grade": "A",
       "evidence": "The extensions SDK lets engineers build operation extensions that wrap external APIs; no connector definition covering auth, sync and lifecycle. Scored at the lower reading under rule 11 because: If a general extension SDK does not count as a connector SDK.",
       "alt_score": 2,
-      "alt_note": "The September v0.3 pass scored 2 on the evidence above."
+      "alt_note": "The September v0.3 pass scored 2 on the evidence above.",
+      "confidence": "medium"
     },
     "MAL-18": {
       "status": "assessed",
@@ -285,7 +322,8 @@
       "grade": "A",
       "evidence": "No path versioning; breaking changes are announced in release notes; no deprecation windows or idempotent sync.",
       "alt_score": 2,
-      "alt_note": "The API is documented through a generated OpenAPI spec."
+      "alt_note": "The API is documented through a generated OpenAPI spec.",
+      "confidence": "medium"
     },
     "EXP-01": {
       "status": "assessed",
@@ -293,7 +331,8 @@
       "grade": "A",
       "evidence": "Kernel is users, roles, policies, permissions, files, collections, flows, comments and notifications, with no domain nouns; system collections accept custom fields.",
       "alt_score": 4,
-      "alt_note": "System collections are themselves extensible definitions."
+      "alt_note": "System collections are themselves extensible definitions.",
+      "confidence": "medium"
     },
     "EXP-02": {
       "status": "assessed",
@@ -301,7 +340,8 @@
       "grade": "A",
       "evidence": "Any domain can be modelled as collections, relations, flows and policies with no kernel change, but no domain shipped this way is evidenced inside the repository.",
       "alt_score": 3,
-      "alt_note": "Domain templates exist in other repositories (grade C knowledge), which would prove the path."
+      "alt_note": "Domain templates exist in other repositories (grade C knowledge), which would prove the path.",
+      "confidence": "medium"
     },
     "EXP-03": {
       "status": "assessed",
@@ -309,7 +349,8 @@
       "grade": "A",
       "evidence": "Schema snapshot and apply cover collections, fields and relations; CLI sync pulls and pushes roles, policies, permissions, flows, operations, dashboards, panels, presets, translations and settings between projects (packages/cli/src/commands/sync). Not a versioned bundle with install semantics.",
       "alt_score": 3,
-      "alt_note": "A pulled sync directory is a versionable, installable bundle of definitions, layouts and rules."
+      "alt_note": "A pulled sync directory is a versionable, installable bundle of definitions, layouts and rules.",
+      "confidence": "medium"
     },
     "LRN-01": {
       "status": "assessed",
@@ -317,13 +358,15 @@
       "grade": "A",
       "evidence": "Activity rows are written per request and are queryable by in-product Insights dashboards; vendor telemetry counters (api/src/telemetry); AI telemetry to Braintrust or Langfuse (api/src/ai/telemetry). Scored at the lower reading under rule 11 because: Activity is an audit stream, not per-feature usage instrumentation.",
       "alt_score": 3,
-      "alt_note": "The September v0.3 pass scored 3 on the evidence above."
+      "alt_note": "The September v0.3 pass scored 3 on the evidence above.",
+      "confidence": "medium"
     },
     "LRN-02": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "Item comments are free text; no typed feedback or rating objects linked to definitions."
+      "evidence": "Item comments are free text; no typed feedback or rating objects linked to definitions.",
+      "confidence": "medium"
     },
     "LRN-04": {
       "status": "assessed",
@@ -331,7 +374,8 @@
       "grade": "A",
       "evidence": "Insights dashboards can query any collection including activity; no joined usage, support and delivery models or mining.",
       "alt_score": 2,
-      "alt_note": "In-product dashboards over system collections are a partial join."
+      "alt_note": "In-product dashboards over system collections are a partial join.",
+      "confidence": "medium"
     },
     "LRN-06": {
       "status": "assessed",
@@ -342,36 +386,45 @@
         "status": "assessed",
         "score": 0,
         "grade": "A",
-        "evidence": "No AI involvement in this behaviour."
-      }
+        "evidence": "No AI involvement in this behaviour.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "DEL-04": {
       "status": "assessed",
-      "score": 1,
+      "score": 2,
       "grade": "A",
-      "evidence": "An AI authoring lane turns admin requests into schema, flow and item changes behind approvals, one project at a time (api/src/ai/tools); nothing applies accepted proposals across projects. Scored at the lower reading under rule 11 because: If the lane is judged manual per tenant because a human drives every change.",
-      "alt_score": 2,
-      "alt_note": "The September v0.3 pass scored 2 on the evidence above.",
+      "evidence": "Re-scored 1 to 2 at the v0.7 migration, after the kinds of change exposed the gap. The AI assistant, on by default (AI_ENABLED true, packages/env/src/constants/defaults.ts:265) once a provider key is set, drafts collections, fields, relations, flows, operations and items as zod-validated tool calls; every mutating call waits for the user's approval unless that user set the tool to always-allow (api/src/ai/tools/registry.ts:198-214, tests in registry.test.ts). That is anchor 2: an AI lane drafts changes on request and a person finishes them. It is not 3: there is no accepted-change specification, verification evidence or policy across change classes. The earlier lower reading treated per-call human approval as a manual lane, which is what anchor 2 describes.",
       "ai": {
         "status": "assessed",
-        "score": 1,
+        "score": 2,
         "grade": "A",
-        "evidence": "The AI lane drafts schema, flow and item changes behind approvals.",
-        "alt_score": 2,
-        "alt_note": "An AI lane for narrow tasks on request."
-      }
+        "evidence": "The AI lane drafts schema, flow and item changes as tool calls a person approves (api/src/ai/tools/registry.ts:198-214).",
+        "confidence": "high"
+      },
+      "confidence": "high"
     },
     "LRN-09": {
       "status": "assessed",
       "score": 0,
       "grade": "A",
-      "evidence": "No binding of changes to baselines or metrics."
+      "evidence": "No binding of changes to baselines or metrics.",
+      "confidence": "medium"
+    },
+    "LRN-10": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "confidence": "medium",
+      "evidence": "The checks that govern change are code: zod schemas on every AI tool (api/src/ai/tools/*/index.ts, parsed in registry.ts), service-level validation, and the tool prompts (api/src/ai/tools/*/prompt.md). The only governing settings are the project's MCP allow-deletes setting (api/src/controllers/mcp/index.ts:52) and each user's per-tool approval modes kept in the app (app/src/ai/stores/use-ai.ts:179-185); neither is linked to results. No evaluation sets exist (AIR-05 0) and nothing records a failure against the check that missed it."
     },
     "DEL-06": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "/server/info with version, /server/health, generated specs (api/src/controllers/server.ts:21-80) and /schema/snapshot as a machine-readable configuration snapshot (api/src/controllers/schema.ts)."
+      "evidence": "/server/info with version, /server/health, generated specs (api/src/controllers/server.ts:21-80) and /schema/snapshot as a machine-readable configuration snapshot (api/src/controllers/schema.ts).",
+      "confidence": "high"
     },
     "DEL-07": {
       "status": "assessed",
@@ -379,13 +432,15 @@
       "grade": "A",
       "evidence": "Versioned container images, a bootstrap command, schema apply and CLI sync recreate a configured instance; E2E tests start instances per database vendor (tests/e2e). No per-change ephemeral environment or feature flags.",
       "alt_score": 3,
-      "alt_note": "Instances are reproducible from a build id and snapshot in minutes."
+      "alt_note": "Instances are reproducible from a build id and snapshot in minutes.",
+      "confidence": "medium"
     },
     "DEL-08": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "E2E API suite across database vendors (tests/e2e), run on pull requests only when labelled; no changed-path map or adoption instrumentation."
+      "evidence": "E2E API suite across database vendors (tests/e2e), run on pull requests only when labelled; no changed-path map or adoption instrumentation.",
+      "confidence": "medium"
     },
     "LRN-07": {
       "status": "assessed",
@@ -396,26 +451,31 @@
         "status": "assessed",
         "score": 0,
         "grade": "A",
-        "evidence": "No AI involvement in this behaviour."
-      }
+        "evidence": "No AI involvement in this behaviour.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "LRN-08": {
       "status": "assessed",
-      "score": 1,
+      "score": 2,
       "grade": "A",
-      "evidence": "AI-authored changes pass a human approval (api/src/ai/tools/registry.ts:198-214); there is no evaluation against a baseline.",
+      "evidence": "Re-scored 1 to 2 under the v0.7 boundary, which scores the checks on changes the product's AI makes. Every AI tool call is parsed against its zod schema before it can run (registry.ts #parseInput, collections/index.ts:20-66), deletes can be blocked wholesale (registry.ts:202), and the change then passes the same service validation as a person's; a person approves each mutating call. No evaluation against a baseline. Directus has no learning-from-experience loop.",
       "ai": {
         "status": "assessed",
-        "score": 1,
+        "score": 2,
         "grade": "A",
-        "evidence": "AI-made changes get human approval only (api/src/ai/tools/registry.ts:198-214)."
-      }
+        "evidence": "Schema validation of every AI tool call and a delete block before human approval (api/src/ai/tools/registry.ts:198-214); no baseline evaluation.",
+        "confidence": "high"
+      },
+      "confidence": "high"
     },
     "ARC-02": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Every system migration has up and down steps (api/src/database/migrations, 110 files); user collections change through direct DDL from the schema service, with snapshot and apply for moving schemas between instances. No online strategy is enforced."
+      "evidence": "Every system migration has up and down steps (api/src/database/migrations, 110 files); user collections change through direct DDL from the schema service, with snapshot and apply for moving schemas between instances. No online strategy is enforced.",
+      "confidence": "medium"
     },
     "ARC-03": {
       "status": "assessed",
@@ -428,7 +488,8 @@
         "implemented": true,
         "tested": false,
         "operated": false
-      }
+      },
+      "confidence": "medium"
     },
     "ARC-04": {
       "status": "assessed",
@@ -436,13 +497,15 @@
       "grade": "A",
       "evidence": "Scheduled jobs and flows run inside the API process (api/src/schedules, api/src/flows.ts); there is no job queue with retries.",
       "alt_score": 2,
-      "alt_note": "Schedules take a lock so they run once across instances."
+      "alt_note": "Schedules take a lock so they run once across instances.",
+      "confidence": "medium"
     },
     "ARC-07": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "A Prometheus metrics endpoint for database, cache and storage health (api/src/metrics, METRICS_* settings); no stated objectives."
+      "evidence": "A Prometheus metrics endpoint for database, cache and storage health (api/src/metrics, METRICS_* settings); no stated objectives.",
+      "confidence": "medium"
     },
     "ARC-08": {
       "status": "assessed",
@@ -453,14 +516,19 @@
         "status": "assessed",
         "score": 1,
         "grade": "A",
-        "evidence": "Model errors are returned to the chat; no timeouts or breakers around model calls were found (api/src/ai/chat/lib)."
-      }
+        "evidence": "Model errors are returned to the chat; no timeouts or breakers around model calls were found (api/src/ai/chat/lib).",
+        "confidence": "medium"
+      },
+      "confidence": "high"
     },
     "ARC-09": {
       "status": "assessed",
-      "score": 1,
+      "score": 0,
       "grade": "A",
-      "evidence": "No backup command. Schema snapshots move definitions between instances, but data and files are left to the database and storage provider."
+      "evidence": "Corrected from 1 to 0 at the v0.7 migration, applying the anchor as the second rating did for Dify: level 1 needs documentation telling operators to back up, and this repository has none. No backup or restore command or feature for the database, files or settings; searched every file outside node_modules for 'backup' and 'back up' (only icon names in app/src). Schema snapshot and apply move the data model, not data or files.",
+      "alt_score": 1,
+      "confidence": "medium",
+      "alt_note": "Schema snapshots move definitions between instances (api/src/controllers/schema.ts), and Directus's separate documentation repository, not read here, may tell operators to back up; a rater may count either as level 1."
     },
     "DEL-01": {
       "status": "assessed",
@@ -473,26 +541,31 @@
         "status": "assessed",
         "score": 1,
         "grade": "A",
-        "evidence": "The model receives free-text requests in chat; nothing structures them."
-      }
+        "evidence": "The model receives free-text requests in chat; nothing structures them.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "DEL-09": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "Features are gated by licence entitlements (api/src/license/entitlements), not cohorts or flags."
+      "evidence": "Features are gated by licence entitlements (api/src/license/entitlements), not cohorts or flags.",
+      "confidence": "medium"
     },
     "DEL-10": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Flows can be switched inactive and AI tools disabled at runtime; other changes cannot be switched off without editing them."
+      "evidence": "Flows can be switched inactive and AI tools disabled at runtime; other changes cannot be switched off without editing them.",
+      "confidence": "medium"
     },
     "LRN-03": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Every flow run records each operation step with its resolve or reject status as activity and revisions (api/src/flows.ts:414-454), viewable per flow; admins can read system logs (app/src/modules/settings/routes/system-logs). Failed actions outside flows are not recorded per product area."
+      "evidence": "Every flow run records each operation step with its resolve or reject status as activity and revisions (api/src/flows.ts:414-454), viewable per flow; admins can read system logs (app/src/modules/settings/routes/system-logs). Failed actions outside flows are not recorded per product area.",
+      "confidence": "high"
     },
     "LRN-05": {
       "status": "assessed",
@@ -503,8 +576,10 @@
         "status": "assessed",
         "score": 0,
         "grade": "A",
-        "evidence": "No AI involvement in this behaviour."
-      }
+        "evidence": "No AI involvement in this behaviour.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "GOV-10": {
       "status": "assessed",
@@ -515,8 +590,10 @@
         "status": "assessed",
         "score": 2,
         "grade": "A",
-        "evidence": "Per-tool approval and a switch to disable deletes; no blast-radius limit."
-      }
+        "evidence": "Per-tool approval and a switch to disable deletes; no blast-radius limit.",
+        "confidence": "medium"
+      },
+      "confidence": "high"
     },
     "GOV-11": {
       "status": "assessed",
@@ -527,14 +604,17 @@
         "status": "assessed",
         "score": 1,
         "grade": "A",
-        "evidence": "Untrusted content is not fenced from instructions."
-      }
+        "evidence": "Untrusted content is not fenced from instructions.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "EXP-04": {
       "status": "assessed",
       "score": 0,
       "grade": "A",
-      "evidence": "No record of failed searches or unsupported requests was found."
+      "evidence": "No record of failed searches or unsupported requests was found.",
+      "confidence": "medium"
     },
     "EXP-05": {
       "status": "assessed",
@@ -545,8 +625,10 @@
         "status": "assessed",
         "score": 0,
         "grade": "A",
-        "evidence": "No AI involvement in this behaviour."
-      }
+        "evidence": "No AI involvement in this behaviour.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "EXP-06": {
       "status": "assessed",
@@ -554,7 +636,8 @@
       "grade": "A",
       "evidence": "Extensions are installed per project; there is no cohort launch.",
       "alt_score": 2,
-      "alt_note": "Roles and policies can expose new collections to selected users."
+      "alt_note": "Roles and policies can expose new collections to selected users.",
+      "confidence": "medium"
     },
     "DEL-11": {
       "status": "not_applicable",
@@ -564,19 +647,22 @@
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "OpenAI, Anthropic, Google and OpenAI-compatible providers configured by admins, model chosen in the chat (api/src/ai/providers/registry.ts); no fallback or declared resilience strategy."
+      "evidence": "OpenAI, Anthropic, Google and OpenAI-compatible providers configured by admins, model chosen in the chat (api/src/ai/providers/registry.ts); no fallback or declared resilience strategy.",
+      "confidence": "medium"
     },
     "AIR-02": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "Usage is streamed to the client per request (api/src/ai/chat/controllers/chat.post.ts:71-72); not recorded per user, and no budgets."
+      "evidence": "Usage is streamed to the client per request (api/src/ai/chat/controllers/chat.post.ts:71-72); not recorded per user, and no budgets.",
+      "confidence": "high"
     },
     "AIR-03": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Schema-aware tools read live collections, fields, relations, items and files (api/src/ai/tools/schema, items, files); results come from the source records."
+      "evidence": "Schema-aware tools read live collections, fields, relations, items and files (api/src/ai/tools/schema, items, files); results come from the source records.",
+      "confidence": "medium"
     },
     "AIR-04": {
       "status": "assessed",
@@ -587,35 +673,40 @@
         "implemented": true,
         "tested": true,
         "operated": false
-      }
+      },
+      "confidence": "high"
     },
     "AIR-05": {
       "status": "assessed",
       "score": 0,
       "grade": "A",
-      "evidence": "No evaluation harness for the assistant (searched api/src/ai for eval)."
+      "evidence": "No evaluation harness for the assistant (searched api/src/ai for eval).",
+      "confidence": "medium"
     },
     "AIR-06": {
       "status": "assessed",
       "score": 0,
       "grade": "A",
-      "evidence": "No evaluation in CI; AI changes ship unevaluated (.github/workflows)."
+      "evidence": "No evaluation in CI; AI changes ship unevaluated (.github/workflows).",
+      "confidence": "medium"
     },
     "AIR-07": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Opt-in Langfuse and Braintrust telemetry records model calls with user, role, provider and model (api/src/ai/telemetry); revisions record data changes by the user, without the model or prompt."
+      "evidence": "Opt-in Langfuse and Braintrust telemetry records model calls with user, role, provider and model (api/src/ai/telemetry); revisions record data changes by the user, without the model or prompt.",
+      "confidence": "medium"
     },
     "AIR-08": {
       "status": "assessed",
       "score": 0,
       "grade": "A",
-      "evidence": "No feedback or quality monitoring for the assistant."
+      "evidence": "No feedback or quality monitoring for the assistant.",
+      "confidence": "medium"
     }
   },
   "limits": "Repository evidence only, main branch at the tip named above. No running instance was inspected, so approval and preview behaviour is read from code. Directus Cloud, the hosted marketplace catalogue and published templates are out of scope. The repository is under a source-available licence, so some features may be licence-gated (api/src/license); entitlement checks were not traced per feature. Single rater; 18 alternate readings mark likely disagreements.",
-  "framework_version": "0.5.1",
+  "framework_version": "0.7.0",
   "reading": "**SAL 1.** Every loop reaches L1 through the data-model editor and flow logs, which record each operation's success or failure (LRN-03 2). The AI assistant drafts schema and flow changes behind approvals but is scored at its lower reading (DEL-04 1), and Learn is the weakest capability (0.8). **Architecture:** no load suite (ARC-06 0) and no backup command (ARC-09 1) hold the architecture foundation at L1. **Next level:** structured request intake and a stronger AI lane, plus capacity and backup evidence.",
   "framework": "EVOLVE",
   "scope_facts": {
@@ -629,7 +720,7 @@
     },
     "multi_tenant": {
       "value": false,
-      "evidence": "One project per deployment; isolation inside a project is by roles and policies, not tenants."
+      "evidence": "One project per deployment. Roles and policies separate people inside one project that one set of admins runs; there are no self-administering organisations or workspaces in the data model."
     },
     "hosted_service": {
       "value": true,
@@ -641,7 +732,7 @@
     },
     "agent_mutations": {
       "value": true,
-      "evidence": "The AI assistant changes collections, fields, flows and items through tools (api/src/ai/tools)."
+      "evidence": "The AI assistant and MCP server write collections, fields, relations, flows, operations and items through tools (api/src/ai/tools); drafted calls wait for approval."
     },
     "evolution_auto_apply": {
       "value": false,
@@ -653,7 +744,7 @@
     },
     "code_release_path": {
       "value": false,
-      "evidence": "The AI lane changes definitions, not Directus code."
+      "evidence": "False under the v0.7 definition, a judgement call. The AI assistant can draft flow operations of type exec, sandboxed JavaScript (api/src/ai/tools/operations/prompt.md:67, :182), but each call runs only after a person approves it, and the script is a field of a flow definition that is versioned and reverted with it (GOV-05 scope). The AI does not build or activate extensions, and no first-party lane ships Directus code."
     },
     "ai_features": {
       "value": true,
@@ -667,5 +758,82 @@
       "value": true,
       "evidence": "AI tools create and change collections, fields, flows and items behind approvals (api/src/ai/tools/registry.ts)."
     }
-  }
+  },
+  "change_kinds": [
+    {
+      "id": "data-model",
+      "name": "What data is kept (collections and fields)",
+      "who": "project admins",
+      "main": true,
+      "reach": 0,
+      "confidence": "medium",
+      "evidence": "Admins create and change collections, fields and relations in the Data Model UI with no deploy (api/src/services/collections.ts, fields.ts), and the AI assistant drafts them behind per-call approval (api/src/ai/tools/collections, fields, relations; registry.ts:198-214). But there is no undo: schema changes record no prior state and have no rollback in the UI (GOV-05), deleting or retyping a field drops data, and schema snapshot, diff and apply (api/src/controllers/schema.ts) is an engineer flow between instances. Only an addition can be reversed, by deleting it. A path without undo is reach 0."
+    },
+    {
+      "id": "permissions",
+      "name": "Who can see and change what (roles, policies and permissions)",
+      "who": "project admins",
+      "main": true,
+      "reach": 1,
+      "confidence": "high",
+      "evidence": "Admins edit roles, policies and permissions in Settings with no deploy. Undo: these system collections keep revisions (accountability 'all' by default, packages/system-data/src/collections/collections.yaml:14-68), and the policy and role pages show the revisions sidebar with revert (app/src/modules/settings/routes/policies/item.vue, roles/item.vue; RevisionsService.revert, api/src/services/revisions.ts:13-27)."
+    },
+    {
+      "id": "flows",
+      "name": "Automations (flows)",
+      "who": "project admins",
+      "main": true,
+      "reach": 2,
+      "confidence": "medium",
+      "evidence": "Admins build flows from triggers and operations in the UI; the AI assistant drafts flows and operations, including sandboxed exec scripts, as tool calls a person approves before they run (api/src/ai/tools/flows, operations/index.ts, operations/prompt.md:67, :182; registry.ts:198-214). Undo: a flow can be set inactive or deleted, and flows and operations keep revisions (collections.yaml:100-103) that can be reverted through the revert endpoint (api/src/controllers/utils.ts:75); the flows page has no revisions UI. Reach 2 rests on DEL-04 2, re-scored in this migration."
+    },
+    {
+      "id": "dashboards-layouts",
+      "name": "Dashboards and how lists are laid out",
+      "who": "project admins and editors",
+      "main": false,
+      "reach": 1,
+      "confidence": "low",
+      "evidence": "Insights dashboards and panels and collection layouts, bookmarks and presets are edited in the Data Studio with no deploy. Undo: dashboards and panels keep revisions (collections.yaml:87-90) revertible through the API only; presets keep no revisions (accountability null, collections.yaml:55) and are reset or deleted by hand."
+    },
+    {
+      "id": "marketplace-extensions",
+      "name": "Add-ons from the marketplace",
+      "who": "project admins",
+      "main": false,
+      "reach": 1,
+      "confidence": "medium",
+      "evidence": "Admins install marketplace extensions in the app, sandboxed by default (MARKETPLACE_TRUST sandbox, packages/env/src/constants/defaults.ts:124), through /extensions/registry/install and reinstall (api/src/controllers/extensions.ts:184-230). Undo: uninstall (/registry/uninstall, extensions.ts:232)."
+    },
+    {
+      "id": "custom-extensions",
+      "name": "Custom screens, endpoints and hooks",
+      "who": "developers for the project",
+      "main": false,
+      "reach": 0,
+      "confidence": "high",
+      "evidence": "Custom interfaces, modules, endpoints, hooks and operations are code written with the extensions SDK (packages/extensions-sdk) and deployed to the instance's extensions folder; changes to Directus itself are releases of this repository. Engineers only."
+    }
+  ],
+  "ai_delivery": {
+    "present": true,
+    "qualifies": false,
+    "evidence": "AGENTS.md, ai_policy.md, .claude (CLAUDE.md, hooks, settings); .github/workflows/claude.yml runs anthropics/claude-code-action@v1 (a moving tag, not a pinned version) when someone mentions @claude in an issue or review, with read-only contents permission.",
+    "note": "AI-assisted engineering, not Directus evolving itself. It does not meet rule 12: the workflow answers mentions with no write access and no enforced limits or required checks, and the instruction files count for nothing."
+  },
+  "proven": {
+    "request": {
+      "status": "not_evidenced",
+      "searched": "Repository at the pinned commit: release workflows, changesets, revisions and activity code. Operating records of real changes going through a Directus project's Request → Release loop (activity and revisions) live in running instances, not in the repository."
+    },
+    "fix": {
+      "status": "not_evidenced",
+      "searched": "Repository at the pinned commit: release workflows, changesets, revisions and activity code. Operating records of real changes going through a Directus project's Issue → Fix loop (activity and revisions) live in running instances, not in the repository."
+    },
+    "expansion": {
+      "status": "not_evidenced",
+      "searched": "Repository at the pinned commit: release workflows, changesets, revisions and activity code. Operating records of real changes going through a Directus project's Opportunity → Expansion loop (activity and revisions) live in running instances, not in the repository."
+    }
+  },
+  "confidence_note": "Confidence for criteria whose score did not change in the v0.7 migration was assigned at migration from the recorded evidence; confidence for new and changed readings (kinds of change, LRN-10 and every re-read criterion) comes from re-reading the source at the pinned commit."
 }

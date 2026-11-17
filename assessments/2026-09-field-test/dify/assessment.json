@@ -3,6 +3,7 @@
   "date": "2026-09-30",
   "source": "github.com/langgenius/dify @ ea38e484b81b4104736d2484aaa1d0d7ea99627e (main)",
   "archetype": "configurable-application-platform",
+  "basis": "shipped",
   "scope_line": "Scope: the dify monorepo (api, web, dify-agent runtime, packages, CLI, docker configuration, CI). The separately released dify-sandbox and plugin-daemon services are assessed through their configuration here. Dify Cloud and the plugin marketplace catalogue are out of scope.",
   "scores": {
     "MAL-01": {
@@ -11,20 +12,23 @@
       "grade": "A",
       "evidence": "Entity kinds (apps, workflows, datasets, tools) are fixed models (api/models); new kinds need code, migration and release.",
       "alt_score": 2,
-      "alt_note": "Apps and datasets behave like runtime-defined entities, though of fixed kinds."
+      "alt_note": "Apps and datasets behave like runtime-defined entities, though of fixed kinds.",
+      "confidence": "medium"
     },
     "MAL-02": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
       "single_entity": true,
-      "evidence": "Knowledge-base documents carry user-defined typed metadata fields (DatasetMetadata, api/models/dataset.py); app input variables are typed with validation. No privacy tag; one entity family."
+      "evidence": "Knowledge-base documents carry user-defined typed metadata fields (DatasetMetadata, api/models/dataset.py); app input variables are typed with validation. No privacy tag; one entity family.",
+      "confidence": "medium"
     },
     "MAL-03": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "Relations and lifecycle states are coded per feature (draft and published workflows, document indexing states)."
+      "evidence": "Relations and lifecycle states are coded per feature (draft and published workflows, document indexing states).",
+      "confidence": "medium"
     },
     "MAL-04": {
       "status": "assessed",
@@ -32,13 +36,15 @@
       "grade": "A",
       "evidence": "Every app gets the same generated service API shaped by its input variables (api/controllers/service_api), plus an OpenAPI surface (api/controllers/openapi, fastopenapi.py); no per-app code. Scored at the lower reading under rule 11 because: Apps are a single entity family, not arbitrary defined types.",
       "alt_score": 3,
-      "alt_note": "The September v0.3 pass scored 3 on the evidence above."
+      "alt_note": "The September v0.3 pass scored 3 on the evidence above.",
+      "confidence": "medium"
     },
     "MAL-05": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Publishing a new workflow version changes the app's API inputs and outputs live (api/services/workflow_service.py version handling)."
+      "evidence": "Publishing a new workflow version changes the app's API inputs and outputs live (api/services/workflow_service.py version handling).",
+      "confidence": "medium"
     },
     "MAL-06": {
       "status": "assessed",
@@ -46,13 +52,15 @@
       "grade": "A",
       "evidence": "Generated OpenAPI documents (api/controllers/openapi, API_SCHEMA_GUIDE.md), typed SDKs (sdks/) and structured errors. No dry-run. Scored at the lower reading under rule 11 because: Coverage of the whole API by the generated spec was not verified.",
       "alt_score": 3,
-      "alt_note": "The September v0.3 pass scored 3 on the evidence above."
+      "alt_note": "The September v0.3 pass scored 3 on the evidence above.",
+      "confidence": "low"
     },
     "MAL-07": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Workflow canvases and each app's web-app settings (branding, opening statement, suggested questions) are data edited by builders; there is no page layout editor."
+      "evidence": "Workflow canvases and each app's web-app settings (branding, opening statement, suggested questions) are data edited by builders; there is no page layout editor.",
+      "confidence": "medium"
     },
     "MAL-08": {
       "status": "assessed",
@@ -60,7 +68,8 @@
       "grade": "A",
       "evidence": "Chat, completion and workflow web apps render intake forms generically from each app's typed input variables; list and detail views are hand-built.",
       "alt_score": 3,
-      "alt_note": "Intake is fully generic and logs and annotations views are generic across apps."
+      "alt_note": "Intake is fully generic and logs and annotations views are generic across apps.",
+      "confidence": "medium"
     },
     "MAL-09": {
       "status": "assessed",
@@ -68,7 +77,8 @@
       "grade": "A",
       "evidence": "Design-system themes (packages/dify-ui/src/themes) and 1,401 locale files, with AI translation in CI (.github/workflows/translate-i18n-claude.yml); no tenant theme editor or text overrides.",
       "alt_score": 3,
-      "alt_note": "The locale pipeline includes AI translation."
+      "alt_note": "The locale pipeline includes AI translation.",
+      "confidence": "medium"
     },
     "MAL-10": {
       "status": "assessed",
@@ -76,25 +86,29 @@
       "grade": "A",
       "evidence": "Workflows and chatflows compose triggers (schedule, webhook, plugin triggers in api/core/trigger), conditions, iteration, code, HTTP, tool and LLM nodes in the UI; debug preview and single-step runs; draft and published versions.",
       "alt_score": 4,
-      "alt_note": "Versioned, testable and partly AI-assisted (generate_workflow_instruction_suggestions), but not simulatable against history."
+      "alt_note": "Versioned, testable and partly AI-assisted (generate_workflow_instruction_suggestions), but not simulatable against history.",
+      "confidence": "medium"
     },
     "MAL-11": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Inbound webhook and plugin triggers with per-node retry settings and run logs; Dify does not publish its own entity lifecycle events to subscribers."
+      "evidence": "Inbound webhook and plugin triggers with per-node retry settings and run logs; Dify does not publish its own entity lifecycle events to subscribers.",
+      "confidence": "medium"
     },
     "MAL-12": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Code nodes run in the separate dify-sandbox service with a worker timeout (SANDBOX_WORKER_TIMEOUT 15) and all network traffic forced through the SSRF proxy (SANDBOX_HTTP_PROXY, docker/.env.example:193-201, api/core/helper/ssrf_proxy.py); triggered by workflow events and requests."
+      "evidence": "Code nodes run in the separate dify-sandbox service with a worker timeout (SANDBOX_WORKER_TIMEOUT 15) and all network traffic forced through the SSRF proxy (SANDBOX_HTTP_PROXY, docker/.env.example:193-201, api/core/helper/ssrf_proxy.py); triggered by workflow events and requests.",
+      "confidence": "high"
     },
     "GOV-01": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Design system (packages/dify-ui) with accessibility lint rules (lint.config.ts) and an axe-based accessibility E2E workflow that runs on demand for a chosen page and WCAG level (.github/workflows/accessibility-e2e.yml:4-21)."
+      "evidence": "Design system (packages/dify-ui) with accessibility lint rules (lint.config.ts) and an axe-based accessibility E2E workflow that runs on demand for a chosen page and WCAG level (.github/workflows/accessibility-e2e.yml:4-21).",
+      "confidence": "high"
     },
     "GOV-02": {
       "status": "assessed",
@@ -102,19 +116,22 @@
       "grade": "A",
       "evidence": "Per-feature logs only: authentication audit entities (api/services/entities/auth_audit_entities.py), app and workflow run logs; no generic audit store.",
       "alt_score": 2,
-      "alt_note": "Run logs are generic across apps."
+      "alt_note": "Run logs are generic across apps.",
+      "confidence": "medium"
     },
     "GOV-03": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Account deletion service and scheduled message cleanup with retention settings (api/services/account_deletion_service.py, api/schedule/clean_messages.py); no data-subject export."
+      "evidence": "Account deletion service and scheduled message cleanup with retention settings (api/services/account_deletion_service.py, api/schedule/clean_messages.py); no data-subject export.",
+      "confidence": "medium"
     },
     "GOV-04": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "RBAC resource and agent-access services (api/services/rbac_resource_service.py), SSRF proxy and plugin signature enforcement (FORCE_VERIFYING_SIGNATURE, docker/.env.example:236); no security scanning in CI."
+      "evidence": "RBAC resource and agent-access services (api/services/rbac_resource_service.py), SSRF proxy and plugin signature enforcement (FORCE_VERIFYING_SIGNATURE, docker/.env.example:236); no security scanning in CI.",
+      "confidence": "high"
     },
     "GOV-05": {
       "status": "assessed",
@@ -125,19 +142,22 @@
         "implemented": true,
         "tested": false,
         "operated": false
-      }
+      },
+      "confidence": "medium"
     },
     "GOV-06": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Draft and publish with debug preview for apps and workflows; no review step or proposal object."
+      "evidence": "Draft and publish with debug preview for apps and workflows; no review step or proposal object.",
+      "confidence": "medium"
     },
     "GOV-07": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "Every publish is a manual human action; the agent runtime's ask-human layer (dify-agent/src/dify_agent/layers/ask_human/layer.py) gates agent actions, not changes."
+      "evidence": "Every publish is a manual human action; the agent runtime's ask-human layer (dify-agent/src/dify_agent/layers/ask_human/layer.py) gates agent actions, not changes.",
+      "confidence": "medium"
     },
     "GOV-08": {
       "status": "assessed",
@@ -145,13 +165,15 @@
       "grade": "A",
       "evidence": "Imported DSL is checked against the current DSL version and flagged when older or newer (api/services/dsl_version.py, app_dsl_service.py); plugins declare manifests and versions against a stable plugin SDK contract. Scored at the lower reading under rule 11 because: If version warnings on import do not count as automated compatibility checks.",
       "alt_score": 3,
-      "alt_note": "The September v0.3 pass scored 3 on the evidence above."
+      "alt_note": "The September v0.3 pass scored 3 on the evidence above.",
+      "confidence": "medium"
     },
     "ARC-01": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Knowledge bases get vector and keyword indexes configured per dataset (api/core/rag); application lists use SQL with Redis caching."
+      "evidence": "Knowledge bases get vector and keyword indexes configured per dataset (api/core/rag); application lists use SQL with Redis caching.",
+      "confidence": "medium"
     },
     "ARC-05": {
       "status": "assessed",
@@ -164,7 +186,8 @@
         "implemented": true,
         "tested": false,
         "operated": false
-      }
+      },
+      "confidence": "medium"
     },
     "ARC-06": {
       "status": "assessed",
@@ -172,13 +195,15 @@
       "grade": "A",
       "evidence": "No load or performance suite and no documented limits found (searched for k6, locust, benchmark and load test).",
       "alt_score": 1,
-      "alt_note": "Vector-database test suites exercise one surface."
+      "alt_note": "Vector-database test suites exercise one surface.",
+      "confidence": "medium"
     },
     "DEL-02": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "API, worker, web, sandbox, plugin daemon, SSRF proxy and agent runtime are separate containers with separate deploy workflows (9 Dockerfiles; .github/workflows/deploy-agent.yml, deploy-knowledge.yml)."
+      "evidence": "API, worker, web, sandbox, plugin daemon, SSRF proxy and agent runtime are separate containers with separate deploy workflows (9 Dockerfiles; .github/workflows/deploy-agent.yml, deploy-knowledge.yml).",
+      "confidence": "medium"
     },
     "DEL-03": {
       "status": "assessed",
@@ -186,13 +211,15 @@
       "grade": "A",
       "evidence": "import-linter layer contracts for the backend (api/.importlinter:1-20) plus ESLint configuration for the frontend. Scored at the lower reading under rule 11 because: Whether the import-linter contract runs as a required CI check was not verified.",
       "alt_score": 3,
-      "alt_note": "The September v0.3 pass scored 3 on the evidence above."
+      "alt_note": "The September v0.3 pass scored 3 on the evidence above.",
+      "confidence": "low"
     },
     "DEL-05": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Main CI on pull requests with no draft filter runs API tests, web tests, style, migration and bundle-size checks (.github/workflows/main-ci.yml, db-migration-test.yml, web-bundle-size.yml); accessibility runs only on demand and there is no security scan."
+      "evidence": "Main CI on pull requests with no draft filter runs API tests, web tests, style, migration and bundle-size checks (.github/workflows/main-ci.yml, db-migration-test.yml, web-bundle-size.yml); accessibility runs only on demand and there is no security scan.",
+      "confidence": "medium"
     },
     "MAL-13": {
       "status": "assessed",
@@ -200,13 +227,15 @@
       "grade": "A",
       "evidence": "Plugins extend models, tools, agent strategies, endpoints, data sources and triggers; workflow templates and DSL are declarative; there are no plugin points for UI, theme or text.",
       "alt_score": 3,
-      "alt_note": "Breadth across server surfaces is large."
+      "alt_note": "Breadth across server surfaces is large.",
+      "confidence": "medium"
     },
     "MAL-14": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Plugins run in the separate plugin daemon, signatures are verified by default (FORCE_VERIFYING_SIGNATURE true) and outbound traffic goes through the SSRF proxy (docker/.env.example:222-236)."
+      "evidence": "Plugins run in the separate plugin daemon, signatures are verified by default (FORCE_VERIFYING_SIGNATURE true) and outbound traffic goes through the SSRF proxy (docker/.env.example:222-236).",
+      "confidence": "high"
     },
     "MAL-15": {
       "status": "assessed",
@@ -214,7 +243,8 @@
       "grade": "A",
       "evidence": "Plugin developers connect a local plugin to a running Dify instance for remote debugging through the daemon's install port (EXPOSE_PLUGIN_DAEMON_PORT, docker/.env.example:222), with logs; builders debug workflows step by step. Scored at the lower reading under rule 11 because: Remote debugging configuration was read from settings, not exercised.",
       "alt_score": 3,
-      "alt_note": "The September v0.3 pass scored 3 on the evidence above."
+      "alt_note": "The September v0.3 pass scored 3 on the evidence above.",
+      "confidence": "medium"
     },
     "MAL-19": {
       "status": "assessed",
@@ -227,8 +257,10 @@
         "status": "assessed",
         "score": 2,
         "grade": "A",
-        "evidence": "Apps exposed as MCP servers with a per-app credential (api/controllers/mcp/mcp.py)."
-      }
+        "evidence": "Apps exposed as MCP servers with a per-app credential (api/controllers/mcp/mcp.py).",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "MAL-20": {
       "status": "assessed",
@@ -241,8 +273,10 @@
         "status": "assessed",
         "score": 2,
         "grade": "A",
-        "evidence": "Grounded end-user apps and builder generators."
-      }
+        "evidence": "Grounded end-user apps and builder generators.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "GOV-09": {
       "status": "assessed",
@@ -253,14 +287,17 @@
         "status": "assessed",
         "score": 1,
         "grade": "A",
-        "evidence": "Agent tools run with credentials configured by the builder, shared across end users."
-      }
+        "evidence": "Agent tools run with credentials configured by the builder, shared across end users.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "MAL-16": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "One model-provider interface maps many LLM vendors onto a canonical model API (api/core/model_manager.py, provider_manager.py); data-source plugins map external content into canonical documents and chunks."
+      "evidence": "One model-provider interface maps many LLM vendors onto a canonical model API (api/core/model_manager.py, provider_manager.py); data-source plugins map external content into canonical documents and chunks.",
+      "confidence": "medium"
     },
     "MAL-17": {
       "status": "assessed",
@@ -268,37 +305,43 @@
       "grade": "A",
       "evidence": "Plugin SDK covers credential schemas and OAuth, triggers with subscriptions, data-source sync and install and upgrade lifecycle; admins install from the marketplace; signatures verify publishers.",
       "alt_score": 4,
-      "alt_note": "Signature verification is a form of certification."
+      "alt_note": "Signature verification is a form of certification.",
+      "confidence": "medium"
     },
     "MAL-18": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Service API is path-versioned (/v1) and documented; no deprecation windows or conflict handling."
+      "evidence": "Service API is path-versioned (/v1) and documented; no deprecation windows or conflict handling.",
+      "confidence": "medium"
     },
     "EXP-01": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Kernel of tenants, accounts, apps, workflows, datasets, conversations and messages, tools and plugins, served over web, API, MCP and IM channels; no business-domain nouns."
+      "evidence": "Kernel of tenants, accounts, apps, workflows, datasets, conversations and messages, tools and plugins, served over web, API, MCP and IM channels; no business-domain nouns.",
+      "confidence": "medium"
     },
     "EXP-02": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Recommended apps and knowledge-pipeline templates ship domain solutions as app definitions, knowledge and tools on an unchanged kernel (api/constants/recommended_apps.json, pipeline_templates.json)."
+      "evidence": "Recommended apps and knowledge-pipeline templates ship domain solutions as app definitions, knowledge and tools on an unchanged kernel (api/constants/recommended_apps.json, pipeline_templates.json).",
+      "confidence": "medium"
     },
     "EXP-03": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "App DSL export and import is a versioned bundle of app configuration, workflow graph, model settings and tool references (api/services/app_dsl_service.py, dsl_version.py), plus snippet DSL (snippet_dsl_service.py)."
+      "evidence": "App DSL export and import is a versioned bundle of app configuration, workflow graph, model settings and tool references (api/services/app_dsl_service.py, dsl_version.py), plus snippet DSL (snippet_dsl_service.py).",
+      "confidence": "medium"
     },
     "LRN-01": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Per-app statistics and workflow run logs update as runs happen (api/controllers/console/app/statistic.py, workflow_statistic.py); tracing to external LLM-ops tools (api/core/ops)."
+      "evidence": "Per-app statistics and workflow run logs update as runs happen (api/controllers/console/app/statistic.py, workflow_statistic.py); tracing to external LLM-ops tools (api/core/ops).",
+      "confidence": "medium"
     },
     "LRN-02": {
       "status": "assessed",
@@ -306,7 +349,8 @@
       "grade": "A",
       "evidence": "Message feedback (rating, content, source) is linked to messages and conversations (api/models/model.py:296-335) and triaged through logs and annotations; the link to the app configuration version was not verified.",
       "alt_score": 3,
-      "alt_note": "Messages record the app configuration they ran with."
+      "alt_note": "Messages record the app configuration they ran with.",
+      "confidence": "low"
     },
     "LRN-04": {
       "status": "assessed",
@@ -314,7 +358,8 @@
       "grade": "A",
       "evidence": "App statistics combine usage and satisfaction for one app; no joined usage, support and delivery models.",
       "alt_score": 2,
-      "alt_note": "Satisfaction joins feedback and usage for each app."
+      "alt_note": "Satisfaction joins feedback and usage for each app.",
+      "confidence": "medium"
     },
     "LRN-06": {
       "status": "assessed",
@@ -325,8 +370,10 @@
         "status": "assessed",
         "score": 0,
         "grade": "A",
-        "evidence": "No AI involvement in this behaviour."
-      }
+        "evidence": "No AI involvement in this behaviour.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "DEL-04": {
       "status": "assessed",
@@ -337,8 +384,10 @@
         "status": "assessed",
         "score": 2,
         "grade": "A",
-        "evidence": "AI generators draft prompts, code and workflow steps (api/core/llm_generator)."
-      }
+        "evidence": "AI generators draft prompts, code and workflow steps (api/core/llm_generator).",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "LRN-09": {
       "status": "assessed",
@@ -346,13 +395,22 @@
       "grade": "A",
       "evidence": "Before-and-after comparison is possible by hand from statistics and traces; nothing binds a published version to a baseline and decision. Scored at the lower reading under rule 11 because: If manual comparison does not count as a mechanism.",
       "alt_score": 1,
-      "alt_note": "The September v0.3 pass scored 1 on the evidence above."
+      "alt_note": "The September v0.3 pass scored 1 on the evidence above.",
+      "confidence": "medium"
+    },
+    "LRN-10": {
+      "status": "assessed",
+      "score": 0,
+      "grade": "A",
+      "confidence": "medium",
+      "evidence": "The checks that govern change are code: graph and DSL validation (api/services/dsl_version.py, app_dsl_service.py), the agent composer validator (api/services/agent/composer_validator.py:52-395) and the build-draft write rules (api/services/agent_config_service.py:968-983). The generators' prompts are code (api/core/llm_generator). There are no evaluation sets for changes and no change policy object (GOV-07 1); nothing records a failure against the check that missed it. Searched api/services, api/core/llm_generator, dify-agent/src."
     },
     "DEL-06": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "/console/api/version and /console/api/ping (api/controllers/console/system.py:27-37) and a worker health check (api/celery_healthcheck.py); no configuration snapshot."
+      "evidence": "/console/api/version and /console/api/ping (api/controllers/console/system.py:27-37) and a worker health check (api/celery_healthcheck.py); no configuration snapshot.",
+      "confidence": "high"
     },
     "DEL-07": {
       "status": "assessed",
@@ -360,13 +418,15 @@
       "grade": "A",
       "evidence": "Docker Compose stack, seeded E2E runs (e2e/scripts/seed-runner.ts) and branch-triggered dev deploys (.github/workflows/deploy-dev.yml); no per-change ephemeral environment.",
       "alt_score": 3,
-      "alt_note": "E2E runs create seeded, disposable instances per change."
+      "alt_note": "E2E runs create seeded, disposable instances per change.",
+      "confidence": "medium"
     },
     "DEL-08": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Web and CLI E2E suites (.github/workflows/web-e2e.yml, cli-e2e.yml); no changed-path map or adoption instrumentation at ship."
+      "evidence": "Web and CLI E2E suites (.github/workflows/web-e2e.yml, cli-e2e.yml); no changed-path map or adoption instrumentation at ship.",
+      "confidence": "medium"
     },
     "LRN-07": {
       "status": "assessed",
@@ -377,42 +437,52 @@
         "status": "assessed",
         "score": 0,
         "grade": "A",
-        "evidence": "Annotations are curated by people."
-      }
+        "evidence": "Annotations are curated by people.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "LRN-08": {
       "status": "assessed",
-      "score": 1,
+      "score": 2,
       "grade": "A",
-      "evidence": "Annotations and app changes are applied by people without evaluation against a baseline.",
+      "evidence": "Re-scored 1 to 2 under the v0.7 boundary, which scores the checks on changes the product's AI makes to its own definitions. Agent build-mode config pushes are schema-validated (AgentSoulConfig.model_validate, api/services/agent_config_service.py:946-955) and checked by the composer validator, which rejects plaintext secrets, invalid shell and env configuration and missing assets (api/services/agent/composer_validator.py:230-395), before a person applies them (roster.py:953); AI-drafted workflow graphs pass the same graph validation as hand edits when saved and published. No evaluation against a baseline. Dify has no learning-from-experience loop.",
       "ai": {
-        "status": "not_applicable",
-        "rationale": "agent_mutations is false."
-      }
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "confidence": "medium",
+        "evidence": "Automated schema and validator checks on AI-made agent configuration (composer_validator.py, agent_config_service.py:946-955); no baseline evaluation."
+      },
+      "confidence": "medium"
     },
     "ARC-02": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Alembic migrations with downgrade steps (api/migrations/versions, 219 of 219); no enforced online strategy."
+      "evidence": "Alembic migrations with downgrade steps (api/migrations/versions, 219 of 219); no enforced online strategy.",
+      "confidence": "medium"
     },
     "ARC-03": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Stateless Flask API and Celery workers over PostgreSQL and Redis, documented through Docker Compose; no scale-out tests or manifests in the repository."
+      "evidence": "Stateless Flask API and Celery workers over PostgreSQL and Redis, documented through Docker Compose; no scale-out tests or manifests in the repository.",
+      "confidence": "medium"
     },
     "ARC-04": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Celery queues with retries on many tasks (api/extensions/ext_celery.py, api/tasks/delete_conversation_task.py:104); no dead-lettering or idempotency rule."
+      "evidence": "Celery queues with retries on many tasks (api/extensions/ext_celery.py, api/tasks/delete_conversation_task.py:104); no dead-lettering or idempotency rule.",
+      "confidence": "high"
     },
     "ARC-07": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "Optional OpenTelemetry and Sentry; no metrics or objectives for core paths."
+      "evidence": "Optional OpenTelemetry and Sentry; no metrics or objectives for core paths.",
+      "confidence": "medium"
     },
     "ARC-08": {
       "status": "assessed",
@@ -430,14 +500,19 @@
           "implemented": true,
           "tested": false,
           "operated": false
-        }
-      }
+        },
+        "confidence": "medium"
+      },
+      "confidence": "high"
     },
     "ARC-09": {
       "status": "assessed",
-      "score": 1,
+      "score": 0,
       "grade": "A",
-      "evidence": "No backup command; Docker volume backup is left to operators."
+      "evidence": "Corrected from 1 after the second-rating study. No supported backup or restore of the database, uploaded files or vector store, and no repository documentation telling operators to back them up: searched api/commands, docker/README.md, docs/, README.md and every *.md, *.sh and *.yaml for backup. The only backup is of the .env file before an env sync (docker/dify-env-sync.sh:82-97, docker/README.md:72-80); the app migration commands move workflow apps and custom tools between environments, not the product's state. Dify's separate documentation repository was not read.",
+      "alt_score": 1,
+      "confidence": "high",
+      "alt_note": "The cross-environment app migration exports and imports workflow apps and custom tools (api/commands/data_migration.py:88-147, docs/cross-env-app-migration/README.md) and the env-sync script backs up .env (docker/dify-env-sync.sh:82-97); a rater may count these as level 1."
     },
     "DEL-01": {
       "status": "assessed",
@@ -448,26 +523,31 @@
         "status": "assessed",
         "score": 0,
         "grade": "A",
-        "evidence": "No AI involvement in this behaviour."
-      }
+        "evidence": "No AI involvement in this behaviour.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "DEL-09": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "Published app versions go to all users at once."
+      "evidence": "Published app versions go to all users at once.",
+      "confidence": "medium"
     },
     "DEL-10": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Apps can switch their web app and API off at runtime (api/models/model.py:445-446)."
+      "evidence": "Apps can switch their web app and API off at runtime (api/models/model.py:445-446).",
+      "confidence": "high"
     },
     "LRN-03": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "End users like or dislike answers and the feedback is queryable per app (api/models/model.py:1299-1302); workflow runs record node errors."
+      "evidence": "End users like or dislike answers and the feedback is queryable per app (api/models/model.py:1299-1302); workflow runs record node errors.",
+      "confidence": "high"
     },
     "LRN-05": {
       "status": "assessed",
@@ -480,32 +560,45 @@
         "status": "assessed",
         "score": 0,
         "grade": "A",
-        "evidence": "No AI involvement in this behaviour."
-      }
+        "evidence": "No AI involvement in this behaviour.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "GOV-10": {
-      "status": "not_applicable",
-      "rationale": "No self-change path: AI drafts are saved by a person.",
-      "if_applicable": 1,
+      "status": "assessed",
+      "score": 2,
+      "grade": "A",
+      "confidence": "high",
+      "evidence": "Now applicable: agent_mutations is true under the v0.7 definition. The agent's own config writes are enforced server-side: pushes are accepted only on the calling user's DEBUG_BUILD draft of an agent in the same tenant, and published snapshots and the shared draft are not writable from the runtime (api/services/agent_config_service.py:890-955, _require_writable at 968-983, 403 config_not_writable), with tests (api/tests/unit_tests/services/test_agent_config_service.py, api/tests/unit_tests/controllers/inner_api/plugin/test_agent_config.py). The workflow generator path has no enforced scope beyond a person applying the returned graph, and there are no rate or volume limits, so not every self-change path is bounded.",
       "ai": {
-        "status": "not_applicable",
-        "rationale": "GOV-10 is not applicable."
+        "status": "assessed",
+        "score": 2,
+        "grade": "A",
+        "confidence": "high",
+        "evidence": "An enforced allow rule for the agent build-mode path (agent_config_service.py:968-983); the workflow generator path is unbounded."
       }
     },
     "GOV-11": {
-      "status": "not_applicable",
-      "rationale": "No self-change path.",
-      "if_applicable": 1,
+      "status": "assessed",
+      "score": 1,
+      "grade": "A",
+      "confidence": "medium",
+      "evidence": "Now applicable: agent_mutations is true under the v0.7 definition. Build drafts record the owning account (api/models/agent.py:252-277), but changes do not record the inputs that drove them, and retrieved knowledge, files and tool output reach the agent's prompt with no fencing or injection scanning (searched dify-agent/src, api/services/agent, api/core/llm_generator for untrusted-content handling; only package documents are validated, api/services/agent/roster_package_reader.py:360). A person applies every change.",
       "ai": {
-        "status": "not_applicable",
-        "rationale": "GOV-11 is not applicable."
+        "status": "assessed",
+        "score": 1,
+        "grade": "A",
+        "confidence": "low",
+        "evidence": "No provenance of source inputs on AI-made config changes and no fencing of untrusted content; mitigated only by human apply."
       }
     },
     "EXP-04": {
       "status": "assessed",
       "score": 0,
       "grade": "A",
-      "evidence": "No record of unmet intents was found."
+      "evidence": "No record of unmet intents was found.",
+      "confidence": "medium"
     },
     "EXP-05": {
       "status": "assessed",
@@ -516,14 +609,17 @@
         "status": "assessed",
         "score": 0,
         "grade": "A",
-        "evidence": "No AI involvement in this behaviour."
-      }
+        "evidence": "No AI involvement in this behaviour.",
+        "confidence": "medium"
+      },
+      "confidence": "medium"
     },
     "EXP-06": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Plugins from the marketplace are installed per workspace (api/services/plugin); no success metric or keep-or-kill record."
+      "evidence": "Plugins from the marketplace are installed per workspace (api/services/plugin); no success metric or keep-or-kill record.",
+      "confidence": "medium"
     },
     "DEL-11": {
       "status": "not_applicable",
@@ -533,37 +629,43 @@
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Builders choose models per app from many providers; load balancing with cooldown fails over across credentials, with tests (api/core/model_manager.py:68-130, tests/unit_tests/services/test_model_load_balancing_service.py)."
+      "evidence": "Builders choose models per app from many providers; load balancing with cooldown fails over across credentials, with tests (api/core/model_manager.py:68-130, tests/unit_tests/services/test_model_load_balancing_service.py).",
+      "confidence": "high"
     },
     "AIR-02": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Token usage and cost recorded per message, credit usage and billing quota reservation per tenant (api/core/credit_usage.py, api/services/billing_service.py:77-89)."
+      "evidence": "Token usage and cost recorded per message, credit usage and billing quota reservation per tenant (api/core/credit_usage.py, api/services/billing_service.py:77-89).",
+      "confidence": "high"
     },
     "AIR-03": {
       "status": "assessed",
       "score": 3,
       "grade": "A",
-      "evidence": "Knowledge bases with indexing, retrieval and citations (api/core/rag)."
+      "evidence": "Knowledge bases with indexing, retrieval and citations (api/core/rag).",
+      "confidence": "medium"
     },
     "AIR-04": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "Dataset permissions control which builders can attach knowledge (api/services/knowledge_retrieval_inner_service.py), but published apps retrieve with the app's datasets, not each end user's permissions."
+      "evidence": "Dataset permissions control which builders can attach knowledge (api/services/knowledge_retrieval_inner_service.py), but published apps retrieve with the app's datasets, not each end user's permissions.",
+      "confidence": "medium"
     },
     "AIR-05": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "Builders test prompts manually in debug and preview; no evaluation harness."
+      "evidence": "Builders test prompts manually in debug and preview; no evaluation harness.",
+      "confidence": "medium"
     },
     "AIR-06": {
       "status": "assessed",
       "score": 1,
       "grade": "A",
-      "evidence": "Publishing follows manual testing; nothing blocks a regression."
+      "evidence": "Publishing follows manual testing; nothing blocks a regression.",
+      "confidence": "medium"
     },
     "AIR-07": {
       "status": "assessed",
@@ -574,17 +676,19 @@
         "implemented": true,
         "tested": true,
         "operated": false
-      }
+      },
+      "confidence": "high"
     },
     "AIR-08": {
       "status": "assessed",
       "score": 2,
       "grade": "A",
-      "evidence": "End-user likes and dislikes and app statistics (satisfaction, tokens) per app (api/models/model.py:1299-1302); no drift alerts."
+      "evidence": "End-user likes and dislikes and app statistics (satisfaction, tokens) per app (api/models/model.py:1299-1302); no drift alerts.",
+      "confidence": "high"
     }
   },
   "limits": "Repository evidence only, main at the tip named above. dify-sandbox and plugin-daemon are separate repositories; their behaviour was taken from configuration here and not read in source. Dify Cloud and enterprise editions are out of scope. Single rater.",
-  "framework_version": "0.5.1",
+  "framework_version": "0.7.0",
   "reading": "**SAL 1.** Builders reshape apps and workflows without code (Open 2.2), and the AI generators draft prompts and code (DEL-04 2), but there is no intake (DEL-01 0) and no load suite (ARC-06 0), which caps the architecture foundation at L1. **Issue → Fix:** end users' likes and dislikes are recorded per app (LRN-03 2), but there is no grouping or diagnosis (LRN-05 1). **Next level:** structured requests, failure grouping, and measured capacity.",
   "framework": "EVOLVE",
   "scope_facts": {
@@ -598,7 +702,7 @@
     },
     "multi_tenant": {
       "value": true,
-      "evidence": "Workspaces (tenants) share a deployment with per-tenant limits."
+      "evidence": "Workspaces (tenants) with their own members and roles share one deployment, with tenant_id across the data model and per-tenant limits; operators create more with `flask create-tenant` (api/commands/account.py:91-95)."
     },
     "hosted_service": {
       "value": true,
@@ -609,12 +713,12 @@
       "evidence": "The console and service APIs change apps, datasets and workflows."
     },
     "agent_mutations": {
-      "value": false,
-      "evidence": "AI generators draft prompts, code and workflow steps into the editor; a person saves and publishes (api/core/llm_generator)."
+      "value": true,
+      "evidence": "Changed to true under the v0.7 definition, which counts drafts the product stores awaiting approval. In agent build mode the Dify agent writes its own notes, env, files and skills with `dify-agent config ... push` (dify-agent/src/dify_agent/layers/config/layer.py:29-48) into a per-user DEBUG_BUILD draft stored by the server (api/services/agent_config_service.py:913-929); a person applies it (api/controllers/console/agent/roster.py:953). The workflow generator also drafts graphs for the editor (api/services/workflow_generator_service.py:45-98)."
     },
     "evolution_auto_apply": {
       "value": false,
-      "evidence": "Every publish is a manual human action."
+      "evidence": "AI changes land in a build draft or the editor; applying and publishing are human actions (roster.py:953; workflow publish). No learning loop applies changes."
     },
     "definition_change_path": {
       "value": true,
@@ -622,7 +726,7 @@
     },
     "code_release_path": {
       "value": false,
-      "evidence": "No first-party evolution system ships code changes."
+      "evidence": "False under the v0.7 definition. The code generator drafts code-node source into the editor (api/controllers/console/app/generator.py:263) and build mode can push skill files to a draft, but a person saves, applies and publishes them, and they are versioned and restored with the workflow or agent definition; the AI does not activate code, and no first-party lane ships Dify's own code."
     },
     "ai_features": {
       "value": true,
@@ -636,5 +740,82 @@
       "value": true,
       "evidence": "Agent and workflow tools call external services and write data (api/core/tools)."
     }
-  }
+  },
+  "change_kinds": [
+    {
+      "id": "apps-workflows",
+      "name": "Apps, workflows and agents",
+      "who": "app builders in a workspace",
+      "main": true,
+      "reach": 2,
+      "confidence": "high",
+      "evidence": "Builders change apps and workflows on the canvas with debug runs, then publish; the workflow generator drafts or refines a whole graph for the builder to apply (api/controllers/console/app/generator.py:482-571, api/services/workflow_generator_service.py:45-98), and in agent build mode the agent writes its own configuration into a per-user build draft that a person applies (api/services/agent_config_service.py:913-929, 968-983; apply at api/controllers/console/agent/roster.py:953). Undo: restore any published workflow version to the draft and publish it (api/services/workflow_service.py:622, api/controllers/console/app/workflow.py:1557) and restore an agent version (roster.py:1302, roster_service.py:1450). Reach 2 rests on DEL-04 2."
+    },
+    {
+      "id": "prompts",
+      "name": "What the AI is told to do (prompts and instructions)",
+      "who": "app builders",
+      "main": true,
+      "reach": 2,
+      "confidence": "medium",
+      "evidence": "Builders edit prompts in apps, LLM nodes and agents; the prompt and instruction generators draft them on request (api/controllers/console/app/generator.py:230, :327; api/core/llm_generator/llm_generator.py). Undo: prompts in workflows and agents roll back with their published versions (workflow_service.py:622, roster.py:1302). In basic chat and completion apps each save writes a new model configuration row (api/controllers/console/app/model_config.py:68) but there is no path to restore an earlier one, so undo there is by hand."
+    },
+    {
+      "id": "knowledge",
+      "name": "Knowledge the apps answer from",
+      "who": "app builders and knowledge owners",
+      "main": true,
+      "reach": 1,
+      "confidence": "medium",
+      "evidence": "Builders upload, sync and re-index documents and set retrieval in the console with no deploy. Undo: documents can be disabled, re-enabled, archived and un-archived (api/controllers/console/datasets/datasets_document.py:731) or deleted; edits to chunks and retrieval settings keep no history."
+    },
+    {
+      "id": "model-providers",
+      "name": "Which AI models and credentials are used",
+      "who": "workspace admins",
+      "main": false,
+      "reach": 1,
+      "confidence": "medium",
+      "evidence": "Admins add provider credentials, validate them and choose default models in the console (api/controllers/console/workspace/model_providers.py:148-313). Undo: several credentials are kept per provider and the admin switches back (credentials/switch at :291); default-model changes are set back by hand."
+    },
+    {
+      "id": "tools-plugins",
+      "name": "Tools and plugins the apps can use",
+      "who": "workspace admins",
+      "main": false,
+      "reach": 1,
+      "confidence": "medium",
+      "evidence": "Admins install plugins from the marketplace, a package or GitHub and upgrade them (api/controllers/console/workspace/plugin.py:810-858, :1010) and add custom API tools. Undo: uninstall (plugin.py:1061); a downgrade path to an earlier plugin version was not found."
+    },
+    {
+      "id": "platform-features",
+      "name": "New node types, screens and platform behaviour",
+      "who": "Dify users, through feature requests",
+      "main": false,
+      "reach": 0,
+      "confidence": "high",
+      "evidence": "Changes to Dify itself (core node types, console screens, runtime behaviour) are code in this monorepo, shipped by release; plugins extend tools, models and triggers but not the core. Engineers only."
+    }
+  ],
+  "ai_delivery": {
+    "present": true,
+    "qualifies": false,
+    "evidence": "AGENTS.md, .agents/skills (backend and frontend code review, testing), .claude/skills and settings; CI workflow translate-i18n-claude.yml runs anthropics/claude-code-action pinned by SHA (v1.0.235) on manual dispatch to translate locale files, told not to create branches, commits or pull requests.",
+    "note": "AI-assisted engineering, not Dify evolving itself. It does not meet rule 12: the one agent workflow translates text on demand; no agent lane builds Dify changes from requests or issues under enforced limits, and instruction and skill files count for nothing."
+  },
+  "proven": {
+    "request": {
+      "status": "not_evidenced",
+      "searched": "Repository at the pinned commit: README, docs/, .github workflows and release configuration. Operating records of real changes going through Dify's Request → Release loop (workflow publish history, app logs) live in running deployments, not in the repository."
+    },
+    "fix": {
+      "status": "not_evidenced",
+      "searched": "Repository at the pinned commit: README, docs/, .github workflows and release configuration. Operating records of real changes going through Dify's Issue → Fix loop (workflow publish history, app logs) live in running deployments, not in the repository."
+    },
+    "expansion": {
+      "status": "not_evidenced",
+      "searched": "Repository at the pinned commit: README, docs/, .github workflows and release configuration. Operating records of real changes going through Dify's Opportunity → Expansion loop (workflow publish history, app logs) live in running deployments, not in the repository."
+    }
+  },
+  "confidence_note": "Confidence for criteria whose score did not change in the v0.7 migration was assigned at migration from the recorded evidence; confidence for new and changed readings (kinds of change, LRN-10 and every re-read criterion) comes from re-reading the source at the pinned commit."
 }
