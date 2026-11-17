@@ -23,7 +23,9 @@ For an AI fact that a shipped opt-in setting turns on, give both values.
 
 ## Software Autonomy Level
 
-Headline: **SAL n (name) · AI-driven n** · Request → Release Ln (AI Ln) · Issue → Fix Ln (AI Ln) · Opportunity → Expansion Ln (AI Ln).
+Headline: **Built to SAL n (name) · Proven: … · AI-driven n** · Request → Release Ln (AI Ln) · Issue → Fix Ln (AI Ln) · Opportunity → Expansion Ln (AI Ln). A design assessment says **Designed for** and has no Proven part.
+
+For business and product readers, give the output of `scripts/report.py <assessment.json>` first; this template is the engineering scorecard.
 
 | Loop | Stages | Spine | Architecture | Governance | Level | AI-driven | With opt-in settings |
 |---|---:|---:|---:|---:|---:|---:|---:|
@@ -32,6 +34,21 @@ Headline: **SAL n (name) · AI-driven n** · Request → Release Ln (AI Ln) · I
 | Opportunity → Expansion | | | | | | | |
 
 Also report the headline with every alternate reading. A loop's level is the lowest of its four parts.
+
+## Kinds of change
+
+| Kind | Who makes it | Main | Reach | Evidence |
+|---|---|---|---|---|
+| | | | | |
+
+State "n of m main kinds are self-serve". Level 1 needs every main kind at reach 1 or more.
+
+## Recursion and proof
+
+- Recursion: the LRN-10 reading in words (fixed, by hand, governed, results-driven, self-improving).
+- Proven, per loop: the level operating records show, or not evidenced with what was searched.
+- AI delivery: whether engineers build the product with AI coding agents or a delivery framework, and whether it counts.
+- Confidence: the counts, and the "check these first" list.
 
 ## Critical controls
 
