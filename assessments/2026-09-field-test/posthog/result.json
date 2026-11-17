@@ -4,7 +4,9 @@
   "source": "github.com/PostHog/posthog @ 645e1a78140757ea1bb9ddeb0ff9d3915c60b6f6 (master)",
   "archetype": "focused-application",
   "framework": "EVOLVE",
-  "framework_version": "0.6.0",
+  "framework_version": "0.7.0",
+  "basis": "shipped",
+  "headline_text": "Built to SAL 1 (Configurable) · Proven: not evidenced · AI-driven 0 · Request → Release L2 (AI L2) · Issue → Fix L1 (AI L0) · Opportunity → Expansion L1 (AI L0)",
   "scope_facts": {
     "persistent_data": true,
     "schema_changes": true,
@@ -20,14 +22,15 @@
     "ai_actions": true
   },
   "coverage": {
-    "assessed": 65,
+    "assessed": 66,
     "not_evidenced": 0,
     "not_applicable": 9
   },
   "grades": {
-    "A": 65,
+    "A": 66,
     "B": 0,
-    "C": 0
+    "C": 0,
+    "D": 0
   },
   "sal": {
     "headline": 1,
@@ -234,7 +237,7 @@
               "part": "governance",
               "stage": "Ceiling",
               "needs": "GOV-10 ≥ 3 and LRN-08 ≥ 2",
-              "observed": "2; 1",
+              "observed": "2; 2",
               "control": "Bounded self-change"
             }
           ]
@@ -246,7 +249,7 @@
             "LRN-05": 0,
             "LRN-06": 0,
             "LRN-07": 0,
-            "LRN-08": 1
+            "LRN-08": 2
           },
           "blockers": [
             {
@@ -283,6 +286,138 @@
         }
       }
     }
+  },
+  "change_kinds": [
+    {
+      "id": "dashboards-insights",
+      "name": "Charts, reports and dashboards",
+      "who": "product and growth teams in a project",
+      "main": true,
+      "reach": 2,
+      "evidence": "Members build insights and dashboards in the UI with live preview; PostHog AI drafts them on request (ee/hogai/tools/create_insight.py; ee/hogai/tools/upsert_dashboard/tool.py:116, with a confirmation preview for updates that remove insights at :125-139) and the member keeps or edits the result. Undo: a deleted dashboard and its tiles are restored through undo-delete (products/dashboards/backend/api/dashboard.py:2424, :2747; posthog/api/file_system/deletion.py), and edits are recorded in the activity log with before and after values; there is no one-step revert to an earlier version of a dashboard or insight, so undoing an edit means editing it back from the logged values. Reach 2 rests on DEL-04 2.",
+      "confidence": "medium",
+      "reach_name": "Drafted"
+    },
+    {
+      "id": "feature-flags",
+      "name": "Who sees which feature (feature flags)",
+      "who": "engineers and product managers in a project",
+      "main": true,
+      "reach": 2,
+      "evidence": "Flags are created and edited in the UI and API with validated release conditions; PostHog AI creates flags on request through the same validated facade (products/feature_flags/backend/max_tools.py:211, create_flag with validation errors returned at :340-350). Undo: switch the flag off, restore a deleted or archived flag, and read any earlier version reconstructed from history (products/feature_flags/backend/version_history.py; versions endpoint api/feature_flag.py:4780); restoring an earlier version is done by editing it back, not by a revert button. Approval policies can require a reviewer for flag changes (products/approvals/backend/policies.py).",
+      "confidence": "medium",
+      "reach_name": "Drafted"
+    },
+    {
+      "id": "experiments",
+      "name": "A/B tests and experiments",
+      "who": "product teams",
+      "main": false,
+      "reach": 2,
+      "evidence": "Experiments are set up and launched in the UI; PostHog AI creates them in draft for a person to configure and launch (products/experiments/backend/max_tools.py:97, :158). Undo: reset an experiment to draft or archive it (products/experiments/backend/experiment_service.py:1963, :2996).",
+      "confidence": "medium",
+      "reach_name": "Drafted"
+    },
+    {
+      "id": "data-pipelines",
+      "name": "Where data is sent and how it is transformed",
+      "who": "data and engineering teams",
+      "main": false,
+      "reach": 2,
+      "evidence": "Destinations, transformations and sources are configured from templates in the UI and test-invoked before saving (nodejs/src/cdp/cdp-api.ts:280); PostHog AI drafts transformation code, filters and inputs into the editor for a person to save (products/cdp/backend/max_tools.py:51, :153, :236). Undo: every live change is a numbered revision that can be restored (products/cdp/backend/api/hog_function.py:1395-1414, revisions restore at :1677-1708).",
+      "confidence": "high",
+      "reach_name": "Drafted"
+    },
+    {
+      "id": "surveys",
+      "name": "Surveys shown to users",
+      "who": "product and research teams",
+      "main": false,
+      "reach": 2,
+      "evidence": "Surveys are built and launched in the UI; PostHog AI drafts a survey and launches it only with explicit confirmation (products/surveys/backend/max_tools.py:291-305, is_dangerous_operation at :298). Undo: stop a survey by ending it or archive it (end_date and archived fields, products/surveys/backend/api/survey.py:939-940); edits have no version history.",
+      "confidence": "medium",
+      "reach_name": "Drafted"
+    },
+    {
+      "id": "product-features",
+      "name": "New kinds of analysis and changes to PostHog's own screens",
+      "who": "PostHog's users, through feature requests",
+      "main": false,
+      "reach": 0,
+      "evidence": "New analysis types, product screens and behaviour are PostHog code in this monorepo, changed by pull request and release; no first-party lane builds PostHog's own code from users' requests (code_release_path false; Tasks and Stamphog act on repositories, not on a running PostHog). Engineers only.",
+      "confidence": "high",
+      "reach_name": "Engineers only"
+    }
+  ],
+  "kinds_summary": {
+    "value": 2,
+    "kinds": 6,
+    "self_serve": 5,
+    "main": 2,
+    "main_self_serve": 2,
+    "text": "2 of 2 main kinds are self-serve"
+  },
+  "proven": {
+    "headline": null,
+    "headline_name": null,
+    "text": "Proven: not evidenced",
+    "loops": {
+      "request": {
+        "status": "not_evidenced",
+        "level": null,
+        "built": 2,
+        "searched": "Repository at the pinned commit: CHANGELOG.md (points to the public changelog of engineering releases), activity-log and change-request models, .github workflows. No operating records of real changes going through PostHog's own Request → Release loop in a deployment are in the repository."
+      },
+      "fix": {
+        "status": "not_evidenced",
+        "level": null,
+        "built": 1,
+        "searched": "Repository at the pinned commit: CHANGELOG.md (points to the public changelog of engineering releases), activity-log and change-request models, .github workflows. No operating records of real changes going through PostHog's own Issue → Fix loop in a deployment are in the repository."
+      },
+      "expansion": {
+        "status": "not_evidenced",
+        "level": null,
+        "built": 1,
+        "searched": "Repository at the pinned commit: CHANGELOG.md (points to the public changelog of engineering releases), activity-log and change-request models, .github workflows. No operating records of real changes going through PostHog's own Opportunity → Expansion loop in a deployment are in the repository."
+      }
+    }
+  },
+  "recursion": {
+    "criterion": "LRN-10",
+    "status": "assessed",
+    "score": 1,
+    "name": "By hand",
+    "text": "Recursion: 1 By hand (LRN-10 at 1)"
+  },
+  "ai_delivery": {
+    "recorded": true,
+    "present": true,
+    "qualifies": false,
+    "evidence": "AGENTS.md, CLAUDE.md, AI_POLICY.md, .agents/skills, .claude (agents, commands, hooks, skills), .codex, .cursorrules; agent workflows in CI: pr-autoresolve-conflicts.yml runs openai/codex-action pinned by SHA to resolve merge conflicts (manual dispatch only), review-hog.yml triggers an AI review service on labelled PRs, and stamphog[bot] posts AI approvals on this repository's PRs (products/stamphog/README.md).",
+    "note": "AI-assisted engineering, not PostHog evolving itself. It does not meet rule 12: the agent workflows review, approve or resolve conflicts on PRs that people write; no agent lane builds PostHog changes from its users' requests or issues, and whether Stamphog approvals are required checks is set in branch protection outside the repository.",
+    "text": "Engineers build this product with AI coding agents or a delivery framework. That is AI-assisted engineering, not the product evolving itself. It is not installed, enforced and limited as part of the product, so it earns no credit."
+  },
+  "confidence": {
+    "recorded": true,
+    "criteria": {
+      "high": 14,
+      "medium": 51,
+      "low": 1,
+      "none": 0
+    },
+    "ai_readings": {
+      "high": 2,
+      "medium": 11,
+      "low": 0,
+      "none": 0
+    },
+    "change_kinds": {
+      "high": 2,
+      "medium": 4,
+      "low": 0,
+      "none": 0
+    },
+    "check_first": []
   },
   "sensitivity": {
     "raise_headline": [
@@ -344,7 +479,7 @@
             "GOV-09 (AI)": 2,
             "GOV-10 (AI)": 2,
             "GOV-11 (AI)": 2,
-            "LRN-08 (AI)": 1
+            "LRN-08 (AI)": 2
           }
         },
         "Operations": {
@@ -399,7 +534,7 @@
             "LRN-05": 0,
             "LRN-06": 0,
             "LRN-07": 0,
-            "LRN-08": 1
+            "LRN-08": 2
           }
         },
         "Expand": {
@@ -438,7 +573,7 @@
             "GOV-09 (AI)": 3,
             "GOV-10 (AI)": 2,
             "GOV-11 (AI)": 3,
-            "LRN-08 (AI)": 1
+            "LRN-08 (AI)": 2
           }
         },
         "Operations": {
@@ -493,7 +628,7 @@
             "LRN-05": 0,
             "LRN-06": 0,
             "LRN-07": 0,
-            "LRN-08": 1
+            "LRN-08": 2
           }
         },
         "Expand": {
@@ -532,7 +667,7 @@
             "GOV-09 (AI)": 2,
             "GOV-10 (AI)": 2,
             "GOV-11 (AI)": 2,
-            "LRN-08 (AI)": 1
+            "LRN-08 (AI)": 2
           }
         },
         "Operations": {
@@ -587,7 +722,7 @@
             "LRN-05": 0,
             "LRN-06": 0,
             "LRN-07": 0,
-            "LRN-08": 1
+            "LRN-08": 2
           }
         },
         "Expand": {
@@ -603,14 +738,14 @@
     "ARC": 2.2,
     "DEL": 2.2,
     "MAL": 2.5,
-    "LRN": 1.8,
+    "LRN": 1.6,
     "GOV": 2.1,
     "EXP": 1.3
   },
   "ranges": {
     "ARC": [
       2.2,
-      2.3
+      2.4
     ],
     "DEL": [
       2.2,
@@ -621,8 +756,8 @@
       3.1
     ],
     "LRN": [
-      1.8,
-      2.7
+      1.6,
+      2.4
     ],
     "GOV": [
       2.1,
@@ -652,7 +787,7 @@
     "LRN Sense": 2,
     "LRN Diagnose and propose": 1.5,
     "LRN Learn from experience": 1.5,
-    "LRN Measure": 2,
+    "LRN Measure": 1.5,
     "GOV Compliance and security": 2,
     "GOV Change control": 2.3,
     "GOV AI and self-change safety": 2,
@@ -710,6 +845,7 @@
     "LRN-07": 2,
     "LRN-08": 1,
     "LRN-09": 2,
+    "LRN-10": 1,
     "GOV-01": 1,
     "GOV-02": 2,
     "GOV-03": 2,
@@ -739,10 +875,10 @@
   "variants": {
     "high": {
       "capabilities": {
-        "ARC": 2.3,
+        "ARC": 2.4,
         "DEL": 2.8,
         "MAL": 3.1,
-        "LRN": 2.7,
+        "LRN": 2.4,
         "GOV": 2.6,
         "EXP": 1.8
       },
@@ -793,7 +929,7 @@
         "ARC": 2.2,
         "DEL": 2.2,
         "MAL": 2.5,
-        "LRN": 1.8,
+        "LRN": 1.6,
         "GOV": 2.1,
         "EXP": 1.3
       },
@@ -844,7 +980,7 @@
         "ARC": 2.2,
         "DEL": 2.2,
         "MAL": 2.5,
-        "LRN": 1.8,
+        "LRN": 1.6,
         "GOV": 2.1,
         "EXP": 1.3
       }
@@ -854,11 +990,11 @@
         "ARC": 2.2,
         "DEL": 2.2,
         "MAL": 2.3,
-        "LRN": 1.8,
+        "LRN": 1.6,
         "GOV": 2.1,
         "EXP": 1.5
       }
     }
   },
-  "criteria_in_rubric": 74
+  "criteria_in_rubric": 75
 }

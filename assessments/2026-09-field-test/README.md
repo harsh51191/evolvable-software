@@ -1,6 +1,6 @@
-# Field test: 11 open-source systems under EVOLVE v0.6
+# Field test: 11 open-source systems under EVOLVE v0.7
 
-This folder scores 11 open-source products with EVOLVE from this repository: SAL under the v0.4 rules (with v0.5.1's scheduled-work check), AI Readiness under v0.5, and AI-driven loop levels under v0.6. The same systems were scored under MSR v0.2 and v0.3 in September 2026; this pass migrates those inputs and adds the 17 new criteria, scope facts, evidence facets and inventories.
+This folder scores 11 open-source products with EVOLVE from this repository: SAL under the v0.4 rules (with v0.5.1's scheduled-work check), AI Readiness under v0.5, AI-driven loop levels under v0.6, and kinds of change, recursion, confidence and proof under v0.7. The same systems were scored under MSR v0.2 and v0.3 in September 2026; this pass migrates those inputs and adds the 17 new criteria, scope facts, evidence facets and inventories.
 
 > **Provisional.** These results come from one rater reading public source code. They are not maintainer-reviewed, and the 17 new criteria have not had a second independent assessment. Where repository evidence is missing, a criterion scores 0, which can understate products whose capabilities live elsewhere. Before quoting or comparing these results, give each project's maintainers a chance to correct the evidence.
 
@@ -114,6 +114,10 @@ What the results say:
 7. **OpenHands scope.** The OpenHands Automation Service (`OpenHands/automation`) was added after an inter-rater review found it missing.
 
 The v0.3 headline numbers are kept in `tools/v03_comparison.json`, and the v0.2 numbers in `tools/v02_comparison.json`.
+
+## What changed in v0.7
+
+Each product was re-read at its pinned commit for the new fields (`spec/evolve-v0.7.md`): its kinds of change and how far each has come, LRN-10 (whether the loop improves its own checks), an AI delivery record, a proven reading (not evidenced for all eleven, since a repository holds no operating records), and confidence on every score. The three tightened definitions were applied. No product's level changed. The corrections, the scope facts that changed and why, are listed in `CHANGELOG.md`. Each product folder now also has a plain-language `report.md`.
 
 ## What changed in v0.6
 

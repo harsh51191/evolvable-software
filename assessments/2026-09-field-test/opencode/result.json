@@ -4,14 +4,16 @@
   "source": "github.com/anomalyco/opencode @ 2fa3363c924c5c3e367b84a87ae478296a0ed59b (dev)",
   "archetype": "agent-runtime",
   "framework": "EVOLVE",
-  "framework_version": "0.6.0",
+  "framework_version": "0.7.0",
+  "basis": "shipped",
+  "headline_text": "Built to SAL 0 (Manual) · Proven: not evidenced · AI-driven 0 · Request → Release L0 (AI L0) · Issue → Fix L0 (AI L0) · Opportunity → Expansion L0 (AI L0)",
   "scope_facts": {
     "persistent_data": true,
     "schema_changes": true,
     "multi_tenant": false,
     "hosted_service": false,
     "machine_actions": true,
-    "agent_mutations": false,
+    "agent_mutations": true,
     "evolution_auto_apply": false,
     "definition_change_path": true,
     "code_release_path": false,
@@ -20,14 +22,15 @@
     "ai_actions": true
   },
   "coverage": {
-    "assessed": 59,
+    "assessed": 62,
     "not_evidenced": 0,
-    "not_applicable": 15
+    "not_applicable": 13
   },
   "grades": {
-    "A": 59,
+    "A": 62,
     "B": 0,
-    "C": 0
+    "C": 0,
+    "D": 0
   },
   "sal": {
     "headline": 0,
@@ -42,9 +45,16 @@
           "architecture": 2,
           "governance": 2
         },
-        "next_met": 1,
+        "next_met": 0,
         "next_total": 2,
         "blockers": [
+          {
+            "part": "spine",
+            "stage": "Build",
+            "needs": "people build path ≥ 2 or product build path ≥ 2",
+            "observed": "kinds 2 of 3 main self-serve; DEL-04 1",
+            "control": null
+          },
           {
             "part": "spine",
             "stage": "Roll back",
@@ -63,9 +73,16 @@
           "architecture": 2,
           "governance": 2
         },
-        "next_met": 1,
+        "next_met": 0,
         "next_total": 3,
         "blockers": [
+          {
+            "part": "spine",
+            "stage": "Build",
+            "needs": "people build path ≥ 2 or product build path ≥ 2",
+            "observed": "kinds 2 of 3 main self-serve; DEL-04 1, LRN-07 1",
+            "control": null
+          },
           {
             "part": "spine",
             "stage": "Roll back",
@@ -143,9 +160,9 @@
       },
       {
         "control": "Bounded self-change",
-        "needs": "not applicable (agent_mutations and evolution_auto_apply false)",
-        "observed": "n/a",
-        "status": "n/a"
+        "needs": "GOV-10 ≥ 3 and LRN-08 ≥ 2",
+        "observed": "2; 1",
+        "status": "fail"
       }
     ],
     "ai_driven": {
@@ -159,7 +176,15 @@
             "DEL-01": 0,
             "DEL-04": 1
           },
-          "blockers": []
+          "blockers": [
+            {
+              "part": "spine",
+              "stage": "Build",
+              "needs": "people build path ≥ 2 or product build path ≥ 2",
+              "observed": "kinds 2 of 3 main self-serve; DEL-04 1",
+              "control": null
+            }
+          ]
         },
         "fix": {
           "level": 0,
@@ -168,9 +193,17 @@
             "LRN-05": 0,
             "LRN-06": 0,
             "LRN-07": 0,
-            "LRN-08": null
+            "LRN-08": 1
           },
-          "blockers": []
+          "blockers": [
+            {
+              "part": "spine",
+              "stage": "Build",
+              "needs": "people build path ≥ 2 or product build path ≥ 2",
+              "observed": "kinds 2 of 3 main self-serve; DEL-04 1, LRN-07 0",
+              "control": null
+            }
+          ]
         },
         "expansion": {
           "level": 0,
@@ -183,13 +216,140 @@
       }
     }
   },
+  "change_kinds": [
+    {
+      "id": "agents-commands",
+      "name": "Custom agents and commands",
+      "who": "the developer using OpenCode",
+      "main": true,
+      "reach": 0,
+      "evidence": "Markdown or JSON files in .opencode or the global config (packages/opencode/src/config/agent.ts, command.ts); `opencode agent create` drafts an agent with the model (cli/cmd/agent.ts). No supported undo: the files are versioned only by the user's own git (GOV-05 1), and the generator writes outside any session, so session revert does not cover it. Reach 0 because the path has no undo; the AI draft would otherwise read as reach 2, which DEL-04 1 would not support.",
+      "confidence": "high",
+      "reach_name": "Engineers only"
+    },
+    {
+      "id": "project-instructions",
+      "name": "Standing instructions for a project (AGENTS.md)",
+      "who": "the developer using OpenCode",
+      "main": true,
+      "reach": 1,
+      "evidence": "The built-in /init command has the agent create or update AGENTS.md (packages/opencode/src/command/template/initialize.txt), and people edit it in chat. Edits made in a session are snapshotted and the session can be reverted from the TUI or API (packages/opencode/src/session/revert.ts, snapshot/). Reach 1, not 2: the agent drafts the file, but DEL-04 is 1, so the criteria do not support reach 2.",
+      "confidence": "medium",
+      "reach_name": "Self-serve"
+    },
+    {
+      "id": "models-providers",
+      "name": "Which models and providers it uses",
+      "who": "the developer using OpenCode",
+      "main": true,
+      "reach": 1,
+      "evidence": "Providers are added and removed with `opencode auth login` and `opencode providers logout` (packages/opencode/src/cli/cmd/providers.ts:492-501), and the model is chosen in the model picker, which keeps recent choices (packages/opencode/src/provider/provider.ts:2035). Undo is selecting the previous model or logging out. Defaults set by editing opencode.json have no product history. Undo rule used in this field test: a kind has undo when the product keeps the earlier version, or when the change is a selection, toggle or add-and-remove that the same supported path reverses exactly; free-text or multi-field edits with no kept version have none.",
+      "confidence": "medium",
+      "reach_name": "Self-serve"
+    },
+    {
+      "id": "permissions",
+      "name": "What the agent may do without asking",
+      "who": "the developer using OpenCode",
+      "main": false,
+      "reach": 0,
+      "evidence": "Allow, ask and deny rules exist only in configuration files people edit by hand (packages/opencode/src/permission/index.ts:33-80); no in-product path or history. Reach 0.",
+      "confidence": "high",
+      "reach_name": "Engineers only"
+    },
+    {
+      "id": "plugins-mcp",
+      "name": "Plugins, MCP servers and skills",
+      "who": "the developer using OpenCode",
+      "main": false,
+      "reach": 0,
+      "evidence": "Configured as entries and files in opencode.json and .opencode that people edit by hand (packages/plugin, mcp/, skill/discovery.ts); no in-product path or history. Reach 0.",
+      "confidence": "medium",
+      "reach_name": "Engineers only"
+    }
+  ],
+  "kinds_summary": {
+    "value": 1,
+    "kinds": 5,
+    "self_serve": 2,
+    "main": 3,
+    "main_self_serve": 2,
+    "text": "2 of 3 main kinds are self-serve"
+  },
+  "proven": {
+    "headline": null,
+    "headline_name": null,
+    "text": "Proven: not evidenced",
+    "loops": {
+      "request": {
+        "status": "not_evidenced",
+        "level": null,
+        "built": 0,
+        "searched": "Repository at the pinned commit: no product records of requests becoming changes to OpenCode's own definitions; the loop is built at L0."
+      },
+      "fix": {
+        "status": "not_evidenced",
+        "level": null,
+        "built": 0,
+        "searched": "Repository at the pinned commit: no incident or fix records from the product's own loop; built at L0."
+      },
+      "expansion": {
+        "status": "not_evidenced",
+        "level": null,
+        "built": 0,
+        "searched": "Repository at the pinned commit: no records of capabilities proposed or launched by the product; built at L0."
+      }
+    }
+  },
+  "recursion": {
+    "criterion": "LRN-10",
+    "status": "assessed",
+    "score": 0,
+    "name": "Fixed",
+    "text": "Recursion: 0 Fixed (LRN-10 at 0)"
+  },
+  "ai_delivery": {
+    "recorded": true,
+    "present": true,
+    "qualifies": false,
+    "evidence": "AGENTS.md and a .opencode folder (agents, commands, skills, plugins) for working on this repository; OpenCode's own agent runs in CI on issues and pull requests (.github/workflows/opencode.yml:29 pinned by SHA, review.yml:35 and triage.yml:41 install the latest release with curl).",
+    "note": "The team builds OpenCode with OpenCode. Under rule 12 this is the product's general coding agent used by its team: review and triage runs install the latest release rather than a pinned version, and no authority or merge check enforces GOV-10 limits on what it changes. AI-assisted engineering, not OpenCode evolving itself.",
+    "text": "Engineers build this product with AI coding agents or a delivery framework. That is AI-assisted engineering, not the product evolving itself. It is not installed, enforced and limited as part of the product, so it earns no credit."
+  },
+  "confidence": {
+    "recorded": true,
+    "criteria": {
+      "high": 7,
+      "medium": 31,
+      "low": 24,
+      "none": 0
+    },
+    "ai_readings": {
+      "high": 2,
+      "medium": 6,
+      "low": 5,
+      "none": 0
+    },
+    "change_kinds": {
+      "high": 2,
+      "medium": 3,
+      "low": 0,
+      "none": 0
+    },
+    "check_first": [
+      {
+        "id": "LRN-03",
+        "title": "User-issue detection",
+        "holds": [
+          "Issue → Fix to L1"
+        ]
+      }
+    ]
+  },
   "sensitivity": {
     "raise_headline": [],
     "lower_headline": [],
     "raise_loop": {
-      "request": [
-        "GOV-05"
-      ],
       "expansion": [
         "GOV-05"
       ]
@@ -219,10 +379,13 @@
           }
         },
         "Governance": {
-          "level": 2,
+          "level": 1,
           "contributors": {
             "AIR-07": 3,
-            "GOV-09 (AI)": 2
+            "GOV-09 (AI)": 2,
+            "GOV-10 (AI)": 2,
+            "GOV-11 (AI)": 1,
+            "LRN-08 (AI)": 1
           }
         },
         "Operations": {
@@ -277,7 +440,7 @@
             "LRN-05": 0,
             "LRN-06": 0,
             "LRN-07": 0,
-            "LRN-08": null
+            "LRN-08": 1
           }
         },
         "Expand": {
@@ -313,7 +476,10 @@
           "level": 2,
           "contributors": {
             "AIR-07": 3,
-            "GOV-09 (AI)": 2
+            "GOV-09 (AI)": 2,
+            "GOV-10 (AI)": 2,
+            "GOV-11 (AI)": 1,
+            "LRN-08 (AI)": 2
           }
         },
         "Operations": {
@@ -368,7 +534,7 @@
             "LRN-05": 0,
             "LRN-06": 0,
             "LRN-07": 0,
-            "LRN-08": null
+            "LRN-08": 2
           }
         },
         "Expand": {
@@ -401,10 +567,13 @@
           }
         },
         "Governance": {
-          "level": 2,
+          "level": 1,
           "contributors": {
             "AIR-07": 3,
-            "GOV-09 (AI)": 2
+            "GOV-09 (AI)": 2,
+            "GOV-10 (AI)": 2,
+            "GOV-11 (AI)": 1,
+            "LRN-08 (AI)": 1
           }
         },
         "Operations": {
@@ -459,7 +628,7 @@
             "LRN-05": 0,
             "LRN-06": 0,
             "LRN-07": 0,
-            "LRN-08": null
+            "LRN-08": 1
           }
         },
         "Expand": {
@@ -476,7 +645,7 @@
     "DEL": 1.3,
     "MAL": 2.2,
     "LRN": 0.6,
-    "GOV": 1.7,
+    "GOV": 1.6,
     "EXP": 1.1
   },
   "ranges": {
@@ -494,11 +663,11 @@
     ],
     "LRN": [
       0.6,
-      0.7
+      0.8
     ],
     "GOV": [
-      1.7,
-      1.9
+      1.6,
+      1.8
     ],
     "EXP": [
       1.1,
@@ -524,7 +693,7 @@
     "LRN Measure": 0,
     "GOV Compliance and security": 1.5,
     "GOV Change control": 1.5,
-    "GOV AI and self-change safety": 2,
+    "GOV AI and self-change safety": 1.7,
     "EXP Expressible": 2.3,
     "EXP Discover": 0,
     "EXP Launch": 1
@@ -580,6 +749,7 @@
     "LRN-07": 1,
     "LRN-08": 1,
     "LRN-09": 0,
+    "LRN-10": 0,
     "GOV-01": 1,
     "GOV-02": 1,
     "GOV-03": 2,
@@ -589,8 +759,8 @@
     "GOV-07": 2,
     "GOV-08": 2,
     "GOV-09": 2,
-    "GOV-10": null,
-    "GOV-11": null,
+    "GOV-10": 2,
+    "GOV-11": 1,
     "EXP-01": 3,
     "EXP-02": 2,
     "EXP-03": 2,
@@ -612,8 +782,8 @@
         "ARC": 1.8,
         "DEL": 1.5,
         "MAL": 2.4,
-        "LRN": 0.7,
-        "GOV": 1.9,
+        "LRN": 0.8,
+        "GOV": 1.8,
         "EXP": 1.2
       },
       "sal": {
@@ -664,7 +834,7 @@
         "DEL": 1.3,
         "MAL": 2.2,
         "LRN": 0.6,
-        "GOV": 1.7,
+        "GOV": 1.6,
         "EXP": 1.1
       },
       "sal": {
@@ -715,7 +885,7 @@
         "DEL": 1.3,
         "MAL": 2.2,
         "LRN": 0.6,
-        "GOV": 1.7,
+        "GOV": 1.6,
         "EXP": 1.1
       }
     },
@@ -725,10 +895,10 @@
         "DEL": 1.3,
         "MAL": 1.8,
         "LRN": 0.6,
-        "GOV": 1.4,
+        "GOV": 1.6,
         "EXP": 1.1
       }
     }
   },
-  "criteria_in_rubric": 74
+  "criteria_in_rubric": 75
 }

@@ -4,7 +4,9 @@
   "source": "github.com/NousResearch/hermes-agent @ bddd22be7c2e5f7630c3d90507e6e7280ff092e3 (main) + github.com/NousResearch/hermes-agent-self-evolution @ 0a929e3aa20e15cf04dc7c28492a7d41a5139125 (main, last commit 2026-06-17)",
   "archetype": "agent-runtime",
   "framework": "EVOLVE",
-  "framework_version": "0.6.0",
+  "framework_version": "0.7.0",
+  "basis": "shipped",
+  "headline_text": "Built to SAL 1 (Configurable) · Proven: not evidenced · AI-driven 0 · Request → Release L1 (AI L0) · Issue → Fix L2 (AI L0) · Opportunity → Expansion L1 (AI L0)",
   "scope_facts": {
     "persistent_data": true,
     "schema_changes": true,
@@ -20,14 +22,15 @@
     "ai_actions": true
   },
   "coverage": {
-    "assessed": 62,
+    "assessed": 63,
     "not_evidenced": 0,
     "not_applicable": 12
   },
   "grades": {
-    "A": 62,
+    "A": 63,
     "B": 0,
-    "C": 0
+    "C": 0,
+    "D": 0
   },
   "sal": {
     "headline": 1,
@@ -263,11 +266,173 @@
       }
     }
   },
+  "change_kinds": [
+    {
+      "id": "skills",
+      "name": "What the agent knows how to do (skills)",
+      "who": "the person running the agent",
+      "main": true,
+      "reach": 2,
+      "evidence": "The background review drafts and writes skills after turns, on by default (agent/background_review.py; hermes_cli/config_defaults.py:814); with skills.write_approval on, writes are staged for /skills approve (tools/write_approval.py:73-189). People install hub skills after a scan (tools/skills_hub_install.py). Undo: every mutation is ledgered and `hermes curator rollback` reverts one entry, failing closed (tools/skill_ledger.py:569, hermes_cli/curator.py:509). Reach 2 rests on DEL-04 2; nothing builds, checks and stages a skill change end to end for approval by default.",
+      "confidence": "high",
+      "reach_name": "Drafted"
+    },
+    {
+      "id": "memory-persona",
+      "name": "What the agent remembers and how it presents itself",
+      "who": "the person running the agent",
+      "main": true,
+      "reach": 0,
+      "evidence": "The memory tool and the background review write MEMORY.md and USER.md, with scans and delete gates (tools/memory_tool.py); SOUL.md and other protected instruction files need a person (cli-config.yaml.example:573-576). No supported undo: memory files keep no history (GOV-05 inventory: memory 1). Reach 0 because the path has no undo. Undo rule used in this field test: a kind has undo when the product keeps the earlier version, or when the change is a selection, toggle or add-and-remove that the same supported path reverses exactly; free-text or multi-field edits with no kept version have none.",
+      "confidence": "medium",
+      "reach_name": "Engineers only"
+    },
+    {
+      "id": "models-settings",
+      "name": "Which models and providers it uses, and its settings",
+      "who": "the person running the agent",
+      "main": true,
+      "reach": 1,
+      "evidence": "Models and providers are selected with `hermes model` and settings changed with `hermes config` and the setup flows (hermes_cli/config_migrations.py for upgrades). Undo is selecting the previous model or value again; some writes keep point-in-time copies used only for automatic recovery (hermes_cli/config_backups.py:45-90), and there is no command to list or restore an earlier version, so larger edits have no undo. Undo rule used in this field test: a kind has undo when the product keeps the earlier version, or when the change is a selection, toggle or add-and-remove that the same supported path reverses exactly; free-text or multi-field edits with no kept version have none.",
+      "confidence": "medium",
+      "reach_name": "Self-serve"
+    },
+    {
+      "id": "scheduled-jobs",
+      "name": "Scheduled and recurring tasks",
+      "who": "the person running the agent",
+      "main": false,
+      "reach": 1,
+      "evidence": "Jobs are created, paused and removed in natural language through the cronjob_manage tool, with prompt scanning (tools/cronjob_tools.py, cronjob_prompt_scan.py), or with `hermes cron` (hermes_cli/cron.py). Undo is pausing or removing the job; edits keep no earlier version.",
+      "confidence": "low",
+      "reach_name": "Self-serve"
+    },
+    {
+      "id": "tools-approvals",
+      "name": "Which tools it may use and what needs approval",
+      "who": "the person running the agent",
+      "main": false,
+      "reach": 1,
+      "evidence": "Toolsets and MCP tools are enabled and disabled with `hermes tools` (hermes_cli/tools_config.py:35, tools_disable_enable_command), and approval behaviour is configuration (tools/approval_smart.py). Toggles are undone by toggling back; approval settings keep no earlier version (GOV-05 inventory: configuration 2). Undo rule used in this field test: a kind has undo when the product keeps the earlier version, or when the change is a selection, toggle or add-and-remove that the same supported path reverses exactly; free-text or multi-field edits with no kept version have none.",
+      "confidence": "medium",
+      "reach_name": "Self-serve"
+    },
+    {
+      "id": "plugins",
+      "name": "Add-ons for new platforms, providers and tools",
+      "who": "the person running the agent",
+      "main": false,
+      "reach": 1,
+      "evidence": "`hermes plugins install` from the catalogue and `hermes plugins remove|uninstall` (hermes_cli/plugins_cmd.py:982-984, plugins_cmd_install.py, plugins_cmd_remove.py), with a plugin ledger (plugins_ledger.py). Undo is removal.",
+      "confidence": "medium",
+      "reach_name": "Self-serve"
+    }
+  ],
+  "kinds_summary": {
+    "value": 1,
+    "kinds": 6,
+    "self_serve": 5,
+    "main": 3,
+    "main_self_serve": 2,
+    "text": "2 of 3 main kinds are self-serve"
+  },
+  "proven": {
+    "headline": null,
+    "headline_name": null,
+    "text": "Proven: not evidenced",
+    "loops": {
+      "request": {
+        "status": "not_evidenced",
+        "level": null,
+        "built": 1,
+        "searched": "Both repositories at the pinned commits: no operating records of requested skills or configuration changes going through the loop in a real installation (skill ledgers live in each user's HERMES_HOME)."
+      },
+      "fix": {
+        "status": "not_evidenced",
+        "level": null,
+        "built": 2,
+        "searched": "Both repositories: no background-review or skill-ledger records from a real installation; the self-evolution reports/phase1_validation_report.pdf is a validation study, not operating records of the product's own loop."
+      },
+      "expansion": {
+        "status": "not_evidenced",
+        "level": null,
+        "built": 1,
+        "searched": "Both repositories: no records of new capabilities proposed and launched."
+      }
+    }
+  },
+  "recursion": {
+    "criterion": "LRN-10",
+    "status": "assessed",
+    "score": 1,
+    "name": "By hand",
+    "text": "Recursion: 1 By hand (LRN-10 at 1)"
+  },
+  "ai_delivery": {
+    "recorded": true,
+    "present": true,
+    "qualifies": false,
+    "evidence": "AGENTS.md at the repository root. No agent steps in CI: the workflows that mention Anthropic or Claude are provider tests and a contributor allowlist (.github/workflows/contributor-check.yml:47, live-providers.yml). The self-evolution companion is scored as part of the product, not as delivery tooling.",
+    "note": "Engineers use AI coding agents (AGENTS.md); instruction files alone do not count under rule 12, and no delivery framework is installed.",
+    "text": "Engineers build this product with AI coding agents or a delivery framework. That is AI-assisted engineering, not the product evolving itself. It is not installed, enforced and limited as part of the product, so it earns no credit."
+  },
+  "confidence": {
+    "recorded": true,
+    "criteria": {
+      "high": 11,
+      "medium": 31,
+      "low": 21,
+      "none": 0
+    },
+    "ai_readings": {
+      "high": 3,
+      "medium": 6,
+      "low": 4,
+      "none": 0
+    },
+    "change_kinds": {
+      "high": 1,
+      "medium": 4,
+      "low": 1,
+      "none": 0
+    },
+    "check_first": [
+      {
+        "id": "DEL-01",
+        "title": "Request intake into a structured change specification",
+        "holds": [
+          "Request → Release to L2"
+        ]
+      },
+      {
+        "id": "LRN-03",
+        "title": "User-issue detection",
+        "holds": [
+          "Issue → Fix to L3"
+        ]
+      },
+      {
+        "id": "EXP-04",
+        "title": "Unmet-demand sensing",
+        "holds": [
+          "Opportunity → Expansion to L2"
+        ]
+      },
+      {
+        "id": "EXP-05",
+        "title": "Evidence-backed opportunity proposals",
+        "holds": [
+          "Opportunity → Expansion to L2"
+        ]
+      }
+    ]
+  },
   "sensitivity": {
     "raise_headline": [
       "DEL-01"
     ],
     "lower_headline": [
+      "DEL-04",
       "DEL-11",
       "LRN-03",
       "GOV-05"
@@ -278,16 +443,17 @@
       ]
     },
     "lower_loop": {
+      "request": [
+        "DEL-04",
+        "DEL-11",
+        "GOV-05"
+      ],
       "fix": [
         "DEL-05",
         "DEL-11",
         "LRN-03",
         "LRN-05",
         "LRN-06",
-        "GOV-05"
-      ],
-      "request": [
-        "DEL-11",
         "GOV-05"
       ],
       "expansion": [
@@ -584,7 +750,7 @@
     "ARC": 2.3,
     "DEL": 1.8,
     "MAL": 2.2,
-    "LRN": 2.2,
+    "LRN": 2.1,
     "GOV": 2.1,
     "EXP": 1.7
   },
@@ -602,8 +768,8 @@
       2.5
     ],
     "LRN": [
-      2.2,
-      2.9
+      2.1,
+      2.6
     ],
     "GOV": [
       2.1,
@@ -630,7 +796,7 @@
     "LRN Sense": 2.3,
     "LRN Diagnose and propose": 2,
     "LRN Learn from experience": 2.5,
-    "LRN Measure": 2,
+    "LRN Measure": 1.5,
     "GOV Compliance and security": 2,
     "GOV Change control": 2.3,
     "GOV AI and self-change safety": 2,
@@ -689,6 +855,7 @@
     "LRN-07": 3,
     "LRN-08": 2,
     "LRN-09": 2,
+    "LRN-10": 1,
     "GOV-01": 1,
     "GOV-02": 2,
     "GOV-03": 2,
@@ -721,7 +888,7 @@
         "ARC": 2.8,
         "DEL": 2.3,
         "MAL": 2.5,
-        "LRN": 2.9,
+        "LRN": 2.6,
         "GOV": 2.4,
         "EXP": 1.9
       },
@@ -772,7 +939,7 @@
         "ARC": 2.3,
         "DEL": 1.8,
         "MAL": 2.2,
-        "LRN": 2.3,
+        "LRN": 2.2,
         "GOV": 2.3,
         "EXP": 1.7
       },
@@ -823,7 +990,7 @@
         "ARC": 2.3,
         "DEL": 1.8,
         "MAL": 2.2,
-        "LRN": 2.2,
+        "LRN": 2.1,
         "GOV": 2.1,
         "EXP": 1.7
       }
@@ -833,11 +1000,11 @@
         "ARC": 1.8,
         "DEL": 1.8,
         "MAL": 1.9,
-        "LRN": 2.2,
+        "LRN": 2.1,
         "GOV": 2.1,
         "EXP": 1.7
       }
     }
   },
-  "criteria_in_rubric": 74
+  "criteria_in_rubric": 75
 }

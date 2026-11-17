@@ -4,7 +4,9 @@
   "source": "github.com/openclaw/openclaw @ df2a29cac9ad37c31a0f5a0d977ba3e4fd833cb0 (main)",
   "archetype": "agent-runtime",
   "framework": "EVOLVE",
-  "framework_version": "0.6.0",
+  "framework_version": "0.7.0",
+  "basis": "shipped",
+  "headline_text": "Built to SAL 2 (Assisted) · Proven: not evidenced · AI-driven 0 · Request → Release L2 (AI L2) · Issue → Fix L2 (AI L0) · Opportunity → Expansion L1 (AI L0)",
   "scope_facts": {
     "persistent_data": true,
     "schema_changes": true,
@@ -14,20 +16,21 @@
     "agent_mutations": true,
     "evolution_auto_apply": true,
     "definition_change_path": true,
-    "code_release_path": false,
+    "code_release_path": true,
     "ai_features": true,
     "ai_data_access": true,
     "ai_actions": true
   },
   "coverage": {
-    "assessed": 61,
+    "assessed": 63,
     "not_evidenced": 0,
-    "not_applicable": 13
+    "not_applicable": 12
   },
   "grades": {
-    "A": 61,
+    "A": 63,
     "B": 0,
-    "C": 0
+    "C": 0,
+    "D": 0
   },
   "sal": {
     "headline": 2,
@@ -42,8 +45,8 @@
           "architecture": 2,
           "governance": 2
         },
-        "next_met": 12,
-        "next_total": 19,
+        "next_met": 11,
+        "next_total": 20,
         "blockers": [
           {
             "part": "spine",
@@ -74,6 +77,13 @@
             "control": "Definition rollback"
           },
           {
+            "part": "spine",
+            "stage": "Roll back",
+            "needs": "DEL-11 ≥ 3",
+            "observed": "2",
+            "control": "Release rollback"
+          },
+          {
             "part": "stages",
             "stage": "Intake",
             "needs": "DEL-01 ≥ 3",
@@ -88,10 +98,17 @@
             "control": "Safe migrations"
           },
           {
+            "part": "architecture",
+            "stage": "Foundation",
+            "needs": "ARC-09 ≥ 3",
+            "observed": "2",
+            "control": "Tested backup and restore"
+          },
+          {
             "part": "governance",
             "stage": "Ceiling",
             "needs": "GOV-10 ≥ 3 and LRN-08 ≥ 2",
-            "observed": "2; 2",
+            "observed": "2; 1",
             "control": "Bounded self-change"
           }
         ]
@@ -105,9 +122,16 @@
           "architecture": 2,
           "governance": 2
         },
-        "next_met": 13,
-        "next_total": 21,
+        "next_met": 11,
+        "next_total": 22,
         "blockers": [
+          {
+            "part": "spine",
+            "stage": "Build",
+            "needs": "product build path ≥ 3",
+            "observed": "DEL-04 2, LRN-07 3 with LRN-08 1",
+            "control": null
+          },
           {
             "part": "spine",
             "stage": "Verify",
@@ -128,6 +152,13 @@
             "needs": "GOV-05 ≥ 3",
             "observed": "2",
             "control": "Definition rollback"
+          },
+          {
+            "part": "spine",
+            "stage": "Roll back",
+            "needs": "DEL-11 ≥ 3",
+            "observed": "2",
+            "control": "Release rollback"
           },
           {
             "part": "stages",
@@ -158,10 +189,17 @@
             "control": "Safe migrations"
           },
           {
+            "part": "architecture",
+            "stage": "Foundation",
+            "needs": "ARC-09 ≥ 3",
+            "observed": "2",
+            "control": "Tested backup and restore"
+          },
+          {
             "part": "governance",
             "stage": "Ceiling",
             "needs": "GOV-10 ≥ 3 and LRN-08 ≥ 2",
-            "observed": "2; 2",
+            "observed": "2; 1",
             "control": "Bounded self-change"
           }
         ]
@@ -205,8 +243,8 @@
       {
         "control": "Release rollback",
         "needs": "DEL-11 ≥ 3",
-        "observed": "n/a",
-        "status": "n/a"
+        "observed": "2",
+        "status": "fail"
       },
       {
         "control": "Safe migrations",
@@ -217,8 +255,8 @@
       {
         "control": "Tested backup and restore",
         "needs": "ARC-09 ≥ 3",
-        "observed": "3",
-        "status": "pass"
+        "observed": "2",
+        "status": "fail"
       },
       {
         "control": "Tenant isolation",
@@ -235,7 +273,7 @@
       {
         "control": "Bounded self-change",
         "needs": "GOV-10 ≥ 3 and LRN-08 ≥ 2",
-        "observed": "2; 2",
+        "observed": "2; 1",
         "status": "fail"
       }
     ],
@@ -269,7 +307,7 @@
               "part": "governance",
               "stage": "Ceiling",
               "needs": "GOV-10 ≥ 3 and LRN-08 ≥ 2",
-              "observed": "2; 2",
+              "observed": "2; 1",
               "control": "Bounded self-change"
             }
           ]
@@ -281,7 +319,7 @@
             "LRN-05": 1,
             "LRN-06": 2,
             "LRN-07": 3,
-            "LRN-08": 2
+            "LRN-08": 1
           },
           "blockers": [
             {
@@ -312,12 +350,175 @@
       }
     }
   },
+  "change_kinds": [
+    {
+      "id": "skills",
+      "name": "What the assistant knows how to do (skills)",
+      "who": "the person running the assistant",
+      "main": true,
+      "reach": 2,
+      "evidence": "The product drafts skills: /learn stages a pending proposal for the person to apply (src/skills/workshop/learn-prompt.ts:23-34), and the experience review writes skills from observed runs (experience-review.ts). People also apply, reject or quarantine proposals (src/cli/skills-cli.ts:877-1135). Undo: skill collections are backed up and restored or rolled back by revision hash (src/skills/workshop/collection-backup.ts, collection-restore.ts, collection-rollback.ts). Reach 2, not 3: DEL-04 is 2, and nothing checks and stages a skill change end to end for approval by default.",
+      "confidence": "high",
+      "reach_name": "Drafted"
+    },
+    {
+      "id": "memory-persona",
+      "name": "What the assistant remembers and how it presents itself",
+      "who": "the person running the assistant",
+      "main": true,
+      "reach": 0,
+      "evidence": "Memory and persona files (MEMORY.md, SOUL.md, AGENTS.md in the workspace) change in chat and through dreaming, which is on by default (docs/concepts/dreaming.md). No supported undo: the workspace is only `git init`-ed at creation and never committed (src/agents/workspace.ts:682-708); dreaming keeps MEMORY.md preimages in plugin state but offers no restore command; `memory forget` deletes by source session, it does not revert (docs/cli/memory.md). Reach 0 because the path has no undo. Undo rule used in this field test: a kind has undo when the product keeps the earlier version, or when the change is a selection, toggle or add-and-remove that the same supported path reverses exactly; free-text or multi-field edits with no kept version have none.",
+      "confidence": "medium",
+      "reach_name": "Engineers only"
+    },
+    {
+      "id": "models-channels",
+      "name": "Which models, providers and chat channels it uses",
+      "who": "the person running the assistant",
+      "main": true,
+      "reach": 2,
+      "evidence": "Models and providers are selected, and channels connected and disconnected, through onboarding, the Control UI and the validated `openclaw config set|unset` (src/cli/config-cli.ts:330-479). The system agent drafts each such change as a pending proposal that the person approves before it applies, then checks it with the config validator (src/system-agent/assistant-prompts.ts:159-161, src/agents/tools/system-agent-tool.ts). Undo: re-selecting the previous model or disconnecting the channel through the same path; wider configuration edits keep no operator-visible earlier version (five rotating backups serve only automatic recovery, src/config/backup-rotation.ts). Reach 2 rests on DEL-04 2. Undo rule used in this field test: a kind has undo when the product keeps the earlier version, or when the change is a selection, toggle or add-and-remove that the same supported path reverses exactly; free-text or multi-field edits with no kept version have none.",
+      "confidence": "medium",
+      "reach_name": "Drafted"
+    },
+    {
+      "id": "tool-permissions",
+      "name": "What the assistant may do and who may instruct it",
+      "who": "the person running the assistant",
+      "main": false,
+      "reach": 1,
+      "evidence": "Exec allowlist entries are added and removed with `openclaw approvals` and exec policy commands (src/cli/exec-approvals-cli.ts, exec-policy-cli.ts), and senders are paired and revoked with `openclaw pairing` (src/pairing). Undo is removing the entry or revoking the pairing; there is no history of earlier policy versions (GOV-05 inventory: configuration 2). Undo rule used in this field test: a kind has undo when the product keeps the earlier version, or when the change is a selection, toggle or add-and-remove that the same supported path reverses exactly; free-text or multi-field edits with no kept version have none.",
+      "confidence": "medium",
+      "reach_name": "Self-serve"
+    },
+    {
+      "id": "scheduled-jobs",
+      "name": "Scheduled and recurring tasks",
+      "who": "the person running the assistant",
+      "main": false,
+      "reach": 1,
+      "evidence": "Jobs are created, edited, paused and removed through `openclaw automations add|edit|remove` and the agent's cron tool (docs/cli/cron.md, src/agents/tools/cron-tool.ts), with no deploy. Undo is by disabling or removing the job; edits keep no earlier version (src/cron/config-revision.ts is a concurrency token only), so an edit is undone only by editing it back.",
+      "confidence": "low",
+      "reach_name": "Self-serve"
+    },
+    {
+      "id": "plugins",
+      "name": "Add-ons for new channels, tools and providers",
+      "who": "the person running the assistant",
+      "main": false,
+      "reach": 2,
+      "evidence": "People install curated plugins from ClawHub, bundled or official sources and remove them with uninstall (docs/plugins/manage-plugins.md). The agent can write a plugin, pack it with `openclaw plugins pack`, and the system agent proposes activating that exact archive for the person to approve (src/system-agent/plugin-artifact.ts, src/agents/tools/system-agent-tool.ts). Undo is plugin_uninstall. Reach 2 rests on DEL-04 2.",
+      "confidence": "medium",
+      "reach_name": "Drafted"
+    }
+  ],
+  "kinds_summary": {
+    "value": 1,
+    "kinds": 6,
+    "self_serve": 5,
+    "main": 3,
+    "main_self_serve": 2,
+    "text": "2 of 3 main kinds are self-serve"
+  },
+  "proven": {
+    "headline": null,
+    "headline_name": null,
+    "text": "Proven: not evidenced",
+    "loops": {
+      "request": {
+        "status": "not_evidenced",
+        "level": null,
+        "built": 2,
+        "searched": "Repository at the pinned commit: no operating records of /learn or Workshop proposals being applied in a real deployment (proposal ledgers live in each installation's state database, not in the repository); release notes describe product changes, not the loop."
+      },
+      "fix": {
+        "status": "not_evidenced",
+        "level": null,
+        "built": 2,
+        "searched": "Repository at the pinned commit: no experience-review or proposal ledgers, audit exports or incident records from a real installation; QA and maturity evidence (qa/, docs/maturity) are test runs, not operating records."
+      },
+      "expansion": {
+        "status": "not_evidenced",
+        "level": null,
+        "built": 1,
+        "searched": "Repository at the pinned commit: no records of new capabilities being proposed and launched to a cohort."
+      }
+    }
+  },
+  "recursion": {
+    "criterion": "LRN-10",
+    "status": "assessed",
+    "score": 0,
+    "name": "Fixed",
+    "text": "Recursion: 0 Fixed (LRN-10 at 0)"
+  },
+  "ai_delivery": {
+    "recorded": true,
+    "present": true,
+    "qualifies": false,
+    "evidence": "AGENTS.md (145 lines), .agents/skills (maintainer skills such as openclaw-pr-maintainer, autoreview, clawsweeper), .claude/settings.json, and Codex agent steps in CI (.github/workflows/docs-agent.yml:281, dated-todo-sweep.yml:55, maturity-scorecard.yml:596, release-validation-skill-runner.yml:91, openai/codex-action pinned by SHA).",
+    "note": "Engineers build OpenClaw with AI coding agents and run agents in CI for docs, sweeps and release validation. These are the team's engineering tooling: no installed delivery framework enforces authority and merge checks as required checks with GOV-10 limits on what the agents change, so under rule 12 they do not count as OpenClaw evolving itself.",
+    "text": "Engineers build this product with AI coding agents or a delivery framework. That is AI-assisted engineering, not the product evolving itself. It is not installed, enforced and limited as part of the product, so it earns no credit."
+  },
+  "confidence": {
+    "recorded": true,
+    "criteria": {
+      "high": 14,
+      "medium": 32,
+      "low": 17,
+      "none": 0
+    },
+    "ai_readings": {
+      "high": 2,
+      "medium": 9,
+      "low": 2,
+      "none": 0
+    },
+    "change_kinds": {
+      "high": 1,
+      "medium": 4,
+      "low": 1,
+      "none": 0
+    },
+    "check_first": [
+      {
+        "id": "DEL-09",
+        "title": "Staged exposure",
+        "holds": [
+          "Request → Release to L3",
+          "Issue → Fix to L3"
+        ]
+      },
+      {
+        "id": "LRN-05",
+        "title": "Automated diagnosis",
+        "holds": [
+          "Issue → Fix to L3"
+        ]
+      },
+      {
+        "id": "EXP-04",
+        "title": "Unmet-demand sensing",
+        "holds": [
+          "Opportunity → Expansion to L2"
+        ]
+      },
+      {
+        "id": "EXP-05",
+        "title": "Evidence-backed opportunity proposals",
+        "holds": [
+          "Opportunity → Expansion to L2"
+        ]
+      }
+    ]
+  },
   "sensitivity": {
     "raise_headline": [],
     "lower_headline": [
       "DEL-01",
       "DEL-04",
       "DEL-05",
+      "DEL-11",
       "LRN-03",
       "LRN-05",
       "LRN-06",
@@ -329,16 +530,20 @@
         "DEL-01",
         "DEL-04",
         "DEL-05",
+        "DEL-11",
         "GOV-05"
       ],
       "fix": [
+        "DEL-04",
         "DEL-05",
+        "DEL-11",
         "LRN-03",
         "LRN-05",
         "LRN-06",
         "GOV-05"
       ],
       "expansion": [
+        "DEL-11",
         "GOV-05"
       ]
     }
@@ -372,7 +577,7 @@
             "GOV-09 (AI)": 3,
             "GOV-10 (AI)": 2,
             "GOV-11 (AI)": 2,
-            "LRN-08 (AI)": 2
+            "LRN-08 (AI)": 1
           }
         },
         "Operations": {
@@ -422,12 +627,12 @@
           }
         },
         "Diagnose and improve": {
-          "level": 2,
+          "level": 1,
           "readings": {
             "LRN-05": 1,
             "LRN-06": 2,
             "LRN-07": 3,
-            "LRN-08": 2
+            "LRN-08": 1
           }
         },
         "Expand": {
@@ -628,29 +833,29 @@
     }
   },
   "capabilities": {
-    "ARC": 2.3,
+    "ARC": 2,
     "DEL": 2.2,
     "MAL": 2.4,
-    "LRN": 2.1,
+    "LRN": 1.8,
     "GOV": 2.3,
     "EXP": 1.7
   },
   "ranges": {
     "ARC": [
-      2.3,
-      2.3
+      2,
+      2
     ],
     "DEL": [
       2.2,
-      2.6
+      2.7
     ],
     "MAL": [
       2.4,
       2.9
     ],
     "LRN": [
-      2.1,
-      2.8
+      1.8,
+      2.5
     ],
     "GOV": [
       2.3,
@@ -663,11 +868,11 @@
   },
   "area_means": {
     "ARC Data": 2,
-    "ARC Resilience": 2.5,
+    "ARC Resilience": 2,
     "DEL Intake": 2,
     "DEL Build": 2.7,
     "DEL Verify": 2.5,
-    "DEL Release": 1.5,
+    "DEL Release": 1.7,
     "MAL APIs": 2,
     "MAL Interface": 2,
     "MAL Behaviour": 2,
@@ -676,8 +881,8 @@
     "MAL Agent interface": 3,
     "LRN Sense": 2,
     "LRN Diagnose and propose": 2,
-    "LRN Learn from experience": 2.5,
-    "LRN Measure": 2,
+    "LRN Learn from experience": 2,
+    "LRN Measure": 1,
     "GOV Compliance and security": 2,
     "GOV Change control": 2.5,
     "GOV AI and self-change safety": 2.3,
@@ -695,7 +900,7 @@
     "ARC-06": null,
     "ARC-07": null,
     "ARC-08": 2,
-    "ARC-09": 3,
+    "ARC-09": 2,
     "DEL-01": 2,
     "DEL-02": 3,
     "DEL-03": 3,
@@ -706,7 +911,7 @@
     "DEL-08": 3,
     "DEL-09": 1,
     "DEL-10": 2,
-    "DEL-11": null,
+    "DEL-11": 2,
     "MAL-01": null,
     "MAL-02": null,
     "MAL-03": null,
@@ -734,8 +939,9 @@
     "LRN-05": 2,
     "LRN-06": 2,
     "LRN-07": 3,
-    "LRN-08": 2,
+    "LRN-08": 1,
     "LRN-09": 2,
+    "LRN-10": 0,
     "GOV-01": 1,
     "GOV-02": 2,
     "GOV-03": 2,
@@ -765,10 +971,10 @@
   "variants": {
     "high": {
       "capabilities": {
-        "ARC": 2.3,
-        "DEL": 2.6,
+        "ARC": 2,
+        "DEL": 2.7,
         "MAL": 2.9,
-        "LRN": 2.8,
+        "LRN": 2.5,
         "GOV": 2.6,
         "EXP": 1.8
       },
@@ -816,10 +1022,10 @@
     },
     "available": {
       "capabilities": {
-        "ARC": 2.3,
+        "ARC": 2,
         "DEL": 2.2,
         "MAL": 2.4,
-        "LRN": 2.1,
+        "LRN": 1.9,
         "GOV": 2.4,
         "EXP": 1.7
       },
@@ -867,24 +1073,24 @@
     },
     "assessed_only": {
       "capabilities": {
-        "ARC": 2.3,
+        "ARC": 2,
         "DEL": 2.2,
         "MAL": 2.4,
-        "LRN": 2.1,
+        "LRN": 1.8,
         "GOV": 2.3,
         "EXP": 1.7
       }
     },
     "all_applicable": {
       "capabilities": {
-        "ARC": 2.0,
+        "ARC": 1.9,
         "DEL": 2.2,
         "MAL": 2.0,
-        "LRN": 2.1,
+        "LRN": 1.8,
         "GOV": 2.3,
         "EXP": 1.7
       }
     }
   },
-  "criteria_in_rubric": 74
+  "criteria_in_rubric": 75
 }

@@ -96,21 +96,23 @@ This is a **public beta**. It is designed to produce a falsifiable assessment, n
 
 EVOLVE was run on 11 open-source products from their public source code; each name links to the project, and the field-test README lists the exact commit read. Full tables, evidence and per-product scorecards are in [`assessments/2026-09-field-test/`](assessments/2026-09-field-test/README.md).
 
-> **Provisional, single rater.** These readings come from one rater and have not been reviewed by the projects' maintainers or by a second rater. Read them as findings to check, not rankings.
+> **Provisional.** These readings come from AI raters and have not been reviewed by the projects' maintainers. Eight control criteria on three products had a blind second and third rating (see `second-rating/`). Read them as findings to check, not rankings. Brought to EVOLVE v0.7 in November 2026 at the same commits.
 
-| Product | Archetype | SAL | Request → Release | Issue → Fix | Expansion | AI Readiness |
-|---|---|---:|---|---|---|---|
-| [n8n](https://github.com/n8n-io/n8n) | configurable platform | **2** | L2 (AI L2) | L2 (AI L0) | L1 (AI L0) | L2 Deployed with material control gaps |
-| [OpenClaw](https://github.com/openclaw/openclaw) | agent runtime | **2** | L2 (AI L2) | L2 (AI L0) | L1 (AI L0) | L1 Experimental |
-| [PostHog](https://github.com/PostHog/posthog) | focused application | **1** | L2 (AI L2) | L1 (AI L0) | L1 (AI L0) | L2 Deployed with material control gaps |
-| [Hermes Agent](https://github.com/NousResearch/hermes-agent) | agent runtime | **1** | L1 (AI L0) | L2 (AI L0) | L1 (AI L0) | L1 Experimental |
-| [OpenHands](https://github.com/OpenHands/OpenHands) | agent runtime | **1** | L1 (AI L0) | L1 (AI L0) | L1 (AI L0) | L2 Deployed with material control gaps |
-| [Dify](https://github.com/langgenius/dify) | configurable platform | **1** | L1 (AI L0) | L1 (AI L0) | L1 (AI L0) | L1 Experimental |
-| [Discourse](https://github.com/discourse/discourse) | focused application | **1** | L1 (AI L0) | L1 (AI L0) | L0 (AI L0) | no AI by default; L1 Experimental with opt-in |
-| [Directus](https://github.com/directus/directus) | configurable platform | **1** | L1 (AI L0) | L1 (AI L0) | L1 (AI L0) | L0 Foundational gap |
-| [Frappe](https://github.com/frappe/frappe) | configurable platform | **1** | L1 (AI L0) | L1 (AI L0) | L1 (AI L0) | no AI features |
-| [OpenCode](https://github.com/anomalyco/opencode) | agent runtime | **0** | L0 (AI L0) | L0 (AI L0) | L0 (AI L0) | L1 Experimental |
-| [LibreChat](https://github.com/danny-avila/LibreChat) | focused application | **0** | L0 (AI L0) | L0 (AI L0) | L0 (AI L0) | L0 Foundational gap |
+| Product | Archetype | SAL (built) | Request → Release | Issue → Fix | Expansion | Main kinds self-serve | Recursion | AI Readiness |
+|---|---|---:|---|---|---|---|---|---|
+| [n8n](https://github.com/n8n-io/n8n) | configurable platform | **2** | L2 (AI L2) | L2 (AI L0) | L1 (AI L0) | 1 of 2 | By hand | L2 Deployed with material control gaps |
+| [OpenClaw](https://github.com/openclaw/openclaw) | agent runtime | **2** | L2 (AI L2) | L2 (AI L0) | L1 (AI L0) | 2 of 3 | Fixed | L1 Experimental |
+| [PostHog](https://github.com/PostHog/posthog) | focused application | **1** | L2 (AI L2) | L1 (AI L0) | L1 (AI L0) | 2 of 2 | By hand | L2 Deployed with material control gaps |
+| [Hermes Agent](https://github.com/NousResearch/hermes-agent) | agent runtime | **1** | L1 (AI L0) | L2 (AI L0) | L1 (AI L0) | 2 of 3 | By hand | L1 Experimental |
+| [OpenHands](https://github.com/OpenHands/OpenHands) | agent runtime | **1** | L1 (AI L0) | L1 (AI L0) | L1 (AI L0) | 3 of 3 | Fixed | L1 Experimental |
+| [Dify](https://github.com/langgenius/dify) | configurable platform | **1** | L1 (AI L0) | L1 (AI L0) | L1 (AI L0) | 3 of 3 | Fixed | L1 Experimental |
+| [Discourse](https://github.com/discourse/discourse) | focused application | **1** | L1 (AI L0) | L1 (AI L0) | L0 (AI L0) | 3 of 3 | Fixed | no AI by default; L1 Experimental with opt-in |
+| [Directus](https://github.com/directus/directus) | configurable platform | **1** | L1 (AI L0) | L1 (AI L0) | L1 (AI L0) | 2 of 3 | Fixed | L0 Foundational gap |
+| [Frappe](https://github.com/frappe/frappe) | configurable platform | **1** | L1 (AI L0) | L1 (AI L0) | L1 (AI L0) | 4 of 4 | By hand | no AI features |
+| [OpenCode](https://github.com/anomalyco/opencode) | agent runtime | **0** | L0 (AI L0) | L0 (AI L0) | L0 (AI L0) | 2 of 3 | Fixed | L1 Experimental |
+| [LibreChat](https://github.com/danny-avila/LibreChat) | focused application | **0** | L0 (AI L0) | L0 (AI L0) | L0 (AI L0) | 1 of 3 | By hand | L0 Foundational gap |
+
+Every product is built to the level shown and **not proven** in operation: a repository holds no operating records of a product's own loop. Each product folder has a plain-language `report.md`.
 
 No product's AI drives both the request and the fix loop, so every AI-driven headline is 0.
 
@@ -119,6 +121,8 @@ What stands out:
 - **AI builds changes, but does not yet fix the product.** In n8n, OpenClaw and PostHog, AI turns requests into plans and drafts the change (Request → Release, AI L2). In no product does AI diagnose issues well enough to drive the fix loop. Hermes and OpenClaw come closest: their AI learns from experience and proposes skill changes, but only explains errors when asked.
 - **No product reaches SAL 3.** Definition rollback fails in all eleven: each rolls back some surfaces (workflows, skills) but not all (credentials, memory, configuration).
 - **No product blocks a release on an AI regression.** Every product with AI fails the regression-evaluation gate, so none can reach AI Readiness L3 yet.
+- **No product's checks improve from results yet.** The best Recursion reading is *by hand*: people update evaluation sets and rules after the fact. None records a wrong pass against the check that missed it.
+- **The kinds of change people cannot undo are telling.** n8n credentials, the agent runtimes' memory and persona, Directus's data model and LibreChat's model configuration can be changed but not undone, so those products reach Level 1 only where AI drafting covers the gap, or not at all.
 - **Expansion is the least developed loop.** No product clusters unmet demand into themes or proposes an adjacent capability on its own.
 
 ## What is included

@@ -4,14 +4,16 @@
   "source": "github.com/OpenHands/OpenHands @ 21cc5c6170fe093c0fcd23ffc61949f4933e17b9 (main) + github.com/OpenHands/software-agent-sdk @ 5ffdd2933c51423e302f5ee5e5b66df0ad9cc28a (main) + github.com/OpenHands/automation @ ec4c5cc0cb05f3fb01816b36ff6271f6680b6675 (main, 2026-09-30)",
   "archetype": "agent-runtime",
   "framework": "EVOLVE",
-  "framework_version": "0.6.0",
+  "framework_version": "0.7.0",
+  "basis": "shipped",
+  "headline_text": "Built to SAL 1 (Configurable) · Proven: not evidenced · AI-driven 0 · Request → Release L1 (AI L0) · Issue → Fix L1 (AI L0) · Opportunity → Expansion L1 (AI L0)",
   "scope_facts": {
     "persistent_data": true,
     "schema_changes": true,
     "multi_tenant": true,
     "hosted_service": true,
     "machine_actions": true,
-    "agent_mutations": false,
+    "agent_mutations": true,
     "evolution_auto_apply": false,
     "definition_change_path": true,
     "code_release_path": false,
@@ -20,14 +22,15 @@
     "ai_actions": true
   },
   "coverage": {
-    "assessed": 64,
+    "assessed": 67,
     "not_evidenced": 0,
-    "not_applicable": 10
+    "not_applicable": 8
   },
   "grades": {
-    "A": 64,
+    "A": 67,
     "B": 0,
-    "C": 0
+    "C": 0,
+    "D": 0
   },
   "sal": {
     "headline": 1,
@@ -178,9 +181,9 @@
       },
       {
         "control": "Bounded self-change",
-        "needs": "not applicable (agent_mutations and evolution_auto_apply false)",
-        "observed": "n/a",
-        "status": "n/a"
+        "needs": "GOV-10 ≥ 3 and LRN-08 ≥ 2",
+        "observed": "1; 1",
+        "status": "fail"
       }
     ],
     "ai_driven": {
@@ -218,7 +221,7 @@
             "LRN-05": 0,
             "LRN-06": 0,
             "LRN-07": 0,
-            "LRN-08": null
+            "LRN-08": 1
           },
           "blockers": [
             {
@@ -263,34 +266,211 @@
       }
     }
   },
+  "change_kinds": [
+    {
+      "id": "automations",
+      "name": "Scheduled and event-driven automations",
+      "who": "users and organisation admins",
+      "main": true,
+      "reach": 1,
+      "evidence": "Created from templates or the setup UI, where drafts are validated and materialised disabled until a test run (OpenHands src/routes/automation-setup-route.tsx, automation-templates.tsx; automation repository: draft_router.py), or by the agent in chat (create-instructions.tsx:58-61). Changed, disabled and deleted through the API and UI (router.py PATCH and DELETE /{automation_id}, lines 325 and 481). Undo is disabling or deleting; edits keep no earlier version unless git sync is set up (src/routes/automation-git-sync.tsx). Reach 1, not 2: the agent drafts automations, but DEL-04 is 1 under the self rule, so the criteria do not support reach 2. Undo rule used in this field test: a kind has undo when the product keeps the earlier version, or when the change is a selection, toggle or add-and-remove that the same supported path reverses exactly; free-text or multi-field edits with no kept version have none.",
+      "confidence": "medium",
+      "reach_name": "Self-serve"
+    },
+    {
+      "id": "skills-plugins",
+      "name": "Skills, plugins and tool servers the agent uses",
+      "who": "users",
+      "main": true,
+      "reach": 1,
+      "evidence": "Plugins are installed, enabled, disabled and uninstalled, and MCP servers added, updated and deleted in the canvas (src/routes/skills-plugins.tsx:20-100; src/hooks/mutation/use-install-plugin.ts, use-set-plugin-enabled.ts, use-uninstall-plugin.ts, use-add-mcp-server.ts, use-delete-mcp-server.ts). Undo is the reverse toggle or removal. Undo rule used in this field test: a kind has undo when the product keeps the earlier version, or when the change is a selection, toggle or add-and-remove that the same supported path reverses exactly; free-text or multi-field edits with no kept version have none.",
+      "confidence": "medium",
+      "reach_name": "Self-serve"
+    },
+    {
+      "id": "models-settings",
+      "name": "Which models it uses and how the agent behaves",
+      "who": "users",
+      "main": true,
+      "reach": 1,
+      "evidence": "LLM, agent, agent-profile, condenser and verification settings are chosen in the canvas settings pages (src/routes/llm-settings.tsx, agent-settings.tsx, agent-profiles-settings.tsx, condenser-settings.tsx; src/hooks/mutation/use-save-settings.ts). Undo is selecting the previous value; settings keep no history (GOV-05 2). Undo rule used in this field test: a kind has undo when the product keeps the earlier version, or when the change is a selection, toggle or add-and-remove that the same supported path reverses exactly; free-text or multi-field edits with no kept version have none.",
+      "confidence": "low",
+      "reach_name": "Self-serve"
+    },
+    {
+      "id": "action-approval",
+      "name": "Which agent actions need a person's approval",
+      "who": "users",
+      "main": false,
+      "reach": 1,
+      "evidence": "Confirmation policies (never, always, confirm risky) are selectable settings (software-agent-sdk openhands-sdk/openhands/sdk/security/confirmation_policy.py:27-43). Undo is selecting the previous policy. Undo rule used in this field test: a kind has undo when the product keeps the earlier version, or when the change is a selection, toggle or add-and-remove that the same supported path reverses exactly; free-text or multi-field edits with no kept version have none.",
+      "confidence": "medium",
+      "reach_name": "Self-serve"
+    },
+    {
+      "id": "canvas-extensions",
+      "name": "Interface extensions and themes",
+      "who": "users and organisation admins",
+      "main": false,
+      "reach": 0,
+      "evidence": "Canvas extensions that contribute pages, panels and themes are specified and only partly shipped (specs/canvas-extensions.md); core layout is code. Reach 0 until extensions ship with an install and remove path.",
+      "confidence": "low",
+      "reach_name": "Engineers only"
+    }
+  ],
+  "kinds_summary": {
+    "value": 2,
+    "kinds": 5,
+    "self_serve": 4,
+    "main": 3,
+    "main_self_serve": 3,
+    "text": "3 of 3 main kinds are self-serve"
+  },
+  "proven": {
+    "headline": null,
+    "headline_name": null,
+    "text": "Proven: not evidenced",
+    "loops": {
+      "request": {
+        "status": "not_evidenced",
+        "level": null,
+        "built": 1,
+        "searched": "All three repositories at the pinned commits: no operating records of requests becoming changes to OpenHands' own definitions in a real deployment (automation run history lives in each deployment's database)."
+      },
+      "fix": {
+        "status": "not_evidenced",
+        "level": null,
+        "built": 1,
+        "searched": "All three repositories: no incident or fix records from the product's own loop; unhealthy-automation disabling is shown in tests (tests/test_unhealthy_automations.py), not operating records."
+      },
+      "expansion": {
+        "status": "not_evidenced",
+        "level": null,
+        "built": 1,
+        "searched": "All three repositories: no records of capabilities proposed or launched to a cohort and kept or killed."
+      }
+    }
+  },
+  "recursion": {
+    "criterion": "LRN-10",
+    "status": "assessed",
+    "score": 0,
+    "name": "Fixed",
+    "text": "Recursion: 0 Fixed (LRN-10 at 0)"
+  },
+  "ai_delivery": {
+    "recorded": true,
+    "present": true,
+    "qualifies": false,
+    "evidence": "AGENTS.md and .agents/skills in all three repositories; an OpenHands agent plugin runs in CI only for issue duplicate checking (OpenHands .github/workflows/issue-duplicate-checker.yml:67 and software-agent-sdk issue-duplicate-checker.yml:66, OpenHands/extensions pinned by SHA); software-agent-sdk requires review threads to be resolved (review-thread-gate.yml).",
+    "note": "Engineers build OpenHands with AI agents; the only agent workflow in CI triages issues and makes no changes, and nothing installs a delivery framework with enforced authority and GOV-10 limits. AI-assisted engineering, not OpenHands evolving itself.",
+    "text": "Engineers build this product with AI coding agents or a delivery framework. That is AI-assisted engineering, not the product evolving itself. It is not installed, enforced and limited as part of the product, so it earns no credit."
+  },
+  "confidence": {
+    "recorded": true,
+    "criteria": {
+      "high": 11,
+      "medium": 32,
+      "low": 24,
+      "none": 0
+    },
+    "ai_readings": {
+      "high": 2,
+      "medium": 3,
+      "low": 8,
+      "none": 0
+    },
+    "change_kinds": {
+      "high": 0,
+      "medium": 3,
+      "low": 2,
+      "none": 0
+    },
+    "check_first": [
+      {
+        "id": "ARC-06",
+        "title": "Ceilings measured, not discovered in incidents",
+        "holds": [
+          "Request → Release to L2",
+          "Issue → Fix to L2",
+          "Opportunity → Expansion to L2"
+        ]
+      },
+      {
+        "id": "ARC-09",
+        "title": "Backup, restore and recovery",
+        "holds": [
+          "Request → Release to L2",
+          "Issue → Fix to L2",
+          "Opportunity → Expansion to L2",
+          "Tested backup and restore control"
+        ]
+      },
+      {
+        "id": "DEL-01",
+        "title": "Request intake into a structured change specification",
+        "holds": [
+          "Request → Release to L2"
+        ]
+      },
+      {
+        "id": "DEL-04",
+        "title": "AI implementation lane",
+        "holds": [
+          "Request → Release to L2",
+          "Issue → Fix to L2"
+        ]
+      },
+      {
+        "id": "LRN-06",
+        "title": "Ranked, evidence-backed proposals for change",
+        "holds": [
+          "Issue → Fix to L2"
+        ]
+      },
+      {
+        "id": "LRN-08",
+        "title": "Learned changes are validated before they take effect",
+        "holds": [
+          "Bounded self-change control"
+        ]
+      },
+      {
+        "id": "GOV-10",
+        "title": "Bounded self-change",
+        "holds": [
+          "Bounded self-change control"
+        ]
+      },
+      {
+        "id": "EXP-04",
+        "title": "Unmet-demand sensing",
+        "holds": [
+          "Opportunity → Expansion to L2"
+        ]
+      },
+      {
+        "id": "EXP-05",
+        "title": "Evidence-backed opportunity proposals",
+        "holds": [
+          "Opportunity → Expansion to L2"
+        ]
+      }
+    ]
+  },
   "sensitivity": {
     "raise_headline": [],
     "lower_headline": [
-      "MAL-06",
-      "MAL-07",
-      "MAL-09",
-      "MAL-19",
-      "MAL-20",
       "LRN-03",
       "GOV-05"
     ],
     "raise_loop": {},
     "lower_loop": {
-      "request": [
-        "MAL-06",
-        "MAL-07",
-        "MAL-09",
-        "MAL-19",
-        "MAL-20",
+      "fix": [
+        "LRN-03",
         "GOV-05"
       ],
-      "fix": [
-        "MAL-06",
-        "MAL-07",
-        "MAL-09",
-        "MAL-19",
-        "MAL-20",
-        "LRN-03",
+      "request": [
         "GOV-05"
       ],
       "expansion": [
@@ -301,9 +481,9 @@
   "ai_readiness": {
     "default": {
       "status": "assessed",
-      "level": 2,
-      "name": "Deployed with material control gaps",
-      "uncapped": 2,
+      "level": 1,
+      "name": "Experimental",
+      "uncapped": 1,
       "label": "not production-governed",
       "dimensions": {
         "Context": {
@@ -321,10 +501,13 @@
           }
         },
         "Governance": {
-          "level": 2,
+          "level": 1,
           "contributors": {
             "AIR-07": 3,
-            "GOV-09 (AI)": 2
+            "GOV-09 (AI)": 2,
+            "GOV-10 (AI)": 1,
+            "GOV-11 (AI)": 1,
+            "LRN-08 (AI)": 1
           }
         },
         "Operations": {
@@ -379,7 +562,7 @@
             "LRN-05": 0,
             "LRN-06": 0,
             "LRN-07": 0,
-            "LRN-08": null
+            "LRN-08": 1
           }
         },
         "Expand": {
@@ -392,9 +575,9 @@
     },
     "high": {
       "status": "assessed",
-      "level": 2,
-      "name": "Deployed with material control gaps",
-      "uncapped": 2,
+      "level": 1,
+      "name": "Experimental",
+      "uncapped": 1,
       "label": "not production-governed",
       "dimensions": {
         "Context": {
@@ -412,10 +595,13 @@
           }
         },
         "Governance": {
-          "level": 2,
+          "level": 1,
           "contributors": {
             "AIR-07": 3,
-            "GOV-09 (AI)": 2
+            "GOV-09 (AI)": 2,
+            "GOV-10 (AI)": 1,
+            "GOV-11 (AI)": 1,
+            "LRN-08 (AI)": 2
           }
         },
         "Operations": {
@@ -470,7 +656,7 @@
             "LRN-05": 0,
             "LRN-06": 0,
             "LRN-07": 0,
-            "LRN-08": null
+            "LRN-08": 2
           }
         },
         "Expand": {
@@ -483,9 +669,9 @@
     },
     "available": {
       "status": "assessed",
-      "level": 2,
-      "name": "Deployed with material control gaps",
-      "uncapped": 2,
+      "level": 1,
+      "name": "Experimental",
+      "uncapped": 1,
       "label": "not production-governed",
       "dimensions": {
         "Context": {
@@ -503,10 +689,13 @@
           }
         },
         "Governance": {
-          "level": 3,
+          "level": 1,
           "contributors": {
             "AIR-07": 3,
-            "GOV-09 (AI)": 3
+            "GOV-09 (AI)": 3,
+            "GOV-10 (AI)": 1,
+            "GOV-11 (AI)": 1,
+            "LRN-08 (AI)": 1
           }
         },
         "Operations": {
@@ -561,7 +750,7 @@
             "LRN-05": 0,
             "LRN-06": 0,
             "LRN-07": 0,
-            "LRN-08": null
+            "LRN-08": 1
           }
         },
         "Expand": {
@@ -577,8 +766,8 @@
     "ARC": 1.4,
     "DEL": 1.5,
     "MAL": 2.1,
-    "LRN": 1.1,
-    "GOV": 1.7,
+    "LRN": 1.0,
+    "GOV": 1.4,
     "EXP": 1
   },
   "ranges": {
@@ -595,12 +784,12 @@
       2.3
     ],
     "LRN": [
-      1.1,
-      1.4
+      1.0,
+      1.3
     ],
     "GOV": [
-      1.7,
-      1.8
+      1.4,
+      1.6
     ],
     "EXP": [
       1,
@@ -625,10 +814,10 @@
     "LRN Sense": 1.5,
     "LRN Diagnose and propose": 1,
     "LRN Learn from experience": 1,
-    "LRN Measure": 1,
+    "LRN Measure": 0.5,
     "GOV Compliance and security": 1,
     "GOV Change control": 2,
-    "GOV AI and self-change safety": 2,
+    "GOV AI and self-change safety": 1.3,
     "EXP Expressible": 2,
     "EXP Discover": 0,
     "EXP Launch": 1
@@ -684,6 +873,7 @@
     "LRN-07": 1,
     "LRN-08": 1,
     "LRN-09": 1,
+    "LRN-10": 0,
     "GOV-01": 1,
     "GOV-02": 1,
     "GOV-03": 1,
@@ -693,8 +883,8 @@
     "GOV-07": 2,
     "GOV-08": 3,
     "GOV-09": 2,
-    "GOV-10": null,
-    "GOV-11": null,
+    "GOV-10": 1,
+    "GOV-11": 1,
     "EXP-01": 2,
     "EXP-02": 2,
     "EXP-03": 2,
@@ -716,8 +906,8 @@
         "ARC": 1.8,
         "DEL": 1.7,
         "MAL": 2.3,
-        "LRN": 1.4,
-        "GOV": 1.8,
+        "LRN": 1.3,
+        "GOV": 1.6,
         "EXP": 1.1
       },
       "sal": {
@@ -767,8 +957,8 @@
         "ARC": 1.4,
         "DEL": 1.5,
         "MAL": 2.1,
-        "LRN": 1.1,
-        "GOV": 2,
+        "LRN": 1.0,
+        "GOV": 1.6,
         "EXP": 1
       },
       "sal": {
@@ -818,8 +1008,8 @@
         "ARC": 1.4,
         "DEL": 1.5,
         "MAL": 2.1,
-        "LRN": 1.1,
-        "GOV": 1.7,
+        "LRN": 1.0,
+        "GOV": 1.4,
         "EXP": 1
       }
     },
@@ -828,11 +1018,11 @@
         "ARC": 1.1,
         "DEL": 1.5,
         "MAL": 1.6,
-        "LRN": 1.1,
+        "LRN": 1.0,
         "GOV": 1.4,
         "EXP": 1
       }
     }
   },
-  "criteria_in_rubric": 74
+  "criteria_in_rubric": 75
 }

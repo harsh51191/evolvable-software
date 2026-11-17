@@ -6,233 +6,251 @@ Read at github.com/directus/directus @ 2878b4ef8ea9c1d09201debe89b3a5dc1d0bf93a 
 
 - **persistent_data**: true. Collections are database tables and files go to configured storage drivers.
 - **schema_changes**: true. The data model editor, schema apply and the AI collection and field tools alter tables at runtime (api/src/services/fields.ts, api/src/ai/tools/collections).
-- **multi_tenant**: false. One project per deployment; isolation inside a project is by roles and policies, not tenants.
+- **multi_tenant**: false. One project per deployment. Roles and policies separate people inside one project that one set of admins runs; there are no self-administering organisations or workspaces in the data model.
 - **hosted_service**: true. The API is a long-lived Node service with optional Redis-backed synchronisation (api/src/synchronization.ts).
 - **machine_actions**: true. REST and GraphQL APIs and an MCP server change items and schema (api/src/ai/mcp).
-- **agent_mutations**: true. The AI assistant changes collections, fields, flows and items through tools (api/src/ai/tools).
+- **agent_mutations**: true. The AI assistant and MCP server write collections, fields, relations, flows, operations and items through tools (api/src/ai/tools); drafted calls wait for approval.
 - **evolution_auto_apply**: false. Mutating AI tool calls require approval unless a user sets a tool to always-allow (api/src/ai/tools/registry.ts:198-214).
 - **definition_change_path**: true. Collections, fields, flows, roles and settings are definitions.
-- **code_release_path**: false. The AI lane changes definitions, not Directus code.
+- **code_release_path**: false. False under the v0.7 definition, a judgement call. The AI assistant can draft flow operations of type exec, sandboxed JavaScript (api/src/ai/tools/operations/prompt.md:67, :182), but each call runs only after a person approves it, and the script is a field of a flow definition that is versioned and reverted with it (GOV-05 scope). The AI does not build or activate extensions, and no first-party lane ships Directus code.
 - **ai_features**: true. The AI assistant and MCP server (api/src/ai).
 - **ai_data_access**: true. AI tools read items, files, schema and flows (api/src/ai/tools).
 - **ai_actions**: true. AI tools create and change collections, fields, flows and items behind approvals (api/src/ai/tools/registry.ts).
+
+## Kinds of change
+
+- **What data is kept (collections and fields)** (`data-model`, main, made by project admins): reach **0 Engineers only**, confidence medium. Admins create and change collections, fields and relations in the Data Model UI with no deploy (api/src/services/collections.ts, fields.ts), and the AI assistant drafts them behind per-call approval (api/src/ai/tools/collections, fields, relations; registry.ts:198-214). But there is no undo: schema changes record no prior state and have no rollback in the UI (GOV-05), deleting or retyping a field drops data, and schema snapshot, diff and apply (api/src/controllers/schema.ts) is an engineer flow between instances. Only an addition can be reversed, by deleting it. A path without undo is reach 0.
+- **Who can see and change what (roles, policies and permissions)** (`permissions`, main, made by project admins): reach **1 Self-serve**, confidence high. Admins edit roles, policies and permissions in Settings with no deploy. Undo: these system collections keep revisions (accountability 'all' by default, packages/system-data/src/collections/collections.yaml:14-68), and the policy and role pages show the revisions sidebar with revert (app/src/modules/settings/routes/policies/item.vue, roles/item.vue; RevisionsService.revert, api/src/services/revisions.ts:13-27).
+- **Automations (flows)** (`flows`, main, made by project admins): reach **2 Drafted**, confidence medium. Admins build flows from triggers and operations in the UI; the AI assistant drafts flows and operations, including sandboxed exec scripts, as tool calls a person approves before they run (api/src/ai/tools/flows, operations/index.ts, operations/prompt.md:67, :182; registry.ts:198-214). Undo: a flow can be set inactive or deleted, and flows and operations keep revisions (collections.yaml:100-103) that can be reverted through the revert endpoint (api/src/controllers/utils.ts:75); the flows page has no revisions UI. Reach 2 rests on DEL-04 2, re-scored in this migration.
+- **Dashboards and how lists are laid out** (`dashboards-layouts`, not main, made by project admins and editors): reach **1 Self-serve**, confidence low. Insights dashboards and panels and collection layouts, bookmarks and presets are edited in the Data Studio with no deploy. Undo: dashboards and panels keep revisions (collections.yaml:87-90) revertible through the API only; presets keep no revisions (accountability null, collections.yaml:55) and are reset or deleted by hand.
+- **Add-ons from the marketplace** (`marketplace-extensions`, not main, made by project admins): reach **1 Self-serve**, confidence medium. Admins install marketplace extensions in the app, sandboxed by default (MARKETPLACE_TRUST sandbox, packages/env/src/constants/defaults.ts:124), through /extensions/registry/install and reinstall (api/src/controllers/extensions.ts:184-230). Undo: uninstall (/registry/uninstall, extensions.ts:232).
+- **Custom screens, endpoints and hooks** (`custom-extensions`, not main, made by developers for the project): reach **0 Engineers only**, confidence high. Custom interfaces, modules, endpoints, hooks and operations are code written with the extensions SDK (packages/extensions-sdk) and deployed to the instance's extensions folder; changes to Directus itself are releases of this repository. Engineers only.
+
+## AI delivery and proof
+
+- **AI delivery**: Engineers build this product with AI coding agents or a delivery framework. That is AI-assisted engineering, not the product evolving itself. It is not installed, enforced and limited as part of the product, so it earns no credit. AGENTS.md, ai_policy.md, .claude (CLAUDE.md, hooks, settings); .github/workflows/claude.yml runs anthropics/claude-code-action@v1 (a moving tag, not a pinned version) when someone mentions @claude in an issue or review, with read-only contents permission.
+- **Proven, Request → Release**: not evidenced. Searched: Repository at the pinned commit: release workflows, changesets, revisions and activity code. Operating records of real changes going through a Directus project's Request → Release loop (activity and revisions) live in running instances, not in the repository.
+- **Proven, Issue → Fix**: not evidenced. Searched: Repository at the pinned commit: release workflows, changesets, revisions and activity code. Operating records of real changes going through a Directus project's Issue → Fix loop (activity and revisions) live in running instances, not in the repository.
+- **Proven, Opportunity → Expansion**: not evidenced. Searched: Repository at the pinned commit: release workflows, changesets, revisions and activity code. Operating records of real changes going through a Directus project's Opportunity → Expansion loop (activity and revisions) live in running instances, not in the repository.
+
+Confidence for criteria whose score did not change in the v0.7 migration was assigned at migration from the recorded evidence; confidence for new and changed readings (kinds of change, LRN-10 and every re-read criterion) comes from re-reading the source at the pinned commit.
 
 ## Elastic (ARC)
 
 ### Data
 
-- **ARC-01 Indexed query path, never a scan of a generic store**: **3** (grade A), facets: implemented, tested. Collections are real tables, so there is no generic store; fields marked is_indexed get database indexes (api/src/services/fields.ts:1008-1012); schema and response caching (CACHE_* settings).
-- **ARC-02 Safe schema and data migrations**: **2** (grade A). Every system migration has up and down steps (api/src/database/migrations, 110 files); user collections change through direct DDL from the schema service, with snapshot and apply for moving schemas between instances. No online strategy is enforced.
+- **ARC-01 Indexed query path, never a scan of a generic store**: **3** (grade A, confidence high), facets: implemented, tested. Collections are real tables, so there is no generic store; fields marked is_indexed get database indexes (api/src/services/fields.ts:1008-1012); schema and response caching (CACHE_* settings).
+- **ARC-02 Safe schema and data migrations**: **2** (grade A, confidence medium). Every system migration has up and down steps (api/src/database/migrations, 110 files); user collections change through direct DDL from the schema service, with snapshot and apply for moving schemas between instances. No online strategy is enforced.
 
 ### Scale
 
-- **ARC-03 Horizontal scale of services**: **2** (grade A), facets: implemented. Redis-backed synchronisation, message bus and locks support several API instances (api/src/synchronization.ts, api/src/bus, api/src/lock); scale-out guidance lives in the separate docs site.
+- **ARC-03 Horizontal scale of services**: **2** (grade A, confidence medium), facets: implemented. Redis-backed synchronisation, message bus and locks support several API instances (api/src/synchronization.ts, api/src/bus, api/src/lock); scale-out guidance lives in the separate docs site.
   - Higher reading 3: The building blocks for stateless scale-out are all in place.
-- **ARC-04 Reliable asynchronous work**: **1** (grade A). Scheduled jobs and flows run inside the API process (api/src/schedules, api/src/flows.ts); there is no job queue with retries.
+- **ARC-04 Reliable asynchronous work**: **1** (grade A, confidence medium). Scheduled jobs and flows run inside the API process (api/src/schedules, api/src/flows.ts); there is no job queue with retries.
   - Higher reading 2: Schedules take a lock so they run once across instances.
 - **ARC-05 Tenant isolation and noisy-neighbour controls**: **not applicable**. Scope fact multi_tenant is false: One project per deployment; isolation inside a project is by roles and policies, not tenants. If counted: 2.
 
 ### Capacity
 
-- **ARC-06 Ceilings measured, not discovered in incidents**: **0** (grade A). No load or performance suite in the repository and no documented per-surface limits (searched for k6, locust, artillery, benchmark and load test).
-- **ARC-07 Service objectives defined and monitored**: **2** (grade A). A Prometheus metrics endpoint for database, cache and storage health (api/src/metrics, METRICS_* settings); no stated objectives.
+- **ARC-06 Ceilings measured, not discovered in incidents**: **0** (grade A, confidence medium). No load or performance suite in the repository and no documented per-surface limits (searched for k6, locust, artillery, benchmark and load test).
+- **ARC-07 Service objectives defined and monitored**: **2** (grade A, confidence medium). A Prometheus metrics endpoint for database, cache and storage health (api/src/metrics, METRICS_* settings); no stated objectives.
 
 ### Resilience
 
-- **ARC-08 Failure isolation and graceful degradation**: **2** (grade A). Sandboxed extensions run in an isolated VM with limits (api/src/extensions/lib/sandbox); the pressure limiter sheds load (packages/env/src/constants/defaults.ts:29). Other surfaces have no breakers.
-  - AI-qualified reading: **1** (grade A). Model errors are returned to the chat; no timeouts or breakers around model calls were found (api/src/ai/chat/lib).
-- **ARC-09 Backup, restore and recovery**: **1** (grade A). No backup command. Schema snapshots move definitions between instances, but data and files are left to the database and storage provider.
+- **ARC-08 Failure isolation and graceful degradation**: **2** (grade A, confidence high). Sandboxed extensions run in an isolated VM with limits (api/src/extensions/lib/sandbox); the pressure limiter sheds load (packages/env/src/constants/defaults.ts:29). Other surfaces have no breakers.
+  - AI-qualified reading: **1** (grade A, confidence medium). Model errors are returned to the chat; no timeouts or breakers around model calls were found (api/src/ai/chat/lib).
+- **ARC-09 Backup, restore and recovery**: **0** (grade A, confidence medium). Corrected from 1 to 0 at the v0.7 migration, applying the anchor as the second rating did for Dify: level 1 needs documentation telling operators to back up, and this repository has none. No backup or restore command or feature for the database, files or settings; searched every file outside node_modules for 'backup' and 'back up' (only icon names in app/src). Schema snapshot and apply move the data model, not data or files.
+  - Higher reading 1: Schema snapshots move definitions between instances (api/src/controllers/schema.ts), and Directus's separate documentation repository, not read here, may tell operators to back up; a rater may count either as level 1.
 
 ## Velocity (DEL)
 
 ### Intake
 
-- **DEL-01 Request intake into a structured change specification**: **1** (grade A). Requests reach the AI assistant as free-text chat (api/src/ai/chat); nothing structures them into a specification.
+- **DEL-01 Request intake into a structured change specification**: **1** (grade A, confidence medium). Requests reach the AI assistant as free-text chat (api/src/ai/chat); nothing structures them into a specification.
   - Higher reading 2: The chat keeps the request with the collections it touches.
-  - AI-qualified reading: **1** (grade A). The model receives free-text requests in chat; nothing structures them.
+  - AI-qualified reading: **1** (grade A, confidence medium). The model receives free-text requests in chat; nothing structures them.
 
 ### Build
 
-- **DEL-02 Layers deploy independently**: **1** (grade A). API and Data Studio ship as one Node process and one container image (Dockerfile); packages are separate but deployed together.
+- **DEL-02 Layers deploy independently**: **1** (grade A, confidence medium). API and Data Studio ship as one Node process and one container image (Dockerfile); packages are separate but deployed together.
   - Higher reading 2: The anchors do not separate 'one artifact' (0) from 'monolith, manual' (1) from a containerised monolith.
-- **DEL-03 Module boundaries enforced by tooling**: **2** (grade A). pnpm workspace packages with declared dependencies (pnpm-workspace.yaml); no architectural lint.
-- **DEL-04 AI implementation lane**: **1** (grade A). An AI authoring lane turns admin requests into schema, flow and item changes behind approvals, one project at a time (api/src/ai/tools); nothing applies accepted proposals across projects. Scored at the lower reading under rule 11 because: If the lane is judged manual per tenant because a human drives every change.
-  - Higher reading 2: The September v0.3 pass scored 2 on the evidence above.
-  - AI-qualified reading: **1** (grade A). The AI lane drafts schema, flow and item changes behind approvals.
-    - Higher reading 2: An AI lane for narrow tasks on request.
+- **DEL-03 Module boundaries enforced by tooling**: **2** (grade A, confidence medium). pnpm workspace packages with declared dependencies (pnpm-workspace.yaml); no architectural lint.
+- **DEL-04 AI implementation lane**: **2** (grade A, confidence high). Re-scored 1 to 2 at the v0.7 migration, after the kinds of change exposed the gap. The AI assistant, on by default (AI_ENABLED true, packages/env/src/constants/defaults.ts:265) once a provider key is set, drafts collections, fields, relations, flows, operations and items as zod-validated tool calls; every mutating call waits for the user's approval unless that user set the tool to always-allow (api/src/ai/tools/registry.ts:198-214, tests in registry.test.ts). That is anchor 2: an AI lane drafts changes on request and a person finishes them. It is not 3: there is no accepted-change specification, verification evidence or policy across change classes. The earlier lower reading treated per-call human approval as a manual lane, which is what anchor 2 describes.
+  - AI-qualified reading: **2** (grade A, confidence high). The AI lane drafts schema, flow and item changes as tool calls a person approves (api/src/ai/tools/registry.ts:198-214).
 
 ### Verify
 
-- **DEL-05 Every change class has an automated pre-land check**: **2** (grade A). Lint and tests run on pull requests including drafts (.github/workflows/check.yml:3-12), but a Skip Checks label bypasses them (check.yml:30), E2E runs only when labelled (e2e-pr.yml:15) and CodeQL is scheduled.
-- **DEL-06 Verification surface**: **3** (grade A). /server/info with version, /server/health, generated specs (api/src/controllers/server.ts:21-80) and /schema/snapshot as a machine-readable configuration snapshot (api/src/controllers/schema.ts).
-- **DEL-07 Environment reproducibility**: **2** (grade A). Versioned container images, a bootstrap command, schema apply and CLI sync recreate a configured instance; E2E tests start instances per database vendor (tests/e2e). No per-change ephemeral environment or feature flags.
+- **DEL-05 Every change class has an automated pre-land check**: **2** (grade A, confidence high). Lint and tests run on pull requests including drafts (.github/workflows/check.yml:3-12), but a Skip Checks label bypasses them (check.yml:30), E2E runs only when labelled (e2e-pr.yml:15) and CodeQL is scheduled.
+- **DEL-06 Verification surface**: **3** (grade A, confidence high). /server/info with version, /server/health, generated specs (api/src/controllers/server.ts:21-80) and /schema/snapshot as a machine-readable configuration snapshot (api/src/controllers/schema.ts).
+- **DEL-07 Environment reproducibility**: **2** (grade A, confidence medium). Versioned container images, a bootstrap command, schema apply and CLI sync recreate a configured instance; E2E tests start instances per database vendor (tests/e2e). No per-change ephemeral environment or feature flags.
   - Higher reading 3: Instances are reproducible from a build id and snapshot in minutes.
-- **DEL-08 Machine verifiability**: **2** (grade A). E2E API suite across database vendors (tests/e2e), run on pull requests only when labelled; no changed-path map or adoption instrumentation.
+- **DEL-08 Machine verifiability**: **2** (grade A, confidence medium). E2E API suite across database vendors (tests/e2e), run on pull requests only when labelled; no changed-path map or adoption instrumentation.
 
 ### Release
 
-- **DEL-09 Staged exposure**: **1** (grade A). Features are gated by licence entitlements (api/src/license/entitlements), not cohorts or flags.
-- **DEL-10 Kill switch**: **2** (grade A). Flows can be switched inactive and AI tools disabled at runtime; other changes cannot be switched off without editing them.
+- **DEL-09 Staged exposure**: **1** (grade A, confidence medium). Features are gated by licence entitlements (api/src/license/entitlements), not cohorts or flags.
+- **DEL-10 Kill switch**: **2** (grade A, confidence medium). Flows can be switched inactive and AI tools disabled at runtime; other changes cannot be switched off without editing them.
 - **DEL-11 Release rollback**: **not applicable**. Scope fact code_release_path is false: The AI lane changes definitions, not Directus code.
 
 ## Open (MAL)
 
 ### Data model
 
-- **MAL-01 New entity type without code, DDL or deploy**: **3** (grade A). Admins create collections in the Data Model UI and the API creates real tables with no migration or deploy (api/src/services/collections.ts); the AI assistant can also author collections through zod-validated tools behind an approval gate (api/src/ai/tools/collections/index.ts:20-66, api/src/ai/tools/registry.ts:198-214). No dry-run, so not 4.
+- **MAL-01 New entity type without code, DDL or deploy**: **3** (grade A, confidence medium). Admins create collections in the Data Model UI and the API creates real tables with no migration or deploy (api/src/services/collections.ts); the AI assistant can also author collections through zod-validated tools behind an approval gate (api/src/ai/tools/collections/index.ts:20-66, api/src/ai/tools/registry.ts:198-214). No dry-run, so not 4.
   - Higher reading 4: AI authoring through a gate already exists; only dry-run and versioned definitions are missing.
-- **MAL-02 Field definitions carry type and validation**: **2** (grade A). Typed fields with validation rules, conditions, required, unique and is_indexed are created in the UI and read by forms and the generated APIs (api/services/fields.ts:62, 1008-1012). v0.3 moved the privacy tag to GOV-03. Scored at the lower reading under rule 11 because: Validation rules are partial for some field types.
+- **MAL-02 Field definitions carry type and validation**: **2** (grade A, confidence medium). Typed fields with validation rules, conditions, required, unique and is_indexed are created in the UI and read by forms and the generated APIs (api/services/fields.ts:62, 1008-1012). v0.3 moved the privacy tag to GOV-03. Scored at the lower reading under rule 11 because: Validation rules are partial for some field types.
   - Higher reading 3: The September v0.3 pass scored 3 on the evidence above.
-- **MAL-03 Relationships and lifecycle states declarable**: **2** (grade A). M2O, O2M, M2M and M2A relations are declared in the UI with database-level referential actions; lifecycle states are not a feature, and v0.3 accepts either at level 3. Scored at the lower reading under rule 11 because: If lifecycle states are considered central for this product.
+- **MAL-03 Relationships and lifecycle states declarable**: **2** (grade A, confidence medium). M2O, O2M, M2M and M2A relations are declared in the UI with database-level referential actions; lifecycle states are not a feature, and v0.3 accepts either at level 3. Scored at the lower reading under rule 11 because: If lifecycle states are considered central for this product.
   - Higher reading 3: The September v0.3 pass scored 3 on the evidence above.
 
 ### APIs
 
-- **MAL-04 API per entity is generic or generated**: **3** (grade A). Generic REST (/items/:collection) and a GraphQL schema generated at runtime from the data model per role (api/src/services/graphql/index.ts:23-89): typed, with field selection, deep filters and permission and field validation from the definition. Scored at the lower reading under rule 11 because: If 'typed projections' requires per-type client types rather than runtime GraphQL types.
+- **MAL-04 API per entity is generic or generated**: **3** (grade A, confidence medium). Generic REST (/items/:collection) and a GraphQL schema generated at runtime from the data model per role (api/src/services/graphql/index.ts:23-89): typed, with field selection, deep filters and permission and field validation from the definition. Scored at the lower reading under rule 11 because: If 'typed projections' requires per-type client types rather than runtime GraphQL types.
   - Higher reading 4: The September v0.3 pass scored 4 on the evidence above.
-- **MAL-05 API reshapes at runtime from definitions**: **3** (grade A). Schema changes invalidate the cached schema so REST and GraphQL reflect them live. No per-consumer schema versions or dry-run.
-- **MAL-06 Machine-readable contract with introspection and dry-run**: **3** (grade A). /server/specs/oas and /server/specs/graphql are generated from the live schema (api/src/controllers/server.ts:21-37); typed SDK (sdk/); structured error codes (packages/errors). No mutation dry-run, so not 4.
+- **MAL-05 API reshapes at runtime from definitions**: **3** (grade A, confidence medium). Schema changes invalidate the cached schema so REST and GraphQL reflect them live. No per-consumer schema versions or dry-run.
+- **MAL-06 Machine-readable contract with introspection and dry-run**: **3** (grade A, confidence high). /server/specs/oas and /server/specs/graphql are generated from the live schema (api/src/controllers/server.ts:21-37); typed SDK (sdk/); structured error codes (packages/errors). No mutation dry-run, so not 4.
 
 ### Interface
 
-- **MAL-07 Layout is data, tenant-overridable, validated, previewable**: **2** (grade A). Collection layouts (table, cards, calendar, kanban, map), form widths, groups and interface options are stored as presets and field meta and edited in the Data Studio per role (app/src/layouts); Insights dashboards; visual editing of connected frontends (packages/visual-editing). One project per instance, so per-tenant reads as per project. Scored at the lower reading under rule 11 because: No schema validation of layout props and no preview of layout changes before they apply.
+- **MAL-07 Layout is data, tenant-overridable, validated, previewable**: **2** (grade A, confidence medium). Collection layouts (table, cards, calendar, kanban, map), form widths, groups and interface options are stored as presets and field meta and edited in the Data Studio per role (app/src/layouts); Insights dashboards; visual editing of connected frontends (packages/visual-editing). One project per instance, so per-tenant reads as per project. Scored at the lower reading under rule 11 because: No schema validation of layout props and no preview of layout changes before they apply.
   - Higher reading 3: The September v0.3 pass scored 3 on the evidence above.
-- **MAL-08 Generic list, detail and intake widgets from definition plus view spec**: **3** (grade A). Every collection renders generic list layouts, item detail and create forms from field meta and interfaces (app/src/layouts, app/src/interfaces); admins configure presets.
-- **MAL-09 Theme tokens and text are data with tenant overrides**: **3** (grade A). Admin appearance settings with light and dark theme overrides and custom CSS (api/src/database/seeds/13-settings.yaml, packages/themes), custom translation strings, and 93 locale files maintained through Crowdin (crowdin.yml).
+- **MAL-08 Generic list, detail and intake widgets from definition plus view spec**: **3** (grade A, confidence medium). Every collection renders generic list layouts, item detail and create forms from field meta and interfaces (app/src/layouts, app/src/interfaces); admins configure presets.
+- **MAL-09 Theme tokens and text are data with tenant overrides**: **3** (grade A, confidence medium). Admin appearance settings with light and dark theme overrides and custom CSS (api/src/database/seeds/13-settings.yaml, packages/themes), custom translation strings, and 93 locale files maintained through Crowdin (crowdin.yml).
 
 ### Behaviour
 
-- **MAL-10 Rules engine with declarative conditions and actions**: **2** (grade A). Flows compose triggers (event, schedule, webhook, manual, another flow) and operations (condition, exec, item CRUD, request, notification, mail, transform, trigger) across any collection in the admin UI (api/src/operations, api/src/flows.ts). No test or simulation mode.
+- **MAL-10 Rules engine with declarative conditions and actions**: **2** (grade A, confidence medium). Flows compose triggers (event, schedule, webhook, manual, another flow) and operations (condition, exec, item CRUD, request, notification, mail, transform, trigger) across any collection in the admin UI (api/src/operations, api/src/flows.ts). No test or simulation mode.
   - Higher reading 3: Everything in level 3 except a test mode.
-- **MAL-11 Event model with webhooks or subscriptions and retry**: **2** (grade A). Action and filter events fire for every collection including user-defined ones (api/src/emitter.ts); outbound webhooks are Flow request operations with flow logs. No retry or replay in api/src/flows.ts.
+- **MAL-11 Event model with webhooks or subscriptions and retry**: **2** (grade A, confidence medium). Action and filter events fire for every collection including user-defined ones (api/src/emitter.ts); outbound webhooks are Flow request operations with flow logs. No retry or replay in api/src/flows.ts.
   - Higher reading 3: Admin subscriptions with delivery logs exist; only retry is missing.
-- **MAL-12 Sandboxed server-side hooks**: **3** (grade A). The exec operation and sandboxed API extensions run in isolated-vm with memory and time limits (FLOWS_RUN_SCRIPT_MAX_MEMORY 32, FLOWS_RUN_SCRIPT_TIMEOUT 10000, packages/env/src/constants/defaults.ts:213-214) and requested scopes including a request URL allowlist (packages/extensions/src/shared/schemas/options.ts:14-27); triggered by events and requests.
+- **MAL-12 Sandboxed server-side hooks**: **3** (grade A, confidence high). The exec operation and sandboxed API extensions run in isolated-vm with memory and time limits (FLOWS_RUN_SCRIPT_MAX_MEMORY 32, FLOWS_RUN_SCRIPT_TIMEOUT 10000, packages/env/src/constants/defaults.ts:213-214) and requested scopes including a request URL allowlist (packages/extensions/src/shared/schemas/options.ts:14-27); triggered by events and requests.
 
 ### Extensions
 
-- **MAL-13 Plugin lane breadth**: **3** (grade A). Interfaces, displays, layouts, modules, panels, themes, endpoints, hooks, operations and bundles as code extensions (packages/extensions), plus declarative Flows, presets, translations and theme overrides; in-app marketplace backed by packages/extensions-registry.
+- **MAL-13 Plugin lane breadth**: **3** (grade A, confidence medium). Interfaces, displays, layouts, modules, panels, themes, endpoints, hooks, operations and bundles as code extensions (packages/extensions), plus declarative Flows, presets, translations and theme overrides; in-app marketplace backed by packages/extensions-registry.
   - Higher reading 4: A registry and marketplace exist; plugin points are not generated from definitions.
-- **MAL-14 Runtime isolation and dependency control**: **3** (grade A). Sandboxed API extensions run in isolated-vm with memory and time limits and a request URL allowlist; marketplace installs default to sandbox trust (MARKETPLACE_TRUST sandbox, packages/env/src/constants/defaults.ts:124). Local non-sandboxed extensions keep full trust.
-- **MAL-15 Developer loop**: **2** (grade A). Extensions SDK with create, build and dev commands (packages/create-directus-extension, packages/extensions-sdk) and Docker Compose for local development; no preview against a remote project or staged branches.
+- **MAL-14 Runtime isolation and dependency control**: **3** (grade A, confidence high). Sandboxed API extensions run in isolated-vm with memory and time limits and a request URL allowlist; marketplace installs default to sandbox trust (MARKETPLACE_TRUST sandbox, packages/env/src/constants/defaults.ts:124). Local non-sandboxed extensions keep full trust.
+- **MAL-15 Developer loop**: **2** (grade A, confidence medium). Extensions SDK with create, build and dev commands (packages/create-directus-extension, packages/extensions-sdk) and Docker Compose for local development; no preview against a remote project or staged branches.
 
 ### Integrations
 
-- **MAL-16 Canonical data model with a mapping layer**: **1** (grade A). No canonical integration model; integrations are Flow request operations or custom extensions.
-- **MAL-17 Connector definition or SDK**: **1** (grade A). The extensions SDK lets engineers build operation extensions that wrap external APIs; no connector definition covering auth, sync and lifecycle. Scored at the lower reading under rule 11 because: If a general extension SDK does not count as a connector SDK.
+- **MAL-16 Canonical data model with a mapping layer**: **1** (grade A, confidence medium). No canonical integration model; integrations are Flow request operations or custom extensions.
+- **MAL-17 Connector definition or SDK**: **1** (grade A, confidence medium). The extensions SDK lets engineers build operation extensions that wrap external APIs; no connector definition covering auth, sync and lifecycle. Scored at the lower reading under rule 11 because: If a general extension SDK does not count as a connector SDK.
   - Higher reading 2: The September v0.3 pass scored 2 on the evidence above.
-- **MAL-18 Stable versioned contracts**: **1** (grade A). No path versioning; breaking changes are announced in release notes; no deprecation windows or idempotent sync.
+- **MAL-18 Stable versioned contracts**: **1** (grade A, confidence medium). No path versioning; breaking changes are announced in release notes; no deprecation windows or idempotent sync.
   - Higher reading 2: The API is documented through a generated OpenAPI spec.
 
 ### Agent interface
 
-- **MAL-19 Machine-readable capability surface for agents**: **3** (grade A). MCP server over the same tool registry (api/src/ai/mcp/server.ts) with OAuth scope and audience checks (server.ts:75-102) and zod-typed tools; the schema tool returns the live data model as a capability map.
+- **MAL-19 Machine-readable capability surface for agents**: **3** (grade A, confidence medium). MCP server over the same tool registry (api/src/ai/mcp/server.ts) with OAuth scope and audience checks (server.ts:75-102) and zod-typed tools; the schema tool returns the live data model as a capability map.
   - Higher reading 4: Items and schema tools cover user-defined collections at runtime; tools are generic rather than generated per collection.
-  - AI-qualified reading: **3** (grade A). MCP server over the AI tool registry with OAuth scopes (api/src/ai/mcp/server.ts).
-- **MAL-20 Conversational operability for users and natural-language authoring for operators**: **2** (grade A). In-app AI assistant with grounded tools over items, files, schema, relations and flows, running under the user's permissions (api/src/ai/chat, app/src/ai); admins author collections, fields, relations and flows in natural language with an approval card showing the proposed call. LLM tracing to Braintrust or Langfuse (api/src/ai/telemetry); no groundedness evaluation. Scored at the lower reading under rule 11 because: If an approval card is not a preview of the resulting change.
+  - AI-qualified reading: **3** (grade A, confidence medium). MCP server over the AI tool registry with OAuth scopes (api/src/ai/mcp/server.ts).
+- **MAL-20 Conversational operability for users and natural-language authoring for operators**: **2** (grade A, confidence medium). In-app AI assistant with grounded tools over items, files, schema, relations and flows, running under the user's permissions (api/src/ai/chat, app/src/ai); admins author collections, fields, relations and flows in natural language with an approval card showing the proposed call. LLM tracing to Braintrust or Langfuse (api/src/ai/telemetry); no groundedness evaluation. Scored at the lower reading under rule 11 because: If an approval card is not a preview of the resulting change.
   - Higher reading 3: The September v0.3 pass scored 3 on the evidence above.
-  - AI-qualified reading: **2** (grade A). A grounded model-backed assistant for operators (api/src/ai/chat).
+  - AI-qualified reading: **2** (grade A, confidence medium). A grounded model-backed assistant for operators (api/src/ai/chat).
 
 ## Learn (LRN)
 
 ### Sense
 
-- **LRN-01 Telemetry accessible to the platform in near real time**: **2** (grade A). Activity rows are written per request and are queryable by in-product Insights dashboards; vendor telemetry counters (api/src/telemetry); AI telemetry to Braintrust or Langfuse (api/src/ai/telemetry). Scored at the lower reading under rule 11 because: Activity is an audit stream, not per-feature usage instrumentation.
+- **LRN-01 Telemetry accessible to the platform in near real time**: **2** (grade A, confidence medium). Activity rows are written per request and are queryable by in-product Insights dashboards; vendor telemetry counters (api/src/telemetry); AI telemetry to Braintrust or Langfuse (api/src/ai/telemetry). Scored at the lower reading under rule 11 because: Activity is an audit stream, not per-feature usage instrumentation.
   - Higher reading 3: The September v0.3 pass scored 3 on the evidence above.
-- **LRN-02 Structured learning signals**: **1** (grade A). Item comments are free text; no typed feedback or rating objects linked to definitions.
-- **LRN-03 User-issue detection**: **2** (grade A). Every flow run records each operation step with its resolve or reject status as activity and revisions (api/src/flows.ts:414-454), viewable per flow; admins can read system logs (app/src/modules/settings/routes/system-logs). Failed actions outside flows are not recorded per product area.
-- **LRN-04 Cross-source mining inside the product**: **1** (grade A). Insights dashboards can query any collection including activity; no joined usage, support and delivery models or mining.
+- **LRN-02 Structured learning signals**: **1** (grade A, confidence medium). Item comments are free text; no typed feedback or rating objects linked to definitions.
+- **LRN-03 User-issue detection**: **2** (grade A, confidence high). Every flow run records each operation step with its resolve or reject status as activity and revisions (api/src/flows.ts:414-454), viewable per flow; admins can read system logs (app/src/modules/settings/routes/system-logs). Failed actions outside flows are not recorded per product area.
+- **LRN-04 Cross-source mining inside the product**: **1** (grade A, confidence medium). Insights dashboards can query any collection including activity; no joined usage, support and delivery models or mining.
   - Higher reading 2: In-product dashboards over system collections are a partial join.
 
 ### Diagnose and propose
 
-- **LRN-05 Automated diagnosis**: **1** (grade A). Engineers read logs; no grouping or attached context.
-  - AI-qualified reading: **0** (grade A). No AI involvement in this behaviour.
-- **LRN-06 Ranked, evidence-backed proposals for change**: **0** (grade A). No recommendation or proposal features; the assistant acts only on request.
-  - AI-qualified reading: **0** (grade A). No AI involvement in this behaviour.
+- **LRN-05 Automated diagnosis**: **1** (grade A, confidence medium). Engineers read logs; no grouping or attached context.
+  - AI-qualified reading: **0** (grade A, confidence medium). No AI involvement in this behaviour.
+- **LRN-06 Ranked, evidence-backed proposals for change**: **0** (grade A, confidence medium). No recommendation or proposal features; the assistant acts only on request.
+  - AI-qualified reading: **0** (grade A, confidence medium). No AI involvement in this behaviour.
 
 ### Learn from experience
 
-- **LRN-07 The product turns its own operating experience into candidate changes**: **1** (grade A). The AI assistant acts only on request (api/src/ai); nothing learns from use.
-  - AI-qualified reading: **0** (grade A). No AI involvement in this behaviour.
-- **LRN-08 Learned changes are validated before they take effect**: **1** (grade A). AI-authored changes pass a human approval (api/src/ai/tools/registry.ts:198-214); there is no evaluation against a baseline.
-  - AI-qualified reading: **1** (grade A). AI-made changes get human approval only (api/src/ai/tools/registry.ts:198-214).
+- **LRN-07 The product turns its own operating experience into candidate changes**: **1** (grade A, confidence medium). The AI assistant acts only on request (api/src/ai); nothing learns from use.
+  - AI-qualified reading: **0** (grade A, confidence medium). No AI involvement in this behaviour.
+- **LRN-08 Learned changes are validated before they take effect**: **2** (grade A, confidence high). Re-scored 1 to 2 under the v0.7 boundary, which scores the checks on changes the product's AI makes. Every AI tool call is parsed against its zod schema before it can run (registry.ts #parseInput, collections/index.ts:20-66), deletes can be blocked wholesale (registry.ts:202), and the change then passes the same service validation as a person's; a person approves each mutating call. No evaluation against a baseline. Directus has no learning-from-experience loop.
+  - AI-qualified reading: **2** (grade A, confidence high). Schema validation of every AI tool call and a delete block before human approval (api/src/ai/tools/registry.ts:198-214); no baseline evaluation.
 
 ### Measure
 
-- **LRN-09 Post-change impact is measured against a declared baseline**: **0** (grade A). No binding of changes to baselines or metrics.
+- **LRN-09 Post-change impact is measured against a declared baseline**: **0** (grade A, confidence medium). No binding of changes to baselines or metrics.
+- **LRN-10 The improvement loop improves itself**: **0** (grade A, confidence medium). The checks that govern change are code: zod schemas on every AI tool (api/src/ai/tools/*/index.ts, parsed in registry.ts), service-level validation, and the tool prompts (api/src/ai/tools/*/prompt.md). The only governing settings are the project's MCP allow-deletes setting (api/src/controllers/mcp/index.ts:52) and each user's per-tool approval modes kept in the app (app/src/ai/stores/use-ai.ts:179-185); neither is linked to results. No evaluation sets exist (AIR-05 0) and nothing records a failure against the check that missed it.
 
 ## Vet (GOV)
 
 ### Compliance and security
 
-- **GOV-01 Accessibility inherited from a component kit and continuously verified**: **1** (grade A). Component library and theme tokens exist (packages/themes, app/src/components); no automated accessibility scanning in CI or tests.
+- **GOV-01 Accessibility inherited from a component kit and continuously verified**: **1** (grade A, confidence medium). Component library and theme tokens exist (packages/themes, app/src/components); no automated accessibility scanning in CI or tests.
   - Higher reading 2: Kit and tokens are present; the anchors bundle kit and scans.
-- **GOV-02 Audit generic over entities, definition changes and approvals**: **2** (grade A). Activity and revisions record every item mutation including system collections (schema, permissions, settings, flows), with an admin Activity module and retention (ACTIVITY_RETENTION and REVISIONS_RETENTION, packages/env/src/constants/defaults.ts:167-172). There is no approval object, so approvals are not covered.
+- **GOV-02 Audit generic over entities, definition changes and approvals**: **2** (grade A, confidence medium). Activity and revisions record every item mutation including system collections (schema, permissions, settings, flows), with an admin Activity module and retention (ACTIVITY_RETENTION and REVISIONS_RETENTION, packages/env/src/constants/defaults.ts:167-172). There is no approval object, so approvals are not covered.
   - Higher reading 3: All other level-3 clauses are met.
-- **GOV-03 Privacy classification, export, erasure and retention generic over entities**: **0** (grade A). No data-subject export or erasure features and no privacy tags (searched for gdpr, erasure, anonymisation and personal data); admins can export collections and delete items by hand. Scored at the lower reading under rule 11 because: If manual export and deletion do not count as a mechanism.
+- **GOV-03 Privacy classification, export, erasure and retention generic over entities**: **0** (grade A, confidence medium). No data-subject export or erasure features and no privacy tags (searched for gdpr, erasure, anonymisation and personal data); admins can export collections and delete items by hand. Scored at the lower reading under rule 11 because: If manual export and deletion do not count as a mechanism.
   - Higher reading 1: The September v0.3 pass scored 1 on the evidence above.
-- **GOV-04 Security as infrastructure**: **2** (grade A), facets: implemented, tested. Policies with collection, field and item-level rules apply to every collection including new ones; field validation is generic. CodeQL runs on a schedule, not on pull requests (.github/workflows/codeql-analysis.yml:5), so scanning does not gate change.
+- **GOV-04 Security as infrastructure**: **2** (grade A, confidence medium), facets: implemented, tested. Policies with collection, field and item-level rules apply to every collection including new ones; field validation is generic. CodeQL runs on a schedule, not on pull requests (.github/workflows/codeql-analysis.yml:5), so scanning does not gate change.
   - Higher reading 3: Authorisation is generated per defined type; only the gating clause fails.
 
 ### Change control
 
-- **GOV-05 Definitions and layouts versioned with rollback**: **2** (grade A), facets: implemented, tested. Revisions can be reverted for items and system records (api/src/services/revisions.ts:13-18); data-model changes have no rollback in the UI. The higher reading of 3 was dropped under the inventory rule (a 3 needs every default surface at 3): Data-model changes have no rollback.
-- **GOV-06 Proposal, review, apply as a first-class object with preview**: **2** (grade A). Content Versioning stages item changes for compare and promote (api/src/services/versions.ts:436-521); definitions and configuration move between projects through schema snapshot, diff and apply (api/src/controllers/schema.ts) and CLI sync pull, diff and push (packages/cli/src/commands/sync), which is an engineer flow.
+- **GOV-05 Definitions and layouts versioned with rollback**: **2** (grade A, confidence high), facets: implemented, tested. Revisions can be reverted for items and system records (api/src/services/revisions.ts:13-18); data-model changes have no rollback in the UI. The higher reading of 3 was dropped under the inventory rule (a 3 needs every default surface at 3): Data-model changes have no rollback.
+- **GOV-06 Proposal, review, apply as a first-class object with preview**: **2** (grade A, confidence medium). Content Versioning stages item changes for compare and promote (api/src/services/versions.ts:436-521); definitions and configuration move between projects through schema snapshot, diff and apply (api/src/controllers/schema.ts) and CLI sync pull, diff and push (packages/cli/src/commands/sync), which is an engineer flow.
   - Higher reading 3: Versions with compare-and-promote already form a proposal, review and apply flow, but for content only.
-- **GOV-07 Policy-based apply with recorded approvals and a movable human boundary**: **2** (grade A). Mutating AI tool calls require approval unless the user set that tool to always-allow (api/src/ai/tools/registry.ts:198-214, app/src/ai/stores/use-ai.ts:179-185); deletes can be disabled wholesale (allowDeletes). Approvals are not recorded as audit objects.
+- **GOV-07 Policy-based apply with recorded approvals and a movable human boundary**: **2** (grade A, confidence medium). Mutating AI tool calls require approval unless the user set that tool to always-allow (api/src/ai/tools/registry.ts:198-214, app/src/ai/stores/use-ai.ts:179-185); deletes can be disabled wholesale (allowDeletes). Approvals are not recorded as audit objects.
   - Higher reading 3: Per-tool approval modes are a policy per change class; only recorded approvals are missing.
-- **GOV-08 Upgrade safety**: **2** (grade A). Extension SDK and types are versioned packages (packages/extensions-sdk, packages/extensions); system migrations run automatically; schema snapshots apply through diff. No automated compatibility check of extensions against a new release was found.
+- **GOV-08 Upgrade safety**: **2** (grade A, confidence medium). Extension SDK and types are versioned packages (packages/extensions-sdk, packages/extensions); system migrations run automatically; schema snapshots apply through diff. No automated compatibility check of extensions against a new release was found.
 
 ### AI and self-change safety
 
-- **GOV-09 Agent-safe actions**: **2** (grade A). The assistant acts with the user's accountability; MCP clients get OAuth-scoped tokens; mutations need approval; rate limiter and activity rows apply. No idempotency keys or dry-run.
+- **GOV-09 Agent-safe actions**: **2** (grade A, confidence medium). The assistant acts with the user's accountability; MCP clients get OAuth-scoped tokens; mutations need approval; rate limiter and activity rows apply. No idempotency keys or dry-run.
   - Higher reading 3: Scoped identity, approval-as-preview, rate limits and audit are present; idempotency is the gap.
-  - AI-qualified reading: **2** (grade A). AI acts with the user's accountability and mutations need approval; no idempotency or dry-run.
-- **GOV-10 Bounded self-change**: **2** (grade A). Each AI tool can require approval and deletes can be disabled wholesale (api/src/ai/tools/registry.ts:198-214); there is no per-period or blast-radius limit.
-  - AI-qualified reading: **2** (grade A). Per-tool approval and a switch to disable deletes; no blast-radius limit.
-- **GOV-11 Learning-input integrity**: **1** (grade A). AI changes are recorded as revisions by the acting user, but inputs carry no provenance and nothing separates untrusted content from instructions (api/src/ai).
-  - AI-qualified reading: **1** (grade A). Untrusted content is not fenced from instructions.
+  - AI-qualified reading: **2** (grade A, confidence medium). AI acts with the user's accountability and mutations need approval; no idempotency or dry-run.
+- **GOV-10 Bounded self-change**: **2** (grade A, confidence high). Each AI tool can require approval and deletes can be disabled wholesale (api/src/ai/tools/registry.ts:198-214); there is no per-period or blast-radius limit.
+  - AI-qualified reading: **2** (grade A, confidence medium). Per-tool approval and a switch to disable deletes; no blast-radius limit.
+- **GOV-11 Learning-input integrity**: **1** (grade A, confidence medium). AI changes are recorded as revisions by the acting user, but inputs carry no provenance and nothing separates untrusted content from instructions (api/src/ai).
+  - AI-qualified reading: **1** (grade A, confidence medium). Untrusted content is not fenced from instructions.
 
 ## Expand (EXP)
 
 ### Expressible
 
-- **EXP-01 Kernel concepts are domain-neutral**: **3** (grade A). Kernel is users, roles, policies, permissions, files, collections, flows, comments and notifications, with no domain nouns; system collections accept custom fields.
+- **EXP-01 Kernel concepts are domain-neutral**: **3** (grade A, confidence medium). Kernel is users, roles, policies, permissions, files, collections, flows, comments and notifications, with no domain nouns; system collections accept custom fields.
   - Higher reading 4: System collections are themselves extensible definitions.
-- **EXP-02 A new domain is expressible without kernel change**: **2** (grade A). Any domain can be modelled as collections, relations, flows and policies with no kernel change, but no domain shipped this way is evidenced inside the repository.
+- **EXP-02 A new domain is expressible without kernel change**: **2** (grade A, confidence medium). Any domain can be modelled as collections, relations, flows and policies with no kernel change, but no domain shipped this way is evidenced inside the repository.
   - Higher reading 3: Domain templates exist in other repositories (grade C knowledge), which would prove the path.
-- **EXP-03 A domain ships as an installable bundle**: **2** (grade A). Schema snapshot and apply cover collections, fields and relations; CLI sync pulls and pushes roles, policies, permissions, flows, operations, dashboards, panels, presets, translations and settings between projects (packages/cli/src/commands/sync). Not a versioned bundle with install semantics.
+- **EXP-03 A domain ships as an installable bundle**: **2** (grade A, confidence medium). Schema snapshot and apply cover collections, fields and relations; CLI sync pulls and pushes roles, policies, permissions, flows, operations, dashboards, panels, presets, translations and settings between projects (packages/cli/src/commands/sync). Not a versioned bundle with install semantics.
   - Higher reading 3: A pulled sync directory is a versionable, installable bundle of definitions, layouts and rules.
 
 ### Discover
 
-- **EXP-04 Unmet-demand sensing**: **0** (grade A). No record of failed searches or unsupported requests was found.
-- **EXP-05 Evidence-backed opportunity proposals**: **0** (grade A). No adjacent-capability proposals.
-  - AI-qualified reading: **0** (grade A). No AI involvement in this behaviour.
+- **EXP-04 Unmet-demand sensing**: **0** (grade A, confidence medium). No record of failed searches or unsupported requests was found.
+- **EXP-05 Evidence-backed opportunity proposals**: **0** (grade A, confidence medium). No adjacent-capability proposals.
+  - AI-qualified reading: **0** (grade A, confidence medium). No AI involvement in this behaviour.
 
 ### Launch
 
-- **EXP-06 Cohort launch with keep-or-kill**: **1** (grade A). Extensions are installed per project; there is no cohort launch.
+- **EXP-06 Cohort launch with keep-or-kill**: **1** (grade A, confidence medium). Extensions are installed per project; there is no cohort launch.
   - Higher reading 2: Roles and policies can expose new collections to selected users.
 
 ## AI Readiness Checks (AIR)
 
 ### Context
 
-- **AIR-03 AI-ready data and context access**: **3** (grade A). Schema-aware tools read live collections, fields, relations, items and files (api/src/ai/tools/schema, items, files); results come from the source records.
-- **AIR-04 Permission-preserving retrieval and tool access**: **3** (grade A), facets: implemented, tested. Tool calls run through services with the requesting user's accountability, so Directus permissions apply (api/src/ai/tools/items, tests pass accountability through: items/index.test.ts).
+- **AIR-03 AI-ready data and context access**: **3** (grade A, confidence medium). Schema-aware tools read live collections, fields, relations, items and files (api/src/ai/tools/schema, items, files); results come from the source records.
+- **AIR-04 Permission-preserving retrieval and tool access**: **3** (grade A, confidence high), facets: implemented, tested. Tool calls run through services with the requesting user's accountability, so Directus permissions apply (api/src/ai/tools/items, tests pass accountability through: items/index.test.ts).
 
 ### Quality
 
-- **AIR-05 Offline AI evaluation**: **0** (grade A). No evaluation harness for the assistant (searched api/src/ai for eval).
-- **AIR-06 Regression gating before release**: **0** (grade A). No evaluation in CI; AI changes ship unevaluated (.github/workflows).
+- **AIR-05 Offline AI evaluation**: **0** (grade A, confidence medium). No evaluation harness for the assistant (searched api/src/ai for eval).
+- **AIR-06 Regression gating before release**: **0** (grade A, confidence medium). No evaluation in CI; AI changes ship unevaluated (.github/workflows).
 
 ### Governance
 
-- **AIR-07 AI action tracing and auditability**: **2** (grade A). Opt-in Langfuse and Braintrust telemetry records model calls with user, role, provider and model (api/src/ai/telemetry); revisions record data changes by the user, without the model or prompt.
+- **AIR-07 AI action tracing and auditability**: **2** (grade A, confidence medium). Opt-in Langfuse and Braintrust telemetry records model calls with user, role, provider and model (api/src/ai/telemetry); revisions record data changes by the user, without the model or prompt.
 
 ### Operations
 
-- **AIR-01 Model and provider portability and resilience**: **2** (grade A). OpenAI, Anthropic, Google and OpenAI-compatible providers configured by admins, model chosen in the chat (api/src/ai/providers/registry.ts); no fallback or declared resilience strategy.
-- **AIR-02 AI usage and per-customer cost controls**: **1** (grade A). Usage is streamed to the client per request (api/src/ai/chat/controllers/chat.post.ts:71-72); not recorded per user, and no budgets.
-- **AIR-08 Production quality, drift and feedback monitoring**: **0** (grade A). No feedback or quality monitoring for the assistant.
+- **AIR-01 Model and provider portability and resilience**: **2** (grade A, confidence medium). OpenAI, Anthropic, Google and OpenAI-compatible providers configured by admins, model chosen in the chat (api/src/ai/providers/registry.ts); no fallback or declared resilience strategy.
+- **AIR-02 AI usage and per-customer cost controls**: **1** (grade A, confidence high). Usage is streamed to the client per request (api/src/ai/chat/controllers/chat.post.ts:71-72); not recorded per user, and no budgets.
+- **AIR-08 Production quality, drift and feedback monitoring**: **0** (grade A, confidence medium). No feedback or quality monitoring for the assistant.

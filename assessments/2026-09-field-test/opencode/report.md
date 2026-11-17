@@ -1,0 +1,248 @@
+# OpenCode: how ready it is to evolve itself
+
+A plain-language reading of an EVOLVE 0.7.0 assessment. Date 2026-09-30.
+
+## In one paragraph
+
+Built to Level 0, Manual: the changes that matter most are made by engineers writing and releasing code. Not yet proven in operation. In practice, most changes are requests that wait for engineers and for the next release. The biggest thing holding it back is that undo does not cover everything people can change, so some settings, rules or layouts have no history to go back to.
+
+## Where it stands
+
+The product is read on three loops. Its overall level is the lower of the first two; the third is reported beside it.
+
+**From request to release.** Can the product take a user's request, build it properly and release it?
+
+- Built to Level 0, Manual. The changes that matter most are made by engineers writing and releasing code.
+- Held at this level by the shared release steps.
+- Proven: not evidenced.
+
+**From problem to fix.** Can the product find the problems users face, fix them and release the fix?
+
+- Built to Level 0, Manual. The changes that matter most are made by engineers writing and releasing code.
+- Held at this level by the loop's own steps and the shared release steps.
+- Proven: not evidenced.
+
+**From unmet need to new offering.** Can the product notice needs it does not serve yet, and propose or launch something for them?
+
+- Built to Level 0, Manual. The changes that matter most are made by engineers writing and releasing code.
+- Held at this level by the shared release steps.
+- Proven: not evidenced.
+
+Built to says what the product ships and can do. Proven says what operating records show it has done. The two are reported separately and never added together.
+
+## The kinds of change
+
+The changes the people running the product most often need, and how far each has come.
+
+| Kind of change | Who makes it | How far it has come | Main kind |
+|---|---|---|---|
+| Custom agents and commands | the developer using OpenCode | Engineers only. This kind of change needs engineers to change code, make a release or edit files by hand. | Yes |
+| Standing instructions for a project (AGENTS.md) | the developer using OpenCode | Self-serve. The people running the product make this kind of change themselves, without a release, and can undo it. | Yes |
+| Which models and providers it uses | the developer using OpenCode | Self-serve. The people running the product make this kind of change themselves, without a release, and can undo it. | Yes |
+| What the agent may do without asking | the developer using OpenCode | Engineers only. This kind of change needs engineers to change code, make a release or edit files by hand. | No |
+| Plugins, MCP servers and skills | the developer using OpenCode | Engineers only. This kind of change needs engineers to change code, make a release or edit files by hand. | No |
+
+2 of 3 main kinds are self-serve. Self-serve means: the people running the product make this kind of change themselves, without a release, and can undo it.
+
+## What works today
+
+The strongest parts of the product, rated 3 or more out of 4.
+
+- **Fast, safe delivery:** Parts of the product release separately.
+- **Change without engineers:** An interface other software can explore; Add-ons can extend most of the product; New connections by matching fields; A kit for building connectors.
+- **Growing into new areas:** A general-purpose core.
+- **Safe AI features:** AI works from the product's own data; The AI sees only what the user may; A full record of AI actions.
+
+## What holds it back
+
+What each loop lacks for its next level, most widely felt first.
+
+- **Undo it.** Undo does not cover everything people can change, so some settings, rules or layouts have no history to go back to. Holds back all three loops.
+- **Build the change.** Not every main kind of change can be made by the people running the product: Custom agents and commands. Nor does the product build the change itself yet. Holds back: From request to release, on the way to Level 1; From problem to fix, on the way to Level 1.
+- **Notice the problem.** The product does not yet notice and raise, by itself, the places where users struggle. Holds back: From problem to fix, on the way to Level 1.
+
+## Safety gates
+
+Safety gates must all pass before the product may carry changes from start to finish (Level 3). 0 of 5 that apply have passed.
+
+| Safety gate | Status | Why it matters |
+|---|---|---|
+| Undo for every change people and AI make in the product | Not yet | Without it, a bad change to settings, rules or layouts stays in place until an engineer repairs it by hand. |
+| Undo for a new version of the code | Does not apply |  |
+| Safe changes to how data is stored | Not yet | Without it, a small change can lock the product or lose data. |
+| Backups that are proven to restore | Not yet | Without it, a mistake that undo cannot reach is permanent, because nobody knows whether the backup works. |
+| Customer organisations kept apart | Does not apply |  |
+| Security checks built into every change | Not yet | Without it, changes that arrive faster than people can review them will carry security holes into the product. |
+| Limits and checks on changes the product makes to itself | Not yet | Without it, one bad change the product makes on its own can spread widely before anyone looks. |
+
+## How much AI does
+
+How far the product's own AI carries each loop. Level 1 is people changing the product, so AI counts from Level 2, and never above the loop's own level.
+
+- From request to release: AI does none of the steps on its own yet.
+- From problem to fix: AI does none of the steps on its own yet.
+- From unmet need to new offering: AI does none of the steps on its own yet.
+
+Engineers build this product with AI coding agents or a delivery framework. That is AI-assisted engineering, not the product evolving itself. It is not installed, enforced and limited as part of the product, so it earns no credit.
+
+How safe its AI features are to run for real customers: 1 out of 4. The weakest area sets this.
+
+- What the AI knows and may see: 3 out of 4.
+- How AI quality is tested: 1 out of 4.
+- How AI actions are controlled: 1 out of 4.
+- How the AI runs day to day: 1 out of 4.
+- The AI sees only what the user may: passed.
+- Worse AI results block a release: not yet.
+- A full record of AI actions: passed.
+
+Whatever else improves, it cannot rise above 2 until these pass: Worse AI results block a release.
+
+## Does the loop improve itself
+
+Do the checks, tests and rules that govern change get better from results? A loop whose checks never improve repeats its mistakes faster.
+
+**Fixed** (step 0 of 4). The checks, tests and rules that govern change improve only when engineers rewrite them in code.
+
+## Has it been proven
+
+Not yet proven in operation.
+
+- From request to release: not evidenced. The rater looked for operating records and found none that show it.
+- From problem to fix: not evidenced. The rater looked for operating records and found none that show it.
+- From unmet need to new offering: not evidenced. The rater looked for operating records and found none that show it.
+
+This reading comes from the product's code and documents alone. Nobody observed the product in operation, so the reading cannot say what it has been seen to do.
+
+Built says what the product can do; proven says what it has been seen to do. A product should run at the level it has proven, and take on more as the proof grows.
+
+## How sure this reading is
+
+Of the 62 answers based on evidence, 7 are held with high confidence (the rater read the code and its tests), 31 with medium confidence (the rater read the code, but not every path through it) and 24 with low confidence (inferred from part of the evidence).
+
+For the kinds of change: 2 high, 3 medium and 0 low.
+
+Check these first. The rater was least sure of them, and each one decides a level or a safety gate:
+
+- Notices where users struggle: holds From problem to fix, on the way to Level 1.
+
+The reading answers 75 questions: 62 from evidence, 0 where no evidence was found (counted as missing), and 13 that do not apply to this product.
+
+The evidence behind the answers: 62 checked in the code, 0 taken from the product's own documents or settings and 0 inferred from other material.
+
+With the higher readings some evidence also supports, From request to release would read Level 1, Configurable; From unmet need to new offering would read Level 1, Configurable.
+
+The reading treats the product as follows:
+
+- It stores data that must not be lost.
+- Changes to it can alter how data is stored.
+- AI agents or other software can change its data or settings.
+- Its own AI can change its settings, skills, memory or data.
+- Its behaviour is changed through settings and rules.
+- It has AI features.
+- Its AI can read the product's data.
+- Its AI can change data or settings, send messages outside the product or spend money.
+
+This is one rater's reading of the evidence. A second, independent reading may differ.
+
+## What to do next
+
+**From request to release, to Level 1, Configurable.** The check to run on the live product: Take each main kind of change the assessment lists (an answer, a rule, a workflow step, a setting). The people who need it make one in the running product, with no engineer, code change or new release, then undo it.
+
+**From problem to fix, to Level 1, Configurable.** The check to run on the live product: Make the product fail the way a user would see it (a failed action, an error, negative feedback). The product records it where a person can look it up, with the part of the product involved. Someone running the product then changes the behaviour without engineers and can undo it.
+
+For the overall level to rise, both checks must pass.
+
+- For a plan of milestones that starts from a business goal, run `python3 scripts/blueprint.py <assessment.json> --goal "<business goal>"`.
+- For the full list of what the next assessment must find, run `python3 scripts/score.py <assessment.json> --checklist 1`.
+
+## For engineers
+
+Headline as the scorer prints it: **Built to SAL 0 (Manual) · Proven: not evidenced · AI-driven 0 · Request → Release L0 (AI L0) · Issue → Fix L0 (AI L0) · Opportunity → Expansion L0 (AI L0)**
+
+AI Readiness as the scorer prints it: AI Readiness L1 (Experimental) · Context 3 · Quality 1 · Governance 1 · Operations 1 · not production-governed.
+
+Recursion: 0 Fixed (LRN-10 at 0). 2 of 3 main kinds are self-serve.
+
+Next-level blockers in the scorer's terms:
+
+- Request → Release to L1: spine Build needs people build path ≥ 2 or product build path ≥ 2 (has kinds 2 of 3 main self-serve; DEL-04 1); spine Roll back needs rollback ≥ 2 (has GOV-05 1)
+- Issue → Fix to L1: spine Build needs people build path ≥ 2 or product build path ≥ 2 (has kinds 2 of 3 main self-serve; DEL-04 1, LRN-07 1); spine Roll back needs rollback ≥ 2 (has GOV-05 1); stages Detect needs LRN-03 ≥ 2 (has 1)
+- Opportunity → Expansion to L1: spine Roll back needs rollback ≥ 2 (has GOV-05 1)
+
+| Plain name | Code | Score |
+|---|---|---|
+| Fast lists and searches as data grows | ARC-01 | does not apply |
+| Safe changes to how data is stored | ARC-02 | 1 |
+| More capacity by adding servers | ARC-03 | does not apply |
+| Reliable background work | ARC-04 | does not apply |
+| Customer organisations kept apart | ARC-05 | does not apply |
+| Known limits, tested regularly | ARC-06 | does not apply |
+| Service targets, watched with alerts | ARC-07 | does not apply |
+| One failure does not spread | ARC-08 | 2 |
+| Backups that are proven to restore | ARC-09 | 1 |
+| Requests become clear change plans | DEL-01 | 0 |
+| Parts of the product release separately | DEL-02 | 3 |
+| Internal boundaries checked automatically | DEL-03 | 2 |
+| AI builds accepted changes | DEL-04 | 1 |
+| Automatic checks before any change lands | DEL-05 | 2 |
+| The product reports what is running | DEL-06 | 2 |
+| A fresh test copy for each change | DEL-07 | 2 |
+| User journeys tested automatically | DEL-08 | 2 |
+| Release to a small group first | DEL-09 | 1 |
+| Off switch for any change | DEL-10 | 1 |
+| Undo for a new version of the code | DEL-11 | does not apply |
+| New kinds of records without engineering | MAL-01 | does not apply |
+| New fields with built-in checks | MAL-02 | does not apply |
+| Links and statuses set without engineers | MAL-03 | does not apply |
+| Other software can use new records | MAL-04 | does not apply |
+| Changes reach other software at once | MAL-05 | does not apply |
+| An interface other software can explore | MAL-06 | 3 |
+| Page layouts changed without engineers | MAL-07 | 1 |
+| Screens appear for new records | MAL-08 | does not apply |
+| Branding and wording changed without engineers | MAL-09 | 2 |
+| Automatic rules people can set up | MAL-10 | 2 |
+| Other systems told when things happen | MAL-11 | 2 |
+| Custom logic that runs safely | MAL-12 | 2 |
+| Add-ons can extend most of the product | MAL-13 | 3 |
+| Outside code runs fenced off | MAL-14 | 1 |
+| Add-on builders can test before publishing | MAL-15 | 2 |
+| New connections by matching fields | MAL-16 | 3 |
+| A kit for building connectors | MAL-17 | 3 |
+| Stable, versioned interfaces for other software | MAL-18 | 2 |
+| Ready-made tools for AI agents | MAL-19 | 2 |
+| Use and change the product by chat | MAL-20 | 2 |
+| Usage data available within minutes | LRN-01 | 2 |
+| Feedback tied to what it concerns | LRN-02 | 0 |
+| Notices where users struggle | LRN-03 | 1 |
+| Usage, feedback, errors and changes joined | LRN-04 | 1 |
+| Works out why a problem happens | LRN-05 | 1 |
+| Ranked suggestions for change, with evidence | LRN-06 | 0 |
+| Learns from its own use, unprompted | LRN-07 | 1 |
+| Self-made changes tested before use | LRN-08 | 1 |
+| Every change measured after release | LRN-09 | 0 |
+| The checks themselves get better | LRN-10 | 0 |
+| Accessibility built in and checked | GOV-01 | 1 |
+| One record of every change | GOV-02 | 1 |
+| Personal data marked, exportable and erasable | GOV-03 | 2 |
+| Security checks built into every change | GOV-04 | 2 |
+| History and undo for every setting | GOV-05 | 1 |
+| Propose, preview, review, then apply | GOV-06 | 1 |
+| Written rules for what needs approval | GOV-07 | 2 |
+| Customisations survive product upgrades | GOV-08 | 2 |
+| Safe actions for AI and automation | GOV-09 | 2 |
+| Firm limits on self-made changes | GOV-10 | 2 |
+| Protection against planted instructions | GOV-11 | 1 |
+| A general-purpose core | EXP-01 | 3 |
+| New business areas without core changes | EXP-02 | 2 |
+| Ready-made packages for a business area | EXP-03 | 2 |
+| Notices needs it does not serve | EXP-04 | 0 |
+| Proposes new things to offer | EXP-05 | 0 |
+| Trial launches, kept or removed on results | EXP-06 | 1 |
+| AI works from the product's own data | AIR-03 | 3 |
+| The AI sees only what the user may | AIR-04 | 3 |
+| Maintained test cases for AI features | AIR-05 | 1 |
+| Worse AI results block a release | AIR-06 | 1 |
+| A full record of AI actions | AIR-07 | 3 |
+| Changeable AI models, planned failure handling | AIR-01 | 2 |
+| AI spending limits per customer | AIR-02 | 2 |
+| AI quality watched in real use | AIR-08 | 0 |
