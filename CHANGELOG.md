@@ -26,8 +26,8 @@ A critical review found that the scoring engine was sound but the framework did 
 
 ### Field test
 
-- All eleven products brought to v0.7 at their pinned commits, with kinds of change, LRN-10, confidence and AI delivery records, and a plain-language `report.md` each.
-- Corrections: n8n security scans to 2; OpenClaw scheduled-work restore to 2; LibreChat API contract to 2.
+- In progress: products brought to v0.7 at their pinned commits, with kinds of change, LRN-10, confidence and AI delivery records, and a plain-language `report.md` each. Done so far: n8n, Frappe, LibreChat.
+- Corrections so far: n8n security scans to 2; LibreChat API contract to 2. Pending: OpenClaw scheduled-work restore to 2.
 
 ## EVOLVE v0.6.1, 2026-10-03
 
