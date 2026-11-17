@@ -740,16 +740,16 @@
             "level": 1,
             "parts": {
               "stages": 1,
-              "spine": 2,
+              "spine": 1,
               "architecture": 2,
               "governance": 2
             }
           },
           "fix": {
-            "level": 2,
+            "level": 1,
             "parts": {
               "stages": 2,
-              "spine": 2,
+              "spine": 1,
               "architecture": 2,
               "governance": 2
             }

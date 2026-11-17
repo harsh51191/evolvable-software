@@ -60,11 +60,49 @@ def assessment(value=3, archetype="configurable-application-platform", facts=Non
                 scores[cid]["ai"]["facets"] = dict(ALL_FACETS)
     data = {"product": "P", "date": "2026-01-01", "source": "repo@abc", "archetype": archetype,
             "scope_facts": {f: {"value": v, "evidence": "README"} for f, v in facts.items()},
-            "change_kinds": kinds_at(1 if value >= 2 else 0) if kinds is None else kinds,
+            "change_kinds": default_kinds(value) if kinds is None else kinds,
             "scores": scores}
     for key, entry in overrides.items():
         data["scores"][key.replace("_", "-")] = entry
+    if kinds is None:
+        fit_kinds(data)
     return data
+
+
+class AutoKinds(list):
+    """Default kinds, kept consistent with the scores as tests change them."""
+
+
+def default_kinds(value):
+    """Two main kinds and one that is not. The first is self-serve (reach 1) from value 2; the second is as
+    far as the AI lane carries it, so a uniform assessment's product build path serves a main kind (v0.7)."""
+    kinds = AutoKinds(kinds_at(1 if value >= 2 else 0))
+    if value >= 2:
+        kinds[1]["reach"] = min(value, 5)
+    return kinds
+
+
+def max_reach(data):
+    """The highest reach the criteria allow (the rubric's reach_needs), read from plain scores."""
+    s = lambda cid: (data["scores"][cid].get("score") or 0) if data["scores"][cid]["status"] == "assessed" else 0
+    reach = 1
+    if s("DEL-04") >= 2 or (s("LRN-07") >= 2 and s("LRN-08") >= 2):
+        reach = 2
+        if s("DEL-04") >= 3:
+            reach = 3
+            if s("GOV-07") >= 3:
+                reach = 4
+                if s("LRN-07") >= 3:
+                    reach = 5
+    return reach
+
+
+def fit_kinds(data):
+    """Keep default kinds consistent after a score changes; explicit kinds are left as the test set them."""
+    if isinstance(data.get("change_kinds"), AutoKinds):
+        top = max_reach(data)
+        for kind in data["change_kinds"]:
+            kind["reach"] = min(kind["reach"], top) if kind["reach"] > 1 else kind["reach"]
 
 
 def set_score(data, cid, value):
@@ -73,6 +111,7 @@ def set_score(data, cid, value):
     entry["score"] = value
     if "inventory" in entry:
         entry["inventory"] = {k: value for k in entry["inventory"]}
+    fit_kinds(data)
 
 
 def run(data, *args):
@@ -868,12 +907,35 @@ class KindsOfChangeTests(unittest.TestCase):
         self.assertEqual(errors(data), [])
         self.assertEqual(result(data)["variants"]["default"]["capabilities"]["MAL"], 0)
         self.assertEqual(sal(data)["loops"]["request"]["level"], 1)
-        data = assessment(4, kinds=kinds_at(1))
+        data = assessment(4, kinds=list(default_kinds(4)))
         for cid in [c for c in ORDER if c.startswith("MAL-")]:
             set_score(data, cid, 0)
             data["scores"][cid].pop("facets", None)
         self.assertEqual(errors(data), [])
         self.assertEqual(sal(data)["headline"], 5)
+
+    def test_an_ai_lane_counts_only_when_it_serves_a_main_kind(self):
+        # Every main kind self-serve at most: a strong AI lane drafting only kinds that are not main
+        # does not lift the loops past Level 1.
+        kinds = kinds_at(1)
+        kinds[2]["reach"] = 4
+        data = assessment(4, kinds=kinds)
+        self.assertEqual(errors(data), [])
+        self.assertEqual(sal(data)["loops"]["request"]["level"], 1)
+        build = [b for b in sal(data)["loops"]["request"]["blockers"] if b["stage"] == "Build"][0]
+        self.assertIn("serving a main kind at reach 1", build["observed"])
+        # The same lane carrying a main kind lifts them.
+        kinds = kinds_at(1)
+        kinds[0]["reach"] = 4
+        self.assertEqual(sal(assessment(4, kinds=kinds))["headline"], 5)
+        # Level 1 by the product path alone: no main kind self-serve, but one drafted.
+        kinds = kinds_at(0)
+        kinds[1]["reach"] = 2
+        data = assessment(0, kinds=kinds)
+        for cid in ("GOV-05", "DEL-11", "DEL-04"):
+            set_score(data, cid, 2)
+        self.assertEqual(errors(data), [])
+        self.assertEqual(sal(data)["loops"]["request"]["level"], 1)
 
     def test_one_main_kind_engineers_only_fails_level_one(self):
         kinds = kinds_at(1)

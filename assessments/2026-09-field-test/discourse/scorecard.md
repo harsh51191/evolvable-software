@@ -27,13 +27,13 @@ Confidence: 13 high, 51 medium, 0 low across the assessed criteria. No low-confi
 
 Progress toward the next level: Request → Release 2 of 4 conditions for L2; Issue → Fix 4 of 5 conditions for L2; Opportunity → Expansion 1 of 2 conditions for L1.
 
-- With opt-in settings: Built to SAL 1 (Configurable) · AI-driven 0 · Request → Release L1 (AI L0) · Issue → Fix L2 (AI L0) · Opportunity → Expansion L1 (AI L0).
+- With opt-in settings: Built to SAL 1 (Configurable) · AI-driven 0 · Request → Release L1 (AI L0) · Issue → Fix L1 (AI L0) · Opportunity → Expansion L1 (AI L0).
 - With every alternate reading: Built to SAL 1 (Configurable) · AI-driven 0 · Request → Release L1 (AI L0) · Issue → Fix L1 (AI L0) · Opportunity → Expansion L0 (AI L0).
 
 | Loop | Stages | Spine | Architecture | Governance | Level | AI-driven | With opt-in settings |
 |---|---:|---:|---:|---:|---:|---:|---:|
 | Request → Release | L1 | L1 | L2 | L2 | **L1** | L0 | L1 |
-| Issue → Fix | L2 | L1 | L2 | L2 | **L1** | L0 | L2 |
+| Issue → Fix | L2 | L1 | L2 | L2 | **L1** | L0 | L1 |
 | Opportunity → Expansion | L1 | L0 | L2 | L2 | **L0** | L0 | L1 |
 
 **Recursion: 0 Fixed (LRN-10 at 0).** How far the loop improves its own checks, evaluation sets, policies and prompts from measured results.

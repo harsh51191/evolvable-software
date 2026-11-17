@@ -44,8 +44,8 @@
       "evidence": "Workflows, credentials, variables and data tables are definitions."
     },
     "code_release_path": {
-      "value": true,
-      "evidence": "Re-read at the v0.7 migration under the tightened definition. The agents builder (agents module, on by default: packages/@n8n/backend-common/src/modules/module-registry.ts:80) writes TypeScript custom tools, compiles and stores them on the agent (packages/cli/src/modules/agents/builder/agents-builder-tools.service.ts:1090-1123, agent-custom-tools.service.ts) and they run in a V8 isolate when the agent runs (runtime/agent-secure-runtime.ts). The workflow builder may also write Code-node scripts (packages/@n8n/ai-workflow-builder.ee/src/prompts/agents/discovery.prompt.ts:271-284). Both are code the product's AI produces that then runs as part of the product."
+      "value": false,
+      "evidence": "Re-read under the v0.7 rule for code inside definitions. The agents builder writes TypeScript custom tools that are stored on the agent and run in a V8 isolate (packages/cli/src/modules/agents/builder/agents-builder-tools.service.ts:1090-1123; runtime/agent-secure-runtime.ts), and the workflow builder may write Code-node scripts (packages/@n8n/ai-workflow-builder.ee/src/prompts/agents/discovery.prompt.ts:271-284). Both are sandboxed and versioned with the agent or workflow they belong to, so they are part of a definition and definition rollback (GOV-05) covers them. The earlier v0.7 reading (true) counted them as code releases."
     },
     "ai_features": {
       "value": true,
@@ -808,18 +808,9 @@
       "confidence": "low"
     },
     "DEL-11": {
-      "status": "assessed",
-      "score": 2,
-      "grade": "A",
-      "evidence": "Applies since code_release_path was re-read as true. Code the product's AI writes rolls back with the definition that carries it. An agent version snapshots its tools and skills, and an earlier version can be reverted to or published again (packages/cli/src/modules/agents/agent-publish.service.ts:124-176, 404-450; agent-publish.controller.ts:84-144), covered by agent-publish.service.test.ts. Code-node scripts roll back with workflow history, which keeps only 24 hours of earlier versions without a licence (packages/@n8n/constants/src/index.ts:80, packages/cli/src/workflows/workflow-history/workflow-history-helper.ts:11-27), so a previous release is not always available.",
-      "alt_score": 3,
-      "alt_note": "Activating an earlier agent version, tools included, is one tested step, and tool code changes no stored schema.",
-      "facets": {
-        "implemented": true,
-        "tested": true,
-        "operated": false
-      },
-      "confidence": "medium"
+      "status": "not_applicable",
+      "if_applicable": 2,
+      "rationale": "code_release_path is false: AI-written code runs sandboxed inside versioned workflows and agents, covered by GOV-05."
     },
     "AIR-01": {
       "status": "assessed",

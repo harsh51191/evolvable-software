@@ -37,7 +37,7 @@ Each loop shows its level, how many of the next level's applicable conditions it
 | Frappe | configurable platform | **1** | 0 | L1 (2/4), AI L0 | L1 (4/5), AI L0 | L1 (3/5), AI L0 | 1 |
 | OpenHands (canvas, SDK, automation) | agent runtime | **1** | 0 | L1 (1/4), AI L0 | L1 (2/5), AI L0 | L1 (2/5), AI L0 | 1 |
 | Discourse | focused application | **1** | 0 | L1 (2/4), AI L0 | L1 (4/5), AI L0 | L0 (1/2), AI L0 | 1 |
-| LibreChat | focused application | **1** | 0 | L1 (3/4), AI L0 | L1 (3/5), AI L0 | L1 (3/5), AI L0 | 1 |
+| LibreChat | focused application | **0** | 0 | L0 (1/2), AI L0 | L0 (2/3), AI L0 | L1 (3/5), AI L0 | 1 |
 | OpenCode | agent runtime | **0** | 0 | L0 (1/2), AI L0 | L0 (1/3), AI L0 | L0 (1/2), AI L0 | 0 |
 
 Opt-in settings change no headline level. `comparison.md` also covers:

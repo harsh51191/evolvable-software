@@ -50,7 +50,7 @@ It is all or nothing: if any assessed criterion records confidence, every assess
 
 ## Scope facts
 
-Every assessment declares twelve facts, each with evidence, for the default configuration. The three AI facts may also record `available_value`, their value with shipped opt-in settings on; it is used only by the AI Readiness View. They decide which criteria and critical controls apply, so a stateless library is not failed on backups and a single-user tool is not failed on tenant isolation. A fact that is wrongly declared is a validation finding, not a shortcut.
+Every assessment declares twelve facts, each with evidence, for the same installation the scores describe (scoring rule 2): the default configuration, and the edition the assessment names when it scores licensed modules as shipped. The three AI facts may also record `available_value`, their value with shipped opt-in settings on; it is used only by the AI Readiness View. They decide which criteria and critical controls apply, so a stateless library is not failed on backups and a single-user tool is not failed on tenant isolation. A fact that is wrongly declared is a validation finding, not a shortcut.
 
 | Fact | True when |
 |---|---|
@@ -62,7 +62,7 @@ Every assessment declares twelve facts, each with evidence, for the default conf
 | `agent_mutations` | The product's own agents or AI can write to its definitions, skills, memory, configuration or data, including drafts and proposals the product stores awaiting approval. `evolution_auto_apply` says whether they take effect without a person |
 | `evolution_auto_apply` | A change produced by the evolution loop (an AI lane, a learning loop or self-modification) applies without human approval by default. Scheduled maintenance such as index or column tuning does not count |
 | `definition_change_path` | Changes to the product's behaviour are made through definitions or configuration, by people or by the product |
-| `code_release_path` | The evolution system or the product's own AI produces code that then runs as part of the product: plugins, extensions, nodes, tools or scripts it writes and activates, or changes to its own source through its pipeline. Configuration and declarative definitions are not code |
+| `code_release_path` | The evolution system or the product's own AI produces code that then runs as part of the product: plugins, extensions, nodes, tools or scripts it writes and activates, or changes to its own source through its pipeline. Configuration and declarative definitions are not code. Code that lives inside a definition (a workflow's code step, an agent's custom tool, a transformation script) is part of that definition, not a code release, when it runs sandboxed and is versioned and rolled back with the definition; GOV-05 then covers it. It is a code release when it runs with the product's own privileges outside a sandbox, or is not versioned with a definition |
 | `ai_features` | The product ships features that call a language or other ML model |
 | `ai_data_access` | AI features read product data, or call tools that can (requires `ai_features`) |
 | `ai_actions` | AI can take consequential actions: change data or definitions, send messages outside the product, or spend money (requires `ai_features`) |
@@ -82,7 +82,7 @@ Every assessment lists them in `change_kinds`, 1 to 8 entries:
 
 - `id`: lowercase letters, digits and hyphens, unique.
 - `name`: plain words, no jargon. `who`: who needs to make this change.
-- `main`: true when this kind makes up a large share of the changes the product's operators and users actually need. At least one kind is main.
+- `main`: true when the product presents this kind, in its default interface or its user and admin documentation, as a normal way for the people running it (not developers) to adapt it, and they would need it in ordinary use. A kind the product offers only to developers (writing code or apps, scripts switched off by default) is not main. At least one kind is main.
 - `reach`: how far this kind of change has come, 0 to 5.
 - `evidence`: where the kind and its reach were found. `confidence` is optional, as for criteria.
 
@@ -100,8 +100,10 @@ Every assessment lists them in `change_kinds`, 1 to 8 entries:
 - List every kind of change operators or users commonly need, from the product's own documentation, admin surfaces and request history. Include the kinds they cannot make themselves. A kind left out to raise the level is a finding, like a wrongly declared scope fact.
 - Record the evidence for each kind and for its reach.
 - Reach 1 needs both the supported path and undo. A path with no undo is reach 0, and the evidence says so.
+- A supported path is one the product ships for the people running it: a screen, a command, or an API whose client is part of the product or a first-party companion (an official admin app). An API with no shipped client is a path for developers.
+- Undo means getting back the behaviour from before the change. Deleting something that was added is undo. Deleting or overwriting something that existed before, with no way to restore its earlier content, is not.
 
-**How it scores.** The people build path for Request → Release and Issue → Fix is the kinds of change. It is 2 when every main kind has reach 1 or more, 1 when only some kinds do, and 0 when none do. Level 1 needs that path at 2, or the product path at 2. Opportunity → Expansion keeps EXP-02 as its people path. The Open (MAL) capability stays in the profile and no longer decides Level 1.
+**How it scores.** The people build path for Request → Release and Issue → Fix is the kinds of change. It is 2 when every main kind has reach 1 or more, 1 when only some kinds do, and 0 when none do. Level 1 needs that path at 2, or the product path at 2. The product path (an AI lane, DEL-04, or learning into candidate changes, LRN-07 with LRN-08) counts at a level only when at least one main kind has reached that far: a product path of 2 needs a main kind at reach 2 or more, and 3 needs one at reach 3. An AI lane that drafts only kinds that are not main does not lift the loop. Opportunity → Expansion keeps EXP-02 as its people path. The Open (MAL) capability stays in the profile and no longer decides Level 1.
 
 A reach must agree with the criteria, read at their default scores. Otherwise the assessment fails validation:
 
@@ -385,7 +387,8 @@ A supporting reading, separate from SAL: **how safely can the product run AI in 
       ],
       "product": [
         {
-          "c": "DEL-04"
+          "c": "DEL-04",
+          "serves_main": true
         }
       ]
     },
@@ -397,14 +400,16 @@ A supporting reading, separate from SAL: **how safely can the product run AI in 
       ],
       "product": [
         {
-          "c": "DEL-04"
+          "c": "DEL-04",
+          "serves_main": true
         },
         {
           "c": "LRN-07",
           "with": {
             "c": "LRN-08",
             "min": 2
-          }
+          },
+          "serves_main": true
         }
       ]
     },

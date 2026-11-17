@@ -31,6 +31,14 @@ def kinds_at(reach, main=(True, True, False)):
              "evidence": f"docs/{names[i]}.md"} for i, m in enumerate(main)]
 
 
+def default_kinds(value):
+    """The first main kind self-serve from value 2; the second as far as a uniform AI lane carries it (v0.7)."""
+    kinds = kinds_at(1 if value >= 2 else 0)
+    if value >= 2:
+        kinds[1]["reach"] = min(value, 5)
+    return kinds
+
+
 def product(value=3, facts=None, kinds=None):
     """An assessment with every criterion at one value, depth facets and inventories filled in.
     Kinds of change are self-serve when value is 2 or more and engineers only below that."""
@@ -60,7 +68,7 @@ def product(value=3, facts=None, kinds=None):
     return {"product": "P", "date": "2026-01-01", "source": "repo@abc",
             "archetype": "configurable-application-platform",
             "scope_facts": {f: {"value": v, "evidence": "README"} for f, v in facts.items()},
-            "change_kinds": kinds_at(1 if value >= 2 else 0) if kinds is None else kinds,
+            "change_kinds": default_kinds(value) if kinds is None else kinds,
             "scores": scores}
 
 

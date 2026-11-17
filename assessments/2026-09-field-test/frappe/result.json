@@ -381,11 +381,7 @@
       "LRN-03",
       "GOV-05"
     ],
-    "raise_loop": {
-      "fix": [
-        "LRN-08"
-      ]
-    },
+    "raise_loop": {},
     "lower_loop": {
       "fix": [
         "LRN-03",

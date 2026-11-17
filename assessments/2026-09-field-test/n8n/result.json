@@ -16,18 +16,18 @@
     "agent_mutations": true,
     "evolution_auto_apply": false,
     "definition_change_path": true,
-    "code_release_path": true,
+    "code_release_path": false,
     "ai_features": true,
     "ai_data_access": true,
     "ai_actions": true
   },
   "coverage": {
-    "assessed": 75,
+    "assessed": 74,
     "not_evidenced": 0,
-    "not_applicable": 0
+    "not_applicable": 1
   },
   "grades": {
-    "A": 75,
+    "A": 74,
     "B": 0,
     "C": 0,
     "D": 0
@@ -46,7 +46,7 @@
           "governance": 2
         },
         "next_met": 11,
-        "next_total": 21,
+        "next_total": 20,
         "blockers": [
           {
             "part": "spine",
@@ -68,13 +68,6 @@
             "needs": "GOV-05 ≥ 3",
             "observed": "2",
             "control": "Definition rollback"
-          },
-          {
-            "part": "spine",
-            "stage": "Roll back",
-            "needs": "DEL-11 ≥ 3",
-            "observed": "2",
-            "control": "Release rollback"
           },
           {
             "part": "stages",
@@ -130,7 +123,7 @@
           "governance": 2
         },
         "next_met": 11,
-        "next_total": 23,
+        "next_total": 22,
         "blockers": [
           {
             "part": "spine",
@@ -152,13 +145,6 @@
             "needs": "GOV-05 ≥ 3",
             "observed": "2",
             "control": "Definition rollback"
-          },
-          {
-            "part": "spine",
-            "stage": "Roll back",
-            "needs": "DEL-11 ≥ 3",
-            "observed": "2",
-            "control": "Release rollback"
           },
           {
             "part": "stages",
@@ -257,8 +243,8 @@
       {
         "control": "Release rollback",
         "needs": "DEL-11 ≥ 3",
-        "observed": "2",
-        "status": "fail"
+        "observed": "n/a",
+        "status": "n/a"
       },
       {
         "control": "Safe migrations",
@@ -478,7 +464,7 @@
     "recorded": true,
     "criteria": {
       "high": 9,
-      "medium": 52,
+      "medium": 51,
       "low": 14,
       "none": 0
     },
@@ -509,7 +495,6 @@
     "lower_headline": [
       "DEL-01",
       "DEL-04",
-      "DEL-11",
       "LRN-03",
       "LRN-05",
       "LRN-06",
@@ -520,19 +505,16 @@
       "request": [
         "DEL-01",
         "DEL-04",
-        "DEL-11",
         "GOV-05"
       ],
       "fix": [
         "DEL-04",
-        "DEL-11",
         "LRN-03",
         "LRN-05",
         "LRN-06",
         "GOV-05"
       ],
       "expansion": [
-        "DEL-11",
         "GOV-05"
       ]
     }
@@ -836,7 +818,7 @@
     ],
     "DEL": [
       2.1,
-      2.8
+      2.7
     ],
     "MAL": [
       2.3,
@@ -903,7 +885,7 @@
     "DEL-08": 2,
     "DEL-09": 2,
     "DEL-10": 2,
-    "DEL-11": 2,
+    "DEL-11": null,
     "MAL-01": 2,
     "MAL-02": 2,
     "MAL-03": 1,
@@ -964,7 +946,7 @@
     "high": {
       "capabilities": {
         "ARC": 2.3,
-        "DEL": 2.8,
+        "DEL": 2.7,
         "MAL": 3.0,
         "LRN": 2.5,
         "GOV": 2.7,

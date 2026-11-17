@@ -66,9 +66,16 @@
           "architecture": 2,
           "governance": 2
         },
-        "next_met": 13,
+        "next_met": 12,
         "next_total": 22,
         "blockers": [
+          {
+            "part": "spine",
+            "stage": "Build",
+            "needs": "product build path ≥ 3",
+            "observed": "DEL-04 2, LRN-07 3 with LRN-08 2 serving a main kind at reach 2",
+            "control": null
+          },
           {
             "part": "spine",
             "stage": "Verify",

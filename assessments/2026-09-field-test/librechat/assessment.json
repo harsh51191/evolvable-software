@@ -8,7 +8,7 @@
   "archetype": "focused-application",
   "scope_line": "Scope: the LibreChat monorepo (api, client, packages/api, data-provider, data-schemas, e2e, helm, CI). The hosted code interpreter service, RAG API image and third-party MCP servers are out of scope.",
   "limits": "Repository evidence only, main at the tip named above. The hosted code interpreter, RAG API and third-party MCP servers are out of scope. Whether the accessibility and Lighthouse checks run on every pull request depends on path filters and inputs that were read, not exercised. Single rater.",
-  "reading": "**SAL 1.** The product's own agent writes skills on request, inside permission and content checks (DEL-04 2), and that AI lane gives every loop a build path at L1. The people path does not: agents and prompts are versioned and can be reverted, but model settings and tool connections have no undo in the product (1 of 3 main kinds self-serve). Each loop holds at L1 because requests arrive as free text with no record (DEL-01), problems are recorded but not diagnosed (LRN-05 1), and unmet demand is not sensed (EXP-04). **Fragile:** the level rests on one narrow lane for a kind of change that is not main; if GOV-05 or LRN-03 fell one level it would drop to L0. **Next level:** a structured request record, diagnosis of recorded failures, and history with undo for model settings, tool connections and skills; for Level 3, a supported backup (ARC-09 1).",
+  "reading": "**SAL 0.** Agents and prompts are versioned and can be reverted, and model settings can be overridden and undone through the first-party admin panel. Tool connections cannot be undone: an edit keeps no history, so 2 of 3 main kinds are self-serve and the people path fails. The product's own agent writes skills on request inside permission and content checks (DEL-04 2), but skills are not a main kind, and under the v0.7 rule an AI lane counts only when it serves a main kind. **Next level:** keep a history of tool-connection changes with one-step undo; that alone gives every loop a build path at L1. Then a structured request record (DEL-01), diagnosis of recorded failures (LRN-05), and for Level 3 a supported backup (ARC-09 1).",
   "confidence_note": "Confidence for criteria whose reading did not change at the v0.7 migration was assigned at migration from the recorded evidence (high where it names the code path and its tests, medium where it names code but not every path, low where the reading is inferred or rests on documentation or absence); criteria re-read at migration were assigned from that re-reading.",
   "scope_facts": {
     "persistent_data": {
@@ -66,8 +66,8 @@
       "name": "Which AI models and providers are offered, and app-wide settings",
       "who": "administrators",
       "main": true,
-      "reach": 0,
-      "evidence": "Endpoints, model specs and interface settings live in librechat.yaml and .env, edited on the server and read at start (librechat.example.yaml; packages/data-provider/src/config.ts). Per-principal overrides can be set through an admin API (api/server/routes/admin/config.js:38-46) with no admin screen in this repository and no history; deleting an override returns to the file, not to the earlier override.",
+      "reach": 1,
+      "evidence": "Base settings live in librechat.yaml and .env, edited on the server and read at start. Live overrides per role, group or user are set through the admin configuration API (api/server/routes/admin/config.js:38-46), validated and merged per request (packages/api/src/app/service.ts:396-518), and undone by deleting the override, which restores the base setting. The API's client is the first-party admin panel image (deploy-compose.yml), so under the v0.7 self-serve rule this kind is self-serve with undo.",
       "confidence": "medium"
     },
     {

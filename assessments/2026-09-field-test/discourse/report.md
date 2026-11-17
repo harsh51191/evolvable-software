@@ -127,7 +127,7 @@ The reading answers 75 questions: 64 from evidence, 0 where no evidence was foun
 
 The evidence behind the answers: 64 checked in the code, 0 taken from the product's own documents or settings and 0 inferred from other material.
 
-With settings that ship switched off turned on, From problem to fix would read Level 2, Assisted; From unmet need to new offering would read Level 1, Configurable.
+With settings that ship switched off turned on, From unmet need to new offering would read Level 1, Configurable.
 
 The overall level would drop if any of these were rated one step lower: Notices where users struggle; History and undo for every setting.
 

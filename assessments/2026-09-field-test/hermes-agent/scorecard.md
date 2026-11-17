@@ -25,7 +25,7 @@ Confidence: 11 high, 31 medium, 21 low across the assessed criteria. Check these
 
 **Built to SAL 1 (Configurable) · Proven: not evidenced · AI-driven 0 · Request → Release L1 (AI L0) · Issue → Fix L2 (AI L0) · Opportunity → Expansion L1 (AI L0)**
 
-Progress toward the next level: Request → Release 3 of 4 conditions for L2; Issue → Fix 13 of 22 conditions for L3; Opportunity → Expansion 3 of 5 conditions for L2.
+Progress toward the next level: Request → Release 3 of 4 conditions for L2; Issue → Fix 12 of 22 conditions for L3; Opportunity → Expansion 3 of 5 conditions for L2.
 
 - With opt-in settings: Built to SAL 1 (Configurable) · AI-driven 0 · Request → Release L1 (AI L0) · Issue → Fix L2 (AI L0) · Opportunity → Expansion L1 (AI L0).
 - With every alternate reading: Built to SAL 2 (Assisted) · AI-driven 0 · Request → Release L2 (AI L2) · Issue → Fix L2 (AI L0) · Opportunity → Expansion L1 (AI L0).
@@ -78,7 +78,7 @@ Progress toward the next level: Request → Release 3 of 4 conditions for L2; Is
 ### What blocks the next level
 
 - **Request → Release to L2**: stages Intake needs DEL-01 ≥ 2 (has 1)
-- **Issue → Fix to L3**: spine Verify needs DEL-05 ≥ 3 (has 2); spine Verify needs DEL-06 ≥ 3 (has 2); spine Roll back needs GOV-05 ≥ 3 (has 2); spine Roll back needs DEL-11 ≥ 3 (has 2); stages Detect needs LRN-03 ≥ 3 (has 2); stages Diagnose needs LRN-05 ≥ 3 (has 2); stages Propose needs LRN-06 ≥ 3 (has 2); architecture Foundation needs ARC-02 ≥ 3 (has 2); governance Ceiling needs GOV-10 ≥ 3 and LRN-08 ≥ 2 (has 2; 2)
+- **Issue → Fix to L3**: spine Build needs product build path ≥ 3 (has DEL-04 2, LRN-07 3 with LRN-08 2 serving a main kind at reach 2); spine Verify needs DEL-05 ≥ 3 (has 2); spine Verify needs DEL-06 ≥ 3 (has 2); spine Roll back needs GOV-05 ≥ 3 (has 2); spine Roll back needs DEL-11 ≥ 3 (has 2); stages Detect needs LRN-03 ≥ 3 (has 2); stages Diagnose needs LRN-05 ≥ 3 (has 2); stages Propose needs LRN-06 ≥ 3 (has 2); architecture Foundation needs ARC-02 ≥ 3 (has 2); governance Ceiling needs GOV-10 ≥ 3 and LRN-08 ≥ 2 (has 2; 2)
 - **Opportunity → Expansion to L2**: stages Sense needs EXP-04 ≥ 2 (has 1); stages Propose needs EXP-05 ≥ 2 (has 1)
 
 ### What AI drives

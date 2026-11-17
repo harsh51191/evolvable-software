@@ -6,7 +6,7 @@ Scope: the LibreChat monorepo (api, client, packages/api, data-provider, data-sc
 
 ## Reading
 
-**SAL 1.** The product's own agent writes skills on request, inside permission and content checks (DEL-04 2), and that AI lane gives every loop a build path at L1. The people path does not: agents and prompts are versioned and can be reverted, but model settings and tool connections have no undo in the product (1 of 3 main kinds self-serve). Each loop holds at L1 because requests arrive as free text with no record (DEL-01), problems are recorded but not diagnosed (LRN-05 1), and unmet demand is not sensed (EXP-04). **Fragile:** the level rests on one narrow lane for a kind of change that is not main; if GOV-05 or LRN-03 fell one level it would drop to L0. **Next level:** a structured request record, diagnosis of recorded failures, and history with undo for model settings, tool connections and skills; for Level 3, a supported backup (ARC-09 1).
+**SAL 0.** Agents and prompts are versioned and can be reverted, and model settings can be overridden and undone through the first-party admin panel. Tool connections cannot be undone: an edit keeps no history, so 2 of 3 main kinds are self-serve and the people path fails. The product's own agent writes skills on request inside permission and content checks (DEL-04 2), but skills are not a main kind, and under the v0.7 rule an AI lane counts only when it serves a main kind. **Next level:** keep a history of tool-connection changes with one-step undo; that alone gives every loop a build path at L1. Then a structured request record (DEL-01), diagnosis of recorded failures (LRN-05), and for Level 3 a supported backup (ARC-09 1).
 
 ## Limits
 
@@ -19,21 +19,21 @@ Scope facts true: persistent_data, schema_changes, hosted_service, machine_actio
 
 Coverage: 65 assessed, 0 not evidenced, 10 not applicable. Grades: 65 A, 0 B, 0 C.
 
-Confidence: 3 high, 49 medium, 13 low across the assessed criteria. Check these first (low confidence, and they hold a blocker or a critical control): LRN-05 (Issue → Fix to L2); EXP-04 (Opportunity → Expansion to L2); EXP-05 (Opportunity → Expansion to L2).
+Confidence: 3 high, 49 medium, 13 low across the assessed criteria. Check these first (low confidence, and they hold a blocker or a critical control): EXP-04 (Opportunity → Expansion to L2); EXP-05 (Opportunity → Expansion to L2).
 
 ## Software Autonomy Level
 
-**Built to SAL 1 (Configurable) · Proven: not evidenced · AI-driven 0 · Request → Release L1 (AI L0) · Issue → Fix L1 (AI L0) · Opportunity → Expansion L1 (AI L0)**
+**Built to SAL 0 (Manual) · Proven: not evidenced · AI-driven 0 · Request → Release L0 (AI L0) · Issue → Fix L0 (AI L0) · Opportunity → Expansion L1 (AI L0)**
 
-Progress toward the next level: Request → Release 3 of 4 conditions for L2; Issue → Fix 3 of 5 conditions for L2; Opportunity → Expansion 3 of 5 conditions for L2.
+Progress toward the next level: Request → Release 1 of 2 conditions for L1; Issue → Fix 2 of 3 conditions for L1; Opportunity → Expansion 3 of 5 conditions for L2.
 
-- With opt-in settings: Built to SAL 1 (Configurable) · AI-driven 0 · Request → Release L1 (AI L0) · Issue → Fix L1 (AI L0) · Opportunity → Expansion L1 (AI L0).
-- With every alternate reading: Built to SAL 1 (Configurable) · AI-driven 0 · Request → Release L1 (AI L0) · Issue → Fix L1 (AI L0) · Opportunity → Expansion L1 (AI L0).
+- With opt-in settings: Built to SAL 0 (Manual) · AI-driven 0 · Request → Release L0 (AI L0) · Issue → Fix L0 (AI L0) · Opportunity → Expansion L1 (AI L0).
+- With every alternate reading: Built to SAL 0 (Manual) · AI-driven 0 · Request → Release L0 (AI L0) · Issue → Fix L0 (AI L0) · Opportunity → Expansion L1 (AI L0).
 
 | Loop | Stages | Spine | Architecture | Governance | Level | AI-driven | With opt-in settings |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| Request → Release | L1 | L2 | L2 | L2 | **L1** | L0 | L1 |
-| Issue → Fix | L1 | L2 | L2 | L2 | **L1** | L0 | L1 |
+| Request → Release | L1 | L0 | L2 | L2 | **L0** | L0 | L0 |
+| Issue → Fix | L1 | L0 | L2 | L2 | **L0** | L0 | L0 |
 | Opportunity → Expansion | L1 | L2 | L2 | L2 | **L1** | L0 | L1 |
 
 **Recursion: 1 By hand (LRN-10 at 1).** How far the loop improves its own checks, evaluation sets, policies and prompts from measured results.
@@ -42,11 +42,11 @@ Progress toward the next level: Request → Release 3 of 4 conditions for L2; Is
 
 ### Kinds of change
 
-1 of 3 main kinds are self-serve (reach 1 or more: the people running the product make it themselves and can undo it).
+2 of 3 main kinds are self-serve (reach 1 or more: the people running the product make it themselves and can undo it).
 
 | Kind | Who | Main | Reach | Evidence |
 |---|---|---|---|---|
-| Which AI models and providers are offered, and app-wide settings (`models-config`) | administrators | yes | 0 Engineers only | Endpoints, model specs and interface settings live in librechat.yaml and .env, edited on the server and read at start (librechat.example.yaml; packages/data-provider/src/config.ts). Per-principal overrides can be set through an admin API (api/server/routes/admin/config.js:38-46) with no admin screen in this repository and no history; deleting an override returns to the file, not to the earlier override. Confidence medium. |
+| Which AI models and providers are offered, and app-wide settings (`models-config`) | administrators | yes | 1 Self-serve | Base settings live in librechat.yaml and .env, edited on the server and read at start. Live overrides per role, group or user are set through the admin configuration API (api/server/routes/admin/config.js:38-46), validated and merged per request (packages/api/src/app/service.ts:396-518), and undone by deleting the override, which restores the base setting. The API's client is the first-party admin panel image (deploy-compose.yml), so under the v0.7 self-serve rule this kind is self-serve with undo. Confidence medium. |
 | Agents: their instructions, tools and files (`agents`) | users and administrators | yes | 1 Self-serve | Built in the agent builder with no deploy; each save keeps a version (packages/data-schemas/src/schema/agent.ts:125) and an agent can be reverted to an earlier version (api/server/routes/agents/v1.js:154-168). No AI drafts agent changes (DEL-04 is 0). Confidence high. |
 | Tools and connected services (MCP servers) (`tools-mcp`) | administrators and users | yes | 0 Engineers only | Servers in librechat.yaml need a server edit and restart; servers added in the UI (api/server/routes/mcp.js:1261-1287) can be removed but keep no history of earlier settings or credentials, so a change cannot be undone through the product. A path without undo is reach 0. Confidence medium. |
 | Saved prompts (`prompts`) | users | no | 1 Self-serve | Prompt groups keep versions and a chosen production version that can be switched back (packages/data-schemas/src/schema/promptGroup.ts:25). Confidence medium. |
@@ -59,8 +59,8 @@ Progress toward the next level: Request → Release 3 of 4 conditions for L2; Is
 
 | Loop | Built | Proven | Operating records, or what was searched |
 |---|---:|---|---|
-| Request → Release | L1 | not evidenced | Searched: The repository at the pinned commit: agent and prompt version fields, audit-log schema (packages/data-schemas/src/types/auditLog.ts), UPGRADING.md and release workflows for LibreChat's own engineer-made releases. No operating records of real changes made through the product's request loop in a deployment. |
-| Issue → Fix | L1 | not evidenced | Searched: The same sources plus message feedback (packages/data-schemas/src/schema/message.ts:103) and admin insights (packages/api/src/insights); no operating records of issues fixed through the product's loop. |
+| Request → Release | L0 | not evidenced | Searched: The repository at the pinned commit: agent and prompt version fields, audit-log schema (packages/data-schemas/src/types/auditLog.ts), UPGRADING.md and release workflows for LibreChat's own engineer-made releases. No operating records of real changes made through the product's request loop in a deployment. |
+| Issue → Fix | L0 | not evidenced | Searched: The same sources plus message feedback (packages/data-schemas/src/schema/message.ts:103) and admin insights (packages/api/src/insights); no operating records of issues fixed through the product's loop. |
 | Opportunity → Expansion | L1 | not evidenced | Searched: The same sources; no records of capabilities launched to a group and kept or killed. |
 
 ### Critical controls
@@ -77,8 +77,8 @@ Progress toward the next level: Request → Release 3 of 4 conditions for L2; Is
 
 ### What blocks the next level
 
-- **Request → Release to L2**: stages Intake needs DEL-01 ≥ 2 (has 0)
-- **Issue → Fix to L2**: stages Diagnose needs LRN-05 ≥ 2 (has 1); stages Propose needs LRN-06 ≥ 2 (has 0)
+- **Request → Release to L1**: spine Build needs people build path ≥ 2 or product build path ≥ 2 (has kinds 2 of 3 main self-serve; DEL-04 2 serving a main kind at reach 1)
+- **Issue → Fix to L1**: spine Build needs people build path ≥ 2 or product build path ≥ 2 (has kinds 2 of 3 main self-serve; DEL-04 2 serving a main kind at reach 1, LRN-07 1)
 - **Opportunity → Expansion to L2**: stages Sense needs EXP-04 ≥ 2 (has 0); stages Propose needs EXP-05 ≥ 2 (has 0)
 
 ### What AI drives
@@ -87,13 +87,13 @@ Each loop re-scored with its AI-performable stages read only on what AI does the
 
 | Loop | Level | AI-driven | AI stage readings | What AI needs for its next level |
 |---|---:|---:|---|---|
-| Request → Release | L1 | L0 | DEL-01 0, DEL-04 2 | DEL-01 ≥ 2 (has 0) |
-| Issue → Fix | L1 | L0 | LRN-05 0, LRN-06 0, LRN-07 1, LRN-08 2 | LRN-05 ≥ 2 (has 0); LRN-06 ≥ 2 (has 0) |
+| Request → Release | L0 | L0 | DEL-01 0, DEL-04 2 | people build path ≥ 2 or product build path ≥ 2 (has kinds 2 of 3 main self-serve; DEL-04 2 serving a main kind at reach 1) |
+| Issue → Fix | L0 | L0 | LRN-05 0, LRN-06 0, LRN-07 1, LRN-08 2 | people build path ≥ 2 or product build path ≥ 2 (has kinds 2 of 3 main self-serve; DEL-04 2 serving a main kind at reach 1, LRN-07 1) |
 | Opportunity → Expansion | L1 | L0 | EXP-05 0 | EXP-05 ≥ 2 (has 0) |
 
 ### Sensitivity
 
-- **Fragile:** the headline drops if any of these falls one level: DEL-04, LRN-03, GOV-05.
+- **Robust:** no single criterion falling one level lowers the headline.
 - No single criterion rising one level lifts the headline.
 
 ## EVOLVE profile

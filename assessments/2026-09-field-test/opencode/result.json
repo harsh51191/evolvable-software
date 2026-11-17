@@ -791,10 +791,10 @@
         "headline_name": "Manual",
         "loops": {
           "request": {
-            "level": 1,
+            "level": 0,
             "parts": {
               "stages": 1,
-              "spine": 2,
+              "spine": 0,
               "architecture": 2,
               "governance": 2
             }
@@ -803,7 +803,7 @@
             "level": 0,
             "parts": {
               "stages": 0,
-              "spine": 2,
+              "spine": 0,
               "architecture": 2,
               "governance": 2
             }

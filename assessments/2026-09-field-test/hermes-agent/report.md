@@ -61,6 +61,7 @@ The strongest parts of the product, rated 3 or more out of 4.
 What each loop lacks for its next level, most widely felt first.
 
 - **Take in the request.** Requests stay as loose text, and the product does not turn them into a plan a person can confirm and build from. Holds back: From request to release, on the way to Level 2.
+- **Build the change.** The product's own AI does not build accepted changes from start to finish, so a person still builds or completes each one. Holds back: From problem to fix, on the way to Level 3.
 - **Check the change.** Some kinds of change, or drafts, can take effect without passing automatic checks. Holds back: From problem to fix, on the way to Level 3.
 - **Check the change.** The running product cannot report its version, its health and its live settings in a form software can read. Holds back: From problem to fix, on the way to Level 3.
 - **Undo it.** Undo does not cover everything people can change, so some settings, rules or layouts have no history to go back to. Holds back: From problem to fix, on the way to Level 3.
@@ -185,7 +186,7 @@ Recursion: 1 By hand (LRN-10 at 1). 2 of 3 main kinds are self-serve.
 Next-level blockers in the scorer's terms:
 
 - Request → Release to L2: stages Intake needs DEL-01 ≥ 2 (has 1)
-- Issue → Fix to L3: spine Verify needs DEL-05 ≥ 3 (has 2); spine Verify needs DEL-06 ≥ 3 (has 2); spine Roll back needs GOV-05 ≥ 3 (has 2); spine Roll back needs DEL-11 ≥ 3 (has 2); stages Detect needs LRN-03 ≥ 3 (has 2); stages Diagnose needs LRN-05 ≥ 3 (has 2); stages Propose needs LRN-06 ≥ 3 (has 2); architecture Foundation needs ARC-02 ≥ 3 (has 2); governance Ceiling needs GOV-10 ≥ 3 and LRN-08 ≥ 2 (has 2; 2)
+- Issue → Fix to L3: spine Build needs product build path ≥ 3 (has DEL-04 2, LRN-07 3 with LRN-08 2 serving a main kind at reach 2); spine Verify needs DEL-05 ≥ 3 (has 2); spine Verify needs DEL-06 ≥ 3 (has 2); spine Roll back needs GOV-05 ≥ 3 (has 2); spine Roll back needs DEL-11 ≥ 3 (has 2); stages Detect needs LRN-03 ≥ 3 (has 2); stages Diagnose needs LRN-05 ≥ 3 (has 2); stages Propose needs LRN-06 ≥ 3 (has 2); architecture Foundation needs ARC-02 ≥ 3 (has 2); governance Ceiling needs GOV-10 ≥ 3 and LRN-08 ≥ 2 (has 2; 2)
 - Opportunity → Expansion to L2: stages Sense needs EXP-04 ≥ 2 (has 1); stages Propose needs EXP-05 ≥ 2 (has 1)
 
 | Plain name | Code | Score |

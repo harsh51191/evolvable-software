@@ -129,7 +129,7 @@ The reading answers 75 questions: 62 from evidence, 0 where no evidence was foun
 
 The evidence behind the answers: 62 checked in the code, 0 taken from the product's own documents or settings and 0 inferred from other material.
 
-With the higher readings some evidence also supports, From request to release would read Level 1, Configurable; From unmet need to new offering would read Level 1, Configurable.
+With the higher readings some evidence also supports, From unmet need to new offering would read Level 1, Configurable.
 
 The reading treats the product as follows:
 

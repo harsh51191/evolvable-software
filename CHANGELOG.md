@@ -13,6 +13,16 @@ A critical review found that the scoring engine was sound but the framework did 
 - **AI-assisted engineering** is recorded, and rule 12 now says when an installed delivery framework counts as the product's own way of changing.
 - **Three definitions tightened** after the second-rating study: LRN-08 for products with no learned changes, `multi_tenant`, and `code_release_path` with `agent_mutations`.
 
+### Decided after the blind full ratings
+
+Five questions the raters split on are now rules, so two raters reading the same code reach the same level:
+
+- **What makes a kind of change main.** The product presents it, in its default interface or user and admin documentation, as a normal way for the people running it to adapt it. Kinds offered only to developers (writing code or apps, scripts switched off by default) are not main.
+- **Self-serve and undo.** A supported path is a screen, a command, or an API whose client ships with the product or an official companion. Undo means getting the earlier behaviour back; deleting something that existed before, without its earlier content, is not undo.
+- **An AI lane must serve a main kind.** The product build path counts at a level only when a main kind of change has reached that far (Drafted for Level 1 and 2, Carried for Level 3). An AI that drafts only side things does not lift the product. LibreChat's agent writes skills, which are not main, so it stays at Level 0.
+- **Scope facts follow the scored installation**, the same default configuration or named edition the scores describe.
+- **Code inside a definition is part of the definition** when it runs sandboxed and is versioned with it; it is a code release otherwise. n8n's AI-written code steps and agent tools are definitions, so release rollback (DEL-11) no longer applies to it. No level changed.
+
 ### Added
 
 - **What evolvable software means.** The README opens with a plain definition, what it is not, why levels cannot be skipped, and what each level means for users.
@@ -29,7 +39,7 @@ A critical review found that the scoring engine was sound but the framework did 
 - All eleven products brought to v0.7 at their pinned commits, with kinds of change, LRN-10, confidence and AI delivery records, and a plain-language `report.md` each. No product's level changed in the migration.
 - Corrections: n8n security scans to 2; OpenClaw scheduled-work restore to 2; LibreChat API contract to 2; Dify and Directus backup to 0 (no supported backup in the repository).
 - Re-reading under the tightened definitions changed scope facts for n8n (multi-tenant; its agent builder ships code), OpenClaw (activates agent-built plugins), LibreChat, OpenCode, OpenHands and Dify (their AI writes their own definitions), with the criteria that brought into scope.
-- Blind second ratings of every criterion for n8n, LibreChat and Frappe. 149 of 200 shared scores matched exactly (74%) and 196 (98%) were within one point; every Level 3 control failed under both raters. They led to three LibreChat corrections (its agent writing skills is an AI lane, DEL-04 0 to 2; a job queue exists, ARC-04 1 to 3; operators are told to back up, ARC-09 0 to 1), which raise LibreChat from Level 0 to Level 1. Frappe's level still differs (1 or 0) on whether custom server logic is a main kind of change. Results in `second-rating/README.md`; open questions in `evals/disagreements.md`.
+- Blind second ratings of every criterion for n8n, LibreChat and Frappe. 149 of 200 shared scores matched exactly (74%) and 196 (98%) were within one point; every Level 3 control failed under both raters. They led to three LibreChat corrections (its agent writing skills is an AI lane, DEL-04 0 to 2; a job queue exists, ARC-04 1 to 3; operators are told to back up, ARC-09 0 to 1). LibreChat stays at Level 0 under the rule below, because skills are not a main kind; Frappe stays at Level 1, because custom server logic is offered only to developers. Results in `second-rating/README.md`; open questions in `evals/disagreements.md`.
 - Answer Desk, the reference product, assessed blind: Built to and Designed for Level 1. Its published assessment and the corrections to its own documentation are in `examples/born-evolvable/`.
 
 ## EVOLVE v0.6.1, 2026-10-03

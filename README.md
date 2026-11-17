@@ -96,7 +96,7 @@ This is a **public beta**. It is designed to produce a falsifiable assessment, n
 
 EVOLVE was run on 11 open-source products from their public source code; each name links to the project, and the field-test README lists the exact commit read. Full tables, evidence and per-product scorecards are in [`assessments/2026-09-field-test/`](assessments/2026-09-field-test/README.md).
 
-> **Provisional.** These readings come from AI raters and have not been reviewed by the projects' maintainers. Eight control criteria on three products had a blind second and third rating, and n8n, LibreChat and Frappe had a blind second rating of every criterion under v0.7 (see `second-rating/`). In those full ratings 74% of scores matched exactly and 98% were within one point, every Level 3 control failed under both raters, and the overall level matched for n8n, matched for LibreChat after three corrections, and still differs for Frappe on one judgement call. Read them as findings to check, not rankings. Brought to EVOLVE v0.7 in November 2026 at the same commits.
+> **Provisional.** These readings come from AI raters and have not been reviewed by the projects' maintainers. Eight control criteria on three products had a blind second and third rating, and n8n, LibreChat and Frappe had a blind second rating of every criterion under v0.7 (see `second-rating/`). In those full ratings 74% of scores matched exactly and 98% were within one point, every Level 3 control failed under both raters, and the overall level matched for n8n and differed for LibreChat and Frappe, each on one judgement about kinds of change. Those judgements are now settled rules (see `CHANGELOG.md`). Read them as findings to check, not rankings. Brought to EVOLVE v0.7 in November 2026 at the same commits.
 
 | Product | Archetype | SAL (built) | Request → Release | Issue → Fix | Expansion | Main kinds self-serve | Recursion | AI Readiness |
 |---|---|---:|---|---|---|---|---|---|
@@ -109,7 +109,7 @@ EVOLVE was run on 11 open-source products from their public source code; each na
 | [Discourse](https://github.com/discourse/discourse) | focused application | **1** | L1 (AI L0) | L1 (AI L0) | L0 (AI L0) | 3 of 3 | Fixed | no AI by default; L1 Experimental with opt-in |
 | [Directus](https://github.com/directus/directus) | configurable platform | **1** | L1 (AI L0) | L1 (AI L0) | L1 (AI L0) | 2 of 3 | Fixed | L0 Foundational gap |
 | [Frappe](https://github.com/frappe/frappe) | configurable platform | **1** | L1 (AI L0) | L1 (AI L0) | L1 (AI L0) | 4 of 4 | By hand | no AI features |
-| [LibreChat](https://github.com/danny-avila/LibreChat) | focused application | **1** | L1 (AI L0) | L1 (AI L0) | L1 (AI L0) | 1 of 3 | By hand | L0 Foundational gap |
+| [LibreChat](https://github.com/danny-avila/LibreChat) | focused application | **0** | L0 (AI L0) | L0 (AI L0) | L1 (AI L0) | 2 of 3 | By hand | L0 Foundational gap |
 | [OpenCode](https://github.com/anomalyco/opencode) | agent runtime | **0** | L0 (AI L0) | L0 (AI L0) | L0 (AI L0) | 2 of 3 | Fixed | L1 Experimental |
 
 Every product is built to the level shown and **not proven** in operation: a repository holds no operating records of a product's own loop. Each product folder has a plain-language `report.md`.

@@ -4,7 +4,7 @@ A plain-language reading of an EVOLVE 0.7.0 assessment. Date 2026-09-30.
 
 ## In one paragraph
 
-Built to Level 1, Configurable: the people running the product can make the changes they need most without engineers, and can undo them. Not yet proven in operation. In practice, someone running the product makes the change in the product itself, and can undo it. The biggest thing holding it back is that requests stay as loose text, and the product does not turn them into a plan a person can confirm and build from.
+Built to Level 0, Manual: the changes that matter most are made by engineers writing and releasing code. Not yet proven in operation. In practice, most changes are requests that wait for engineers and for the next release. The biggest thing holding it back is that not every main kind of change can be made by the people running the product: Tools and connected services (MCP servers). Nor does the product build the change itself yet.
 
 ## Where it stands
 
@@ -12,14 +12,14 @@ The product is read on three loops. Its overall level is the lower of the first 
 
 **From request to release.** Can the product take a user's request, build it properly and release it?
 
-- Built to Level 1, Configurable. The people running the product can make the changes they need most without engineers, and can undo them.
-- Held at this level by the loop's own steps.
+- Built to Level 0, Manual. The changes that matter most are made by engineers writing and releasing code.
+- Held at this level by the shared release steps.
 - Proven: not evidenced.
 
 **From problem to fix.** Can the product find the problems users face, fix them and release the fix?
 
-- Built to Level 1, Configurable. The people running the product can make the changes they need most without engineers, and can undo them.
-- Held at this level by the loop's own steps.
+- Built to Level 0, Manual. The changes that matter most are made by engineers writing and releasing code.
+- Held at this level by the shared release steps.
 - Proven: not evidenced.
 
 **From unmet need to new offering.** Can the product notice needs it does not serve yet, and propose or launch something for them?
@@ -36,14 +36,14 @@ The changes the people running the product most often need, and how far each has
 
 | Kind of change | Who makes it | How far it has come | Main kind |
 |---|---|---|---|
-| Which AI models and providers are offered, and app-wide settings | administrators | Engineers only. This kind of change needs engineers to change code, make a release or edit files by hand. | Yes |
+| Which AI models and providers are offered, and app-wide settings | administrators | Self-serve. The people running the product make this kind of change themselves, without a release, and can undo it. | Yes |
 | Agents: their instructions, tools and files | users and administrators | Self-serve. The people running the product make this kind of change themselves, without a release, and can undo it. | Yes |
 | Tools and connected services (MCP servers) | administrators and users | Engineers only. This kind of change needs engineers to change code, make a release or edit files by hand. | Yes |
 | Saved prompts | users | Self-serve. The people running the product make this kind of change themselves, without a release, and can undo it. | No |
 | Who may use agents, prompts, skills and memories | administrators | Self-serve. The people running the product make this kind of change themselves, without a release, and can undo it. | No |
 | Skills that agents use | users | Engineers only. This kind of change needs engineers to change code, make a release or edit files by hand. | No |
 
-1 of 3 main kinds are self-serve. Self-serve means: the people running the product make this kind of change themselves, without a release, and can undo it.
+2 of 3 main kinds are self-serve. Self-serve means: the people running the product make this kind of change themselves, without a release, and can undo it.
 
 ## What works today
 
@@ -56,9 +56,7 @@ The strongest parts of the product, rated 3 or more out of 4.
 
 What each loop lacks for its next level, most widely felt first.
 
-- **Take in the request.** Requests stay as loose text, and the product does not turn them into a plan a person can confirm and build from. Holds back: From request to release, on the way to Level 2.
-- **Work out the cause.** The product reports problems but does not work out their likely cause, so people have to investigate each one. Holds back: From problem to fix, on the way to Level 2.
-- **Propose what to change.** The product shows data but does not turn it into ranked suggestions for change with evidence and expected gain. Holds back: From problem to fix, on the way to Level 2.
+- **Build the change.** Not every main kind of change can be made by the people running the product: Tools and connected services (MCP servers). Nor does the product build the change itself yet. Holds back: From request to release, on the way to Level 1; From problem to fix, on the way to Level 1.
 - **Spot unmet needs.** Failed searches and unsupported requests are not gathered into themes that show what users want and cannot get. Holds back: From unmet need to new offering, on the way to Level 2.
 - **Propose what to change.** The product does not propose new things to offer by itself, with evidence, for a person to decide. Holds back: From unmet need to new offering, on the way to Level 2.
 
@@ -124,7 +122,6 @@ For the kinds of change: 1 high, 5 medium and 0 low.
 
 Check these first. The rater was least sure of them, and each one decides a level or a safety gate:
 
-- Works out why a problem happens: holds From problem to fix, on the way to Level 2.
 - Notices needs it does not serve: holds From unmet need to new offering, on the way to Level 2.
 - Proposes new things to offer: holds From unmet need to new offering, on the way to Level 2.
 
@@ -133,8 +130,6 @@ The reading answers 75 questions: 65 from evidence, 0 where no evidence was foun
 The evidence behind the answers: 65 checked in the code, 0 taken from the product's own documents or settings and 0 inferred from other material.
 
 Neither the higher readings some evidence also supports, nor settings that ship switched off, would change any level.
-
-The overall level would drop if any of these were rated one step lower: AI builds accepted changes; Notices where users struggle; History and undo for every setting.
 
 The reading treats the product as follows:
 
@@ -153,27 +148,27 @@ This is one rater's reading of the evidence. A second, independent reading may d
 
 ## What to do next
 
-**From request to release, to Level 2, Assisted.** The check to run on the live product: A user describes a change in plain words inside the product. The product records it with structure (what, for whom, where) and drafts the change for a person to finish. Every change, drafted or not, passes automatic checks before it goes live, and a change that fails them is stopped.
+**From request to release, to Level 1, Configurable.** The check to run on the live product: Take each main kind of change the assessment lists (an answer, a rule, a workflow step, a setting). The people who need it make one in the running product, with no engineer, code change or new release, then undo it.
 
-**From problem to fix, to Level 2, Assisted.** The check to run on the live product: Cause a real failure. The product explains why it happened, with evidence, proposes what to change, and drafts the change for a person to finish.
+**From problem to fix, to Level 1, Configurable.** The check to run on the live product: Make the product fail the way a user would see it (a failed action, an error, negative feedback). The product records it where a person can look it up, with the part of the product involved. Someone running the product then changes the behaviour without engineers and can undo it.
 
 For the overall level to rise, both checks must pass.
 
 - For a plan of milestones that starts from a business goal, run `python3 scripts/blueprint.py <assessment.json> --goal "<business goal>"`.
-- For the full list of what the next assessment must find, run `python3 scripts/score.py <assessment.json> --checklist 2`.
+- For the full list of what the next assessment must find, run `python3 scripts/score.py <assessment.json> --checklist 1`.
 
 ## For engineers
 
-Headline as the scorer prints it: **Built to SAL 1 (Configurable) · Proven: not evidenced · AI-driven 0 · Request → Release L1 (AI L0) · Issue → Fix L1 (AI L0) · Opportunity → Expansion L1 (AI L0)**
+Headline as the scorer prints it: **Built to SAL 0 (Manual) · Proven: not evidenced · AI-driven 0 · Request → Release L0 (AI L0) · Issue → Fix L0 (AI L0) · Opportunity → Expansion L1 (AI L0)**
 
 AI Readiness as the scorer prints it: AI Readiness L0 (Foundational gap) · Context 2 · Quality 0 · Governance 1 · Operations 2 · not production-governed.
 
-Recursion: 1 By hand (LRN-10 at 1). 1 of 3 main kinds are self-serve.
+Recursion: 1 By hand (LRN-10 at 1). 2 of 3 main kinds are self-serve.
 
 Next-level blockers in the scorer's terms:
 
-- Request → Release to L2: stages Intake needs DEL-01 ≥ 2 (has 0)
-- Issue → Fix to L2: stages Diagnose needs LRN-05 ≥ 2 (has 1); stages Propose needs LRN-06 ≥ 2 (has 0)
+- Request → Release to L1: spine Build needs people build path ≥ 2 or product build path ≥ 2 (has kinds 2 of 3 main self-serve; DEL-04 2 serving a main kind at reach 1)
+- Issue → Fix to L1: spine Build needs people build path ≥ 2 or product build path ≥ 2 (has kinds 2 of 3 main self-serve; DEL-04 2 serving a main kind at reach 1, LRN-07 1)
 - Opportunity → Expansion to L2: stages Sense needs EXP-04 ≥ 2 (has 0); stages Propose needs EXP-05 ≥ 2 (has 0)
 
 | Plain name | Code | Score |

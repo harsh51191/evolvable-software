@@ -15,17 +15,17 @@ Repository evidence only, master at the tip named above. Enterprise modules (*.e
 ---
 Framework EVOLVE 0.7.0. Date 2026-09-30. Source github.com/n8n-io/n8n @ c17c48043eb1080e5ae9795ea3a384960f8748f1 (master). Archetype **configurable-application-platform**. Basis **shipped** (what ships).
 
-Scope facts true: persistent_data, schema_changes, multi_tenant, hosted_service, machine_actions, agent_mutations, definition_change_path, code_release_path, ai_features, ai_data_access, ai_actions. False: evolution_auto_apply.
+Scope facts true: persistent_data, schema_changes, multi_tenant, hosted_service, machine_actions, agent_mutations, definition_change_path, ai_features, ai_data_access, ai_actions. False: evolution_auto_apply, code_release_path.
 
-Coverage: 75 assessed, 0 not evidenced, 0 not applicable. Grades: 75 A, 0 B, 0 C.
+Coverage: 74 assessed, 0 not evidenced, 1 not applicable. Grades: 74 A, 0 B, 0 C.
 
-Confidence: 9 high, 52 medium, 14 low across the assessed criteria. Check these first (low confidence, and they hold a blocker or a critical control): LRN-05 (Issue → Fix to L3).
+Confidence: 9 high, 51 medium, 14 low across the assessed criteria. Check these first (low confidence, and they hold a blocker or a critical control): LRN-05 (Issue → Fix to L3).
 
 ## Software Autonomy Level
 
 **Built to SAL 2 (Assisted) · Proven: not evidenced · AI-driven 0 · Request → Release L2 (AI L2) · Issue → Fix L2 (AI L0) · Opportunity → Expansion L1 (AI L0)**
 
-Progress toward the next level: Request → Release 11 of 21 conditions for L3; Issue → Fix 11 of 23 conditions for L3; Opportunity → Expansion 3 of 5 conditions for L2.
+Progress toward the next level: Request → Release 11 of 20 conditions for L3; Issue → Fix 11 of 22 conditions for L3; Opportunity → Expansion 3 of 5 conditions for L2.
 
 - With opt-in settings: Built to SAL 2 (Assisted) · AI-driven 0 · Request → Release L2 (AI L2) · Issue → Fix L2 (AI L0) · Opportunity → Expansion L1 (AI L0).
 - With every alternate reading: Built to SAL 2 (Assisted) · AI-driven 0 · Request → Release L2 (AI L2) · Issue → Fix L2 (AI L0) · Opportunity → Expansion L1 (AI L0).
@@ -68,7 +68,7 @@ Progress toward the next level: Request → Release 11 of 21 conditions for L3; 
 | Control | Needs | Observed | Status |
 |---|---|---|---|
 | Definition rollback | GOV-05 ≥ 3 | 2 | fail |
-| Release rollback | DEL-11 ≥ 3 | 2 | fail |
+| Release rollback | DEL-11 ≥ 3 | n/a | n/a |
 | Safe migrations | ARC-02 ≥ 3 | 2 | fail |
 | Tested backup and restore | ARC-09 ≥ 3 | 2 | fail |
 | Tenant isolation | ARC-05 ≥ 3 | 2 | fail |
@@ -77,8 +77,8 @@ Progress toward the next level: Request → Release 11 of 21 conditions for L3; 
 
 ### What blocks the next level
 
-- **Request → Release to L3**: spine Build needs product build path ≥ 3 (has DEL-04 2); spine Verify needs DEL-06 ≥ 3 (has 2); spine Roll back needs GOV-05 ≥ 3 (has 2); spine Roll back needs DEL-11 ≥ 3 (has 2); stages Intake needs DEL-01 ≥ 3 (has 2); architecture Foundation needs ARC-02 ≥ 3 (has 2); architecture Foundation needs ARC-09 ≥ 3 (has 2); architecture Foundation needs ARC-05 ≥ 3 (has 2); governance Ceiling needs GOV-04 ≥ 3 (has 2); governance Ceiling needs GOV-10 ≥ 3 and LRN-08 ≥ 2 (has 2; 2)
-- **Issue → Fix to L3**: spine Build needs product build path ≥ 3 (has DEL-04 2, LRN-07 1); spine Verify needs DEL-06 ≥ 3 (has 2); spine Roll back needs GOV-05 ≥ 3 (has 2); spine Roll back needs DEL-11 ≥ 3 (has 2); stages Detect needs LRN-03 ≥ 3 (has 2); stages Diagnose needs LRN-05 ≥ 3 (has 2); stages Propose needs LRN-06 ≥ 3 (has 2); architecture Foundation needs ARC-02 ≥ 3 (has 2); architecture Foundation needs ARC-09 ≥ 3 (has 2); architecture Foundation needs ARC-05 ≥ 3 (has 2); governance Ceiling needs GOV-04 ≥ 3 (has 2); governance Ceiling needs GOV-10 ≥ 3 and LRN-08 ≥ 2 (has 2; 2)
+- **Request → Release to L3**: spine Build needs product build path ≥ 3 (has DEL-04 2); spine Verify needs DEL-06 ≥ 3 (has 2); spine Roll back needs GOV-05 ≥ 3 (has 2); stages Intake needs DEL-01 ≥ 3 (has 2); architecture Foundation needs ARC-02 ≥ 3 (has 2); architecture Foundation needs ARC-09 ≥ 3 (has 2); architecture Foundation needs ARC-05 ≥ 3 (has 2); governance Ceiling needs GOV-04 ≥ 3 (has 2); governance Ceiling needs GOV-10 ≥ 3 and LRN-08 ≥ 2 (has 2; 2)
+- **Issue → Fix to L3**: spine Build needs product build path ≥ 3 (has DEL-04 2, LRN-07 1); spine Verify needs DEL-06 ≥ 3 (has 2); spine Roll back needs GOV-05 ≥ 3 (has 2); stages Detect needs LRN-03 ≥ 3 (has 2); stages Diagnose needs LRN-05 ≥ 3 (has 2); stages Propose needs LRN-06 ≥ 3 (has 2); architecture Foundation needs ARC-02 ≥ 3 (has 2); architecture Foundation needs ARC-09 ≥ 3 (has 2); architecture Foundation needs ARC-05 ≥ 3 (has 2); governance Ceiling needs GOV-04 ≥ 3 (has 2); governance Ceiling needs GOV-10 ≥ 3 and LRN-08 ≥ 2 (has 2; 2)
 - **Opportunity → Expansion to L2**: stages Sense needs EXP-04 ≥ 2 (has 0); stages Propose needs EXP-05 ≥ 2 (has 0)
 
 ### What AI drives
@@ -93,7 +93,7 @@ Each loop re-scored with its AI-performable stages read only on what AI does the
 
 ### Sensitivity
 
-- **Fragile:** the headline drops if any of these falls one level: DEL-01, DEL-04, DEL-11, LRN-03, LRN-05, LRN-06, GOV-05.
+- **Fragile:** the headline drops if any of these falls one level: DEL-01, DEL-04, LRN-03, LRN-05, LRN-06, GOV-05.
 - No single criterion rising one level lifts the headline.
 
 ## EVOLVE profile
@@ -101,7 +101,7 @@ Each loop re-scored with its AI-performable stages read only on what AI does the
 | Capability | Default | Range with alternate readings | With opt-in settings | Assessed only | If every criterion counted |
 |---|---:|---|---:|---:|---:|
 | Elastic (ARC) | 2.1 | 2.1–2.3 | 2.1 | 2.1 | 2.1 |
-| Velocity (DEL) | 2.1 | 2.1–2.8 | 2.1 | 2.1 | 2.1 |
+| Velocity (DEL) | 2.1 | 2.1–2.7 | 2.1 | 2.1 | 2.1 |
 | Open (MAL) | 2.3 | 2.3–3.0 | 2.3 | 2.3 | 2.3 |
 | Learn (LRN) | 1.8 | 1.8–2.5 | 1.8 | 1.8 | 1.8 |
 | Vet (GOV) | 2.3 | 2.3–2.7 | 2.3 | 2.3 | 2.3 |
@@ -193,7 +193,7 @@ What the product's AI does. Descriptive levels per area, with no headline: it ne
 | DEL-08 Machine verifiability | assessed | 2 | 3 |  | A, medium |  | Playwright journeys (packages/testing/playwright/composables/journeys) with nightly coverage; no changed-path to journey map or adoption instrumentation at ship evidenced. |
 | DEL-09 Staged exposure | assessed | 2 |  |  | A, low |  | Workflow versions are published deliberately, and frontend features are gated per instance; there are no cohort rollouts for workflow changes. |
 | DEL-10 Kill switch | assessed | 2 |  |  | A, low |  | Workflows can be deactivated at runtime; there is no global kill switch for AI-made changes. |
-| DEL-11 Release rollback | assessed | 2 | 3 |  | A, medium | IT | Applies since code_release_path was re-read as true. Code the product's AI writes rolls back with the definition that carries it. An agent version snapshots its tools and skills, and an earlier version can be reverted to or published again (packages/cli/src/modules/agents/agent-publish.service.ts:124-176, 404-450; agent-publish.controller.ts:84-144), covered by agent-publish.service.test.ts. Code-node scripts roll back with workflow history, which keeps only 24 hours of earlier versions without a licence (packages/@n8n/constants/src/index.ts:80, packages/cli/src/workflows/workflow-history/workflow-history-helper.ts:11-27), so a previous release is not always available. |
+| DEL-11 Release rollback | not_applicable | excluded |  |  | - |  | code_release_path is false: AI-written code runs sandboxed inside versioned workflows and agents, covered by GOV-05. |
 | MAL-01 New entity type without code, DDL or deploy | assessed | 2 | 3 |  | A, medium |  | Data tables are created in the UI with typed columns; a DDL service creates real tables without deploy, with their own permissions and public API (packages/cli/src/modules/data-table: data-table-ddl.service.ts, data-table-permissions.ts; packages/cli/src/public-api/v1/handlers/data-tables). Scored at the lower reading under rule 11 because: Data tables are storage for workflows, not general business-object types with forms and relations. |
 | MAL-02 Field definitions carry type and validation | assessed | 2 | 3 |  | A, medium |  | Data-table columns are typed (data-table-column.entity.ts); execution data has redaction policies (packages/cli/src/modules/redaction/redaction-policy.ts) but no field-level privacy classification. |
 | MAL-03 Relationships and lifecycle states declarable | assessed | 1 |  |  | A, low |  | No declarable relations between data tables and no lifecycle states for user entities; workflow states are product-defined. |

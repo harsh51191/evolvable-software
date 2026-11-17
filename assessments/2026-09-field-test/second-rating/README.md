@@ -124,7 +124,7 @@ Three products were rated again from scratch on all 75 criteria, with scope fact
 | Product | Scores both assessed | Exact | Within one | Level 3 controls agree | Scope facts differ | Overall level, published · blind |
 |---|---:|---:|---:|---|---:|---|
 | n8n | 73 | 48 (66%) | 72 (99%) | 6 of 8 (the other 2 differ only through scope facts) | 3 of 12 | SAL 2 · SAL 2 |
-| LibreChat | 63 | 45 (71%) | 60 (95%) | 6 of 8 | 1 of 12 | SAL 0 · SAL 1, now SAL 1 · SAL 1 after corrections |
+| LibreChat | 63 | 45 (71%) | 60 (95%) | 6 of 8 | 1 of 12 | SAL 0 · SAL 1; SAL 0 under the settled rules |
 | Frappe | 64 | 56 (88%) | 64 (100%) | 8 of 8 | 0 of 12 | SAL 1 · SAL 0 |
 | **All three** | **200** | **149 (74%)** | **196 (98%)** | | | |
 
@@ -139,13 +139,13 @@ After the LibreChat corrections below, LibreChat's exact agreement is 48 of 63 (
 
 The overall level can turn on a single judgement, usually about kinds of change.
 
-- **LibreChat: published 0, blind 1. Corrected to 1.** Re-reading the code at the pinned commit confirmed three errors in the published rating: the product's agent writes skills on request inside permission and content checks, which scoring rule 4 counts as an AI lane (DEL-04 0 to 2); a leased job queue with retries and dead letters exists (ARC-04 1 to 3); and the upgrade guide tells operators to back up MongoDB (ARC-09 0 to 1). The AI lane gives every loop a build path, so LibreChat is now Built to SAL 1. The level is fragile: it rests on one narrow lane for a kind of change that is not main.
-- **Frappe: published 1, blind 0. Open.** Both raters agree that custom server logic needs an engineer, because Server Scripts are off by default. The published rating judged it not a main kind of change, with low confidence; the blind rater judged it main. That one call moves Frappe between Level 1 and Level 0. The rubric needs a test for "main".
+- **LibreChat: published 0, blind 1. Settled at 0.** Re-reading the code at the pinned commit confirmed three errors in the published rating, now corrected: the product's agent writes skills on request inside permission and content checks, which scoring rule 4 counts as an AI lane (DEL-04 0 to 2); a leased job queue with retries and dead letters exists (ARC-04 1 to 3); and the upgrade guide tells operators to back up MongoDB (ARC-09 0 to 1). The blind rater's Level 1 came from that skills lane. Skills are not a main kind of change, and under the settled rule an AI lane counts only when it serves one, so LibreChat stays at 0. Its one blocking gap: tool connections cannot be undone.
+- **Frappe: published 1, blind 0. Settled at 1.** Both raters agree that custom server logic needs an engineer, because Server Scripts are off by default. The published rating judged it not a main kind of change; the blind rater judged it main. Under the settled test, a kind the product offers only to developers is not main, so Frappe stays at Level 1.
 - **n8n: both 2.** The raters differ on three scope facts: whether licence-gated team projects make it multi-tenant, whether AI-written code inside a workflow is a code release, and whether saved "always allow" preferences mean changes apply automatically. None moves the level. The blind rater also reads the fix loop as AI-driven at L2 (published AI L0).
 
 ### What changed as a result
 
 - LibreChat corrected (above) and its report regenerated.
-- Five open questions added to `evals/disagreements.md`: what makes a kind of change main; whether reach 1 needs a screen in the assessed product and whether removing counts as undo; whether one narrow AI lane on a kind that is not main should lift a loop; whether a scope fact follows the default licence; and whether code inside a versioned definition is a code release.
+- The five questions the raters split on are now rules: what makes a kind of change main; what counts as self-serve and as undo; an AI lane counts only when it serves a main kind; scope facts follow the scored installation; code inside a sandboxed, versioned definition is part of it. See `CHANGELOG.md`.
 
 All raters are still AI models. A human second rating remains the next step.

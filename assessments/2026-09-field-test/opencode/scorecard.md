@@ -28,7 +28,7 @@ Confidence: 7 high, 31 medium, 24 low across the assessed criteria. Check these 
 Progress toward the next level: Request → Release 0 of 2 conditions for L1; Issue → Fix 0 of 3 conditions for L1; Opportunity → Expansion 1 of 2 conditions for L1.
 
 - With opt-in settings: Built to SAL 0 (Manual) · AI-driven 0 · Request → Release L0 (AI L0) · Issue → Fix L0 (AI L0) · Opportunity → Expansion L0 (AI L0).
-- With every alternate reading: Built to SAL 0 (Manual) · AI-driven 0 · Request → Release L1 (AI L0) · Issue → Fix L0 (AI L0) · Opportunity → Expansion L1 (AI L0).
+- With every alternate reading: Built to SAL 0 (Manual) · AI-driven 0 · Request → Release L0 (AI L0) · Issue → Fix L0 (AI L0) · Opportunity → Expansion L1 (AI L0).
 
 | Loop | Stages | Spine | Architecture | Governance | Level | AI-driven | With opt-in settings |
 |---|---:|---:|---:|---:|---:|---:|---:|

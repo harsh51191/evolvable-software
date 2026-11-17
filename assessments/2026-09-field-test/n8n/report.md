@@ -64,7 +64,6 @@ What each loop lacks for its next level, most widely felt first.
 - **Build the change.** The product's own AI does not build accepted changes from start to finish, so a person still builds or completes each one. Holds back: From request to release, on the way to Level 3; From problem to fix, on the way to Level 3.
 - **Check the change.** The running product cannot report its version, its health and its live settings in a form software can read. Holds back: From request to release, on the way to Level 3; From problem to fix, on the way to Level 3.
 - **Undo it.** Undo does not cover everything people can change, so some settings, rules or layouts have no history to go back to. Holds back: From request to release, on the way to Level 3; From problem to fix, on the way to Level 3.
-- **Undo it.** Going back to the previous version of the code is not a tested, one-step action that keeps the data working. Holds back: From request to release, on the way to Level 3; From problem to fix, on the way to Level 3.
 - **Technical foundation.** Changes to how data is stored are not tested on realistic data, or can cause downtime or data loss. Holds back: From request to release, on the way to Level 3; From problem to fix, on the way to Level 3.
 - **Technical foundation.** Restoring from a backup is not tested for everything the product needs, which is data, settings, files, secrets and scheduled jobs. Holds back: From request to release, on the way to Level 3; From problem to fix, on the way to Level 3.
 - **Technical foundation.** Nothing shows that customer organisations cannot see each other's data or slow each other down. Holds back: From request to release, on the way to Level 3; From problem to fix, on the way to Level 3.
@@ -79,12 +78,12 @@ What each loop lacks for its next level, most widely felt first.
 
 ## Safety gates
 
-Safety gates must all pass before the product may carry changes from start to finish (Level 3). 0 of 7 that apply have passed.
+Safety gates must all pass before the product may carry changes from start to finish (Level 3). 0 of 6 that apply have passed.
 
 | Safety gate | Status | Why it matters |
 |---|---|---|
 | Undo for every change people and AI make in the product | Not yet | Without it, a bad change to settings, rules or layouts stays in place until an engineer repairs it by hand. |
-| Undo for a new version of the code | Not yet | Without it, a bad release stays live until engineers can build and release a repair. |
+| Undo for a new version of the code | Does not apply |  |
 | Safe changes to how data is stored | Not yet | Without it, a small change can lock the product or lose data. |
 | Backups that are proven to restore | Not yet | Without it, a mistake that undo cannot reach is permanent, because nobody knows whether the backup works. |
 | Customer organisations kept apart | Not yet | Without it, one customer organisation could see another's data or slow the product down for everyone. |
@@ -133,7 +132,7 @@ Built says what the product can do; proven says what it has been seen to do. A p
 
 ## How sure this reading is
 
-Of the 75 answers based on evidence, 9 are held with high confidence (the rater read the code and its tests), 52 with medium confidence (the rater read the code, but not every path through it) and 14 with low confidence (inferred from part of the evidence).
+Of the 74 answers based on evidence, 9 are held with high confidence (the rater read the code and its tests), 51 with medium confidence (the rater read the code, but not every path through it) and 14 with low confidence (inferred from part of the evidence).
 
 For the kinds of change: 0 high, 6 medium and 0 low.
 
@@ -141,13 +140,13 @@ Check these first. The rater was least sure of them, and each one decides a leve
 
 - Works out why a problem happens: holds From problem to fix, on the way to Level 3.
 
-The reading answers 75 questions: 75 from evidence, 0 where no evidence was found (counted as missing), and 0 that do not apply to this product.
+The reading answers 75 questions: 74 from evidence, 0 where no evidence was found (counted as missing), and 1 that do not apply to this product.
 
-The evidence behind the answers: 75 checked in the code, 0 taken from the product's own documents or settings and 0 inferred from other material.
+The evidence behind the answers: 74 checked in the code, 0 taken from the product's own documents or settings and 0 inferred from other material.
 
 Neither the higher readings some evidence also supports, nor settings that ship switched off, would change any level.
 
-The overall level would drop if any of these were rated one step lower: Requests become clear change plans; AI builds accepted changes; Undo for a new version of the code; Notices where users struggle; Works out why a problem happens; Ranked suggestions for change, with evidence; History and undo for every setting.
+The overall level would drop if any of these were rated one step lower: Requests become clear change plans; AI builds accepted changes; Notices where users struggle; Works out why a problem happens; Ranked suggestions for change, with evidence; History and undo for every setting.
 
 The reading treats the product as follows:
 
@@ -158,7 +157,6 @@ The reading treats the product as follows:
 - AI agents or other software can change its data or settings.
 - Its own AI can change its settings, skills, memory or data.
 - Its behaviour is changed through settings and rules.
-- Its own improvement system releases new code, not only new settings and rules.
 - It has AI features.
 - Its AI can read the product's data.
 - Its AI can change data or settings, send messages outside the product or spend money.
@@ -186,8 +184,8 @@ Recursion: 1 By hand (LRN-10 at 1). 1 of 2 main kinds are self-serve.
 
 Next-level blockers in the scorer's terms:
 
-- Request → Release to L3: spine Build needs product build path ≥ 3 (has DEL-04 2); spine Verify needs DEL-06 ≥ 3 (has 2); spine Roll back needs GOV-05 ≥ 3 (has 2); spine Roll back needs DEL-11 ≥ 3 (has 2); stages Intake needs DEL-01 ≥ 3 (has 2); architecture Foundation needs ARC-02 ≥ 3 (has 2); architecture Foundation needs ARC-09 ≥ 3 (has 2); architecture Foundation needs ARC-05 ≥ 3 (has 2); governance Ceiling needs GOV-04 ≥ 3 (has 2); governance Ceiling needs GOV-10 ≥ 3 and LRN-08 ≥ 2 (has 2; 2)
-- Issue → Fix to L3: spine Build needs product build path ≥ 3 (has DEL-04 2, LRN-07 1); spine Verify needs DEL-06 ≥ 3 (has 2); spine Roll back needs GOV-05 ≥ 3 (has 2); spine Roll back needs DEL-11 ≥ 3 (has 2); stages Detect needs LRN-03 ≥ 3 (has 2); stages Diagnose needs LRN-05 ≥ 3 (has 2); stages Propose needs LRN-06 ≥ 3 (has 2); architecture Foundation needs ARC-02 ≥ 3 (has 2); architecture Foundation needs ARC-09 ≥ 3 (has 2); architecture Foundation needs ARC-05 ≥ 3 (has 2); governance Ceiling needs GOV-04 ≥ 3 (has 2); governance Ceiling needs GOV-10 ≥ 3 and LRN-08 ≥ 2 (has 2; 2)
+- Request → Release to L3: spine Build needs product build path ≥ 3 (has DEL-04 2); spine Verify needs DEL-06 ≥ 3 (has 2); spine Roll back needs GOV-05 ≥ 3 (has 2); stages Intake needs DEL-01 ≥ 3 (has 2); architecture Foundation needs ARC-02 ≥ 3 (has 2); architecture Foundation needs ARC-09 ≥ 3 (has 2); architecture Foundation needs ARC-05 ≥ 3 (has 2); governance Ceiling needs GOV-04 ≥ 3 (has 2); governance Ceiling needs GOV-10 ≥ 3 and LRN-08 ≥ 2 (has 2; 2)
+- Issue → Fix to L3: spine Build needs product build path ≥ 3 (has DEL-04 2, LRN-07 1); spine Verify needs DEL-06 ≥ 3 (has 2); spine Roll back needs GOV-05 ≥ 3 (has 2); stages Detect needs LRN-03 ≥ 3 (has 2); stages Diagnose needs LRN-05 ≥ 3 (has 2); stages Propose needs LRN-06 ≥ 3 (has 2); architecture Foundation needs ARC-02 ≥ 3 (has 2); architecture Foundation needs ARC-09 ≥ 3 (has 2); architecture Foundation needs ARC-05 ≥ 3 (has 2); governance Ceiling needs GOV-04 ≥ 3 (has 2); governance Ceiling needs GOV-10 ≥ 3 and LRN-08 ≥ 2 (has 2; 2)
 - Opportunity → Expansion to L2: stages Sense needs EXP-04 ≥ 2 (has 0); stages Propose needs EXP-05 ≥ 2 (has 0)
 
 | Plain name | Code | Score |
@@ -211,7 +209,7 @@ Next-level blockers in the scorer's terms:
 | User journeys tested automatically | DEL-08 | 2 |
 | Release to a small group first | DEL-09 | 2 |
 | Off switch for any change | DEL-10 | 2 |
-| Undo for a new version of the code | DEL-11 | 2 |
+| Undo for a new version of the code | DEL-11 | does not apply |
 | New kinds of records without engineering | MAL-01 | 2 |
 | New fields with built-in checks | MAL-02 | 2 |
 | Links and statuses set without engineers | MAL-03 | 1 |

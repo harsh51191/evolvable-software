@@ -181,6 +181,8 @@ def load_rubric(path):
             for alt in paths[who]:
                 if "cap" in alt and alt["cap"] not in caps:
                     raise ModelError(f"build path {loop}/{who} names unknown capability {alt['cap']}")
+                if "serves_main" in alt and alt["serves_main"] is not True:
+                    raise ModelError(f"build path {loop}/{who}: serves_main must be true")
                 if "kinds" in alt and alt["kinds"] != "main":
                     raise ModelError(f"build path {loop}/{who}: kinds must be \"main\"")
                 known(_test_ids(alt), f"build path {loop}/{who}")
@@ -899,6 +901,12 @@ class Evaluator:
                     w_ok, w_value = self._crit(alt["with"]["c"], alt["with"]["min"])
                     observed[-1] += f" with {alt['with']['c']} {w_value}"
                     ok = w_ok
+                if ok and alt.get("serves_main"):
+                    # The lane counts only when it carries a main kind of change at least this far.
+                    reach = max((k["reach"] for k in self.data.get("change_kinds") or []
+                                 if k.get("main") is True and isinstance(k.get("reach"), int)), default=0)
+                    observed[-1] += f" serving a main kind at reach {reach}"
+                    ok = reach >= minimum
             if ok:
                 return True, ", ".join(observed)
         return False, ", ".join(observed)
@@ -1504,6 +1512,9 @@ def describe_condition(cond, loop, criteria, model, facts, kinds=()):
                 if "with" in alt:
                     w = alt["with"]
                     text += f" (with {w['c']} {criteria[w['c']]['title']}: {criteria[w['c']]['anchors'][w['min']]})"
+                if alt.get("serves_main"):
+                    text += (f" It counts only for a main kind of change it carries to reach {cond['min']} or more"
+                             f" ({model['reach'][min(cond['min'], 5)]}).")
                 parts.append(text)
         who = "People build the change" if cond["path"] == "people" else "The product builds the change"
         return f"{who}. " + " Or: ".join(parts)
